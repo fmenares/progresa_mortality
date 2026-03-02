@@ -527,7 +527,7 @@ file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
 		file write sm "& (`SE_uw05_1')  & (`SE_uw05_2') & (`SE_uw05_3') & (`SE_uw05_4') & (`SE_uw05_5') & (`SE_uw05_6') & (`SE_uw05_7') & (`SE_uw05_8')  \\ "_n
 		
 		file write sm "&  &   &  & &  &   &  & &   \\ "_n
-		file write sm "Mean (1992-1996) & `mean_dep_uw1'  & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw7'  \\  "_n
+		file write sm "Mean (1992-1996) & `mean_dep_uw1'  & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
 		file write sm "Obs & `N_uw1'  & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
 		*file write sm "&  &   &  & &  &   &  &  & \\ "_n
 		file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
@@ -1230,7 +1230,7 @@ file write sm "\underline{\textit{Panel B: Males}}  \\  "_n
 		file write sm "& (`SE_m05_1')  & (`SE_m05_2') & (`SE_m05_3') & (`SE_m05_4') & (`SE_m05_5') & (`SE_m05_6') & (`SE_m05_7') & (`SE_m05_8')  \\ "_n
 		
 		file write sm "&  & &  &  & &  &   &  &   \\ "_n
-		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7' & `mean_dep_m7'  \\  "_n
+		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7' & `mean_dep_m8'  \\  "_n
 		file write sm "Obs & `N_m1'  & `N_m2' & `N_m3' & `N_m4' & `N_m5' & `N_m6' & `N_m7' & `N_m8' \\ "_n
 		*file write sm "&  &   &  & &  &   &  &  & \\ "_n
 		file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
@@ -1262,7 +1262,7 @@ foreach outcome in $hh_food {
 	local SE_f99_`i' : di %12.3f  _se[1.post#c.inten1999]
 	
 	
-	local t_`i' = _b[1.post#c.inten1999]/_se[1.post#c.inten1999]
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
 	
 	if (`t_`i'' >= 2.576) {
 		local OLS_f99_`i' = "`OLS_f99_`i'_aux'***"	
@@ -1321,7 +1321,7 @@ foreach outcome in $hh_food {
 	local SE_m99_`i' : di %12.3f  _se[1.post#c.inten1999]
 	
 	
-	local t_`i' = _b[1.post#c.inten1999]/_se[1.post#c.inten1999]
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
 	
 	if (`t_`i'' >= 2.576) {
 		local OLS_m99_`i' = "`OLS_m99_`i'_aux'***"	
@@ -1495,7 +1495,7 @@ foreach outcome in $hh_health{
 	local SE_m99_`i' : di %12.3f  _se[1.post#c.inten1999]
 	
 	
-	local t_`i' = _b[1.post#c.inten1999]/_se[1.post#c.inten1999]
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
 	
 	if (`t_`i'' >= 2.576) {
 		local OLS_m99_`i' = "`OLS_m99_`i'_aux'***"	
@@ -2024,7 +2024,7 @@ foreach outcome in $hh_health{
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -2113,7 +2113,7 @@ foreach outcome in $individuals {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -2148,7 +2148,7 @@ foreach outcome in $individuals {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -2233,7 +2233,7 @@ foreach outcome in $hh {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -2270,7 +2270,7 @@ foreach outcome in $hh {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -2358,7 +2358,7 @@ foreach outcome in $hh_food {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -2393,7 +2393,7 @@ foreach outcome in $hh_food {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -2475,7 +2475,7 @@ foreach outcome in $hh_health{
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -2512,7 +2512,7 @@ foreach outcome in $hh_health{
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -2999,7 +2999,7 @@ foreach outcome in $hh_health{
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
 	} 
 
@@ -3087,7 +3087,7 @@ foreach outcome in $individuals {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -3122,7 +3122,7 @@ foreach outcome in $individuals {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -3207,7 +3207,7 @@ foreach outcome in $hh {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -3244,7 +3244,7 @@ foreach outcome in $hh {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -3332,7 +3332,7 @@ foreach outcome in $hh_food {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -3367,7 +3367,7 @@ foreach outcome in $hh_food {
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -3449,7 +3449,7 @@ foreach outcome in $hh_health{
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
 	} 
 
@@ -3486,7 +3486,7 @@ foreach outcome in $hh_health{
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
 	} 
 
@@ -3975,7 +3975,7 @@ foreach outcome in $hh_health{
 	} 
 
 
-	if inrange(`t_`i'', 1.645, 1.95) {
+	if inrange(`t_`i'', 1.645, 1.96) {
 		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
 	} 
 
