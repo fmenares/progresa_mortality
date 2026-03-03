@@ -148,6 +148,16 @@ g ortho_out = 0
 g ln_hh_income_tot = log(hh_income_tot)
 g ln_hh_expenditure = log(hh_expenditure)
 
+*====================================================
+* INTENSIVE MARGIN: household-level 65+ earner flag
+*====================================================
+* Flag households that have at least one member aged 65+
+* with positive individual earnings (intensive margin at HH level).
+* NOTE: 'folio' is the ENIGH household identifier; adjust if variable name differs.
+gen elder65_pos_earn_ind = (age >= 65 & ind_earnings > 0 & ind_earnings != . & age != .)
+bysort folio year: egen hh_elder65_pos_earn = max(elder65_pos_earn_ind)
+drop elder65_pos_earn_ind
+
   
 
  *individual
@@ -4000,7 +4010,8 @@ foreach outcome in $hh_health{
 	
 	{
 	cap file close sm
-		file open sm using "$tables/T4_health_enigh_1997_2002.tex", write replace 
+		file open sm using "$tables/T4_health_enigh_1997_2002.tex", write replace
+
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
