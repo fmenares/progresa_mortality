@@ -148,6 +148,16 @@ g ortho_out = 0
 g ln_hh_income_tot = log(hh_income_tot)
 g ln_hh_expenditure = log(hh_expenditure)
 
+*====================================================
+* INTENSIVE MARGIN: household-level 65+ earner flag
+*====================================================
+* Flag households that have at least one member aged 65+
+* with positive individual earnings (intensive margin at HH level).
+* NOTE: 'folio' is the ENIGH household identifier; adjust if variable name differs.
+gen elder65_pos_earn_ind = (age >= 65 & ind_earnings > 0 & ind_earnings != . & age != .)
+bysort folio year: egen hh_elder65_pos_earn = max(elder65_pos_earn_ind)
+drop elder65_pos_earn_ind
+
   
 
  *individual
@@ -4000,7 +4010,8 @@ foreach outcome in $hh_health{
 	
 	{
 	cap file close sm
-		file open sm using "$tables/T4_health_enigh_1997_2002.tex", write replace 
+		file open sm using "$tables/T4_health_enigh_1997_2002.tex", write replace
+
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
@@ -4030,5 +4041,3623 @@ file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
 		file write sm "\bottomrule"_n
 		file write sm "\end{tabular}"
 		file close sm
+}
+
+/*=================================================================
+* INTENSIVE MARGIN TABLES
+* Individual outcomes: restricted to ind_earnings > 0
+* Household outcomes: restricted to hh_elder65_pos_earn == 1
+*=================================================================*/
+
+/*************************************************************
+INTENSIVE MARGIN: 1999 and 2005 Intensity Interaction (Pooled)
+*************************************************************/
+
+*individual income and labor outcomes - INTENSIVE MARGIN
+local i = 1
+global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind"
+
+foreach outcome in $individuals {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_w05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_w05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post if ///
+	`outcome'_out == 0 & ind_earnings > 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_uw05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_uw05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T1_ind_enigh_im.tex", write replace 
+	file write sm "\begin{tabular}{cccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_w05_1' & `OLS_w05_2' & `OLS_w05_3' & `OLS_w05_4' & `OLS_w05_5' & `OLS_w05_6' & `OLS_w05_7' \\  "_n
+	file write sm " & (`SE_w05_1') & (`SE_w05_2') & (`SE_w05_3') & (`SE_w05_4') & (`SE_w05_5') & (`SE_w05_6') & (`SE_w05_7') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_uw05_1' & `OLS_uw05_2' & `OLS_uw05_3' & `OLS_uw05_4' & `OLS_uw05_5' & `OLS_uw05_6' & `OLS_uw05_7'  \\  "_n
+	file write sm "& (`SE_uw05_1') & (`SE_uw05_2') & (`SE_uw05_3') & (`SE_uw05_4') & (`SE_uw05_5') & (`SE_uw05_6') & (`SE_uw05_7')  \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N     \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*household outcomes - INTENSIVE MARGIN
+local i = 1
+global hh = "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
+
+foreach outcome in $hh {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_w05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_w05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_uw05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_uw05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T2_hh_enigh_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_w05_1' & `OLS_w05_2' & `OLS_w05_3' & `OLS_w05_4' & `OLS_w05_5' & `OLS_w05_6' & `OLS_w05_7' & `OLS_w05_8' \\  "_n
+	file write sm " & (`SE_w05_1') & (`SE_w05_2') & (`SE_w05_3') & (`SE_w05_4') & (`SE_w05_5') & (`SE_w05_6') & (`SE_w05_7') & (`SE_w05_8') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_uw05_1' & `OLS_uw05_2' & `OLS_uw05_3' & `OLS_uw05_4' & `OLS_uw05_5' & `OLS_uw05_6' & `OLS_uw05_7' & `OLS_uw05_8'  \\  "_n
+	file write sm "& (`SE_uw05_1') & (`SE_uw05_2') & (`SE_uw05_3') & (`SE_uw05_4') & (`SE_uw05_5') & (`SE_uw05_6') & (`SE_uw05_7') & (`SE_uw05_8')  \\ "_n
+	
+	file write sm "&  &   &  & &  &   &  & &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*food outcomes - INTENSIVE MARGIN
+local i = 1
+global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
+
+foreach outcome in $hh_food {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_w05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_w05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_uw05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_uw05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T3_food_enigh_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veg/Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat/Dairy} & \multicolumn{1}{c}{Sugar/Fat} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_w05_1' & `OLS_w05_2' & `OLS_w05_3' & `OLS_w05_4' & `OLS_w05_5' & `OLS_w05_6' & `OLS_w05_7' & `OLS_w05_8' \\  "_n
+	file write sm " & (`SE_w05_1') & (`SE_w05_2') & (`SE_w05_3') & (`SE_w05_4') & (`SE_w05_5') & (`SE_w05_6') & (`SE_w05_7') & (`SE_w05_8') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_uw05_1' & `OLS_uw05_2' & `OLS_uw05_3' & `OLS_uw05_4' & `OLS_uw05_5' & `OLS_uw05_6' & `OLS_uw05_7' & `OLS_uw05_8'  \\  "_n
+	file write sm "& (`SE_uw05_1') & (`SE_uw05_2') & (`SE_uw05_3') & (`SE_uw05_4') & (`SE_uw05_5') & (`SE_uw05_6') & (`SE_uw05_7') & (`SE_uw05_8')  \\ "_n
+	
+	file write sm "&  &   &  & &  &   &  & &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*health outcomes - INTENSIVE MARGIN
+local i = 1
+global hh_health = "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
+
+foreach outcome in $hh_health {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_w05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_w05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w05_`i' = "`OLS_w05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_uw05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_uw05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw05_`i' = "`OLS_uw05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T4_health_enigh_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_w05_1' & `OLS_w05_2' & `OLS_w05_3' & `OLS_w05_4' & `OLS_w05_5' & `OLS_w05_6' & `OLS_w05_7' & `OLS_w05_8' \\  "_n
+	file write sm " & (`SE_w05_1') & (`SE_w05_2') & (`SE_w05_3') & (`SE_w05_4') & (`SE_w05_5') & (`SE_w05_6') & (`SE_w05_7') & (`SE_w05_8') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_uw05_1' & `OLS_uw05_2' & `OLS_uw05_3' & `OLS_uw05_4' & `OLS_uw05_5' & `OLS_uw05_6' & `OLS_uw05_7' & `OLS_uw05_8'  \\  "_n
+	file write sm "& (`SE_uw05_1') & (`SE_uw05_2') & (`SE_uw05_3') & (`SE_uw05_4') & (`SE_uw05_5') & (`SE_uw05_6') & (`SE_uw05_7') & (`SE_uw05_8')  \\ "_n
+	
+	file write sm "&  &   &  & &  &   &  & &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+/*************************************************************
+INTENSIVE MARGIN: By Sex (1999+2005 Intensity)
+*************************************************************/
+* BY SEX - INTENSIVE MARGIN
+*individual income and labor outcomes
+*
+local i = 1
+
+foreach outcome in $individuals {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & female == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_f99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_f99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_f05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_f05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_f`i' : di %12.2fc `r(mean)'
+	
+	local N_f`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & female == 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_m99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_m99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_m05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_m05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_m`i' : di %12.2fc `r(mean)'
+	
+	local N_m`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T1_ind_enigh_sex_im.tex", write replace 
+	file write sm "\begin{tabular}{cccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Females}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1' & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7'\\  "_n
+	file write sm "& (`SE_f99_1') & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5') & (`SE_f99_6') & (`SE_f99_7')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_f05_1' & `OLS_f05_2' & `OLS_f05_3' & `OLS_f05_4' & `OLS_f05_5' & `OLS_f05_6' & `OLS_f05_7' \\  "_n
+	file write sm " & (`SE_f05_1') & (`SE_f05_2') & (`SE_f05_3') & (`SE_f05_4') & (`SE_f05_5') & (`SE_f05_6') & (`SE_f05_7') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_f1' & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6' & `mean_dep_f7'  \\  "_n
+	file write sm "Obs & `N_f1' & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\  "_n
+	
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Males}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1' & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' \\  "_n
+	file write sm "& (`SE_m99_1') & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5') & (`SE_m99_6') & (`SE_m99_7') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_m05_1' & `OLS_m05_2' & `OLS_m05_3' & `OLS_m05_4' & `OLS_m05_5' & `OLS_m05_6' & `OLS_m05_7'  \\  "_n
+	file write sm "& (`SE_m05_1') & (`SE_m05_2') & (`SE_m05_3') & (`SE_m05_4') & (`SE_m05_5') & (`SE_m05_6') & (`SE_m05_7')  \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_m1' & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6' & `mean_dep_m7'  \\  "_n
+	file write sm "Obs & `N_m1' & `N_m2' & `N_m3' & `N_m4' & `N_m5' & `N_m6' & `N_m7' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N     \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*household outcomes by sex - INTENSIVE MARGIN
+local i = 1
+global hh = "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
+
+foreach outcome in $hh {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & hhh_female == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_f99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_f99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_f05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_f05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & hhh_female == 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_m99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_m99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_m05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_m05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T2_hh_enigh_sex_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1' & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+	file write sm "& (`SE_f99_1') & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5') & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_f05_1' & `OLS_f05_2' & `OLS_f05_3' & `OLS_f05_4' & `OLS_f05_5' & `OLS_f05_6' & `OLS_f05_7' & `OLS_f05_8' \\  "_n
+	file write sm " & (`SE_f05_1') & (`SE_f05_2') & (`SE_f05_3') & (`SE_f05_4') & (`SE_f05_5') & (`SE_f05_6') & (`SE_f05_7') & (`SE_f05_8') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1' & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8' \\  "_n
+	file write sm "& (`SE_m99_1') & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5') & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_m05_1' & `OLS_m05_2' & `OLS_m05_3' & `OLS_m05_4' & `OLS_m05_5' & `OLS_m05_6' & `OLS_m05_7' & `OLS_m05_8'  \\  "_n
+	file write sm "& (`SE_m05_1') & (`SE_m05_2') & (`SE_m05_3') & (`SE_m05_4') & (`SE_m05_5') & (`SE_m05_6') & (`SE_m05_7') & (`SE_m05_8')  \\ "_n
+	
+	file write sm "&  &   &  & &  &   &  & &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*food outcomes by sex - INTENSIVE MARGIN
+local i = 1
+global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
+
+foreach outcome in $hh_food {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & hhh_female == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_f99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_f99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_f05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_f05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & hhh_female == 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_m99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_m99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_m05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_m05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T3_food_enigh_sex_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veg/Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat/Dairy} & \multicolumn{1}{c}{Sugar/Fat} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1' & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+	file write sm "& (`SE_f99_1') & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5') & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_f05_1' & `OLS_f05_2' & `OLS_f05_3' & `OLS_f05_4' & `OLS_f05_5' & `OLS_f05_6' & `OLS_f05_7' & `OLS_f05_8' \\  "_n
+	file write sm " & (`SE_f05_1') & (`SE_f05_2') & (`SE_f05_3') & (`SE_f05_4') & (`SE_f05_5') & (`SE_f05_6') & (`SE_f05_7') & (`SE_f05_8') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1' & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8' \\  "_n
+	file write sm "& (`SE_m99_1') & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5') & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_m05_1' & `OLS_m05_2' & `OLS_m05_3' & `OLS_m05_4' & `OLS_m05_5' & `OLS_m05_6' & `OLS_m05_7' & `OLS_m05_8'  \\  "_n
+	file write sm "& (`SE_m05_1') & (`SE_m05_2') & (`SE_m05_3') & (`SE_m05_4') & (`SE_m05_5') & (`SE_m05_6') & (`SE_m05_7') & (`SE_m05_8')  \\ "_n
+	
+	file write sm "&  &   &  & &  &   &  & &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*health outcomes by sex - INTENSIVE MARGIN
+local i = 1
+global hh_health = "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
+
+foreach outcome in $hh_health {
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & hhh_female == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_f99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_f99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f99_`i' = "`OLS_f99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_f05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_f05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f05_`i' = "`OLS_f05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & hhh_female == 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_m99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_m99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m99_`i' = "`OLS_m99_`i'_aux'"	
+	} 
+	
+	
+	local OLS_m05_`i'_aux: di %12.3f  _b[1.post#c.inten2005]
+	local SE_m05_`i' : di %12.3f  _se[1.post#c.inten2005]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten2005]/_se[1.post#c.inten2005])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m05_`i' = "`OLS_m05_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T4_health_enigh_sex_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1' & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+	file write sm "& (`SE_f99_1') & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5') & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8')\\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_f05_1' & `OLS_f05_2' & `OLS_f05_3' & `OLS_f05_4' & `OLS_f05_5' & `OLS_f05_6' & `OLS_f05_7' & `OLS_f05_8' \\  "_n
+	file write sm " & (`SE_f05_1') & (`SE_f05_2') & (`SE_f05_3') & (`SE_f05_4') & (`SE_f05_5') & (`SE_f05_6') & (`SE_f05_7') & (`SE_f05_8') \\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1' & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8' \\  "_n
+	file write sm "& (`SE_m99_1') & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5') & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8') \\ "_n
+	file write sm "\textit{Intensity 2005 x 1997-2006} & `OLS_m05_1' & `OLS_m05_2' & `OLS_m05_3' & `OLS_m05_4' & `OLS_m05_5' & `OLS_m05_6' & `OLS_m05_7' & `OLS_m05_8'  \\  "_n
+	file write sm "& (`SE_m05_1') & (`SE_m05_2') & (`SE_m05_3') & (`SE_m05_4') & (`SE_m05_5') & (`SE_m05_6') & (`SE_m05_7') & (`SE_m05_8')  \\ "_n
+	
+	file write sm "&  &   &  & &  &   &  & &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+/*************************************************************
+INTENSIVE MARGIN: Only 1999 Intensity Interaction
+*************************************************************/
+
+*individual income and labor outcomes - INTENSIVE MARGIN (1999 only)
+local i = 1
+global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind"
+
+foreach outcome in $individuals {
+	
+	reghdfe `outcome' c.inten1999#i.post [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post if `outcome'_out == 0 & ind_earnings > 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T1_ind_enigh_1999_im.tex", write replace 
+	file write sm "\begin{tabular}{cccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N     \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*household outcomes - INTENSIVE MARGIN (1999 only)
+local i = 1
+global hh = "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
+
+foreach outcome in $hh {
+	
+	reghdfe `outcome' c.inten1999#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T2_hh_enigh_1999_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*food outcomes - INTENSIVE MARGIN (1999 only)
+local i = 1
+global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
+
+foreach outcome in $hh_food {
+	
+	reghdfe `outcome' c.inten1999#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T3_food_enigh_1999_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veg/Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat/Dairy} & \multicolumn{1}{c}{Sugar/Fat} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*health outcomes - INTENSIVE MARGIN (1999 only)
+local i = 1
+global hh_health = "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
+
+foreach outcome in $hh_health {
+	
+	reghdfe `outcome' c.inten1999#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_w99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1999#i.post if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[1.post#c.inten1999]
+	local SE_uw99_`i' : di %12.3f  _se[1.post#c.inten1999]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1999]/_se[1.post#c.inten1999])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T4_health_enigh_1999_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+/*************************************************************
+INTENSIVE MARGIN: 2-Year Lagged Intensity (Barham & Rowberry)
+*************************************************************/
+
+global sample_br = "(inten_start_year==1998 |inten_start_year==1999) & inrange(year, 1992, 2002)"
+
+*individual income and labor outcomes - INTENSIVE MARGIN (baseline 1999)
+local i = 1
+global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind"
+
+foreach outcome in $individuals {
+	
+	reghdfe `outcome' lag2_intensity_new [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' lag2_intensity_new if `outcome'_out == 0 & ind_earnings > 0 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T1_ind_enigh_br_im.tex", write replace 
+	file write sm "\begin{tabular}{cccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N     \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*household outcomes - INTENSIVE MARGIN (baseline 1999)
+local i = 1
+global hh = "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
+
+foreach outcome in $hh {
+	
+	reghdfe `outcome' lag2_intensity_new [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' lag2_intensity_new if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T2_hh_enigh_br_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*food outcomes - INTENSIVE MARGIN (baseline 1999)
+local i = 1
+global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
+
+foreach outcome in $hh_food {
+	
+	reghdfe `outcome' lag2_intensity_new [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' lag2_intensity_new if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T3_food_enigh_br_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veg/Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat/Dairy} & \multicolumn{1}{c}{Sugar/Fat} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*health outcomes - INTENSIVE MARGIN (baseline 1999)
+local i = 1
+global hh_health = "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
+
+foreach outcome in $hh_health {
+	
+	reghdfe `outcome' lag2_intensity_new [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' lag2_intensity_new if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[lag2_intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[lag2_intensity_new]
+	
+	
+	local t_`i' = abs(_b[lag2_intensity_new]/_se[lag2_intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T4_health_enigh_br_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Lagged Intensity (1999)} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+/*************************************************************
+INTENSIVE MARGIN: 1997 Intensity Interaction (up to 2006)
+*************************************************************/
+
+*individual income and labor outcomes - INTENSIVE MARGIN (1997 only)
+local i = 1
+global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind"
+
+foreach outcome in $individuals {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if `outcome'_out == 0 & ind_earnings > 0 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T1_ind_enigh_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{cccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N     \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*household outcomes - INTENSIVE MARGIN (1997 only)
+local i = 1
+global hh = "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
+
+foreach outcome in $hh {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T2_hh_enigh_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7' & `OLS_w97_8'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7') & (`SE_w97_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' & `OLS_uw97_8' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') & (`SE_uw97_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*food outcomes - INTENSIVE MARGIN (1997 only)
+local i = 1
+global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
+
+foreach outcome in $hh_food {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T3_food_enigh_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veg/Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat/Dairy} & \multicolumn{1}{c}{Sugar/Fat} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7' & `OLS_w97_8'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7') & (`SE_w97_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' & `OLS_uw97_8' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') & (`SE_uw97_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*health outcomes - INTENSIVE MARGIN (1997 only)
+local i = 1
+global hh_health = "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
+
+foreach outcome in $hh_health {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T4_health_enigh_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7' & `OLS_w97_8'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7') & (`SE_w97_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' & `OLS_uw97_8' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') & (`SE_uw97_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+/*************************************************************
+INTENSIVE MARGIN: Current Intensity (Barham & Rowberry, 1997-2002)
+*************************************************************/
+
+global sample_br = "(inten_start_year==1998 |inten_start_year==1999) & inrange(year, 1992, 2002)"
+
+*individual income and labor outcomes - INTENSIVE MARGIN (baseline 1997)
+local i = 1
+global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind"
+
+foreach outcome in $individuals {
+	
+	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' intensity_new if `outcome'_out == 0 & ind_earnings > 0 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T1_ind_enigh_br_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{cccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N     \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*household outcomes - INTENSIVE MARGIN (baseline 1997)
+local i = 1
+global hh = "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
+
+foreach outcome in $hh {
+	
+	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' intensity_new if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T2_hh_enigh_br_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*food outcomes - INTENSIVE MARGIN (baseline 1997)
+local i = 1
+global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
+
+foreach outcome in $hh_food {
+	
+	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' intensity_new if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T3_food_enigh_br_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veg/Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat/Dairy} & \multicolumn{1}{c}{Sugar/Fat} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*health outcomes - INTENSIVE MARGIN (baseline 1997)
+local i = 1
+global hh_health = "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
+
+foreach outcome in $hh_health {
+	
+	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_w99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w99_`i' = "`OLS_w99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' intensity_new if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_br, ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw99_`i'_aux: di %12.3f  _b[intensity_new]
+	local SE_uw99_`i' : di %12.3f  _se[intensity_new]
+	
+	
+	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw99_`i' = "`OLS_uw99_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T4_health_enigh_br_1997_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_w99_1' & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+	file write sm "& (`SE_w99_1') & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5') & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity} & `OLS_uw99_1' & `OLS_uw99_2' & `OLS_uw99_3' & `OLS_uw99_4' & `OLS_uw99_5' & `OLS_uw99_6' & `OLS_uw99_7' & `OLS_uw99_8' \\  "_n
+	file write sm "& (`SE_uw99_1') & (`SE_uw99_2') & (`SE_uw99_3') & (`SE_uw99_4') & (`SE_uw99_5') & (`SE_uw99_6') & (`SE_uw99_7') & (`SE_uw99_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+/*************************************************************
+INTENSIVE MARGIN: 1997 Intensity Interaction (up to 2002)
+*************************************************************/
+
+*individual income and labor outcomes - INTENSIVE MARGIN (1997, up to 2002)
+local i = 1
+global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind"
+
+foreach outcome in $individuals {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	`outcome'_out == 0 & ind_earnings > 0 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if `outcome'_out == 0 & ind_earnings > 0 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T1_ind_enigh_1997_2002_im.tex", write replace 
+	file write sm "\begin{tabular}{cccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N     \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*household outcomes - INTENSIVE MARGIN (1997, up to 2002)
+local i = 1
+global hh = "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
+
+foreach outcome in $hh {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T2_hh_enigh_1997_2002_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7' & `OLS_w97_8'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7') & (`SE_w97_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' & `OLS_uw97_8' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') & (`SE_uw97_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*food outcomes - INTENSIVE MARGIN (1997, up to 2002)
+local i = 1
+global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
+
+foreach outcome in $hh_food {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T3_food_enigh_1997_2002_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veg/Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat/Dairy} & \multicolumn{1}{c}{Sugar/Fat} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7' & `OLS_w97_8'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7') & (`SE_w97_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' & `OLS_uw97_8' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') & (`SE_uw97_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+*health outcomes - INTENSIVE MARGIN (1997, up to 2002)
+local i = 1
+global hh_health = "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
+
+foreach outcome in $hh_health {
+	
+	reghdfe `outcome' c.inten1997#i.post [pweight=exp_factor] if ///
+	hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_w97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_w97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w97_`i' = "`OLS_w97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	
+	local N_w`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local n_mun`i' : di %12.0fc `r(ndistinct)' 
+	
+	
+	reghdfe `outcome' c.inten1997#i.post ///
+	if hh_unique == 1 & `outcome'_out == 0 & hh_elder65_pos_earn == 1 & $sample_marg & inrange(year, 1992, 2002), ///
+	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+	
+	local OLS_uw97_`i'_aux: di %12.3f  _b[1.post#c.inten1997]
+	local SE_uw97_`i' : di %12.3f  _se[1.post#c.inten1997]
+	
+	
+	local t_`i' = abs(_b[1.post#c.inten1997]/_se[1.post#c.inten1997])
+	
+	if (`t_`i'' >= 2.576) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"	
+	} 
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"	
+	} 
+
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"	
+	} 
+
+	if (`t_`i'' < 1.645) {
+		local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"	
+	} 
+	
+	
+	sum `outcome' [fweight = exp_factor]  if e(sample) & post == 2
+	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	
+	local N_uw`i' : di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	
+	
+	
+	*increment on i 
+    local ++i
+	
+}
+
+{
+
+		cap file close sm
+	file open sm using "$tables/T4_health_enigh_1997_2002_im.tex", write replace 
+	file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9} "_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
+file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7' & `OLS_w97_8'\\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7') & (`SE_w97_8')\\ "_n
+	file write sm "  & & &  & & & &  \\ "_n
+	
+file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
+	file write sm "\textit{Intensity 1997 x 1997-2002} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' & `OLS_uw97_8' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') & (`SE_uw97_8') \\ "_n
+	file write sm "&  &   &  & &  &   &  &   \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8'  \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm "&  &  &  & &  &  &  & & 	  \\  "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y\\ "_n
+	file write sm "Mun Controls & N & N & N & N & N & N & N & N & N    \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
 }
 
