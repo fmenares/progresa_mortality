@@ -486,8 +486,8 @@ if inlist(`year', 1992) {
 	g indep_w_d = (code_l == "P"  & (inrange(code_n, 7, 11) | code_n == 13))
 	*what about 12 and 14? These are sales, I put them under financial
 
-	g capital_d = (code_l == "P" & (inrange(code_n, 15, 21))
-	
+	g capital_d = (code_l == "P" & (inrange(code_n, 15, 21)))
+
 	*transfers
 	g transfer_d = (code_l == "P" & inrange(code_n, 22, 27))
 	*other income
@@ -536,9 +536,9 @@ if inlist(`year', 1992) {
 
 
 if `year' == 1994 {
-	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) & code_n == 14))
-	
-	g indep_w_d = (code_l == "P"  & (inrange(code_n, 6, 14))
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) | code_n == 14))
+
+	g indep_w_d = (code_l == "P"  & (inrange(code_n, 6, 14)))
 	
 	*earnings from property (capital) 
 	g capital_d = (code_l == "P" & (inrange(code_n, 15, 22)))
@@ -570,7 +570,7 @@ if `year' == 1994 {
 
 if `year' == 1996 {
 	*wages from main job
-	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) & code_n == 14))
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) | code_n == 14))
 	g indep_w_d = (code_l == "P"  & inrange(code_n, 6, 13))
 		*earnings from property (capital) 
 	g capital_d = (code_l == "P" & inrange(code_n, 15, 22))
@@ -708,7 +708,7 @@ bys FOLIO: egen benef_don_non_gob_hh = total(benef_don_non_gob_hh_aux)
 drop *_aux
 drop financial_d other_d transfer_d capital_d indep_w_d wage_d ///
 pensions_d severance_d becas_don_non_gob_d becas_don_gob_d ///
-family_trans_d remit_d progresa_d procampo_d  benef_gob_d family_trans_d remit_d
+family_trans_d remit_d progresa_d procampo_d benef_gob_d
 
 bys FOLIO NUM_REN: keep if _n == 1
 
@@ -1336,7 +1336,7 @@ g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code
 *wages from cooperatives, societities/bussines and secondary jobs
 g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 16) | inlist(code_n, 18, 27, 37)))
 *income from bussines (utilidadeS) and property (rent from capital) 
-g capital_d = (code_l == "P" & | inrange(code_n, 39, 47) | inlist(code_n, 28, 38))
+g capital_d = (code_l == "P" & (inrange(code_n, 39, 47) | inlist(code_n, 28, 38)))
 *transfers
 g transfer_d = (code_l == "P" & inrange(code_n, 48, 60))
 *other income
@@ -1434,7 +1434,7 @@ bys FOLIO: egen family_trans_hh = total(family_trans_hh_aux)
 drop *_aux
 drop financial_d other_d transfer_d capital_d indep_w_d wage_d ///
 pensions_d severance_d becas_don_non_gob_d becas_don_gob_d ///
-family_trans_d remit_d progresa_d procampo_d  benef_gob_d family_trans_d remit_d
+family_trans_d remit_d progresa_d procampo_d benef_gob_d
 bys FOLIO NUM_REN: keep if _n == 1
 
 	g hhh_insured_aux = insurance * hhh
@@ -1758,8 +1758,8 @@ gen benef_don_non_gob_hh = 0
 
 drop *_aux
 drop financial_d other_d transfer_d capital_d indep_w_d wage_d ///
-pensions_d severance_d becas_d  donation_non_gob_d donation_gob_d ///
-family_trans_d remit_d progresa_d procampo_d benef_gob_d remit_d family_trans_d
+pensions_d severance_d becas_d donation_non_gob_d donation_gob_d ///
+family_trans_d remit_d progresa_d procampo_d benef_gob_d
 
 bys folio num_ren: keep if _n == 1
 }
