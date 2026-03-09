@@ -93,7 +93,7 @@ global years = "1992 1994 1996 1998 2000"
 
 *in 2002 there is education for everyone, but not in 2004 and so on
 foreach year in $years {
-local year = 1992
+*local year = 1994
 /*
 *household
 use $data/ENIGH/`year'/hogares.dta, clear
@@ -293,7 +293,7 @@ insurance_cost, by(FOLIO)
 *EXPENDITURE/EROGACIONES (SAVINGS)
 if `year' != 1992 {
 merge 1:m FOLIO using "$data/ENIGH/`year'/eroga.dta", ///
-keepus(FOLIO CLAVE ERO_TRI)
+keepus(FOLIO CLAVE ERO_TRI) keep(1 3) nogen
 
 ren (CLAVE ERO_TRI) (clave ero_tri)
 
@@ -477,24 +477,23 @@ destring(code_n), replace force
 	
 *earnings 
 
-	
-if inrange(`year', 1992, 1996) {
-	
-		*wages from main job
-	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5)))
-	*earnings from bussines
-	g indep_w_d = (code_l == "P"  & (inrange(code_n, 6, 14)))
-}
 
 if inlist(`year', 1992) {
+	*wages from main job
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 6)))
+	*earnings from bussines (cooperativas goes here)
 *earnings from property (capital) 
-	g capital_d = (code_l == "P" & (inlist(code_n, 15) | inrange(code_n, 16, 21)))
+	g indep_w_d = (code_l == "P"  & (inrange(code_n, 7, 11) | code_n == 13))
+	*what about 12 and 14? These are sales, I put them under financial
+
+	g capital_d = (code_l == "P" & (inrange(code_n, 15, 21))
+	
 	*transfers
 	g transfer_d = (code_l == "P" & inrange(code_n, 22, 27))
 	*other income
 	g other_d = (code_l == "P" & inlist(code_n, 28, 29))
 	*financial capital
-	g financial_d = (code_l == "Q" & inrange(code_n, 13, 21))	
+	g financial_d = (code_l == "Q" & inlist(code_n, 12, 14))	
 	
 	*transfers
 
@@ -536,14 +535,15 @@ if inlist(`year', 1992) {
 }
 
 
-
-
-
 if `year' == 1994 {
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) & code_n == 14))
+	
+	g indep_w_d = (code_l == "P"  & (inrange(code_n, 6, 14))
+	
 	*earnings from property (capital) 
-	g capital_d = (code_l == "P" & (inlist(code_n, 15) | inrange(code_n, 16, 22)))
+	g capital_d = (code_l == "P" & (inrange(code_n, 15, 22)))
 	*transfers
-	g transfer_d = ((code_l == "P" & inrange(code_n, 23, 28)) |  (code_l == "P" & code_n == 43) )
+	g transfer_d = (code_l == "P" & (inrange(code_n, 23, 28) | code_n == 43))
 	*other income
 	g other_d = (code_l == "P" & inlist(code_n, 29, 30))	
 	
@@ -569,8 +569,11 @@ if `year' == 1994 {
 }
 
 if `year' == 1996 {
+	*wages from main job
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) & code_n == 14))
+	g indep_w_d = (code_l == "P"  & inrange(code_n, 6, 13))
 		*earnings from property (capital) 
-	g capital_d = (code_l == "P" & (inlist(code_n, 15) | inrange(code_n, 16, 22)))
+	g capital_d = (code_l == "P" & inrange(code_n, 15, 22))
 	
 	*transfers
 	g transfer_d = (code_l == "P" & inrange(code_n, 23, 29))
@@ -607,11 +610,11 @@ if `year' == 1996 {
 else if `year' > 1996 {
 
 		*wages from main job
-	g wage_d = (code_l == "P" & (inrange(code_n, 1, 9)))
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 18))
 	*earnings from bussines
-	g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 18)))
+	g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 17)))
 	*earnings from property (capital) 
-	g capital_d = (code_l == "P" & (inlist(code_n, 19) | inrange(code_n, 20, 27)))
+	g capital_d = (code_l == "P" & (inrange(code_n, 19, 27)))
 	*transfers
 	g transfer_d = (code_l == "P" & inrange(code_n, 28, 34))
 	*other income
@@ -1007,7 +1010,7 @@ insurance_cost, by(FOLIO)
 
 *EXPENDITURE/EROGACIONES (SAVINGS)
 merge 1:m FOLIO using "$data/ENIGH/`year'/eroga.dta", ///
-keepus(FOLIO CLAVE ERO_TRI)
+keepus(FOLIO CLAVE ERO_TRI) keep(1 3) nogen
 ren (CLAVE ERO_TRI) (clave ero_tri)
 
  	gen code_l = substr(clave, 1,1)
@@ -1279,9 +1282,9 @@ destring(code_n), replace force
 if `year' == 2002 {
 	
 *wages from main job
-g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | inlist(code_n, 20, 22)))
+g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | inlist(code_n, 18, 20, 22)))
 *earnings from bussines
-g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 18) | code_n == 23))
+g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 17) | code_n == 23))
 *earnings from property (capital) 
 g capital_d = (code_l == "P" & (inlist(code_n, 19, 21) | inrange(code_n, 24, 36)))
 *transfers
@@ -1329,12 +1332,11 @@ bys FOLIO: egen benef_don_non_gob_hh = total(benef_don_non_gob_hh_aux)
 else {
 	    	
 *wages from main job
-g wage_d = (code_l == "P" & inrange(code_n, 1, 9))
+g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code_n, 29, 36) | inrange(code_n, 19, 26)))
 *wages from cooperatives, societities/bussines and secondary jobs
-g indep_w_d = (code_l == "P"  & (code_n == 17 | inrange(code_n, 19, 27) | inrange(code_n, 29, 37)))
+g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 16) | inlist(code_n, 18, 27, 37)))
 *income from bussines (utilidadeS) and property (rent from capital) 
-g capital_d = (code_l == "P" & (inrange(code_n, 10, 16) | inlist(code_n, 18, 28, 38) | inrange(code_n, 39, 47)))
-
+g capital_d = (code_l == "P" & | inrange(code_n, 39, 47) | inlist(code_n, 28, 38))
 *transfers
 g transfer_d = (code_l == "P" & inrange(code_n, 48, 60))
 *other income
@@ -1346,7 +1348,7 @@ g financial_d = (code_l == "P" & inrange(code_n, 62, 76))
 *there are national and foreign pensions
 g pensions_d = (code_l == "P" & inrange(code_n, 48, 49))
 g severance_d = (code_l == "P" & inrange(code_n, 50, 52))
-g becas_d = (code_l == "P" & inlist(code_n == 53, 54))
+g becas_d = (code_l == "P" & inlist(code_n, 53, 54))
 g donation_non_gob_d = (code_l == "P" & code_n == 55)
 g donation_gob_d = (code_l == "P" & code_n == 56)
 g family_trans_d = (code_l == "P" & code_n == 57)
@@ -1510,7 +1512,7 @@ save "$data/ENIGH/enigh_`year'", replace
 
 global years = "2006"
 foreach year in $years {
-*local year = 2006
+local year = 2006
 /*
 *household
 use $data/ENIGH/`year'/hogares.dta, clear
@@ -1607,7 +1609,7 @@ insurance_cost, by(folio)
 
 *EXPENDITURE/EROGACIONES (SAVINGS)
 merge 1:m folio using "$data/ENIGH/`year'/eroga.dta", ///
-keepus(clave ero_tri)
+keepus(clave ero_tri) keep(1 3) nogen
 
  	gen code_l = substr(clave, 1,1)
 	gen code_n = substr(clave, 2, 4)
@@ -1635,7 +1637,7 @@ insurance_cost (sum) savings loans debt currency, by(folio)
 
 merge 1:1 folio using "$data/ENIGH/`year'/concen.dta", ///
 keepus(folio estrato ubica_geo hombres mujeres tot_resi hog ///
-ingmon gasmon est_dis upm n_ocup pering menores)
+ingmon gasmon est_dis upm n_ocup pering menores) keep(1 3) nogen
 
 
 
@@ -1667,11 +1669,11 @@ g progresa_benef_ind = (becas == 1)
 	    
 	
 *wages from main job
-g wage_d = (code_l == "P" & inrange(code_n, 1, 9))
+g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | inrange(code_n, 19, 26) | inrange(code_n, 29, 35) | code_n == 17))
 *wages from cooperatives, societities/bussines and secondary jobs
-g indep_w_d = (code_l == "P"  & (code_n == 17 | inrange(code_n, 19, 27) | inrange(code_n, 29, 37)))
+g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 16) | inlist(code_n, 27, 37)))
 *income from bussines (utilidadeS) and property (rent from capital) 
-g capital_d = (code_l == "P" & (inrange(code_n, 10, 16) | inlist(code_n, 18, 28, 38) | inrange(code_n, 39, 47)))
+g capital_d = (code_l == "P" & (inlist(code_n, 18, 28, 38) | inrange(code_n, 39, 47)))
 
 *transfers
 g transfer_d = (code_l == "P" & inrange(code_n, 48, 60))
@@ -1684,7 +1686,7 @@ g financial_d = (code_l == "P" & inrange(code_n, 62, 76))
 *there are national and foreign pensions
 g pensions_d = (code_l == "P" & inrange(code_n, 48, 49))
 g severance_d = (code_l == "P" & inrange(code_n, 50, 52))
-g becas_d = (code_l == "P" & inlist(code_n == 53, 54))
+g becas_d = (code_l == "P" & inlist(code_n,  53, 54))
 g donation_non_gob_d = (code_l == "P" & code_n == 55)
 g donation_gob_d = (code_l == "P" & code_n == 56)
 g family_trans_d = (code_l == "P" & code_n == 57)
@@ -1822,10 +1824,10 @@ bys folio: egen any_old_insured = max(insurance)
 bys folio: egen any_old_ss = max(ss)
 bys folio: egen any_old_sp = max(sp)
 bys folio: egen max_age = max(edad)
-bys folio: egen max_age_female_aux = max(edad) if sexo == 2
-bys folio: egen max_age_female = min(max_age_female_aux)
-bys folio: egen max_age_male_aux = max(edad) if sexo == 1
-bys folio: egen max_age_male = min(max_age_male_aux) 
+bys folio: egen max_age_female_aux = max(edad) if sexo == 2 & edad!=.
+bys folio: egen max_age_female = max(max_age_female_aux)
+bys folio: egen max_age_male_aux = max(edad) if sexo == 1 & edad!=.
+bys folio: egen max_age_male = max(max_age_male_aux) 
 
 
 ren edad age
@@ -1864,7 +1866,7 @@ append using  "$data/ENIGH/enigh_2006"
 g id = _n
 
 g employed  = (trabajo == 1)
-ren (folio ubica_geo estrato  hog  tot_resi hombres mujeres menores n_ocup ///
+ren (folio ubica_geo estrato hog tot_resi hombres mujeres menores n_ocup ///
 pering) ///
 (hh_id cve_ent_mun loc_size exp_factor n_hh n_females n_males ///
 n_less_12 n_employed n_income)
@@ -2005,6 +2007,7 @@ egen hh_earnings_mxn = rowtotal(wage_hh indep_w_hh)
 *egen earnings_ind_mxn = rowtotal(wage_ind indep_w_ind other_w_ind)
 egen earnings_ind_mxn = rowtotal(wage_ind indep_w_ind)
 
+
 order hh_id id year 
 label var hh_id "household id"
 label var id "individual id"
@@ -2022,7 +2025,7 @@ label var progresa_benef_hh "progresa beneficiary household (=1)"
 label value educ_attainment educ_attainment_lbl
 label value hhh_educ educ_attainment_lbl
 
-label var exp_fact "expansion factor"
+label var exp_factor "expansion factor"
 label var est_dis "strata"
 label var upm "primary sample unit"
 label var n_hh "number of members in hh"
@@ -2110,7 +2113,7 @@ label var currency "hh expenditure in currencies ($USD 2025)"
 bys year hh_id: g hh_unique = (_n == 1)
 
 
-global years = "2002 2004 2005 2006 2008 2010 2012" 
+global years = "1992 1994 1996 1998 2000 2002 2004 2005 2006" 
 
 foreach year in $years {
 	g d_`year' = (year == `year')	
@@ -2118,32 +2121,24 @@ foreach year in $years {
 
 
 g exp_nofactor = 1
-		 
-*base 100 = july 2018
-*inflation at september of each yer to 07/2018
-local cpi_1992 = 702.94
-local cpi_1994 = 587.32
-local cpi_1996 = 268.49
-local cpi_1998 = 167.66
-local cpi_2000 = 112.3
-local cpi_2002 = 90.59
-local cpi_2004 = 74.37
-local cpi_2005 = 68.46
-local cpi_2006 = 61.83
-
-*inflation from 2018/7 to 12/2025
-local cpi_2025 = 43.17
-*us to mex december 31 2025
-local us_mx = 1/20.52
 
 g inf_ex_rate = .
 
-global years = "1992 1994 1996 1998 2000 2002 2004 2005 2006"
-foreach year in $years {
-	*replace inf_ex_rate3 = (`cpi_2025'/`cpi_`year'')*`us_mx' if year  == `year'	
-	replace inf_ex_rate = (1+`cpi_`year''/100)*(1+`cpi_2025'/100)*`us_mx' if year  == `year'	
-}
+local cpi_1992 = 12.443   // Sep 1992, base July 2018
+local cpi_1994 = 14.536   // Sep 1994
+local cpi_1996 = 27.113   // Sep 1996
+local cpi_1998 = 37.327   // Sep 1998
+local cpi_2000 = 47.061   // Sep 2000
+local cpi_2002 = 52.422   // Sep 2002
+local cpi_2004 = 57.298   // Sep 2004
+local cpi_2005 = 59.309   // Sep 2005
+local cpi_2006 = 61.737   // Sep 2006
+local cpi_2025 = 141.197  // Sep 2025
+local us_mx = 1/20.52
 
+foreach year in $years {
+replace inf_ex_rate = (`cpi_2025'/`cpi_`year'') * `us_mx' if year == `year'
+}
 
 global foods = "cereals meat_dairy sugar_fat_drink vegg_fruit coffe_spices_other tobacco outside_food alcohol packaged_food baby_food pet_food"
 
@@ -2196,7 +2191,7 @@ foreach exp in $expanditures {
 
 g hh_income_tot = (hh_income_mxn_tot) * inf_ex_rate
 g hh_earnings = (hh_earnings_mxn) * inf_ex_rate
-g hh_expenditure = (hh_expenditure_mxn) * inf_ex_rate
+g hh_expenditure = (hh_expenditure_mxn_tot) * inf_ex_rate
 
 g ind_income_tot = (income_ind_mxn_tot) * inf_ex_rate
 g ind_earnings = (earnings_ind_mxn) * inf_ex_rate
@@ -2252,6 +2247,20 @@ g ln_food_exp_pc = log(food_exp_pc)
 
  			 
 drop trabajo
+
+
+
+table year if $sample_marg, stat(mean ind_earnings)  stat(mean wage_ind) stat(mean indep_w_ind) 
+table year, stat(mean ind_earnings)  stat(mean wage_ind) stat(mean indep_w_ind) 
+
+
+egen hh_income_tot_reconstruct = rowtotal(wage_hh indep_w_hh capital_hh ///
+							transfer_hh other_inc_hh)
+
+table year, stat(mean hh_income_tot)  stat(mean hh_income_tot_reconstruct) 
+
+
+
 
 
 save "$data/enigh_panel", replace
