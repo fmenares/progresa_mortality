@@ -234,10 +234,11 @@ else if `year' > 1994 {
 
 	g alcohol_d = (code_l == "A" & inrange(code_n, 195, 204))
 
-	*food ate outside
-	g outside_d = (code_l == "A" & inrange(code_n, 205, 208))
+	*food ate outside (A206=Desayuno, A207=Comida, A208=Cena, A209=Entrecomidas; A205=packaged food, excluded)
+	g outside_d = (code_l == "A" & inrange(code_n, 206, 209))
 
-	g tobacco_d = (code_l == "A" & inrange(code_n, 209, 211))
+	*tobacco (A211=Cigarros, A212=Puros, A213=Tabaco en hoja; A209-A210 are outside food / non-tobacco)
+	g tobacco_d = (code_l == "A" & inrange(code_n, 211, 213))
 }
 
 g cereals = cereals_d * GAS_TRI/ 3
@@ -1298,10 +1299,11 @@ g financial_d = (code_l == "P" & inrange(code_n, 49, 65))
 
 g pensions_d = (code_l == "P" & inrange(code_n, 37, 38))
 g severance_d = (code_l == "P" & inrange(code_n, 39, 41))
-*in 2000, donations and scholarships were together by government and non-government
-*thus, that year the transfer can be overestimated mostly by the donatios from other families (family transfers). 
-*it seems that most of this was under the non governmental, and thus associated with those becas_don_non_gob that year. 
-g becas_don_non_gob_d = (code_l == "P" & inlist(code_n, 42, 44))
+*P042 = Becas ONG (non-governmental scholarships/donations)
+*P043 = Becas y donativos del gobierno (government scholarships)
+*P044 = Regalos/donativos de otros hogares (family transfers — captured separately in family_trans_d)
+*Note: P044 was previously included in becas_don_non_gob_d causing double-counting; removed.
+g becas_don_non_gob_d = (code_l == "P" & code_n == 42)
 g becas_don_gob_d = (code_l == "P" & code_n == 43)
 g family_trans_d = (code_l == "P" & code_n == 44)
 *remittances / remesas
