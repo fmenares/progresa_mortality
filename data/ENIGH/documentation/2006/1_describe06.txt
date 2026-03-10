@@ -1,0 +1,3894 @@
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+
+La base de datos de la ENIGH está conformada por seis tablas que contienen toda la información captada en el
+levantamiento. A continuación se detalla el nombre de estas tablas, el número de registros y su contenido:
+
+Número de
+registros
+
+Contenido
+
+HOGARES.DBF
+
+20 875
+
+Características de los hogares, de las viviendas que
+habitan y el factor de expansión.
+
+POBLACION.DBF
+
+83 624
+
+Características sociodemográficas y ocupacionales de
+los miembros de los hogares.
+
+INGRESOS.DBF
+
+79 752
+
+Ingresos y percepciones de capital de cada uno de los
+miembros de los hogares.
+
+GASTOS.DBF
+
+1 348 530
+
+Gastos realizados por el hogar.
+
+EROGACIONES.DBF
+
+18 269
+
+Erogaciones de capital por hogar.
+
+NOMONETARIO.DBF
+
+174 490
+
+Gastos o ingresos realizados por hogar y algunos por
+persona.
+
+Adicionalmente, se incluye un concentrado por hogar que contiene las principales variables de la encuesta. Este
+concentrado está en la tabla denominada CONCENTRADO.DBF, que contiene los mismos 20 875 registros de
+la de hogar.
+Para obtener cualquier tipo de información se requiere expandirla; esto es, multiplicar el valor de la variable en
+estudio por el factor de expansión, por lo que generalmente es necesario “pegar” el factor a cualquiera de las
+otras tablas.
+Este disco compacto incluye un manejador basado en SQL de Access, que permite, de manera paulatina, hacer
+cruces de información.
+
+1 de 18
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de la tabla
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: Hogares
+
+Nombre de
+campo
+FOLIO
+
+Tipo
+
+Long.
+
+Dec.
+
+Descripción
+
+C
+
+11
+
+0
+
+Identificador del hogar
+
+ESTRATO
+
+C
+
+1
+
+0
+
+Estrato
+
+CONAPO
+UBICA_GEO
+MUROS01
+TECHOS02
+TECHOS03
+PISOS04
+ANTIGUA
+CUA_COC
+COC_DUER
+
+C
+C
+C
+C
+C
+C
+C
+C
+C
+
+1
+20
+2
+2
+1
+1
+1
+1
+1
+
+0
+0
+0
+0
+0
+0
+0
+0
+
+CUA_DOR
+NUM_CUA
+COMBUS10
+COMBUS11
+TENENCIA12
+TENENCIA13
+TENENCIA14
+AGUA15
+AGUA16
+BANO17
+BANO18
+BANO19
+BANO20
+
+N
+N
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+
+2
+2
+5
+1
+1
+2
+4
+1
+1
+1
+1
+1
+1
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+DRENAJE21
+LUZ22
+NO_FOCOS
+BASURA24
+BASURA25
+
+C
+C
+C
+C
+C
+
+1
+1
+2
+8
+1
+
+0
+0
+0
+0
+0
+
+EQV26_1
+EQV26_2
+EQV26_3
+EQV26_4
+EQV26_5
+EQV26_6
+EQV26_7
+EQV26_8
+EQV26_9
+EQV26_10
+EQV26_11
+
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+Estrato del conapo
+Ubicación geográfica
+Material de muros
+Material d techos
+Goteras en techos
+Material de pisos
+Antigüedad de la vivienda
+Cuarto de cocina
+En la cocina también
+duermen
+Cuartos para dormir
+Total de cuartos
+Combustible
+Combustible
+Tenencia de la vivienda
+Responsable
+Dueño
+Disponibilidad de agua
+Dotación de agua
+La vivienda tiene
+Uso exclusivo
+Conexión de agua
+Cuántos cuartos de baño
+tiene
+Cuenta con drenaje
+Obtiene la luz eléctrica
+No. de focos en la vivienda
+Qué hacen con la basura
+Cada cuándo recogen la
+basura
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+La vivienda cuenta con
+
+2 de 18
+
+Observaciones
+1,2 Entidad, 3 decena, 4,5,6 consecutivo
+001-899, 7 tipo de hogar
+1 Localidades de 100 000 habitantes y más
+2 Localidades de 15 000 a 99 999 habitantes
+3 Localidades de 2 500 a 14 999 habitantes
+4 Localidades menores de 2 500 habitantes
+
+Apartado 1.1 pregunta 01
+Apartado 1.1 pregunta 02
+1 Sí, 2 No
+Pregunta 04
+Pregunta 05
+1 Sí, 2 No
+1 Sí, 2 No
+Pregunta 08
+Pregunta 09
+Pregunta 10
+Pregunta 11
+Pregunta 12
+Pregunta 13
+Pregunta 14
+Pregunta 15
+Pregunta 16
+1 Sí, 2 No
+1 Sí, 2 No
+Pregunta 19
+Pregunta 20
+Pregunta 21
+Pregunta 22
+Pregunta 23
+Pregunta 24
+Pregunta 25
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Tabla: Hogares
+Nombre de
+campo
+EQV26_12
+EQV26_13
+RESIDENTES
+HOGARES2
+
+Tipo
+C
+C
+N
+C
+
+Long.
+1
+1
+2
+1
+
+Dec.
+0
+0
+0
+0
+
+HOGARES3
+
+N
+
+2
+
+0
+
+HUESPEDES4
+
+C
+
+1
+
+0
+
+HUESPEDES5
+HUESPEDES6
+
+N
+N
+
+1
+1
+
+0
+0
+
+DOMESTICO7
+DOMESTICO8
+DOMESTICO9
+
+C
+N
+N
+
+1
+1
+1
+
+0
+0
+0
+
+SERV01_1
+
+N
+
+1
+
+0
+
+SERV01_2
+
+N
+
+1
+
+0
+
+Teléfono celular
+
+1 Sí, 2 No
+
+SERV01_3
+
+N
+
+1
+
+0
+
+Televisión por cable. SKY
+o DIREC-TV, Multivisión
+
+1 Sí, 2 No
+
+SERV01_4
+
+N
+
+1
+
+0
+
+Cuenta con Internet
+
+1 Sí, 2 No
+
+SERV02_1
+
+N
+
+1
+
+0
+
+La línea telefónica la
+usan para su negocio
+
+Apartado 1.5 Pregunta 03
+1 Sí, 2 No
+
+SERV02_2
+
+N
+
+1
+
+0
+
+El teléfono celular lo
+usan para su negocio
+
+1 Sí, 2 No
+
+SERV02_3
+
+N
+
+1
+
+0
+
+La televisión por cable.
+SKY o DIREC-TV,
+Multivisión usan para su
+negocio
+
+1 Sí, 2 No
+
+SERV02_4
+
+N
+
+1
+
+0
+
+El Internet lo usan para
+su negocio
+
+1 Sí, 2 No
+
+VEHI04_1
+
+N
+
+2
+
+0
+
+Automóviles para uso en
+el hogar
+
+Pregunta 06
+
+VEHI04_2
+
+N
+
+2
+
+0
+
+Camionetas, van, etc.
+para uso en el hogar
+
+VEHI04_3
+
+N
+
+2
+
+0
+
+Camionetas de caja para
+uso en el hogar
+
+VEHI04_4
+
+N
+
+2
+
+0
+
+Motocicleta o motoneta
+para uso en el hogar
+
+VEHI04_5
+
+N
+
+2
+
+0
+
+Bicicletas como medio de
+transporte para uso en el
+hogar
+
+VEHI04_6
+
+N
+
+2
+
+0
+
+Triciclo de carga utilizada
+como medio de
+transporte uso del hogar
+
+VEHI04_7
+
+N
+
+2
+
+0
+
+Vehículos de tracción
+animal para uso en el
+hogar
+
+VEHI04_8
+
+N
+
+2
+
+0
+
+Vehículos para navegar
+para uso en el hogar
+
+VEHI04_9
+
+N
+
+2
+
+0
+
+VEHI05_1
+
+C
+
+1
+
+0
+
+Otros vehículos para uso
+en el hogar
+Automóvil ( negocio )
+
+VEHI05_2
+VEHI05_3
+VEHI05_4
+VEHI05_5
+
+C
+C
+C
+C
+
+1
+1
+1
+1
+
+0
+0
+0
+0
+
+Camionetas, van, etc.
+Camionetas de caja
+Motocicleta o motoneta
+Bicicletas como medio de
+transporte
+3 de 18
+
+Observaciones
+1 Sí, 2 No
+1 Sí, 2 No
+Apartado1.2 pregunta 1
+1 Sí, 2 No
+Pregunta 3
+1 Sí, 2 No
+Pregunta 5
+Pregunta 6
+1 Sí, 2 No
+Pregunta 8
+Pregunta 9
+Apartado 1.5 Pregunta 02
+1 Sí , 2 No
+
+Pregunta 07 1
+Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Descripción
+La vivienda cuenta con
+La vivienda cuenta con
+Viven en la vivienda
+Comparten mismo gasto
+para comer
+Hogares con gastos
+separados
+Personas que paguen por
+dormir
+Cuántos
+Personas que pagan por
+comer
+Domésticos que duerman
+Cuántos
+Comen de los alimentos
+preparados
+Servicio de línea
+telefónica
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: Hogares
+Nombre de
+campo
+VEHI05_6
+
+Tipo
+C
+
+Long.
+1
+
+Dec.
+0
+
+VEHI05_7
+
+C
+
+1
+
+0
+
+VEHI05_8
+VEHI05_9
+EQH07_01
+
+C
+C
+N
+
+1
+1
+2
+
+0
+0
+0
+
+EQH07_02
+
+N
+
+2
+
+0
+
+EQH07_03
+
+N
+
+2
+
+0
+
+EQH07_04
+
+N
+
+2
+
+0
+
+EQH07_05
+EQH07_06
+EQH07_07
+EQH07_08
+EQH07_09
+
+N
+N
+N
+N
+N
+
+2
+2
+2
+2
+2
+
+0
+0
+0
+0
+0
+
+EQH07_10
+EQH07_11
+EQH07_12
+
+N
+N
+N
+
+2
+2
+2
+
+0
+0
+0
+
+EQH07_13
+EQH07_14
+EQH07_15
+EQH07_16
+
+N
+N
+N
+N
+
+2
+2
+2
+2
+
+0
+0
+0
+0
+
+EQH07_17
+EQH07_18
+EQH07_19
+EQH07_20
+EQH07_21
+
+N
+N
+N
+N
+N
+
+2
+2
+2
+2
+2
+
+0
+0
+0
+0
+0
+
+EQH07_22
+EQH07_23
+EQH07_24
+EQH07_25
+EQH07_26
+EQH07_27
+
+N
+N
+N
+N
+N
+N
+
+2
+2
+2
+2
+2
+2
+
+0
+0
+0
+0
+0
+0
+
+EQH07_28
+EQH07_29
+EQH07_30
+EQH07_31
+EQH07_32
+
+N
+N
+N
+N
+N
+
+2
+2
+2
+2
+2
+
+0
+0
+0
+0
+0
+
+EQH07_33
+
+N
+
+2
+
+0
+
+EQH07_34
+
+N
+
+2
+
+0
+
+Descripción
+Triciclo de carga utilizada
+como medio de
+transporte
+Vehículos de tracción
+animal
+Vehículos para navegar
+Otros vehículos
+Estéreo, modular,
+minicomponente o
+consola
+Reproductor de discos
+compactos
+Radiograbadora con
+reproductor de CD
+Radiograbadora sin
+reproductor de CD
+Radio
+Televisión blanco y negro
+Televisión a color
+Videocasetera
+DVD (reproductor de
+discos de video)
+Licuadora
+Batidora
+Extractor de jugos
+eléctricos
+Tostador
+Cafetera eléctrica
+Sandwichera eléctrica
+Exprimidor de jugos
+eléctricos
+Abrelatas eléctrico
+Horno eléctrico
+Horno de microondas
+Refrigerador
+Estufa de gas o estufa
+eléctrica
+Molino de manos
+Lavadora
+Plancha eléctrica
+Máquina de coser
+Ventilador
+Aparato de aire
+acondicionado
+Aparato calefactor
+Aspiradora
+Computadora
+Impresora
+Escáner, quemador,
+módem y otros aparatos
+Video juegos: nintendo,
+play station, sega u otros
+Otros aparatos que no le
+haya mencionado
+
+4 de 18
+
+Observaciones
+1 Sí, 2 No
+
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+Pregunta 10
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Tabla: Hogares
+
+Tipo
+C
+
+Long.
+1
+
+Dec.
+0
+
+EQH08_02
+
+C
+
+1
+
+0
+
+EQH08_03
+
+C
+
+1
+
+0
+
+EQH08_04
+
+C
+
+1
+
+0
+
+EQH08_05
+EQH08_06
+EQH08_07
+EQH08_08
+EQH08_09
+
+C
+C
+C
+C
+C
+
+1
+1
+1
+1
+1
+
+0
+0
+0
+0
+0
+
+EQH08_10
+EQH08_11
+EQH08_12
+
+C
+C
+C
+
+1
+1
+1
+
+0
+0
+0
+
+EQH08_13
+EQH08_14
+EQH08_15
+EQH08_16
+
+C
+C
+C
+C
+
+1
+1
+1
+1
+
+0
+0
+0
+0
+
+EQH08_17
+EQH08_18
+EQH08_19
+EQH08_20
+EQH08_21
+
+C
+C
+C
+C
+C
+
+1
+1
+1
+1
+1
+
+0
+0
+0
+0
+0
+
+EQH08_22
+EQH08_23
+EQH08_24
+EQH08_25
+EQH08_26
+EQH08_27
+
+C
+C
+C
+C
+C
+C
+
+1
+1
+1
+1
+1
+1
+
+0
+0
+0
+0
+0
+0
+
+EQH08_28
+EQH08_29
+EQH08_30
+EQH08_31
+EQH08_32
+
+C
+C
+C
+C
+C
+
+1
+1
+1
+1
+1
+
+0
+0
+0
+0
+0
+
+EQH08_33
+
+C
+
+1
+
+0
+
+EQH08_34
+
+C
+
+1
+
+0
+
+RESXHOG
+FACTOR
+TIENE_TBM
+
+N
+N
+C
+
+2
+6
+1
+
+0
+0
+0
+
+TIENE_TCM
+
+C
+
+1
+
+0
+
+¿Tiene tarjeta comercial
+mensual?
+
+TIENE_TBT
+
+C
+
+1
+
+0
+
+¿Tiene tarjeta bancaria
+trimestral?
+
+TIENE_TCT
+
+C
+
+1
+
+0
+
+¿Tiene tarjeta comercial
+bimestral?
+
+Descripción
+Estéreo, modular,
+minicomponente o
+consola
+Reproductor de discos
+compactos
+Radiograbadora con
+reproductor de CD
+Radiograbadora sin
+reproductor de CD
+Radio
+Televisión blanco y negro
+Televisión a color
+Videocasetera
+DVD (reproductor de
+discos de video)
+Licuadora
+Batidora
+Extractor de jugos
+eléctricos
+Tostador
+Cafetera eléctrica
+Sandwichera eléctrica
+Exprimidor de jugos
+eléctricos
+Abrelatas eléctrico
+Horno eléctrico
+Horno de microondas
+Refrigerador
+Estufa de gas o estufa
+eléctrica
+Molino de manos
+Lavadora
+Plancha eléctrica
+Máquina de coser
+Ventilador
+Aparato de aire
+acondicionado
+Aparato calefactor
+Aspiradora
+Computadora
+Impresora
+Escáner, quemador,
+módem y otros aparatos
+Videos juegos: nintendo,
+play station sega u otros
+Otros aparatos que no le
+haya mencionado
+Residentes por hogar
+Factor de expansión
+¿Tiene tarjeta bancaria
+mensual?
+
+5 de 18
+
+Observaciones
+Pregunta 11
+1 Sí, 2 no
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+1 Sí, 2 No
+
+Pregunta 1 página 19
+1 Sí, 2 No
+Pregunta 2 página 19
+1 Sí, 2 No
+Pregunta 1 página 43
+1 Sí, 2 No
+Pregunta 2 página 43
+1 Sí, 2 No
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+EQH08_01
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: Hogares
+Nombre de
+campo
+TIENE_TBZ
+
+Tipo
+C
+
+Long.
+1
+
+Dec.
+0
+
+Descripción
+¿Tiene tarjeta bancaria
+semestral?
+
+TIENE_TCZ
+
+C
+
+1
+
+0
+
+¿Tiene tarjeta comercial
+semestral?
+
+TIENE_TBSE
+
+C
+
+1
+
+0
+
+¿Tiene tarjeta bancaria
+semanal?
+
+TIENE_TCSE
+
+C
+
+1
+
+0
+
+¿Tiene tarjeta comercial
+semanal?
+
+PAGO_TCRE
+
+C
+
+1
+
+0
+
+¿Pagó alguno con su
+tarjeta de crédito
+bancaria?
+
+CLAVE_TB01
+PAGO_TCOM
+
+N
+C
+
+7
+1
+
+2
+0
+
+¿Cuánto pagó?
+¿Pagó alguno con su
+tarjeta de crédito
+comercial?
+
+CLAVE_TC01
+
+N
+
+7
+
+2
+
+¿Cuánto pagó?
+
+6 de 18
+
+Observaciones
+Pregunta 1 página 71
+1 Sí, 2 No
+Pregunta 2 página 71
+1 Sí, 2 No
+Pregunta 1 página 1 del cuadernillo
+1 Sí, 2 No
+Pregunta 2 página 1 del cuadernillo
+1 Sí, 2 No
+Pregunta 4 página 32 del cuadernillo secc.
+Estimación del gasto mensual en alimentos y
+bebidas consumidas dentro y fuera de casa, y
+tabaco
+1 Sí, 2 No
+Pregunta 4 clave TB01
+Pregunta 5 página 32 del cuadernillo secc.
+Estimación del gasto mensual en alimentos y
+bebidas consumidas dentro y fuera de casa, y
+tabaco
+1 Sí, 2 No
+Pregunta 5 clave TC01
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+Tabla: Población
+
+Tipo
+C
+C
+C
+
+Long.
+11
+2
+3
+
+Dec.
+0
+0
+0
+
+Descripción
+Identificador del hogar
+Identificador de la persona
+Identificador de la persona
+
+SEXO
+EDAD
+AFILIACION
+
+C
+N
+C
+
+1
+2
+1
+
+0
+0
+0
+
+Identificador de la persona
+Identificador de la persona
+
+RESIDENCIA
+
+C
+
+2
+
+0
+
+ALFABE
+ASIS_ESC
+NIVEL
+
+C
+C
+C
+
+1
+1
+1
+
+0
+0
+0
+
+GRADO
+
+C
+
+1
+
+0
+
+TIPO_ESC
+
+C
+
+1
+
+0
+
+BECA
+
+C
+
+1
+
+0
+
+Apoyos educativos para
+educación básica, media y
+superior (Beca)
+
+CREDITO_ED
+
+C
+
+1
+
+0
+
+Solo para los que estudian
+preparatoria hasta
+postgrado (crédito
+educativo)
+
+FORMA_BC
+
+C
+
+1
+
+0
+
+Forma en que se recibe el
+apoyo (Beca o crédito
+educativo)
+
+N_INSTR141
+
+C
+
+1
+
+0
+
+Año aprobado en la
+escuela
+
+Entidad o país de
+residencia
+Sabe leer o escribir un
+recado
+Asiste a la escuela
+Nivel al que asiste a la
+escuela
+
+Grado en el que va en la
+escuela
+Tipo de escuela a la que
+asiste
+
+7 de 18
+
+Observaciones
+Apartado 1.3 preg 01
+100 Jefe o Jefa
+200 Esposo(a)
+300 Hijo(a)
+400 Trabajador(es) doméstico(s)
+500 No tiene parentesco
+601 al 624 Otro parentesco
+700 Huésped
+1 Hombre, 2 Mujer
+00 AL 97
+
+01 AL 34
+1 Sí, 2 No
+1 Sí, 2 No
+1 Preescolar
+2 Primaria
+3 Secundaria
+4 Carrera técnica con secundaria terminada
+5 Preparatoria o bachillerato
+6 Carrera técnica con preparatoria terminada
+7 Normal
+8 Profesional
+9 Maestría o doctorado
+1 a6
+1 Pública o de gobierno
+2 Privada o de paga
+3 De otro tipo
+1 Oportunidades
+2 Pública o de gobierno
+3 Privada o de paga
+4 Un organismo de gobierno
+5 Una institución privada
+6 No le otorgaron beca
+1 Pública o de gobierno
+2 Privada o de paga
+3 Un organismo de gobierno
+4 Una institución privada
+5 No le otorgaron crédito
+1 Sólo en dinero
+2 Sólo en artículos
+3 En dinero y en artículos
+4 No paga colegiatura
+5 Sólo paga parte de la colegiatura
+0 Ninguno
+1 Preescolar
+2 Primaria
+3 Secundaria
+4 Preparatoria o bachillerato
+5 Normal
+6 Carrera técnica o comercial
+7 Profesional
+8 Maestría
+9 Doctorado
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+FOLIO
+NUM_REN
+PARENTESCO
+
+Tabla: Población
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+N_INSTR142
+ANTEC_ESC
+
+Tipo
+C
+C
+
+Long.
+1
+1
+
+Dec.
+0
+0
+
+Descripción
+Grado o año aprobado
+Estudios que le pidieron
+para ingresar
+
+H_VIVOS
+
+N
+
+2
+
+0
+
+H_MUERTOS
+H_SOBREV
+
+N
+N
+
+2
+2
+
+0
+0
+
+EDOCONY
+
+C
+
+1
+
+0
+
+Total de hijos(as) que ha
+tenido vivos
+Hijos(as) nacidos muertos
+Hijos no residan en la
+vivienda
+Estado conyugal
+
+TRABAJO
+
+C
+
+1
+
+0
+
+VERIFIC
+
+C
+
+1
+
+0
+
+MOT_AUSEN
+
+C
+
+1
+
+0
+
+Razón principal por la que
+no trabajo
+
+BUS_TRAB
+
+C
+
+3
+
+0
+
+Buscadores de trabajo y
+PNEA
+
+NO_TRABAJO
+T_PAIS06
+
+N
+C
+
+1
+1
+
+0
+0
+
+POSICION07
+
+C
+
+1
+
+0
+
+Número de trabajos
+El trabajo lo realizo dentro
+del país
+Posición en el empleo
+
+SUELDO08
+
+C
+
+1
+
+0
+
+CMO091
+
+C
+
+4
+
+0
+
+Condición de actividad en
+el mes pasado
+Ayuda economía de su
+hogar
+
+Recibe o tiene asignado
+un sueldo
+Ocupación
+
+8 de 18
+
+Observaciones
+0a6
+1 Primaria terminada
+2 Secundaria terminada
+3 Preparatoria o bachillerato terminado
+4 Licenciatura o profesional
+5 Maestría
+Pregunta 19
+Pregunta 20
+Pregunta 21
+1 Vive con su pareja en unión libre
+2 Está separado(a)
+3 Divorciado(a)
+4 Viudo(a)
+5 Casado(a)
+6 Soltero(a)
+Apartado 1.4 preg 02 1 Sí, 2 no
+1 Vendió o hizo algún producto para su venta
+2 Prestó algún servicio a cambio de un pago
+3 Ayudó en las tierras o en el negocio de un
+familiar u otra persona
+4 No trabajó el mes pasado
+1 Enfermo o tenía permiso para no trabajar
+2 Vacaciones o recibiendo capacitación
+3 Conflicto laboral o huelga
+4 No tenía materias primas, clientes o el
+equipo estaba descompuesto
+5 No es temporada de trabajo agrícola
+6 Había mal clima u otro fenómeno natural
+7 Ninguna de las anteriores.
+1 Estuvo buscando trabajo
+2 Rentó o alquiló alguna propiedad
+3 Es pensionado o jubilado por su trabajo
+4 Se dedicó a los quehaceres del hogar
+5 Se dedicó a estudiar
+6 Es una persona con alguna limitación física
+o mental que le impide trabajar
+7 Está en otra situación diferente a las
+anteriores.
+
+1 Sí , 2 No
+1. Obrero (a) o empleado (a)
+2. Jornalero (a) o peón
+3. Trabajador (a) sin pago en un negocio que
+no es del hogar
+4. Trabajador (a) sin pago en un negocio
+propiedad del hogar
+5. Trabajador (a) por cuenta propia (solo(a) o
+con trabajadores sin pago)
+6. Patrón (a) (contrata uno o más
+trabajadores con pago)
+7. Miembro de una cooperativa.
+1 Sí , 2 No
+Empleo principal
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Tabla: Población
+Tipo
+
+Long.
+
+Dec.
+
+Descripción
+
+C
+N
+
+4
+1
+
+0
+0
+
+Actividad económica
+Tamaño de la empresa
+(cuántas personas laboran
+durante el mes pasado)
+Tipo de contratación
+(sólo para asalariados)
+
+CONTR141
+
+C
+
+1
+
+0
+
+SINDICA15
+
+C
+
+1
+
+0
+
+OTRO_TRA16
+T_PAIS17
+
+C
+C
+
+3
+1
+
+0
+0
+
+POSICION18
+
+C
+
+1
+
+0
+
+SUELDO19
+
+C
+
+1
+
+0
+
+CMO201
+SCIAN211
+NUMPER2
+CONTR241
+
+C
+C
+N
+C
+
+4
+4
+1
+1
+
+0
+0
+0
+0
+
+SINDICA25
+
+C
+
+1
+
+0
+
+HORAS_TRAB
+
+N
+
+3
+
+0
+
+POSICION3
+CMO3
+SCIAN3
+PRESTA1_01
+PRESTA1_02
+PRESTA1_03
+PRESTA1_04
+PRESTA1_05
+PRESTA1_06
+PRESTA1_07
+PRESTA1_08
+PRESTA1_09
+PRESTA1_10
+PRESTA1_11
+PRESTA1_12
+PRESTA1_13
+PRESTA1_14
+PRESTA1_15
+PRESTA1_16
+PRESTA1_17
+PRESTA1_18
+PRESTA1_19
+PRESTA1_20
+
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+
+1
+4
+4
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+Afiliación a sindicatos
+(sólo para asalariados)
+Otros trabajos
+El trabajo lo realizó dentro
+del país
+Posición en el empleo
+
+Recibe o tiene asignado
+un sueldo
+Ocupación
+Actividad económica
+Tipo de contratación
+(sólo para asalariados )
+Afiliación a sindicatos
+(sólo para asalariados)
+Total de horas trabajadas
+a la semana
+Posición en el empleo
+Ocupación
+Actividad económica
+Prestaciones sociales_01
+Prestaciones sociales_02
+Prestaciones sociales_03
+Prestaciones sociales_04
+Prestaciones sociales_05
+Prestaciones sociales_06
+Prestaciones sociales_07
+Prestaciones sociales_08
+Prestaciones sociales_09
+Prestaciones sociales_10
+Prestaciones sociales_11
+Prestaciones sociales_12
+Prestaciones sociales_13
+Prestaciones sociales_14
+Prestaciones sociales_15
+Prestaciones sociales_16
+Prestaciones sociales_17
+Prestaciones sociales_18
+Prestaciones sociales_19
+Prestaciones sociales_20
+
+9 de 18
+
+Observaciones
+Características del empleo principal
+1.1, 2. 2 a 5, 3. 6 a 10, 4. 11 a 15, 5. 16 y
+más
+1. Temporal o por obra determinada
+2. De base, planta o por tiempo indefinido
+3. No tiene contrato por escrito
+1 Sí , 2 NO
+1, 2, 3 ó 4
+1 Sí, 2 NO
+1 Obrero(a) o empleado(a)
+2. Jornalero(a) o peón
+3. Trabajador(a) sin pago en un negocio que
+no es del hogar
+4. Trabajador(a) sin pago en un negocio
+propiedad del hogar
+5, Trabajador(a) por cuenta propia (solo(a) o
+con trabajadores sin pago)
+6. Patrón(a) (contrata uno o más trabajadores
+con pago)
+7. Miembro de una cooperativa.
+1 Sí , 2 No
+Características del empleo secundario
+Características del empleo secundario
+1. Temporal o por obra determinada
+2. De base, planta o por tiempo indefinido
+3. No tiene contrato por escrito
+1 Sí , 2 No
+Suma de las horas trabajadas en su(s)
+empleo(s)
+Tercer empleo
+Tercer empleo
+Tercer empleo
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+Empleo principal y secundario
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+SCIAN101
+NUMPER131
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: Población
+Nombre de
+campo
+
+Tipo
+
+Long.
+
+Dec.
+
+Descripción
+
+P_OCUP28
+
+C
+
+1
+
+0
+
+Trabajó algo
+complementario diferente
+a lo que desempeño
+
+1 Sí , 2 NO
+
+B_TRAB29
+
+C
+
+1
+
+0
+
+Buscadores de trabajo y
+PNEA
+
+1 Sí , 2 NO
+
+PER_ING30
+
+C
+
+1
+
+0
+
+Trabajos realizados en los
+meses anteriores al mes
+pasado
+
+1 Sí , 2 NO
+
+PER_ING31
+
+C
+
+1
+
+0
+
+Trabajos realizados hace
+más de 6 meses
+
+1 Sí , 2 NO
+
+NUMRENEX
+
+C
+
+2
+
+0
+
+Número de renglón
+
+Número de renglón para
+Código 8 Condición de actividad diferente a
+la realizada el mes pasado.
+Código 9 Actividad realizada fuera del
+periodo con ingresos
+
+EMP_EXT
+
+C
+
+1
+
+0
+
+Código 8 ó 9
+
+POS_EXT
+
+C
+
+1
+
+0
+
+Posición
+
+Observaciones
+
+Posición 1 a 7
+
+SIAN_EXT
+
+C
+
+4
+
+0
+
+Actividad económica
+
+Código de actividad económica
+
+NUMRENEX1
+
+C
+
+2
+
+0
+
+Número de renglón
+
+Número de renglón para
+Código 8 Condición de actividad diferente a
+la realizada el mes pasado.
+Código 9 Actividad realizada fuera del
+periodo con ingresos
+
+EMP_EXT1
+
+C
+
+1
+
+0
+
+Código 8 ó 9
+
+POS_EXT1
+
+C
+
+1
+
+0
+
+Posición
+
+Posición 1 a 7
+
+SIAN_EXT1
+
+C
+
+4
+
+0
+
+Actividad económica
+
+Código de actividad económica
+
+NUMRENEX2
+
+C
+
+2
+
+0
+
+Número de renglón
+
+Número de renglón para
+Código 8 Condición de actividad diferente a
+la realizada el mes pasado.
+Código 9 Actividad realizada fuera del
+periodo con ingresos
+
+EMP_EXT2
+
+C
+
+1
+
+0
+
+Código 8 ó 9
+
+POS_EXT2
+
+C
+
+1
+
+0
+
+Posición
+
+Posición 1 a 7
+
+SIAN_EXT2
+
+C
+
+4
+
+0
+
+Actividad económica
+
+Código de actividad económica
+
+NUMRENEX3
+
+C
+
+2
+
+0
+
+Número de renglón
+
+Número de renglón para
+Código 8 Condición de actividad diferente a
+la realizada el mes pasado.
+Código 9 Actividad realizada fuera del
+periodo con ingresos
+
+EMP_EXT3
+
+C
+
+1
+
+0
+
+Código 8 ó 9
+
+POS_EXT3
+
+C
+
+1
+
+0
+
+Posición
+
+Posición 1 a 7
+
+SIAN_EXT3
+
+C
+
+4
+
+0
+
+Actividad económica
+
+Código de actividad económica
+
+10 de 18
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+Tabla: Ingresos
+
+Tipo
+C
+C
+N
+
+Long.
+11
+2
+1
+
+Dec.
+0
+0
+0
+
+Descripción
+Identificador del Hogar
+Identificador de la persona
+Empleo del que provienen
+los ingresos
+
+P49
+
+N
+
+3
+
+0
+
+Causa de no ingresos en
+el empleo
+
+MESES
+CLAVE
+ING_1
+ING_2
+
+C
+C
+N
+N
+
+12
+4
+9
+9
+
+0
+0
+0
+0
+
+ING_3
+
+N
+
+9
+
+0
+
+ING_4
+
+N
+
+9
+
+0
+
+ING_5
+
+N
+
+9
+
+0
+
+ING_6
+
+N
+
+9
+
+0
+
+Meses de referencia
+Clave de ingreso
+Ingresos del mes pasado
+Ingresos del primer mes
+anterior al mes pasado
+Ingresos del segundo mes
+anterior al mes pasado
+Ingresos del tercer mes
+anterior al mes pasado
+Ingresos del cuarto mes
+anterior al mes pasado
+Ingresos del quinto mes
+anterior al mes pasado
+
+ING_TRI
+
+N
+
+10
+
+2
+
+11 de 18
+
+Observaciones
+
+0 Menores de 12 años y PEI
+1 Empleo primario
+2 Empleo secundario
+.
+.
+.
+7 Empleo de 7 y demás
+8 Ingresos de actividades diferentes a la del
+mes pasado
+9 Ingresos de actividades realizadas antes de
+los 6 meses
+1er. dígito: 1-A, 2-B, 3-C, 4-D, 5-E,
+2° y 3° dígito: 01-14
+P001–P076
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+FOLIO
+NUM_REN
+COD_TRAB
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: Gastos
+Nombre de
+campo
+FOLIO
+CLAVE
+
+Tipo
+C
+C
+
+Long.
+11
+4
+
+Dec.
+0
+0
+
+Descripción
+Identificador del hogar
+Clave del gasto
+
+COSTO
+LUG_COM
+
+N
+C
+
+9
+2
+
+2
+0
+
+Costo de los artículos
+Lugar de compra
+
+DIA
+NUM_REN
+COD
+FPAGO
+
+C
+C
+C
+C
+
+2
+2
+4
+4
+
+0
+0
+0
+0
+
+Día de compra
+Número de renglón
+Código de Institución
+Forma de pago
+
+CANTIDAD
+PRECIO
+
+N
+N
+
+9
+9
+
+2
+2
+
+GASTO
+PAGO_MP
+GAS_TRI
+
+N
+N
+N
+
+9
+9
+9
+
+2
+2
+2
+
+Cantidad
+Precio por kilogramos o
+litros
+Gasto efectuado
+Pago el mes pasado
+Gasto trimestral
+
+12 de 18
+
+Observaciones
+A001-A243, B001-B007, C001-C024,
+D001-D024, E001-E033, F001-F015,
+G001-G029, H001-H119, I001-I026,
+J001-J072, K001-K044, L001-L029,
+M001-M018, N001-N016
+01 Mercado
+02 Tianguis o mercado sobre ruedas y
+vendedores ambulantes
+03 Tiendas específicas del ramo:
+misceláneas, tiendas de abarrotes,
+ultramarinos, vinaterías, pollerías, etc.
+04 Supermercados y tiendas
+departamentales
+05 Compras fuera del país
+06 Restaurantes
+07 Loncherías, fondas, torterías, taquerías,
+cocinas económicas, cenadurías
+08 Cafeterías
+09 Pulquerías, cantinas o bares
+10 Otros
+1–7
+
+1. De contado
+2. Con tarjeta de crédito bancaria
+3. Con tarjeta de crédito comercial
+4. Fiado (persona particular o
+establecimiento comercial)
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+Tabla: Erogaciones
+
+Tipo
+C
+C
+C
+N
+
+Long.
+11
+12
+4
+9
+
+Dec.
+0
+0
+0
+0
+
+ERO_2
+
+N
+
+9
+
+0
+
+ERO_3
+
+N
+
+9
+
+0
+
+ERO_4
+
+N
+
+9
+
+0
+
+ERO_5
+
+N
+
+9
+
+0
+
+ERO_6
+
+N
+
+9
+
+0
+
+ERO_TRI
+
+N
+
+10
+
+2
+
+Descripción
+Identificación del hogar
+Meses de referencia
+Clave de erogaciones
+Erogaciones del mes
+pasado
+Erogaciones del primer
+mes anterior al mes
+pasado
+Erogaciones del segundo
+mes anterior al mes
+pasado
+Erogaciones del tercer
+mes anterior al mes
+pasado
+Erogaciones del cuarto
+mes anterior al mes
+pasado
+Erogaciones del quinto
+mes anterior al mes
+pasado
+Erogación trimestral
+
+13 de 18
+
+Observaciones
+
+Q001-Q016
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+FOLIO
+MESES
+CLAVE
+ERO_1
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: No Monetario
+Nombre de
+campo
+FOLIO
+TIPO_GAS
+COD
+
+Tipo
+C
+C
+C
+
+Long.
+11
+1
+4
+
+Dec.
+0
+0
+0
+
+NUM_REN
+DIA
+CLAVE
+
+C
+C
+C
+
+2
+1
+4
+
+0
+0
+0
+
+Identificador de la persona
+Día de compra
+Clave del gasto
+
+CANTIDAD
+
+N
+
+6
+
+3
+
+PRECIO
+GASTO
+GAS_TRI
+
+N
+N
+N
+
+9
+9
+9
+
+2
+2
+2
+
+Cantidad en kilogramos o
+litros
+Precio por kilogramo o litro
+Gasto estimado
+Gasto trimestral
+
+Descripción
+Identificador del hogar
+Tipo de gasto
+Código no monetario
+
+14 de 18
+
+Observaciones
+
+0 Estimación del alquiler de la vivienda
+1 Autoconsumo
+2 Pago en especie
+3 Regalos
+4 Apoyos que recibe el hogar
+
+A001-A243 ,B001-B007, C001-C024,
+D001-D024, E001-E033, F001-F015,
+G001-G029, H001-H119, I001-I026,
+J001-J072, K001-K044, L001- L029,
+M001-M018, N001-N016
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+Descripción de la base de datos
+Tabla: Concentrado
+Tipo
+
+Long.
+
+Dec.
+
+Descripción
+
+C
+N
+C
+C
+C
+C
+C
+N
+C
+
+11
+10
+1
+1
+5
+1
+1
+2
+2
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+TAM_HOG
+HOMBRES
+MUJERES
+TOT_RESI
+TOT_HOM
+TOT_MUJ
+MAYORES
+MENORES
+P0A11
+
+N
+N
+N
+N
+N
+N
+N
+N
+N
+
+2
+2
+2
+2
+2
+2
+2
+2
+2
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+P12_64
+
+N
+
+2
+
+0
+
+P65MAS
+
+N
+
+2
+
+0
+
+N_OCUP
+PERING
+PEROCU
+
+N
+N
+N
+
+2
+2
+2
+
+0
+0
+0
+
+Identificador del hogar
+Factor de expansión
+Estrato (tamaño de localidad)
+Estrato conapo
+Ubicación geográfica
+Tenencia
+Clase de hogar
+Edad del jefe del hogar
+Nivel de instrucción del jefe
+del hogar
+Población total
+Población total hombres
+Población total mujeres
+Miembros del hogar
+Miembros del hogar hombres
+Miembros del hogar mujeres
+Miembros del hogar mayores
+Miembros del hogar menores
+Miembros del hogar de 0 a 11
+años
+Miembros del hogar de 12 a
+64 años
+Miembros del hogar de 65
+años y más
+Número de ocupados
+
+INGTOT
+INGCOR
+INGMON
+TRABAJO
+
+N
+N
+N
+N
+
+12
+12
+12
+12
+
+2
+2
+2
+2
+
+SUELDOS
+OTRA_REM
+NEGOCIO
+NO_AGROP
+AGROPE
+COOPERA
+SOCIE
+RENTAS
+TRANSFER
+JUBILA
+BECA_DON
+DONATIVO
+
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+
+OTROS
+GASNOM
+AUTO
+PAGO
+REGA
+ESTI
+
+N
+N
+N
+N
+N
+N
+
+12
+12
+12
+12
+12
+12
+
+2
+2
+2
+2
+2
+2
+
+Observaciones
+
+Perceptores de ingreso
+corriente monetario ocupados
+Ingreso total
+Ingreso corriente total
+Ingreso corriente monetario
+Remuneraciones al trabajo
+asalariado
+Sueldos y horas extras
+Otras remuneraciones
+Renta empresarial
+Negocios no agropecuarios
+Negocios agropecuarios
+Cooperativa de producción
+Ingresos de sociedades
+Renta de la propiedad
+Transferencias
+Jubilaciones y pensiones
+Becas y donativos
+Regalos o donativos en dinero
+provenientes de otros hogares
+Otros ingresos corrientes
+Ingreso corriente no monetario
+Autoconsumo
+Pago en especie
+Regalos
+Estimación del alquiler de la
+vivienda
+15 de 18
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+FOLIO
+HOG
+ESTRATO
+CONAPO
+UBICA_GEO
+TENENCIA
+CLASE_HOG
+EDAD
+ED_FORMAL
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: Concentrado
+Nombre de
+campo
+PERTOT
+
+Tipo
+
+Long.
+
+Dec.
+
+Descripción
+
+N
+
+12
+
+2
+
+PERMON
+
+N
+
+12
+
+2
+
+RETIRO
+
+N
+
+12
+
+2
+
+PRESTAMO
+
+N
+
+12
+
+2
+
+OTRAS_PR
+ERONOM
+
+N
+N
+
+12
+12
+
+2
+2
+
+GASTOT
+GASCOR
+GASMON
+ALIMENTOS
+
+N
+N
+N
+N
+
+12
+12
+12
+12
+
+2
+2
+2
+2
+
+ALI_DENT
+
+N
+
+12
+
+2
+
+CEREALES
+CARNES
+PESCADO
+LECHE
+HUEVO
+ACEITES
+TUBÉRCULO
+VERDURAS
+FRUTAS
+AZUCAR
+CAFÉ
+ESPECIAS
+OTRO_ALI
+BEBIDAS
+FUERA_HOG
+
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+
+TABACO
+VESTIDO
+VESTIDO_C
+VES_3YMAS
+
+N
+N
+N
+N
+
+12
+12
+12
+12
+
+2
+2
+2
+2
+
+VES_3MEN
+
+N
+
+12
+
+2
+
+CALZADO
+VIVIENDA
+
+N
+N
+
+12
+12
+
+2
+2
+
+ALQUILER
+
+N
+
+12
+
+2
+
+AGUA
+ENERGIA
+
+N
+N
+
+12
+12
+
+2
+2
+
+Percepciones financieras y de
+capital totales
+Percepciones financieras y de
+capital monetarias
+Retiro de inversiones, tandas,
+cajas de ahorro, etcétera.
+Préstamos recibidos de
+personas no miembros del
+hogar o instituciones; excluye
+préstamos hipotecarios.
+Otras percepciones
+Percepciones financieras y de
+capital no monetarias.
+Gasto total
+Gasto corriente total
+Gasto corriente monetario
+Alimentos y bebidas
+consumidas dentro y fuera del
+hogar, y tabaco
+Alimentos y bebidas
+consumidas dentro del hogar
+Cereales
+Carnes
+Pescados y mariscos
+Leche y sus derivados
+Huevo
+Aceites
+Tubérculo
+Verduras
+Frutas
+Azúcar
+Café
+Especias
+Otros alimentos
+Bebidas
+Alimentos y bebidas
+consumidas fuera del hogar
+Tabaco
+Vestido y calzado
+Vestido
+Vestido para personas de 4
+años y más
+Vestido para personas de 0 a
+3 años
+Calzado y su reparación
+Vivienda, servicios de
+conservación, energía
+eléctrica y combustibles
+Alquileres brutos, impuestos,
+predial y cuotas por servicio
+de conservación
+Agua
+Energía eléctrica y
+combustibles
+
+16 de 18
+
+Observaciones
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Tabla: Concentrado
+Tip
+o
+N
+
+Long.
+
+Dec.
+
+Descripción
+
+12
+
+2
+
+CUIDADOS
+
+N
+
+12
+
+2
+
+ENSERES
+
+N
+
+12
+
+2
+
+SALUD
+
+N
+
+12
+
+2
+
+ATEN_PRI
+
+N
+
+12
+
+2
+
+HOSPITAL
+
+N
+
+12
+
+2
+
+MEDICA
+TRANSPORTE
+
+N
+N
+
+12
+12
+
+2
+2
+
+TRANS_AD
+
+N
+
+12
+
+2
+
+PUBLICO
+FORANEO
+
+N
+N
+
+12
+12
+
+2
+2
+
+VEHICULO
+
+N
+
+12
+
+2
+
+COMUNICA
+EDUCACION
+
+N
+N
+
+12
+12
+
+2
+2
+
+EDUCA
+
+N
+
+12
+
+2
+
+ESPARCI
+
+N
+
+12
+
+2
+
+PERSONAL
+
+N
+
+12
+
+2
+
+CUIDADO
+
+N
+
+12
+
+2
+
+ACCESORIO
+
+N
+
+12
+
+2
+
+TRANSFE
+
+N
+
+12
+
+2
+
+EROTOT
+
+N
+
+12
+
+2
+
+EROMON
+
+N
+
+12
+
+2
+
+CUOTA
+
+N
+
+12
+
+2
+
+Artículos y servicios para la
+limpieza y cuidados de la
+casa, enseres domésticos,
+muebles, cristalería, utensilios
+domésticos y blancos
+Artículos y servicios para la
+limpieza y cuidados de la casa
+Enseres domésticos y
+muebles, cristalería, utensilios
+domésticos y blancos
+Cuidados médicos y
+conservación de la salud
+Atención primaria o
+ambulatoria
+Atención hospitalaria,
+servicios médicos y
+medicamentos durante el
+embarazo y parto, aparatos
+ortopédicos, terapéuticos y
+seguros médicos
+Medicamentos sin receta
+Transporte, adquisición,
+mantenimiento y accesorios
+para vehículos y
+comunicaciones
+Transporte, adquisición,
+mantenimiento y accesorios
+para vehículos
+Transporte público
+Transporte foráneo terrestre,
+aéreo y otros servicios
+especiales de transporte
+Adquisición de vehículos de
+uso particular, mantenimiento
+y accesorios para vehículos
+Comunicaciones
+Servicios y artículos de
+educación y esparcimiento;
+paquetes turísticos y para
+fiestas, hospedaje y
+alojamiento
+Artículos y servicios de
+educación
+Artículos y servicios de
+esparcimiento, paquetes para:
+fiestas, turísticos, hospedaje y
+alojamiento
+Artículos y servicios para el
+cuidado personal, accesorios
+y efectos personales, otros
+gastos diversos y
+transferencias
+Artículos y servicios para el
+cuidado personal
+Accesorios y efectos
+personales
+Otros gastos diversos y
+transferencias
+Erogaciones financieras y de
+capital totales
+Erogaciones financieras y de
+capital monetarias
+Cuota pagada por la vivienda
+propia
+
+17 de 18
+
+Observaciones
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Nombre de
+campo
+LIMPIEZA
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Descripción de la base de datos. 2024.
+
+Tabla: Concentrado
+Nombre de
+campo
+MATERIAL
+
+Tipo
+
+Long.
+
+Dec.
+
+Descripción
+
+N
+
+12
+
+2
+
+SERVICIO
+
+N
+
+12
+
+2
+
+DEPOSITO
+
+N
+
+12
+
+2
+
+TERCEROS
+PAGO_TAR
+
+N
+N
+
+12
+12
+
+2
+2
+
+Materiales para reparación,
+mantenimiento y/o ampliación
+de la vivienda
+Servicios de reparación,
+mantenimiento y/o ampliación
+de la vivienda
+Depósito de cuenta de
+ahorros, tandas, cajas de
+ahorro, etc.
+Préstamos a terceros
+Pago por tarjeta de crédito al
+banco o casa comercial
+
+DEUDAS
+MONEDAS
+
+N
+N
+
+12
+12
+
+2
+2
+
+CASAS
+
+N
+
+12
+
+2
+
+BALANCE
+
+N
+
+12
+
+2
+
+OTRA_ERO
+SMG
+EST_DIS
+UPM
+
+N
+N
+C
+
+12
+12
+3
+
+2
+2
+0
+
+C
+
+5
+
+0
+
+Observaciones
+
+Compra de monedas, metales
+preciosos, joyas y obras de
+arte
+Compra de casas,
+condominios, locales y
+terrenos
+Balance negativo en negocios
+propiedad del hogar
+Otras erogaciones
+Salarios mínimos generales
+Estrato de diseño
+Unidad primaria de muestreo
+
+18 de 18
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+

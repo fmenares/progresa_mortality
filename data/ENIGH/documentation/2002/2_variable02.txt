@@ -1,0 +1,2686 @@
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2002
+Construcción de variables sociodemográficas
+Concepto
+
+Criterios
+
+Total de hogares
+
+Se deben incluir a todos los folios de HOGARES
+
+Total de viviendas
+
+Se deben incluir todos los folios con terminación 0 (cero) en
+HOGARES
+
+Población total
+
+Se deben incluir a todas las personas reportadas en
+POBLACION excluyendo al código 11 de Parentesco
+
+Integrantes del hogar (Población objeto)
+
+Se deben incluir a todas las personas reportadas en
+POBLACION excluyendo los códigos 70, 80, 81, 82, 83, 84
+y 90 de Parentesco
+
+Perceptores
+Perceptores de ingreso corriente monetario
+
+Incluir a todas las personas que reportaron ingresos en
+cualquiera de las claves P001 a P048 de INGRESOS
+
+Perceptores de ingreso de capital
+
+Incluir a todas las personas que reportaron ingresos en
+cualquiera de las claves P049 a P065 de INGRESOS
+
+PEA (Población económicamente activa)
+
+Incluir a todas las personas que reportaron por lo menos un
+empleo en N_empleos o en No_trabajo códigos del 01 al 11
+en POBLACION
+
+Ocupados
+
+Incluir a las personas que reportaron por lo menos un
+empleo en N_empleos en POBLACION
+
+Desocupados
+
+Incluir a las personas que en No_trabajo reportaron códigos
+10 y 11 de POBLACION
+
+PEI (Población económicamente inactiva)
+
+Incluir a las personas que en No_trabajo reportaron códigos
+del 12 al 17 de POBLACION
+
+Número de mayores y menores
+
+Los mayores son las personas de 12 años y más.
+Los menores son las personas de menos de 12 años.
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2002
+Construcción de variables Ocupación
+Código
+
+Descripción
+
+00
+
+No aplica
+
+11
+
+Profesionistas
+
+12
+
+Técnicos
+
+13
+
+Trabajadores en la educación
+
+14
+
+Trabajadores en el arte, espectáculos y deportes
+
+21
+
+Funcionarios y directivos de los sectores público, privado y social
+
+41
+
+Trabajadores en actividades agrícolas, ganaderas, silvícolas y de caza y pesca
+
+51
+
+Jefes, supervisores u otros trabajadores de control en la fabricación artesanal
+
+52
+
+Artesanos, trabajadores fabriles en la industria de la transformación, etc.
+
+53
+
+Operadores de maquinaria fija de movimiento continuo y equipos en el proceso de producción
+industrial.
+
+54
+
+Ayudantes, peones y similares en el proceso de la fabricación artesanal e industrial.
+
+55
+
+Conductores y ayudantes de conductores de maquinaria móvil y medios de transporte.
+
+61
+
+Jefes de departamento, coordinadores y supervisores en actividades administrativas y de servicios.
+
+62
+
+Trabajadores de apoyo en actividades administrativas.
+
+71
+
+Comerciantes, empleados de comercio y agentes de ventas.
+
+72
+
+Vendedores ambulantes y trabajadores ambulantes en servicios.
+
+81
+
+Trabajadores en servicios personales en establecimientos.
+
+82
+
+Trabajadores en servicios domésticos.
+
+83
+
+Trabajadores en servicios de protección y vigilancia y fuerzas armadas.
+
+99
+
+Otros trabajadores con ocupaciones no clasificados anteriormente, insuficientemente especificado y o
+especificado.
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2002
+Construcción de Actividad económica
+(Rama de actividad en POBLACIÓN)
+
+Descripción
+
+Código
+
+ACTIVIDADES PRIMARIAS:
+Agricultura, ganadería, aprovechamiento
+forestal, caza y pesca
+
+111, 112, 113, 114, 115
+
+ACTIVIDADES SECUNDARIAS:
+Minería, Electricidad, agua, y suministro
+de gas por ducto al consumidor final
+
+211, 212, 213, 221, 222
+
+Industria manufacturera
+
+311, 312, 313, 314, 315, 316, 321, 322, 323, 324, 325,
+326, 327, 331, 332, 333, 334, 335, 336, 337, 339
+
+Construcción
+
+236, 237, 238
+
+ACTIVIDADES TERCIARIAS:
+Comercio
+
+400, 431, 432, 433, 434, 435, 436, 437, 461, 462, 463,
+464, 465, 466, 467, 468, 469
+
+Transportes, correos y almacenamiento
+
+481, 482, 483, 484, 485, 486, 487, 488, 491, 492, 493
+
+Servicios
+
+511 a 514, 521 a 524, 531 a 533, 541, 551, 561, 562, 611,
+621 a 624, 711 a 713, 721, 722, 811 a 814, 931, 932
+
+Servicios profesionales, científicos y
+técnicos
+
+541
+
+Servicios de apoyo a los negocios,
+manejo de desechos y servicios de
+remediación
+
+561, 562
+
+Servicios educativos
+
+611
+
+Servicios de salud y asistencia social
+
+621, 622, 623, 624
+
+Servicios de alojamiento temporal y de
+preparación de alimentos y bebidas
+
+721, 722
+
+Otros servicios excepto actividades de
+gobierno
+
+511 a 514, 521 a 524, 531 a 533, 551, 711 a 713, 811 a
+814
+
+Actividades de gobierno y de organismos
+internacionales
+
+931 y 932
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2002
+Construcción de variables de Ingreso
+Ingreso Total
+
+∑ de las claves P001-P065 Autoconsumo (A000)
+Código 1, Pago en Especie (P000) Código 2,
+Regalos (R000) Código 3, correspondientes a las
+claves (A001-A242, B001-B007, C001-C024, D001D024, E001-E034, F001-F015, G002-G005, G008G015, G018-G020, G023-G030, G033-G047 H001H143, I001-I026, J001-J077, K001-K036, L001-L030,
+M001-M018, N001-N016). Estimación del alquiler
+(G007, G017, G022, G032) y las percepciones No
+Monetarias identificadas con las claves Q001Q015, G001, K037-K044.
+
+Ingreso Corriente Total
+
+∑ de las claves P001-P048 Autoconsumo (A000)
+Código 1, Pago en Espécie (P000) Código 2,
+Regalos (R000) Código 3, correspondentes a las
+claves (A001-A242, B001-B007, C001-C024, D001D024, E001-E034, F001-F015, G002-G005, G008G015, G018-G020, G023-G030, G033-G047, H001H143, I001-I026, J001-J077, K001-K036, L001-L030,
+M001-M018, N001-N016). Estimación del alquiler
+G007, G017, G022, G032).
+
+Ingreso Corriente Monetario
+
+∑ de las claves P001-P048
+
+Remuneraciones al Trabajo
+
+∑ de las claves P001-P009, P020 y P022
+
+Ingresos Netos de los Negocios ∑ de las claves P010-P017, P023
+Propios (Renta empresarial)
+Ingresos Netos por Cooperativas ∑ de las claves P018-P019
+Ingresos netos por renta de la ∑ de las claves P021, P024-P036
+propiedad
+Transferencias
+
+∑ de las claves P037-P047
+
+Otros ingresos
+
+∑ de las claves P048
+
+Ingreso Corriente No Monetario
+
+∑ de las claves con información en Autoconsumo
+Código 1, Pago en Especie Código 2, Regalos
+Código 3, Correspondientes a las claves (A001A242, B001-B007, C001-C024, D001-D024, E001E034, F001-F015, G002-G005, G008-G015, G018G020, G023-G030,G033-G047 H001-H143, I001I026, J001-J077, K001-K036, L001-L030, M001M018, N001-N016, Estimación del alquiler G007,
+
+G017, G022, G032).
+Autoconsumo
+
+∑ de las claves con información en Autoconsumo
+(A000) Código 1, Correspondiente a las claves
+(A001-A242, B001-B007, C001-C024, D001-D024,
+E001-E034, F001-F015, G002-G005, G008-G015,
+G018-G020, G023-G030, G033-G047, H001-H143,
+I001-I026, J001-J077, K001-K036, L001-L030, M001M018, N001-N016).
+
+Pago en Especie
+
+∑ de las claves con información en Pago en
+Especie (P000) Código 2, Correspondiente a las
+claves (A001-A242, B001-B007, C001-C024, D001D024, E001-E034, F001-F015, G002-G005, G008,
+G015, G018-G020, G023-G030, G033-G047, H001H143, I001-I026, J001-J077, K001-K036, L001-L030,
+M001-M018, N001-N016).
+
+Regalos
+
+∑ de las claves con información en Regalos (R000)
+Código 3, Correspondiente a las claves (A001A242, B001-B007, C001-C024, D001-D024, E001E034, F001-F015, G002-G005, G008-G015, G018G020, G023-G030, G033-G047, H001-H143, I001I026, J001-J077, K001-K036, L001-L030, M001M018, N001-N016).
+
+Valor estimado de alquiler de la ∑ de las claves G007, G017, G022 y G032
+vivienda
+Percepciones Financieras
+Capital Monetarias
+Percepciones
+Monetarias
+
+Financieras
+
+y
+
+de ∑ de las claves P049-P065
+No ∑ de las claves con información en Autoconsumo
+Código 1, Pago en Especie Código 2, Regalos
+Código 3, correspondientes a las claves Q001Q015, G001, K037-K044.
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2002
+Construcción de variables de Gasto
+∑ de las claves con información de la A001–
+Gasto corriente total + Erogaciones totales A243, B001–B007, C001–C024, D001–D024,
+E001–E034, F001–F015, G001–G047, H001–H143,
+I001–I026, J001–J077, K001–K044, L001–L030,
+M001–M018, N001–N016, Q001-Q015, T101, T102,
+T103, T104, T902–T914, excepto G006, G016,
+G021 y G031, más Autoconsumo (A000) Código
+1, Pago en especie (P000) Código 2, Regalos
+(R000) Código 3, A001-A242, B001–B007, C001–
+C024, D001–D024, E001–E034, F001–F015, G002–
+G005, G008-G015, G018-G020, G023-G030, G033G047, H001–H143, I001–I026, J001–J077, K001–
+K044, L001–L030, M001–M018, N001–N016,
+Erogaciones Financieras y de Capital:
+Autoconsumo (A000), Pago en Especie (P000),
+Regalos (R000), claves G001, K037-K044, Q001Q015.
+Gasto Total
+
+Gasto Corriente Total
+
+∑ de las claves con información de la A001–
+A243, B001–B007, C001–C024, D001–D024,
+E001–E034, F001–F015, G002–G005, G008-G015,
+G018-G020, G023-G030, G033-G047, H001–H143,
+I001–I026, J001–J077, K001–K036, L001–L030,
+M001–M018, N001–N016, T101, T102, T103, T104,
+T902–T914, más Autoconsumo (A000) Código 1,
+Pago en especie (P000) Código 2, Regalos (R000)
+Código 3, B001–B007, C001–C024, D001–D024,
+E001–E034, F001–F015, G002–G005, G008-G015,
+G018-G020, G023-G030, G033-G047, H001–H143,
+I001–I026, J001–J077, K001–K036, L001–L030,
+M001–M018, N001–N016, Estimación del alquiler
+claves (G007, G017, G022, G032).
+
+Gasto Corriente Monetario
+
+∑ de las claves con información de la A001-A243,
+B001-B007, C001-C024, D001-D024, E001-E034,
+F001-F015, G002-G005, G008-G015, G018-G020,
+G023-G030, G033-G047, H001-H143, I001-I026,
+J001-J077, K001-K036, L001-L030, M001-M018,
+N001-N016, T101, T102, T103, T104, T901-T914.
+
+Alimentos y Bebidas consumidas
+dentro y fuera del hogar y tabaco
+
+∑ de claves A001-A243
+
+Alimentos y Bebidas consumidas
+dentro y fuera del hogar
+
+∑ de claves A001-A239
+
+Alimentos y Bebidas consumidas
+dentro del hogar
+
+∑ de claves A001-A234
+
+Cereales
+
+∑ de claves A001-A021
+
+Carnes, pescados y mariscos
+
+∑ de claves A022-A070
+
+De Res y Ternera
+
+∑ de claves A022-A034
+
+De Puerco
+
+∑ de claves A035-A052
+
+De aves
+
+∑ de claves A053-A060
+
+Otras Carnes
+
+∑ de claves A061-A063
+
+Pescados y mariscos
+
+∑ de claves A064-A070
+
+Leche y sus derivados
+
+∑ de claves A071-A088
+
+Leche
+
+∑ de claves A071-A077
+
+Quesos
+
+∑ de claves A078-A084
+
+Otros derivados de leche
+
+∑ de claves A085-A088
+
+Huevos
+
+∑ de claves A089-A090
+
+Aceites y Grasas
+
+∑ de claves A091-A096
+
+Aceites
+
+∑ de claves A091-A093
+
+Grasas
+
+∑ de claves A094-A096
+
+Tubérculos y verduras, legumbres,
+leguminosas, semillas y frutas
+
+∑ de claves A097-A168
+
+Tubérculos
+
+∑ de claves A097-A102
+
+Verduras y Legumbres
+Leguminosas y semillas
+
+∑ de claves A103-A142
+
+Verduras y Legumbres Frescas y
+Procesadas
+
+∑ de claves A103-A139
+
+Verduras y Legumbres Frescas
+
+∑ de claves A103-A128
+
+Verduras
+Procesadas
+
+y
+
+Legumbres ∑ de claves A129–A132
+
+Leguminosas
+
+∑ de claves A133–A137
+
+Leguminosas Procesadas
+
+∑ de claves A138-A139
+
+Semillas a Granel y Envasadas
+
+∑ de claves A140-A142
+
+Frutas Frescas y Procesadas
+
+∑ de claves A143-A168
+
+Frutas Frescas
+
+∑ de claves A143-A166
+
+Frutas Procesadas
+
+∑ de claves A167-A168
+
+Azúcares y mieles, café, té y
+chocolate, especias y aderezos,
+
+otros alimentos diversos y
+servicios de molino
+
+∑ de claves A169-A211
+
+Azúcar o Mieles
+
+∑ de claves A169-A171
+
+Café, Té, Chocolate
+
+∑ de claves A172-A178
+
+Especies y Aderezos
+
+∑ de claves A179-A190
+
+Otros Alimentos Diversos y
+Servicio de Molino
+
+∑ de claves A191-A211
+
+Alimentos Preparados para Bebé
+
+∑ de claves A191-A193
+
+Alimentos preparados (para
+consumir en casa)
+
+∑ de claves A194-A198
+
+Alimentos diversos
+
+∑ de claves A199-A200
+
+Dulces y Postres
+
+∑ de claves A201-A206
+
+Gastos relacionados con la
+elaboración de alimentos
+
+∑ de claves A207-A208
+
+Alimentos en paquete
+
+∑ de claves A209 y A243
+
+Alimentos Para Animales
+Domésticos
+
+∑ de claves A210-A211
+
+Bebidas
+
+∑ de claves A212-A234
+
+Bebidas no Alcohólicas
+
+∑ de claves A212-A218
+
+Bebidas Alcohólicas
+
+∑ de claves A219-A234
+
+Alimentos y Bebidas Consumidas
+Fuera del Hogar
+
+∑ de claves A235-A239
+
+Tabaco
+
+∑ de claves A240-A242
+
+Vestido y Calzado
+
+∑ de claves H001-H090, H093-H132
+
+Vestido
+
+∑ de claves H001-H090, H093
+
+Prendas de vestir para personas de
+0 a 3 años
+
+∑ de claves H001-H025
+
+Prendas de vestir para personas de
+4 años y más
+
+∑ de claves H026-H090 y H093
+
+Prendas de vestir para personas de
+4 a 16 años
+
+∑ de claves H026-H058
+
+Prendas de vestir para personas de
+17 años y más
+
+∑ de claves H059-H090 y H093
+
+Calzado y su reparación
+
+∑ de claves H094-H132
+
+Calzado para personas de 0 a 3 años ∑ de claves H094-H105
+Calzado para personas de 4 a 16
+años
+
+∑ de claves H106-H117
+
+Calzado para personas de 17 años y
+más
+
+∑ de claves H118-H129
+
+Mantenimiento, reparación y
+accesorios de calzado
+
+∑ de claves H130-H132
+
+Vivienda y Servicios de Conservación, ∑ de claves G002-G005, G008-G015, G018-G020,
+
+Electricidad, Combustibles
+
+G023-G030, G033-G047
+∑ de claves G008, G012, G023, G027, G033
+
+Alquileres Brutos
+Impuesto Predial y Cuotas
+Servicios de Conservación
+
+por ∑ de claves G005, G037-G040
+
+Cuotas por pago por la vivienda en ∑ de claves G012, G023, G027, G033
+otra situación
+Agua
+
+∑ de claves G002, G009, G013, G018, G024, G028,
+G034
+
+Electricidad y Combustibles
+
+∑ de claves G003, G004, G010, G011, G014, G015,
+G019, G020, G029, G030, G035, G036, G041-G047
+
+Energía Eléctrica
+
+∑ de claves G003, G010, G014, G019, G025, G029,
+G035
+
+Gas
+
+∑ de claves G005, G011, G015, G020, G026, G030,
+G036
+
+Cuotas por servicio de conservación
+
+∑ de claves G037-G040
+
+Combustibles
+
+∑ de claves G041-G047
+
+Artículos y Servicios para la Limpieza, ∑ de claves C001-C024, I001-I026, K001-K036
+Cuidados
+de
+la
+Casa,
+Enseres
+Domésticos y Muebles, Cristalería,
+Utensilios Domésticos y Blancos
+Artículos y Servicios para la Limpieza y ∑ de claves C001-C024
+Cuidados de la Casa
+Artículos de Limpieza y Cuidados de
+la Casa
+
+∑ de claves C001-C019
+
+Servicios para el hogar
+
+∑ de claves C020-C024
+
+Cristalería, blancos
+domésticos
+
+y
+
+utensilios ∑ de claves I001-I026
+
+Cristalería,
+domésticos
+
+y
+
+utensilios ∑ de claves I001-I013
+
+vajillas
+
+Blancos, mantelería y artículos de ∑ de claves I014-I026
+mercería
+Enseres domésticos y muebles
+
+∑ de claves K001-K036
+
+Cuidados de la Salud
+
+∑ de claves J001-J077
+
+Servicios médicos
+
+∑ de claves J001 - J004
+
+Medicamentos recetados
+
+∑ de claves J005-J023
+
+Servicios y medicamentos no
+profesionales
+
+∑ de claves J024-J025
+
+Atención hospitalaria (no incluye
+parto)
+
+∑ de claves J026-J030
+
+Servicios médicos y medicamentos
+durante el embarazo
+
+∑ de claves J031-J040
+
+Servicios médicos durante el parto
+
+∑ de claves J041-J047
+
+Medicamentos sin receta y material ∑ de claves J048-J067
+de curación
+Medicina alternativa
+
+∑ de claves J068-J069
+
+Aparatos ortopédicos y terapéuticos
+
+∑ de claves J070-J075
+
+Seguro médico
+
+∑ de claves J076-J077
+
+Transporte, Adquisición,
+Mantenimiento y Accesorios para
+Vehículos, Comunicaciones y servicios
+para vehículos
+Transporte, Adquisición,
+Mantenimiento y Accesorios para
+Vehículos
+
+∑ de claves B001-B007, M001-M018, F001-F015
+
+∑ de claves B001-B007, M001-M018
+
+Transporte Público
+
+∑ de claves B001-B007
+
+Transporte Foráneo
+
+∑ de claves M001-M018
+
+Servicios de Transporte
+
+∑ de claves M001-M006
+
+Adquisición de vehículos de uso ∑ de claves M007-M011
+particular
+Refacciones, partes, accesorios y ∑ de claves M012-M018 y F010-F015
+mantenimiento de vehículos
+Comunicaciones
+
+∑ de claves F001-F009
+
+Servicios y artículos de educación y ∑ de claves E001-F034, H091, H092, L001-L030,
+esparcimiento, paquetes turísticos y N003-N005
+para fiestas, hospedaje y alojamiento
+Artículos y servicios de educación y ∑ de claves E001-E034, H091, H092
+servicios de esparcimiento
+Servicios de educación
+
+∑ de claves E001-E012
+
+Transporte escolar
+
+∑ de claves E013
+
+Artículos educativos
+
+∑ de claves E014-E020, H091-H092
+
+Artículos de cultura y recreación
+
+∑ de claves E021-E025
+
+Servicios de recreación
+
+∑ de claves E026-E035
+
+Artículos de Esparcimiento
+
+∑ de claves L001-L030
+
+Artículos y equipo audiovisual
+
+∑ de claves L001-L016
+
+Equipo fotográfico y de video
+
+∑ de claves L017-L022
+
+Otros artículos de esparcimiento
+
+∑ de claves L023-L030
+
+Otros gastos de esparcimiento
+
+∑ de claves N003-N005
+
+Cuidados personales: Accesorios y ∑ de claves D001-D024, H133-H143, N001-N002,
+efectos personales: otros gastos y N006-N016, T101, T102, T103, T104, T902-T914
+transferencias
+∑ de claves D001-D024 y H142
+
+Cuidados personales
+Artículos para el cuidado personal
+
+∑ de claves D001-D019, H142
+
+Servicio para el cuidado personal
+
+∑ de claves D020-D024
+
+Accesorios y efectos personales
+Otros
+gastos
+transferencias
+
+diversos
+
+∑ de claves H133-H141, H143
+y ∑ de claves N001, N002, N006-N016, T101, T102,
+T103, T104, T902-T914
+
+Gastos diversos
+
+∑ de claves N001, N002, N006-N010
+
+Transferencias
+
+∑ de claves N011-N016, T101, T102, T103, T104,
+T902-T914
+
+Gasto corriente no monetario
+
+∑ de claves con información en Autoconsumo
+(A000), Pago en especie (P000), Regalos (R000),
+A001-A243, B001-B007, C001-C024, D001-D024,
+E001-E034, F001-F015, G002-G005, G008-G015,
+G018-G020, G023-G030, G033-G047, H001-H143,
+I001-I026, J001-J077, K001-K036, L001-L030,
+M001-M018, N001-N016. Estimación del alquiler
+de la vivienda (G007, G017, G022, G032.
+
+Autoconsumo
+
+∑ de claves con información en A001-A243,
+B001-B007, C001-C024, D001-D024, E001-E034,
+F001-F015, G002-G005, G008-G015, G018-G020,
+G023-G030, G033-G047, H001-H143, I001-I026,
+J001-J077, K001-K036, L001-L030, M001-M018,
+N001-N016 que tengan código 1.
+
+Pago en especie
+
+∑ de claves con información en A001-A243,
+B001-B007, C001-C024, D001-D024, E001-E034,
+F001-F015, G002-G005, G008-G015, G018-G020,
+G023-G030, G033-G047, H001-H143, I001-I026,
+J001-J077, K001-K036, L001-L030, M001-M018,
+N001-N016. que tengan código 2.
+
+Regalos
+
+∑ de claves con información en A001-A243,
+B001-B007, C001-C024, D001-D024, E001-E034,
+F001-F015, G002-G005, G008-G015, G018-G020,
+G023-G030, G033-G047, H001-H143, I001-I026,
+
+J001-J077, K001-K036, L001-L030, M001-M018,
+N001-N016. que tengan código 3.
+Valor estimado del alquiler
+
+∑ de claves G007, G017, G022, G032
+
+Erogaciones financieras y de capital ∑ de claves G001, K037-K044, Q001-Q015, T915,
+totales
+Autoconsumo (A000), Pago en especie (P000),
+Regalos (R000)
+Erogaciones financieras y de capital ∑ de claves G001, K037-K044, Q001-Q015, T915
+monetario
+Erogaciones financieras y de capital ∑ de claves con información en Autoconsumo
+no monetarias
+(A000), Pago en especie (P000), Regalos (R000),
+Q001-Q015, K037-K044, G001.
+Autoconsumo
+
+∑ de claves con información en Q001-Q015,
+K037-K044 G002 que tengan código 1.
+
+Pago en especie
+
+∑ de claves con información en Q001-Q015,
+K037-K044, G002 que tengan código 2.
+
+Regalos
+
+∑ de claves con información en Q001-Q015,
+K037-K044, G002 que tengan código 3.
+
+Encuesta Nacional de Ingresos y Gastos de Hogares 2002
+Claves de Ingresos, Gastos, Percepciones y Erogaciones
+Clave
+GASTOS
+
+Descripción
+
+Periodo Semanal
+Capítulo 5. Alimentos, bebidas y Tabaco
+A001
+Maíz en Grano
+A002
+Harina de Maíz
+A003
+Masa de Maíz
+A004
+Tortilla de Maíz
+A005
+Botanas: Palomitas, chetos, etc.
+A006
+Tostadas
+A007
+Otros productos de maíz
+A008
+Harina de trigo
+A009
+Tortilla se harina
+A010
+Pasta para sopa
+A011
+Galletas
+A012
+Pan blanco: bolillo, telera, baguette, etc.
+A013
+Pan dulce: en pieza o empaquetado
+A014
+Pan para sándwich, hamburguesas, hot dog, etc.
+A015
+Pasteles y pastelillos: en pieza o empaquetado
+A016
+Botanas
+A017
+Otros productos de trigo: grano, salvado
+A018
+Arroz en grano
+A019
+Otros productos de arroz: Harina
+A020
+Otros cereales: Avena, Cebada, Centeno, etc.
+A021
+Cereal de Maíz, de trigo, de arroz, de avena, etc
+A022
+Aguayón, Cuete, Paloma, Pierna
+A023
+Arrachera, filete
+A024
+Bola, milanesa
+A025
+Chamorro de res
+A026
+Chuleta de costilla
+A027
+Aldilla, fajitas para asar
+A028
+Diezmillo
+A029
+Agujas, costillas cargado (de pecho)
+A030
+Albóndiga y hamburguesa preparada
+A031
+Molida
+A032
+Pulpa en trozo o en bistec, deshebrada
+A033
+Otras partes de la res: cola, cabeza, ubre
+A034
+Vísceras: corazón, hígado, médula, panza, etc.
+A035
+Filete, lomo (chuleta)
+A036
+Pierna
+A037
+Punta
+
+A038
+A039
+A040
+A041
+A042
+A043
+A044
+A045
+A046
+A047
+A048
+A049
+A050
+A051
+A052
+A053
+A054
+A055
+A056
+A057
+A058
+A059
+A060
+A061
+A062
+A063
+A064
+A065
+A066
+A067
+A068
+A069
+A070
+A071
+A072
+A073
+A074
+A075
+A076
+A077
+A078
+A079
+A080
+A081
+A082
+
+Costilla con falda
+Espaldilla (chamorro, bistec, para Mole de olla)
+Codillo
+Otras partes del puerco: cabeza, espinazo, panza, pecho, etc.
+Vísceras: corazón, hígado, riñones, sesos, etcétera
+Carne enchilada
+Chicharrón
+Chorizo y longaniza
+Chuleta ahumada
+Cueritos
+Jamón
+Mortadela, queso de puerco y salami
+Papada, lardo o tocino
+Rellena para preparar en casa
+Salchicha
+Muslo
+Pechuga
+Pierna
+Pollo entero
+Otras partes del pollo: alas, cabeza, patas, pescuezo
+Vísceras: molleja, hígado, corazón
+Otras aves: gallina, pavo, pato, etc.
+Chorizo de pollo, Jamón de pavo y de pollo
+Cordero: Borrego y carnero
+Chivo y cabrito
+Otros: Caballo, iguana, conejo, rana, venado
+Fresco, entero, limpio y sin limpiar (Brage, Carpa, Mojarra, etc), En piezas: Postas y Filete (atén,
+guachinango, Jurel)
+Atún
+Ahumado, seco salado (bacalao, charal)
+Otros: Anguila, mantarraya, cabeza de pescado, hueva
+Frescos: almejas, camarón, calamar, jaiba, ostión, pulpo, etc.
+Procesados: ahumado, envasado, harina
+Otros mariscos: acamayas, larva de camarón
+De vaca, líquida, pasteurizada: Deslactosada, descremada, entera, light, saborizada,
+semidescremada, etc.
+Condensada
+Evaporada
+En Polvo (entera o descremada)
+Modificada o maternizada
+No pasteurizada (leche bronca)
+Otras leches: burra, cabra
+Amarillo
+Añejo y cotija
+Chihuahua
+Fresco
+Manchego
+
+A083
+A084
+A085
+A086
+A087
+A088
+A089
+A090
+A091
+A092
+A093
+A094
+A095
+A096
+A097
+A098
+A099
+A100
+A101
+A102
+A103
+A104
+A105
+A106
+A107
+A108
+A109
+A110
+A111
+A112
+A113
+A114
+A115
+A116
+A117
+A118
+A119
+A120
+A121
+A122
+A123
+A124
+A125
+A126
+A127
+A128
+A129
+
+Oaxaca o asadero
+Otros quesos: Cottage, doble crema, enchilado, etc..
+Crema
+Mantequilla
+Yogurt
+Otros: Jocoque, requesón, suero, etc.
+De gallina: blanco y rojo
+Otros: Codorniz, pata, pava, tortuga, etc.
+Aceite Vegetal
+Aceite de coco, oliva, soya
+Margarina
+Manteca de puerco
+Manteca vegetal
+Otros: Enjundia
+Betabel y camote
+Papa
+Rábano
+Otros tubérculos: Jenjibre, Nabo, etc
+Betabel (cocido) camote (asado), (harina para puré)
+Papas Fritas en Bolsa o Granel
+Acelgas, espinacas y verdolagas
+Aguacate
+Ajo
+Brócoli
+Calabaza y calabacita
+Cebolla
+Chayote
+Chícharo
+Chile jalapeño
+Chile poblano
+Chile serrano
+Otros chiles: Ancho, árbol, habanero, chipotle, etc.
+Cilantro
+Col y repollo
+Ejote
+Elote
+Epazote
+Jitomate
+Lechuga
+Nopal
+Pepino
+Perejil y hierbabuena
+Tomate verde
+Zanahoria
+Otras verduras: aceitunas, alcaparras, etc.
+Geminados: maíz, trigo, soya
+Chiles Envasados: en escabeche (rajas, enteros)
+
+A130
+A131
+A132
+A133
+A134
+A135
+A136
+A137
+A140
+A141
+A142
+A143
+A144
+A145
+A146
+A147
+A148
+A149
+A150
+A151
+A152
+A153
+A154
+A155
+A156
+A157
+A158
+A159
+A160
+A161
+A162
+A163
+A164
+A165
+A166
+A169
+A170
+A171
+A172
+A173
+A176
+A177
+A178
+A179
+A180
+A181
+A182
+
+Chiles secos en polvo: piquín, puya, de árbol, etc.
+Verduras y legumbres envasadas: Aceitunas, alcaparras, etc.
+Verduras y legumbres congelas: Verduras mixtas en bolsa, etc.
+Frijol: Bayo, flor de mayo, negro, etc.
+Garbanzo
+Haba: amarilla y verde
+Lenteja
+Otras leguminosas: Alubia, garbanzo, haba, lenteja, soya, etc.
+A granel: Ajonjolí, Amaranto, Girasol, Nuez, Piñón, etc.
+Envasadas: Ajonjolí, Amaranto, Girasol, Nuez, Piñón, etc.
+Procesadas: Harina de ajonjolí, castaña asada, calabaza, etc.
+Anona, chirimoya y guanábana
+Cereza, fresa, frambuesa y zarzamora
+Chabacano, durazno y melocotón
+Chicozapote y mamey
+Ciruela y Jobo
+Guayaba
+Lima
+Limón
+Mandarina, tangarina
+Toronja
+Mango
+Manzana, perón
+Melón
+Naranja
+Papaya
+Pera
+Piña
+Pitahaya y tuna
+Plátano macho y de castilla
+Plátano tabasco
+Otros plátanos: Dominico, Morado, Roatan, etc.
+Sandía
+Uva
+Otras frutas: Caña, coco, granada, guayaba, higo, jícama, nanche, tamarindo, etc.
+Azúcar Blanca y Morena
+Miel de abeja
+Otras: Glass, Mascabado, piloncillo, azúcar Glass, piloncillo
+Tostado (En Grano o Molido)
+Tostado Soluble
+En Tableta
+En Polvo
+Otros. Cocóa, jarabe de chocolate, etc.
+Canela
+Clavo
+Comino
+Concentrado de pollo y tomate
+
+A183
+A184
+A185
+A186
+A187
+A188
+A189
+A190
+
+Mayonesa
+Mole en pasta
+Mostaza
+Pimienta
+Sal
+Salsas
+Vinagre
+Otros Ablandadores de carne, aderezos, polvo para hornear, tomillo, orégano, salsa de soya, etc.
+
+A191
+A192
+A193
+A194
+A195
+A196
+A197
+A198
+
+Cereal: arroz con papilla, avena-plátano, mixto, etc.
+Papilla: ejote con jamón colado; Jamón, vegetales, cereal picado, etc.
+Jugo de frutas de cualquier combinación
+Arroz con leche
+Carnitas y chicharrón
+Pollo rostizado
+Barbacoa y birria
+Otros alimentos preparados: atole, flautas, guisados, hot dog, emparedados, sopas, tacos, tamales,
+tortas, sopes, menudo, pozole, pizza, etc.
+
+A199
+A200
+A201
+A202
+A203
+A204
+A205
+A206
+A207
+A208
+
+Hongos (champiñones, cuitlacoche, setas, etc.)
+Insectos: Chapulín, chinicuil, gusano de maguey, hormiga (chicatana), etc
+Flanes, gelatinas y pudines
+Cajetas, dulces de leche y jamoncillos
+Ates, crema de cacahuate
+Frutas cristalizadas, endulzadas (incluya alegrías), enchiladas
+Helados, nieve y paletas de hielo
+Caramelos y paletas de dulce
+Molienda de nixtamal
+Otros gastos relacionados con la preparación de alimentos: Hojas de maíz, plátano para tamal, cal
+para nixtamal, etc.
+Alimentos y/o bebidas en paquete: despensa
+Alimentos para animales de esparcimiento
+Alimentos para animales para uso del hogar
+Agua (mineral, quina, natural, desmineralizada), con o sin sabor
+Agua preparada (de sabores de frutas)
+Jugos y néctares naturales
+Concentrados y polvo para preparar bebidas
+Refrescos embotellados (de cola y de sabores)
+Refrescos envasados en lata y tetrapack
+Jarabe natural: granadina, sangrita
+Brandy
+Cerveza
+Anís
+Jerez
+Licor o cremas de frutas: de café, guayaba, naranja, etc.
+Aguamiel, pulque, tlachique
+Mezcal
+Ron: Añejo, blanco, con limón
+
+A209
+A210
+A211
+A212
+A213
+A214
+A215
+A216
+A217
+A218
+A219
+A220
+A221
+A222
+A223
+A224
+A225
+A226
+
+A227
+A228
+A229
+A230
+A231
+A232
+A233
+
+Rompope
+Sidra: Blanca y rosada
+Tequila: añejo, azul y blanco
+Vino de mesa: blanco, rosado y tinto
+Vodka
+Wisky
+Bebida preparada envasadas: Caribe Cooler, Viña Real, Xtassy, Zas, President-Cola, Ron & Cola;
+Cocteles: Daiquiri, margarita, piña colada, tequilada
+
+A234
+Otros: Champagne
+A235
+Desayuno
+A236
+Comida
+A237
+Cena
+A238
+Entrecomidas
+A239
+Otros eventos fuera del hogar
+A240
+Cigarros
+A241
+Puros
+A242
+Tabaco: en hoja y picado
+A243
+Alimentos y/o bebidas subsidiadas
+Capítulo 6. Transporte Público
+B001
+Metro
+B002
+Autobús
+B003
+Trolebús, tranvía
+B004
+Colectivo (pesero)
+B005
+Taxi, Radio Taxi (sitio)
+B006
+Autobús foráneo
+B007
+Otros: Bono de transporte, carretas, etc.
+Periodo Mensual
+Capítulo 7. Limpieza y cuidados de la casa
+C001
+Detergentes (polvo, liquido, pasta y gel)
+C002
+Jabón de barra
+C003
+Blanqueadores
+C004
+Suavizante de telas
+C005
+Limpiadores (en polvo o líquidos)
+C006
+Servilletas y papel absorbente
+C007
+Platos y vasos desechables
+C008
+Escobas, trapeadores y recogedores
+C009
+Fibras, estropajos, lazos
+C010
+Jergas y trapos de cocina
+C011
+Cerillos
+C012
+Pilas
+C013
+Focos
+C014
+Cera y limpia muebles
+C015
+Insecticidas
+C016
+Desodorante ambiental y sanitario
+C017
+Recipientes de lámina (cubetas, tinas, etc.)
+C018
+Recipientes de plástico (cubetas, tinas, mangueras, etc)
+C019
+Otros artículos
+
+C020
+Servicio doméstico
+C021
+Lavandería
+C022
+Tintorería
+C023
+Jardinería
+C024
+Otros servicios: Fumigaciones, etc.
+Capítulo 8. Cuidados personales
+D001
+Jabón de tocador
+D002
+Lociones y perfumes
+D003
+Pasta dental y enjuague bucal (hilo dental, cepillo dental)
+D004
+Champus y enjuagues, tratamiento para el cabello)
+D005
+Tintes y líquidos para permanente
+D006
+Desodorante, talco
+D007
+Crema para el cuerpo, para la cara
+D008
+Gel, spray, mousse para el cabello)
+D009
+Crema para afeitar y rastrillos
+D010
+Cosméticos, polvo y maquillaje sombra lápiz labial, de ojos delineador etc.
+D011
+Esmalte para uñas
+D012
+Papel sanitario, pañuelos desechables
+D013
+Toallas sanitarias
+D014
+Pañales desechables
+D015
+Artículos de tocador para bebé
+D016
+Cepillos y peines
+D017
+Artículos eléctricos (rasuradora, secadora, etc.)
+D018
+Reparación y/o mantenimiento de artículos anteriores
+D019
+Otros: esmaltes y limas para uñas, pasadores, etc.
+D020
+Corte de cabello y peinado
+D021
+Baños y masajes
+D022
+Permanentes y tintes
+D023
+Manicure
+D024
+Otros servicios: rasurar, depilar, etc.
+Capítulo 9. Educación, cultura y recreación
+E001
+Preprimaria
+E002
+Primaria
+E003
+Secundaria
+E004
+Preparatoria
+E005
+Superior (Licenciatura)
+E006
+Postgrado y doctorado
+E007
+Educación técnica
+E008
+Estancias infantiles (excepto primaria)
+E009
+Enseñanza adicional
+E010
+Educación especial para discapacitados
+E011
+Internados
+E012
+Cuidado de niños (persona particular)
+E013
+Transporte escolar
+E014
+Libros para la escuela
+E015
+Pago de imprevistos: Derechos a examen, cursos
+E016
+Equipo escolar: máquina de escribir, calculadoras, etc.
+
+E017
+
+Pago de imprevistos para educación técnica como: derecho a exámen, cursos de regularización etc.
+
+E018
+Material para la educación técnica
+E019
+Material para la educación adicional
+E020
+Reparación y/o mantenimiento de equipo escolar
+E021
+Enciclopedias y libros (excluya los de la escuela)
+E022
+Periódicos
+E023
+Revistas
+E024
+Audiocassete, discos y discos compactos
+E025
+Otros (especifique)
+E026
+Cines
+E027
+Teatros y conciertos
+E028
+Centros nocturnos (incluye alimentos, bebidas, tabaco, cover, propinas, etc.)
+E029
+Espectáculos deportivos
+E030
+Lotería y juegos de azar
+E031
+Cuotas a: Centros sociales, Asociaciones, Clubes, etc.
+E032
+Servicio de televisión por cable, satélite, pago por evento, paquetes
+E033
+Renta de cassetes para videojuegos, discos compactos y video cassetes
+E034
+Otros gastos de recreación: Circos, museos, ferias, juegos mecánicos, balnearios, etc.
+Capítulo 10. Comunicaciones y servicios para vehículos
+F001
+Instalación de línea de teléfono particular
+F002
+Larga distancia de línea particular
+F003
+Llamadas locales de línea particular
+F004
+Teléfonos celulares: Pago inicial y equipo
+F005
+Compra de tarjetas y pago por el servicio de teléfono celular
+F006
+Teléfono público
+F007
+Estampillas para correo, paquetería y telégrafo
+F008
+Internet
+F009
+Otros servicios: Fax público, biper, etc.
+F010
+Gasolina, diesel o gas
+F011
+Aceites y lubricantes
+F012
+Reparación de llantas
+F013
+Pensión y estacionamiento
+F014
+Lavado y engrasado
+F015
+Otros servicios: Encerado, inflado de llantas, etc.
+Capítulo 11. Vivienda y servicios de conservación
+G001
+Pago mensual por su vivienda propia que está pagando
+G002
+Agua
+G003
+Energía eléctrica
+G004
+Gas
+G005
+Impuesto predial
+G007
+Valor Estimado del pago de la renta de la vivienda propia
+G008
+Renta o alquiler
+G009
+Agua
+G010
+Energía eléctrica
+G011
+Gas
+G012
+Cuota pagada por la vivienda
+
+G013
+Agua
+G014
+Energía eléctrica
+G015
+Gas
+G017
+Valor Estimado del pago de la renta de la Vivienda recibida como prestación
+G018
+Agua
+G019
+Energía eléctrica
+G020
+Gas
+G022
+Valor Estimado del pago de la renta de la vivienda prestada
+G023
+Renta o alquiler
+G024
+Agua
+G025
+Energía eléctrica
+G026
+Gas
+G027
+Cuota, pago o renta
+G028
+Agua
+G029
+Luz eléctrica
+G030
+Gas
+G032
+Valor estimado del pago de la renta de la vivienda con otro tipo de tenencia
+G033
+Renta, pago o cuota por la vivienda
+G034
+Agua
+G035
+Energía eléctrica
+G036
+Gas
+G037
+Recolección de basura
+G038
+Cuotas de vigilancia
+G039
+Cuotas de administración
+G040
+Otros servicios
+G041
+Petróleo
+G042
+Diesel
+G043
+Carbón
+G044
+Leña
+G045
+Combustible para calentar
+G046
+Velas y veladoras
+G047
+Otros combustibles: cartón, papel, etc.
+Periodo Trimestral
+Capítulo 12. Prendas de vestir y calzado y accesorios
+H001
+Pantalones
+H002
+Trajes y conjuntos
+H003
+Camisas
+H004
+Playeras
+H005
+Suéteres y sudaderas
+H006
+Camisetas
+H007
+Truzas y boxers
+H008
+Calcetines, calcetas y tines
+H009
+Pants
+H010
+Pijamas y batas
+H011
+Otras prendas para niño
+H012
+Pantalones
+H013
+Vestidos
+
+H014
+H015
+H016
+H017
+H018
+H019
+H020
+H021
+H022
+H023
+H024
+H025
+H026
+H027
+H028
+H029
+H030
+H031
+H032
+H033
+H034
+H035
+H036
+H037
+H038
+H039
+H040
+H041
+H042
+H043
+H044
+H045
+H046
+H047
+H048
+H049
+H050
+H051
+H052
+H053
+H054
+H055
+H056
+H057
+H058
+H059
+H060
+
+Trajes y conjuntos
+Blusas
+Playeras
+Suéteres y sudaderas
+Camisetas
+Pantaletas
+Tobilleras, calcetas y tines
+Pants
+Pijamas y batas
+Otras prendas de vestir
+Prendas de vestir para bebé: pañales de tela, calzón de hule
+Telas, confecciones y reparaciones
+Pantalones
+Camisas
+Playeras
+Trajes y sacos
+Suéteres y sudaderas
+Abrigos
+Chamarras
+Truzas y boxers
+Camisetas
+Calcetines, calcetas y tines
+Pants
+Batas y pijamas
+Gabardinas e impermeables
+Otras prendas de vestir para hombre: corbatas, etc.
+Pantalones
+Blusas
+Playeras
+Trajes y conjuntos
+Sacos
+Vestidos
+Faldas
+Suéteres y sudaderas
+Abrigos
+Chamarras
+Calcetas, tobilleras, tines y mallas
+Pantaletas y fajas
+Brasieres
+Fondos y corpiños
+Medias, pantimedias y tobimedias
+Pijamas, camisones y batas
+Gabardinas e impermeables
+Pants
+Otras prendas de vestir para mujer:rebozos, etcétera
+Pantalones
+Camisas
+
+H061
+H062
+H063
+H064
+H065
+H066
+H067
+H068
+H069
+H070
+H071
+H072
+H073
+H074
+H075
+H076
+H077
+H078
+H079
+H080
+H081
+H082
+H083
+H084
+H085
+H086
+H087
+H088
+H089
+H090
+H091
+H092
+H093
+H094
+H095
+H096
+H097
+H098
+H099
+H100
+H101
+H102
+H103
+H104
+H105
+H106
+H107
+
+Playeras
+Trajes y sacos
+Suéteres y sudaderas
+Abrigos
+Chamarras
+Truzas y boxers
+Camisetas
+Calcetines, calcetas y tines
+Pants
+Batas y pijamas
+Otras prendas de vestir para hombre: corbatas, batas, etc.
+Pantalones
+Blusas
+Playeras
+Trajes y conjuntos
+Sacos
+Vestidos
+Faldas
+Suéteres y sudaderas
+Abrigos
+Chamarras
+Calcetas, tobilleras, tines y mallas
+Pantaletas y fajas
+Brassieres
+Fondos y corpiños
+Medias, pantimedias y tobimedias
+Pijamas, camisones y batas
+Gabardinas e impermeables
+Pants
+Otras prendas de vestir para mujer: rebozos
+Uniformes y prendas de vestir para actividades educativas, artísticas y deportivas
+Prendas especiales de vestir para eventos especiales derivados de la educación
+Telas, confecciones y reparaciones
+Zapatos
+Botas
+Tenis
+Huaraches
+Sandalias para baño o descanso
+Pantuflas
+Zapatos o sandalias
+Botas
+Tenis
+Huaraches
+Sandalias para baño o descanso
+Pantuflas
+Zapatos
+Botas
+
+H108
+Tenis
+H109
+Huaraches
+H110
+Sandalias para baño o descanso
+H111
+Pantuflas
+H112
+Zapatos o sandalias
+H113
+Botas
+H114
+Tenis
+H115
+Huaraches
+H116
+Sandalias para baño o descanso
+H117
+Pantuflas
+H118
+Zapatos
+H119
+Botas
+H120
+Tenis
+H121
+Huaraches
+H122
+Sandalias para baño o descanso
+H123
+Pantuflas
+H124
+Zapatos o sandalias
+H125
+Botas
+H126
+Tenis
+H127
+Huaraches
+H128
+Sandalias para baño o descanso
+H129
+Pantuflas
+H130
+Servicio de limpieza y reparación
+H131
+Cremas para calzado
+H132
+Otros: Agujetas, cepillos, etc.
+H133
+Sombreros, gorros y cachuchas
+H134
+Bolsas
+H135
+Portafolios
+H136
+Cinturones, carteras y monederos
+H137
+Joyería de fantasía
+H138
+Relojes de pulso
+H139
+Encendedores, cigarreras y polveras
+H140
+Diademas
+H141
+Otros accesorios: lentes oscuros, etc
+H142
+Artículos y accesorios para el bebé
+H143
+Reparación y mantenimiento de los artículos anteriores
+Capítulo 13. Cristalería Blancos y utencilios domésticos
+I001
+Vajilla completa de cristal, barro, plástico, etc.
+I002
+Piezas sueltas de vajilla de cristal, barro, plástico, etc.
+I003
+Recipientes o cajas de plástico para la cocina
+I004
+Vasos, copas y jarras de cristal, plástico, cerámica, etc.
+I005
+Cubiertos
+I006
+Objetos ornamentales
+I007
+Accesorios de hule y plástico: jabonera, tapetes, espejos, etc.
+I008
+Reloj de pared o mesa
+I009
+Batería de cocina y piezas sueltas
+I010
+Olla express
+
+I011
+Otros utensilios: tijeras, abrelatas, pinzas de hielo, etc.
+I012
+Herramientas: pinzas, martillo, taladro, etc.
+I013
+Reparación y/o mantenimiento de los artículos anteriores
+I014
+Colchones
+I015
+Colchonetas
+I016
+Cobertores y cobijas
+I017
+Sábanas
+I018
+Fundas
+I019
+Colchas, edredones
+I020
+Manteles y servilletas
+I021
+Toallas
+I022
+Cortinas
+I023
+Telas, confecciones y reparaciones de artículos anteriores
+I024
+Hilos, hilazas y estambres
+I025
+Agujas, cierres, botones y broches
+I026
+Otros artículos: Hamacas, almohadas, cojines, secadores, etc.
+Capítulo 14. Cuidados médicos y conservación de la salud
+J001
+Consultas Médico General
+J002
+Consultas Médico Especialista (cardiólogo, psicólogo, etc)
+J003
+Consultas Dentales (placas, puentes)
+J004
+Análisis clínicos y estudios médicos
+J005
+Diarrea
+J006
+Gripa
+J007
+Piel (picaduras de insectos, hongos, etc.)
+J008
+Rosadura de pañal
+J009
+Tos
+J010
+Fiebre
+J011
+Inflamación
+J012
+Infecciones (antibióticos)
+J013
+Alergias
+J014
+Dolores de cabeza
+J015
+Nervios o fatiga
+J016
+Cólicos
+J017
+Colitis
+J018
+Sinusitis
+J019
+Migraña
+J020
+Reumas
+J021
+Presión arterial
+J022
+Diabetes
+J023
+Otros medicamentos: Anticonceptivos, vitaminas)
+J024
+Consultas con el curandero
+J025
+Hierbas medicinales y remedios caseros
+J026
+Honorarios por servicios profesionales cirugía, quirófano
+J027
+Hospitalización
+J028
+Análisis clínicos y estudios médicos (rayos X, ultrasonido)
+J029
+Ambulancias
+J030
+Medicamentos recetados
+
+J031
+J032
+J033
+J034
+J035
+J036
+J037
+J038
+J039
+J040
+J041
+J042
+J043
+J044
+J045
+J046
+J047
+J048
+J049
+J050
+J051
+J052
+J053
+J054
+J055
+J056
+J057
+J058
+J059
+J060
+J061
+J062
+J063
+J064
+J065
+J066
+J067
+J068
+J069
+J070
+J071
+J072
+J073
+J074
+J075
+J076
+J077
+
+Consultas médicas
+Consultas dentales (placas, puentes, etc)
+Medicamentos recetados
+Vacunas
+Análisis clínicos y estudios médicos (rayos X, ultrasonido)
+Hospitalización durante el embarazo (no parto)
+Ambulancias
+Otros: Aplicación de inyecciones
+Servicio de partera
+Hierbas medicinales y remedios caseros y otros
+Honorarios por servicios profesionales, cirugía, anestesia
+Medicamentos recetados
+Análisis clínicos y estudios médicos (rayos X, ultrasonido)
+Hospitalización, sanatorio, clínica, etc.
+Ambulancias
+Servicio de partera
+Otros
+Diarrea
+Gripe
+Piel (picaduras de insectos, hongos)
+Rosadura de pañal
+Tos
+Fiebre
+Inflamación
+Infección (antibióticos)
+Alergias
+Dolores de cabeza
+Nervios o fatiga
+Cólicos
+Colitis
+Sinusitis
+Migraña
+Reuma
+Presión arterial
+Otros medicamentos
+Algodón, gasas, cintas adhesivas micropore, etc
+Alcohol, merthiolate, solución antiséptica
+Medicamento homeopático
+Medicamento naturista
+Anteojos y lentes de contacto
+Aparatos para sordera
+Aparatos para masajes o terapias (cojines magnéticos)
+Otros aparatos ortopédicos: cómodos, silla de ruedas, etc.
+Reparación y mantenimiento de aparatos ortopédicos
+Otros gastos relacionados con la salud: inyecciones, etc.
+Cuotas a hospitales o clínicas
+Cuotas a compañías de seguros
+
+Periodo Semestral
+Capítulo 15. Enseres domésticos y mantenimiento de la vivienda
+K001
+Ventilador
+K002
+Aparatos telefónicos
+K003
+Identificador de llamadas, fax, etc.
+K004
+Aparatos de aire acondicionado (casa o vehículos)
+K005
+Máquinas de coser
+K006
+Cocina integral
+K007
+Estufa de gas
+K008
+Estufa de otros combustibles: eléctrica, petróleo, carbón, etc.
+K009
+Refrigerador
+K010
+Licuadora
+K011
+Batidora
+K012
+Plancha
+K013
+Extractor de jugos
+K014
+Horno de microondas
+K015
+Lavadora
+K016
+Aspiradora
+K017
+Calentador de gas
+K018
+Calentador de otros combustibles
+K019
+Lámparas eléctricas (incluye candiles)
+K020
+Lámparas de otros combustibles
+K021
+Tanque de gas e instalación
+K022
+Lavadero y tinaco y bomba de agua
+K023
+Otros Aparatos: tostador, calefactor, horno eléctrico. Etc
+K024
+Reparación, instalación y/o mantenimiento de los artículos anteriores
+K025
+Juego de recámara
+K026
+Piezas sueltas de recámara (cama, tocador, litera, etc
+K027
+Juego de comedor o antecomedor
+K028
+Piezas sueltas para comedor o antecomedor (mesa, silla, etc.)
+K029
+Juego de sala
+K030
+Piezas sueltas para sala (mesa de centro, etc.)
+K031
+Muebles para cocina (gabinete, mesa, etc.)
+K032
+Muebles para baño (taza, tina, tina de hidromasaje, etc)
+K033
+Muebles para jardín
+K034
+Alfombras y tapetes e instalación
+K035
+Otros Muebles: librero, escritorio, mesa para t.v., etc.
+K036
+Reparación y/o mantenimiento de los artículos anteriores (especifique)
+K037
+Materiales para reparación y mantenimiento y ampliación
+K038
+Servicio de reparación, mantenimiento y ampliación
+K039
+Materiales para ampliación y remodelación
+K040
+Servicios para: ampliación y remodelación
+K041
+Materiales para reparación y mantenimiento y ampliación
+K042
+Servicio de reparación, mantenimiento y ampliación
+K043
+Materiales para ampliación, construcción y remodelación
+K044
+Servicios para: ampliación, construcción y remodelación
+Capítulo 16. Articulos de esparcimiento
+
+L001
+Radio y radio despertador sin tocacintas
+L002
+Estéreo o modular
+L003
+Grabadora con o sin despertador, excepto con disco compacto
+L004
+T.V. blanco y negro (incluye portátil)
+L005
+T.V. Color (incluye portátil)
+L006
+Videocassetera
+L007
+Computadora
+L008
+Accesorios para computadora (mouse, modem, etc)
+L009
+Antena parabólica, decodificador, control remoto, etc.
+L010
+Accesorios: Bocina, audífonos, antena aérea, etc.
+L011
+Videocasetes cartuchos y discos para video juegos
+L012
+Reproductor de discos compactos (incluye discman)
+L013
+Reproducción de discos compactos para vehículos y auto estéreos
+L014
+Alquiler de T.V., video computadora y equipo
+L015
+Otros aparatos: regresadora de video, reproductor de cassete personal (walkman), etc.
+L016
+Reparación y mantenimiento de los artículos anteriores
+L017
+Proyectores
+L018
+Cámaras fotográficas y de video
+L019
+Material fotográfico, películas
+L020
+Servicio fotográfico, revelado e impresión
+L021
+Otros artículos y servicios: tripié, alquiler de equipo proyectores, etc.
+L022
+Reparación y mantenimiento de los artículos anteriores
+L023
+Juguetes, juegos de mesa
+L024
+Juguetes eléctricos, video juegos
+L025
+Instrumentos musicales
+L026
+Artículos de deporte y cacería (aparatos para ejercicio, etc)
+L027
+Artículos derivados de la educación
+L028
+Artículos de jardinería: plantas, flores, macetas, tierra, abono, etc.
+L029
+Reparación y mantenimiento de los artículos anteriores (especifique)
+L030
+Compras y cuidado de animales domésticos: patos, perros, etc)
+Capítulo 17. Transporte
+M001
+Transporte Foráneo
+M002
+Transporte Ferroviario
+M003
+Transporte Aéreo
+M004
+Servicios de carga y mudanzas o
+M005
+Cuotas de autopista
+M006
+Otros: Lancha, barco, carreta, alquiler de vehículos, etc.
+M007
+Automóvil o Guayin
+M008
+Camioneta pick-up
+M009
+Motoneta, motocicleta
+M010
+Bicicleta
+M011
+Otros: Remolque, lancha, triciclo, etc.
+M012
+Llantas
+M013
+Acumulador
+M014
+Refacciones: Bujías, bandas, filtros, etc.
+M015
+Partes de vehículos: vidrios, salpicaderas, etc.
+M016
+Accesorios: Espejos, manijas, antenas, etc.
+
+M017
+Servicio de afinación, alineación y balanceo
+M018
+Otros servicios: Ajuste de motor, de frenos, hojalatería, pintura, etc.
+Capítulo 18. Otros Gastos
+N001
+Gastos por servicios. Abogados, notarios, arquitectos, etc. (no incluya médicos)
+N002
+Funerales, cementerios
+N003
+Paquetes para fiestas (salón, comida, orquesta)
+N004
+Gastos turísticos: paquetes, hospedaje, alimentos, tours, etc.
+N005
+Hospedaje, alojamiento (con o sin alimentos)
+N006
+Gastos en cargos comunales para festividades locales
+N007
+Contribuciones para obras de servicio público local
+N008
+Seguro de automóvil
+N009
+Seguros contra incendios, daños y riesgos para la vivienda, educación y seguro de vida (no
+capitalizable)
+N010
+Otros gastos diversos no comprendidos en las categorías anteriores (especifique)
+N011
+Indemnizaciones pagadas a terceros
+N012
+Pérdidas y robos en dinero (excluye negocios)
+N013
+Ayuda a parientes y personas no miembros del hogar (en dinero)
+N014
+Contribuciones a Instituciones Benéficas, Iglesias, Cruz Roja, (en dinero) incluye los servicios
+eclesiásticos
+N015
+Servicios del sector público: Expedición de pasaportes, actas, títulos, etc.
+N016
+Trámites para vehículos: Licencias, placas, verificación vehicular, etc.
+INGRESOS
+Ingresos Corrientes Monetarios
+A. Remuneraciones al trabajo
+P001
+Sueldos, Salarios o Jornal
+P002
+Destajo
+P003
+Comisiones y Propinas
+P004
+Horas Extras
+P005
+Aguinaldo
+P006
+Incentivos, Gratificaciones o Premios
+P007
+Bono, Percepción Adicional o Sobresueldo
+P008
+Primas Vacacionales y Otras Prestaciones en Efectivo
+P009
+Reparto de Utilidades
+B. Ingresos por negocios propios
+P010
+Negocios Industriales
+P011
+Negocios Comerciales
+P012
+Prestación de Servicios
+P013
+Producción Agrícola
+P014
+Cría explotación y productos derivados de animales
+P015
+Reproducción, corte y tala de árboles
+P016
+Recolección de Flora, Productos Forestales Caza captura de animales
+P017
+Cría y explotación de plantas y animales acuáticos y pesca
+C. Ingresos por cooperativas
+P018
+Sueldos o Salarios
+P019
+Ganancias o Utilidades
+D. Ingresos de sociedades
+
+P020
+Sueldos, salarios o jornal
+P021
+Ganancias o utilidades
+E. Ingresos de empresas que funcionan como sociedades
+P022
+sueldos, salarios o jornal
+P023
+Ganancias o utilidades
+F. Ingresos por renta de la propiedad
+P024
+Alquiler de tierras terrenos que están dentro del país
+P025
+Alquiler de tierras y terrenos que están fuera del país
+P026
+Alquiler de tierras de donde se extraen minerales, agua, arena, piedra, etc.
+P027
+Alquiler de casas, edificios, locales y otros inmuebles que están dentro del país
+P028
+Alquiler de casas, edificios, locales y otros inmuebles que están fuera del país
+P029
+Intereses provenientes de inversiones a plazo fijo
+P030
+Intereses provenientes de eventos de ahorro
+P031
+Intereses provenientes de prestamos a terceros
+P032
+Rendimientos provenientes de acciones o dividendos
+P033
+Rendimientos provenientes de bonos
+P034
+Rendimiento provenientes de cédulas
+P035
+Alquiler de marcas, patentes y derechos de autor
+P036
+Otros Ingresos por renta de la propiedad no considerados en los anteriores (especifique).
+G. Transferencias
+P037
+Jubilaciones y/o pensiones originados dentro del país
+P038
+Jubilaciones y/o pensiones provenientes de otros países
+P039
+Indemnizaciones recibidas de seguros contra riesgos a terceros
+P040
+Indemnizaciones por accidentes de trabajo
+P041
+Indemnizaciones por despido y retiro voluntario
+P042
+Becas y donativos provenientes de organizaciones no gubernamentales
+P043
+Becas y donativos provenientes del gobierno
+P044
+Regalos o donativos en dinero provenientes de otros hogares
+P045
+Ingresos provenientes de otros países
+P046
+Beneficios de progresa u oportunidades
+P047
+Beneficio de PROCAMPO
+H. Otros ingresos
+P048
+Otros ingresos corrientes no considerados en los anteriores (especifique)
+Percepciones financieras y de capital
+P049
+Retiro de Inversiones, Ahorros, Tandas y Cajas de Ahorro, etc.
+P050
+Pagos recibidos de prestamos que usted hizo a otras personas no miembros del hogar.
+P051
+Prestamos recibidos de personas no miembros del hogar o instituciones
+P052
+Venta de Monedas, Metales Preciosos, Joyas y Obras de Arte
+P053
+Venta de acciones
+P054
+Venta de Bonos
+P055
+Venta de cedulas
+P056
+Venta de marcas, patentes y derechos de autor
+P057
+Herencia, dotes y legados
+P058
+Lotería y juegos de azar
+P059
+Ventas de casas, terrenos, condominios, etc, que están dentro del país propiedad de algún miembro
+del hogar
+
+P060
+
+Venta de casas, terrenos, condominios, etc. Que están fuera del país propiedad de algún miembro del
+hogar
+
+P061
+
+Venta de maquinaria equipos, animales de producción, vehículos, etc utilizados en el negocio
+propiedad del hogar
+Venta de vehículos, aparatos eléctricos d segunda mano, etc.
+Prestamos hipotecarios por bienes inmuebles: casas, terrenos, edificios y locales
+Seguros de vida
+Otras percepciones financieras y de capital no consideradas en las anteriores (especifique)
+
+P062
+P063
+P064
+P065
+
+Erogaciones financieras y de capital
+Q001
+Depósitos en cuentas de ahorros, tandas, cajas de ahorro, etc.
+Q002
+Préstamos a personas no miembros del hogar
+Q003
+Pago a tarjeta de crédito bancario o comercial (incluye intereses)
+Q004
+Pago de deudas a la empresa donde trabajan y/o a otras personas o instituciones (excluya
+crédito hipotecario)
+Q005
+Compra de monedas nacionales o extranjeras, metales preciosos, alhajas, obras de arte, etc.
+Q006
+Seguro de vida
+Q007
+Herencias, dotes y legados
+Q008
+Compra de casas condominios, locales o terrenos que no habita el hogar
+Q009
+Compra de terrenos, casas o condominios que habita el hogar
+Q010
+Pago de hipotecas de bienes inmuebles: casas, terrenos, edificios, etc.
+Q011
+Otras erogaciones no consideradas en las preguntas anteriores (especifique)
+Q012
+Compra de maquinaria, equipo, animales destinados a la reproducción etc, utilizados en negocios
+propiedad del hogar
+Q013
+Balance negativo en negocios propiedad del hogar agropecuarios y no agropecuarios
+Q014
+Compra de valores: cédulas, acciones y bonos
+Q015
+Compra de marcas, patentes y derechos de autor
+Productos y servicios comprados para regalar
+T101
+Alimentos y bebidas no alcohólicas regaladas
+T102
+Desayunos, comidas, cenas o entrecomidas
+T103
+Bebidas alcohólicas regaladas
+T104
+Tabaco regalado
+T902
+Servicios de transporte mensual regalado
+T903
+Artículos de limpieza y cuidados de la casa regalados
+T904
+Artículos de cuidados personales regalados
+T905
+Artículos de educación, cultura y recreación regalados
+T906
+Artículos y servicios en comunicaciones y servicios para vehículos regalados
+T907
+Gastos de vivienda y servicios de conservación regalados
+T908
+Gastos en prendas de vestir, calzado y accesorios regalados
+T909
+Gasto en cristalería, blancos y utensilios domésticos regalados
+T910
+Gasto en cuidados de la salud regalados
+T911
+Gasto en enseres domésticos y mantenimiento de la vivienda regalados
+T912
+Gasto en artículos de esparcimiento regalados
+T913
+Gasto en transporte regalado
+T914
+Otros gastos regalados
+T915
+Erogaciones regaladas
+
+
