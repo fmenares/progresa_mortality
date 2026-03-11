@@ -192,8 +192,8 @@ if `year' == 1994 {
 
 	g alcohol_d = (code_l == "A" & inrange(code_n, 194, 203))
 
-	*food ate outside
-	g outside_d = (code_l == "A" & inrange(code_n, 205, 207))
+	*food ate outside (A204=Desayuno, A205=Comida, A206=Cena, A207=Entrecomidas)
+	g outside_d = (code_l == "A" & inrange(code_n, 204, 207))
 
 	g tobacco_d = (code_l == "A" & inrange(code_n, 208, 210))
 }
@@ -206,13 +206,13 @@ else if `year' > 1994 {
 
 	*eggs and milk
 	g dairy_d = (code_l == "A" & (inrange(code_n, 60, 79)))
-			   
-	g oils_fats_d = (code_l == "A" & inrange(code_n, 80, 84)) 
-	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 85, 146)) 
 
-	g sugar_d = (code_l == "A" & inrange(code_n, 147, 149)) 
+	g oils_fats_d = (code_l == "A" & inrange(code_n, 80, 84))
+	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 85, 146))
 
-	g coffe_d = (code_l == "A" & inrange(code_n, 150, 156)) 
+	g sugar_d = (code_l == "A" & inrange(code_n, 147, 149))
+
+	g coffe_d = (code_l == "A" & inrange(code_n, 150, 156))
 	g specias_d = (code_l == "A" & inrange(code_n, 157, 167))
 
 	g baby_food_d = (code_l == "A" & inrange(code_n, 168, 170))
@@ -234,11 +234,20 @@ else if `year' > 1994 {
 
 	g alcohol_d = (code_l == "A" & inrange(code_n, 195, 204))
 
-	*food ate outside (A206=Desayuno, A207=Comida, A208=Cena, A209=Entrecomidas; A205=packaged food, excluded)
-	g outside_d = (code_l == "A" & inrange(code_n, 206, 209))
-
-	*tobacco (A211=Cigarros, A212=Puros, A213=Tabaco en hoja; A209-A210 are outside food / non-tobacco)
-	g tobacco_d = (code_l == "A" & inrange(code_n, 211, 213))
+	*outside food and tobacco differ by 1 code between 1996/1998 and 2000 catalogs
+	if inlist(`year', 1996, 1998) {
+		*food ate outside (A205=Desayuno, A206=Comida, A207=Cena, A208=Entrecomidas)
+		g outside_d = (code_l == "A" & inrange(code_n, 205, 208))
+		*tobacco (A209=Cigarros, A210=Puros, A211=Tabaco en hoja)
+		g tobacco_d = (code_l == "A" & inrange(code_n, 209, 211))
+	}
+	else {
+		*year == 2000
+		*food ate outside (A206=Desayuno, A207=Comida, A208=Cena, A209=Entrecomidas)
+		g outside_d = (code_l == "A" & inrange(code_n, 206, 209))
+		*tobacco (A211=Cigarros, A212=Puros, A213=Tabaco en hoja)
+		g tobacco_d = (code_l == "A" & inrange(code_n, 211, 213))
+	}
 }
 
 g cereals = cereals_d * GAS_TRI/ 3
@@ -261,7 +270,7 @@ if inlist(`year', 1992, 1994) {
 	g medical_outpatient_d = (code_l == "J" & (inrange(code_n, 01, 03) | inlist(code_n, 5, 6, 9)))
 	g drugs_prescribed_d = (code_l =="J" & (inlist(code_n, 4, 11)))
 	g medical_inpatient_d = (code_l == "J" & inlist(code_n, 10, 12, 13, 14, 15))
-	g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 30, 36))
+	g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 29, 36))
 	g ortho_d = (code_l == "J" & inrange(code_n, 37, 41))
 	g insurance_cost_d = (code_l == "J" & inrange(code_n, 42, 43))
 }
@@ -270,7 +279,14 @@ else {
 	g medical_outpatient_d = (code_l == "J" & (inrange(code_n, 01, 03) | inlist(code_n, 5, 6, 9)))
 	g drugs_prescribed_d = (code_l =="J" & (inlist(code_n, 4, 11)))
 	g medical_inpatient_d = (code_l == "J" & inlist(code_n, 10, 12, 13, 14, 15))
-	g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 34, 38))
+	*J033/J034 = material primeros auxilios differs by 1 between 1996/1998 and 2000 catalogs
+	if inlist(`year', 1996, 1998) {
+		g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 33, 38))
+	}
+	else {
+		*year == 2000
+		g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 34, 38))
+	}
 	g ortho_d = (code_l == "J" & inrange(code_n, 39, 43))
 	g insurance_cost_d = (code_l == "J" & inrange(code_n, 44, 45))
 }
@@ -537,9 +553,10 @@ if inlist(`year', 1992) {
 
 
 if `year' == 1994 {
+	*wages: sueldos P001-P005, cooperativa sueldos P014
 	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) | code_n == 14))
-
-	g indep_w_d = (code_l == "P"  & (inrange(code_n, 6, 14)))
+	*self-employment: negocios propios P006-P013 (P014 cooperativa sueldos excluded to avoid double-count)
+	g indep_w_d = (code_l == "P"  & inrange(code_n, 6, 13))
 	
 	*earnings from property (capital) 
 	g capital_d = (code_l == "P" & (inrange(code_n, 15, 22)))
@@ -918,10 +935,11 @@ else {
 	*eggs and milk
 	g dairy_d = (code_l == "A" & (inrange(code_n, 72, 91)))
 			   
-	g oils_fats_d = (code_l == "A" & inrange(code_n, 92, 97)) 
-	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 98, 168)) 
+	g oils_fats_d = (code_l == "A" & inrange(code_n, 92, 97))
+	*A169 = Jalea y mermelada (processed fruit), included in vegg_fruit
+	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 98, 169))
 
-	g sugar_d = (code_l == "A" & inrange(code_n, 170, 172)) 
+	g sugar_d = (code_l == "A" & inrange(code_n, 170, 172))
 
 	g coffe_d = (code_l == "A" & inrange(code_n, 173, 179)) 
 	g specias_d = (code_l == "A" & inrange(code_n, 180, 191))
@@ -1333,12 +1351,15 @@ bys FOLIO: egen benef_don_non_gob_hh = total(benef_don_non_gob_hh_aux)
 
 else {
 	    	
-*wages from main job
-g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code_n, 29, 36) | inrange(code_n, 19, 26)))
-*wages from cooperatives, societities/bussines and secondary jobs
-g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 16) | inlist(code_n, 18, 27, 37)))
-*income from bussines (utilidadeS) and property (rent from capital) 
-g capital_d = (code_l == "P" & (inrange(code_n, 39, 47) | inlist(code_n, 28, 38)))
+*wages from main job: asalariado P001-P009, cooperativa sueldos P017,
+*  sociedades sueldos P019-P027 (incl. reparto utilidades P027),
+*  empresas sueldos P029-P037 (incl. reparto utilidades P037)
+g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code_n, 19, 27) | inrange(code_n, 29, 37)))
+*self-employment income: negocios propios P010-P016
+g indep_w_d = (code_l == "P"  & inrange(code_n, 10, 16))
+*capital income: cooperativa ganancias P018, sociedades ganancias P028,
+*  empresas ganancias P038, renta propiedad P039-P047
+g capital_d = (code_l == "P" & (inlist(code_n, 18, 28, 38) | inrange(code_n, 39, 47)))
 *transfers
 g transfer_d = (code_l == "P" & inrange(code_n, 48, 60))
 *other income
@@ -1670,11 +1691,14 @@ g progresa_benef_ind = (becas == 1)
 {
 	    
 	
-*wages from main job
-g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | inrange(code_n, 19, 26) | inrange(code_n, 29, 35) | code_n == 17))
-*wages from cooperatives, societities/bussines and secondary jobs
-g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 16) | inlist(code_n, 27, 37)))
-*income from bussines (utilidadeS) and property (rent from capital) 
+*wages from main job: asalariado P001-P009, cooperativa sueldos P017,
+*  sociedades sueldos P019-P027 (incl. reparto utilidades P027),
+*  empresas sueldos P029-P037 (incl. reparto utilidades P037)
+g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code_n, 19, 27) | inrange(code_n, 29, 37)))
+*self-employment income: negocios propios P010-P016
+g indep_w_d = (code_l == "P"  & inrange(code_n, 10, 16))
+*capital income: cooperativa ganancias P018, sociedades ganancias P028,
+*  empresas ganancias P038, renta propiedad P039-P047
 g capital_d = (code_l == "P" & (inlist(code_n, 18, 28, 38) | inrange(code_n, 39, 47)))
 
 *transfers
