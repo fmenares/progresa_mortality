@@ -1,0 +1,485 @@
+%===========================================================================
+% APPENDIX: Identification of PROGRESA Transfers in the ENIGH Survey
+% For: "The Effect of PROGRESA on Adult Mortality"
+% Journal: Journal of Development Economics
+%===========================================================================
+
+\clearpage
+\appendix
+
+\section{Constructing PROGRESA Transfer Variables from the ENIGH}
+\label{app:enigh_progresa}
+
+This appendix documents the data construction of two distinct variables used to
+capture PROGRESA exposure in the Encuesta Nacional de Ingresos y Gastos de los
+Hogares (ENIGH): (i) the \textit{income amount} of PROGRESA transfers received
+by a household or individual (\texttt{progresa\_hh}, \texttt{progresa\_ind}),
+and (ii) a binary \textit{beneficiary flag} indicating whether any household
+member holds a PROGRESA scholarship (\texttt{progresa\_benef\_hh},
+\texttt{progresa\_benef\_ind}). Both variables are used as \textit{outcome
+variables} in the mechanisms analysis (Section~\ref{sec:mechanisms}); they are
+\textit{not} used to assign program treatment, which is drawn from
+administrative enrollment records (see \texttt{aamr\_011326.do} and
+Section~\ref{sec:data}).
+
+The central data challenge is that PROGRESA did not have a dedicated income
+code in the ENIGH until 2002. The program launched in the second half of 1997
+and began disbursing transfers in Spring 1998, but INEGI had not yet adapted
+the survey instrument to capture it as a named program. We use five ENIGH waves
+covering the pre- and immediate post-program period (1992, 1994, 1996, 1998,
+2000), plus three post-2002 waves (2002, 2004/2005, and 2006 for robustness).
+The construction strategy differs materially across periods.
+
+%--------------------------------------------------------------------------
+\subsection{ENIGH Survey Instrument Evolution for Program Transfers}
+\label{app:enigh_evolution}
+%--------------------------------------------------------------------------
+
+Table~\ref{tab:enigh_pcodes} summarises how PROGRESA/Oportunidades transfers
+are recorded in the ENIGH income questionnaire across waves, and where other
+government institutional transfers reside in the same questionnaire.
+
+\begin{table}[h!]
+\centering
+\caption{ENIGH Income P-Codes for Transfers, by Wave}
+\label{tab:enigh_pcodes}
+\small
+\begin{tabular}{lllll}
+\hline\hline
+Wave & PROGRESA code & Government transfers & Non-gov.\ transfers & Notes \\
+\hline
+1992 & --- & P025 & P026 & Program did not exist \\
+1994 & --- & P026 & P027 & Program did not exist \\
+1996 & --- & P026 & P027 & Program did not exist \\
+1998 & P031 (implicit) & P031 & P032 & SEDESOL annotation in 2000 \\
+     &                  &      &      & manual; P031 = becas/donativos \\
+     &                  &      &      & de instituciones (all types) \\
+2000 & P031 (explicit) & P031 & P032 & Enumerator manual instructs: \\
+     &                  &      &      & ``PROGRESA se registra en este \\
+     &                  &      &      & rengl\'on'' \\
+2002 & P046 (own code) & P043 & P042 & First wave with dedicated \\
+     &                  &      &      & PROGRESA/Oportunidades code \\
+2004/2005 & P059 (own code) & P056 & P055 & Fully disaggregated \\
+2006 & P059 (own code) & P056 & P055 & Same as 2004/2005 \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+\noindent
+The 2000 ENIGH enumerator manual (\textit{Manual del Entrevistador}, INEGI
+2000) contains an explicit SEDESOL annotation embedded in the instructions for
+P031:
+
+\begin{quote}
+\textit{``La Secretar\'ia de Desarrollo Social (SEDESOL) ha implementado un
+mecanismo de ayuda para las familias de escasos recursos (Programa Progresa).
+Cuando los ingresos monetarios sean otorgados por este programa el cual es un
+apoyo econ\'omico que se proporciona en efectivo en la modalidad de beca o
+donativo, se registran en este rengl\'on al miembro del hogar responsable del
+menor.''}
+\end{quote}
+
+This annotation confirms that PROGRESA cash disbursements---covering the
+educational, nutritional, and health attendance components paid to the
+\textit{vocal} (typically the mother)---were directed to P031 (\textit{Becas y
+Donativos provenientes de Instituciones}) for the 2000 wave. The same P-code
+numbering applied in 1998, although the 1998 enumerator manual did not yet
+contain the SEDESOL annotation. A parallel variable in the ENIGH population
+file (\texttt{pob.dta}) captures scholarship type at the individual level:
+\texttt{PROP\_BECA} in 2000, with code 5 labelled \textit{Becas de PROGRESA}
+in the survey catalog. This individual-level flag does not exist in 1998 or
+earlier waves.
+
+%--------------------------------------------------------------------------
+\subsection{Construction of the PROGRESA Transfer Amount (Income Variable)}
+\label{app:enigh_amount}
+%--------------------------------------------------------------------------
+
+\subsubsection{Waves 1992, 1994, 1996}
+
+PROGRESA did not exist prior to 1997. For these pre-program waves we set
+\texttt{progresa\_d = 0}, so \texttt{progresa\_ind} and \texttt{progresa\_hh}
+are zero for all observations. These waves serve as the clean pre-treatment
+baseline in the mechanisms regressions.
+
+\subsubsection{Wave 2002, 2004/2005, 2006}
+
+Starting in 2002, PROGRESA/Oportunidades has a dedicated P-code: P046 in 2002
+and P059 in 2004--2006. The income variable is constructed directly from these
+codes with no imputation. We define the income indicator \texttt{progresa\_d}
+as:
+
+\begin{align*}
+\texttt{progresa\_d}_{i} &=
+  \mathbf{1}\bigl[\text{code} = \texttt{P046}\bigr] \quad \text{(2002)} \\
+\texttt{progresa\_d}_{i} &=
+  \mathbf{1}\bigl[\text{code} = \texttt{P059}\bigr] \quad \text{(2004, 2005, 2006)}
+\end{align*}
+
+and the household-level variable is the sum of all individual P-code amounts
+within a household (reported quarterly, converted to monthly: \texttt{ing\_tri
+/ 3}).
+
+\subsubsection{Waves 1998 and 2000: Imputation from the 2002 Share}
+\label{app:enigh_imputation}
+
+For 1998 and 2000, P031 collapses PROGRESA transfers together with all other
+government institutional scholarships and grants (CONAFE stipends, municipal
+scholarship programmes, etc.). There is no way to disentangle these ex ante at
+the respondent level. We use the following imputation, applied after appending
+all waves:
+
+\begin{equation}
+\widehat{\texttt{progresa}}_{i,t} =
+  \underbrace{\left(\texttt{benef\_don\_gob}_{i,t}
+    + \texttt{benef\_don\_non\_gob}_{i,t}\right)}_{\text{P031} + \text{P032
+    amounts}}
+  \times \hat{\omega}_{2002}
+\label{eq:progresa_share}
+\end{equation}
+
+\noindent for $t \in \{1998, 2000\}$, where
+
+\begin{equation}
+\hat{\omega}_{2002} =
+  \frac{\overline{\texttt{progresa}}_{2002}}
+       {\overline{\texttt{progresa}}_{2002}
+        + \overline{\texttt{benef\_don\_gob}}_{2002}
+        + \overline{\texttt{benef\_don\_non\_gob}}_{2002}}
+\label{eq:share_2002}
+\end{equation}
+
+is PROGRESA's share of the combined P046 + P043 + P042 pool in 2002, computed
+as the ratio of sample means at the national level. \texttt{benef\_don\_gob}
+corresponds to government institutional scholarships/grants (P031 in 1998/2000;
+P043 in 2002) and \texttt{benef\_don\_non\_gob} corresponds to
+non-governmental institutional scholarships/grants (P032 in 1998/2000; P042 in
+2002).
+
+The logic is that the composition of the pooled transfer category in 2002---the
+first year PROGRESA appears with its own code and therefore the first year in
+which the shares can be identified---proxies for its composition in the earlier
+waves. This is valid under the assumption that PROGRESA's share of total
+institutional transfers within the target population did not change drastically
+between 1998/2000 and 2002. While program enrollment expanded between 1998 and
+2002, the composition of \textit{other} institutional transfers (CONAFE,
+municipal programmes) was also relatively stable, supporting this assumption.
+The imputation applies to both individual- and household-level variables
+identically.
+
+The Stata implementation is:
+
+\begin{verbatim}
+* Compute 2002 share from sample means
+sum benef_don_non_gob_ind if year == 2002
+local m_benef_non_gob = `r(mean)'
+sum benef_don_gob_ind   if year == 2002
+local m_benef_gob = `r(mean)'
+sum progresa_ind        if year == 2002
+local m_progresa = `r(mean)'
+
+local share_2002 = `m_progresa' / ///
+    (`m_progresa' + `m_benef_gob' + `m_benef_non_gob')
+
+* Impute 1998 and 2000 PROGRESA amounts
+replace progresa_ind = ///
+    (benef_don_non_gob_ind + benef_don_gob_ind) * `share_2002' ///
+    if inlist(year, 1998, 2000)
+\end{verbatim}
+
+%--------------------------------------------------------------------------
+\subsection{Alternative Proxies and Robustness}
+\label{app:enigh_alternatives}
+%--------------------------------------------------------------------------
+
+The baseline imputation uses a single national share and pools government (P031)
+and non-governmental (P032) transfers in the denominator. Two alternative
+proxies address these limitations.
+
+\paragraph{Alternative 1 (Alt1): State-level share, same pool.}
+The ENIGH is designed to be representative at the state level. Conditioning the
+share on state rather than national averages captures geographic variation in
+PROGRESA rollout. For state $e$:
+
+\begin{equation}
+\hat{\omega}_{e,2002}^{\text{Alt1}} =
+  \frac{\overline{\texttt{progresa}}_{e,2002}}
+       {\overline{\texttt{progresa}}_{e,2002}
+        + \overline{\texttt{benef\_don\_gob}}_{e,2002}
+        + \overline{\texttt{benef\_don\_non\_gob}}_{e,2002}}
+\end{equation}
+
+where the overlines denote state-specific means. States with no positive 2002
+observations fall back to the national mean $\hat{\omega}_{2002}$.
+
+\paragraph{Alternative 2 (Alt2): State-level share, government-transfers
+pool only.}
+The SEDESOL annotation instructs enumerators to record PROGRESA under the
+government channel (P031), not the non-governmental channel (P032). The
+non-governmental code (P032) captures private gifts, remittances from
+institutions, and civil-society transfers---flows unrelated to PROGRESA. Alt2
+restricts the denominator to the government channel and scales only the
+government-source amount in 1998/2000:
+
+\begin{equation}
+\hat{\omega}_{e,2002}^{\text{Alt2}} =
+  \frac{\overline{\texttt{progresa}}_{e,2002}}
+       {\overline{\texttt{progresa}}_{e,2002}
+        + \overline{\texttt{benef\_don\_gob}}_{e,2002}}
+\label{eq:alt2}
+\end{equation}
+
+\begin{equation}
+\widehat{\texttt{progresa}}_{i,t}^{\text{Alt2}} =
+  \texttt{benef\_don\_gob}_{i,t}
+  \times \hat{\omega}_{e,2002}^{\text{Alt2}}
+  \quad t \in \{1998, 2000\}
+\end{equation}
+
+Alt2 is theoretically cleaner because it matches the channel documented in the
+enumerator manual. However, it drops non-governmental institutional transfer
+amounts from the 1998/2000 imputed total, which may understate amounts in
+localities where PROGRESA was disbursed through channels recorded under P032
+(e.g., via NGO intermediaries in some early rollout areas).
+
+%--------------------------------------------------------------------------
+\subsection{Construction of the Beneficiary Flag}
+\label{app:enigh_benef_flag}
+%--------------------------------------------------------------------------
+
+The binary beneficiary variable (\texttt{progresa\_benef\_ind}) captures
+whether a household member is identified as a current scholarship recipient in
+the ENIGH population file (\texttt{pob.dta}). This variable exists in the
+population module and is distinct from the income-module transfer amounts. It
+is constructed as follows by wave:
+
+\begin{table}[h!]
+\centering
+\caption{Construction of \texttt{progresa\_benef\_ind} by ENIGH Wave}
+\label{tab:benef_flag}
+\small
+\begin{tabular}{lll}
+\hline\hline
+Wave & Population variable & Condition \\
+\hline
+1992 & --- & = 0 (program did not exist) \\
+1994 & --- & = 0 (program did not exist) \\
+1996 & --- & = 0 (program did not exist) \\
+1998 & --- & = 0 (no PROGRESA entry in \texttt{pob.dta}) \\
+2000 & \texttt{PROP\_BECA} & = 1 if \texttt{PROP\_BECA} == 5 \\
+     &                     & (catalog: \textit{Becas de PROGRESA}) \\
+2002 & \texttt{BECA}       & = 1 if \texttt{BECA} == 5 \\
+2004/2005 & \texttt{BECAS} & = 1 if \texttt{BECAS} == 1 \\
+2006 & \texttt{BECA}       & = 1 if \texttt{BECA} == 1 \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+\noindent
+The household-level flag (\texttt{progresa\_benef\_hh}) equals one if any
+household member satisfies the individual condition:
+
+\begin{verbatim}
+bys FOLIO: egen progresa_benef_hh = max(progresa_benef_ind)
+\end{verbatim}
+
+\paragraph{Coverage limitation for 1998.}
+Although PROGRESA began disbursing transfers in Spring 1998, the 1998 ENIGH
+population file does not contain a scholarship-type variable that identifies
+PROGRESA recipients. We therefore set \texttt{progresa\_benef\_ind = 0} for
+all 1998 respondents. This creates a mechanical zero in 1998 for the beneficiary
+flag even among true PROGRESA recipients. Given that we use this variable as an
+outcome variable rather than a treatment indicator, the practical consequence is
+that regressions using the beneficiary flag as a dependent variable are
+interpreted as showing take-up visibility \textit{in the survey}, and 1998
+should be interpreted cautiously.
+
+\paragraph{Coverage limitation for 2000.}
+\texttt{PROP\_BECA == 5} identifies individuals who report a \textit{Beca de
+PROGRESA} scholarship in the education module. PROGRESA's educational component
+was disbursed to the mother/household head on behalf of the enrolled child;
+the child is the scholarship holder. The health and nutrition transfer
+components---disbursed unconditionally conditional on clinic attendance---are
+not captured by \texttt{PROP\_BECA}. Thus, the 2000 beneficiary flag
+understates true beneficiary status: it records households with at least one
+school-age child receiving the educational scholarship, but misses households
+that received only nutrition/health transfers (e.g., with children under 3 or
+pregnant/lactating women but no school-age children). The beneficiary flag is
+therefore a \textit{lower bound} on true beneficiary status in 2000.
+
+%--------------------------------------------------------------------------
+\subsection{Identifying Assumptions and Known Limitations}
+\label{app:enigh_assumptions}
+%--------------------------------------------------------------------------
+
+The validity of the income-amount variable (\texttt{progresa\_ind}) for 1998
+and 2000 rests on three key assumptions, each with associated caveats.
+
+\paragraph{Assumption 1: Stable composition of institutional transfers.}
+We assume $\hat\omega_{2002}$ (PROGRESA's fraction of the pooled institutional
+transfer category) is a valid proxy for $\omega_{1998}$ and $\omega_{2000}$.
+This holds if other components of P031 (government side) did not grow
+disproportionately faster than PROGRESA between 1998 and 2002. Given that
+PROGRESA was by far the largest targeted government transfer programme in Mexico
+in this period, the assumption is plausible in highly marginalized rural
+municipalities (our sample restriction), where PROGRESA dominated the
+institutional transfer category.
+
+\paragraph{Assumption 2: No attenuation from over-reporting of 2002 PROGRESA.}
+\citet{hernandez2007} document that Oportunidades income reported in the 2002
+ENIGH grew by more than 100 percent relative to 2000, while administrative
+budget data show only 59 percent growth. The authors attribute this partly to
+an oversample of Oportunidades households funded by SEDESOL for the 2002
+round, which inflated both the numerator and the denominator in
+Equation~\eqref{eq:share_2002}. Crucially, the effect on $\hat\omega_{2002}$
+is ambiguous in sign: if PROGRESA income is over-reported more than other
+government transfers in 2002, $\hat\omega_{2002}$ is inflated, causing upward
+bias in the imputed 1998/2000 amounts. We cannot directly correct for this
+without knowing the true over-report factor for PROGRESA versus other transfers;
+results using \texttt{progresa\_ind} as an outcome should be read as reflecting
+the transfer proxy with potential upward bias in levels for 1998 and 2000. Our
+preferred robustness check (Alt2) reduces but does not eliminate this concern.
+
+\paragraph{Assumption 3: No P031/P032 contamination in the analytical sample.}
+Even after imputation, \texttt{progresa\_ind} in 1998/2000 may include
+non-PROGRESA institutional transfers (CONAFE tutor stipends, municipal
+scholarship programmes). In our sample of highly marginalized municipalities
+(marginalization grades 4--5 in 1990), PROGRESA was the only large-scale
+government transfer programme targeting education and nutrition, so
+contamination is likely minimal relative to the national sample. We cannot
+verify this directly.
+
+%--------------------------------------------------------------------------
+\subsection{Role in the Empirical Analysis}
+\label{app:enigh_role}
+%--------------------------------------------------------------------------
+
+Both variables serve exclusively as \textit{dependent variables} in the
+mechanisms analysis. We do not use ENIGH-based PROGRESA measures to assign
+treatment. Treatment is assigned based on administrative records of
+PROGRESA/Oportunidades enrollment at the municipality level, which provide
+clean beneficiary counts for each year 1997--2018 (see
+Section~\ref{sec:data_prog}).
+
+The income-amount variable (\texttt{progresa\_hh}) appears in Table~X
+(mechanisms panel: transfers received) and serves to verify that PROGRESA
+transfers are visible in the survey among households in high-intensity
+municipalities---a standard plausibility check for mechanisms analysis using
+survey data. The beneficiary flag (\texttt{progresa\_benef\_hh}) is used as an
+alternative LHS variable to assess extensive-margin take-up (whether a
+household has any beneficiary), complementing the intensive-margin amount.
+
+The use of PROGRESA variables as outcomes rather than treatment indicators
+means that imprecision or attenuation in the proxy affects our ability to
+\textit{detect} mechanisms through transfers---it creates measurement error in
+the dependent variable, which inflates standard errors but does not bias
+coefficients. Concerns about over-reporting in 2002 would affect levels
+comparisons between years but not the within-municipality difference-in-
+differences estimator which absorbs municipality fixed effects.
+
+%--------------------------------------------------------------------------
+\subsection{Cross-Wave Comparability and Deflation}
+\label{app:enigh_deflation}
+%--------------------------------------------------------------------------
+
+All income amounts are reported quarterly (\texttt{ing\_tri}) and converted to
+monthly by dividing by three (\texttt{ing\_tri / 3}). Amounts are then
+converted to real 2025 USD using wave-specific CPI deflators and the
+contemporaneous MXN/USD exchange rate (variable \texttt{inf\_ex\_rate} in the
+code), applied uniformly across all income variables. The 1992 wave reports
+amounts in old pesos (prior to the 1993 redenomination at 1000:1) and is
+rescaled accordingly (\texttt{GAS\_TRI / 1000} before all other operations).
+
+%--------------------------------------------------------------------------
+\subsection{Literature Context}
+\label{app:enigh_lit}
+%--------------------------------------------------------------------------
+
+The challenge of identifying PROGRESA beneficiaries in pre-2002 ENIGH data is
+widely acknowledged. \citet{hernandez2007} provide the definitive documentation
+of cross-wave comparability issues, noting that the number of income questions
+grew from 36 in 2000 to 48 in 2002 to 61 in 2004 and that SEDESOL partially
+funded the 2002 ENIGH specifically to oversample Oportunidades households.
+Researchers requiring clean PROGRESA identification therefore typically adopt
+one of three strategies: (i) use the PROGRESA experimental evaluation surveys
+(ENCEL/ENCASEH), which provide clean beneficiary status from administrative
+records \citep{gertler2004,parker2005,skoufias2001}; (ii) merge administrative
+enrollment records at the municipality level directly, bypassing the survey
+altogether \citep{barham2013}; or (iii) restrict ENIGH-based mechanisms
+analysis to 2002 and later waves where PROGRESA has a dedicated code
+\citep{parker2008}. Our approach---using 1998/2000 with the 2002-share
+imputation as a \textit{dependent} variable check---is most similar in spirit
+to strategy (ii), with the survey serving as a validity check rather than as
+the primary source of treatment variation.
+
+\citet{barham2013} is the closest existing study to our design: they examine
+the impact of PROGRESA on elderly mortality using a municipality-level
+difference-in-differences strategy with administrative enrollment data and vital
+statistics, without relying on the ENIGH for treatment assignment. Our
+extension uses the ENIGH mechanisms analysis to shed light on the economic
+channels (income, food consumption, health expenditure) through which the
+observed mortality effects operate.
+
+%--------------------------------------------------------------------------
+% REFERENCES (include in main bibliography)
+%--------------------------------------------------------------------------
+% @article{hernandez2007,
+%   author  = {Hern\'andez Meza, Gonzalo and others},
+%   title   = {Los problemas de comparabilidad de las {ENIGH} y su efecto
+%              en la medici\'on de la pobreza},
+%   journal = {Papeles de Poblaci\'on},
+%   year    = {2007},
+%   number  = {51},
+%   pages   = {95--125}
+% }
+%
+% @article{gertler2004,
+%   author  = {Gertler, Paul},
+%   title   = {Do Conditional Cash Transfers Improve Child Health?},
+%   journal = {American Economic Review},
+%   year    = {2004},
+%   volume  = {94},
+%   number  = {2},
+%   pages   = {336--341}
+% }
+%
+% @article{parker2005,
+%   author  = {Parker, Susan W. and Teruel, Graciela M.},
+%   title   = {Randomization and Social Program Evaluation: The Case of {Progresa}},
+%   journal = {The Annals of the American Academy of Political and Social Science},
+%   year    = {2005},
+%   volume  = {599},
+%   pages   = {199--219}
+% }
+%
+% @article{skoufias2001,
+%   author  = {Skoufias, Emmanuel and Parker, Susan W. and Behrman, Jere R.
+%              and Pessino, Carola},
+%   title   = {Conditional Cash Transfers and Their Impact on Child Work and Schooling},
+%   journal = {Econom\'ia},
+%   year    = {2001},
+%   volume  = {2},
+%   number  = {1},
+%   pages   = {45--96}
+% }
+%
+% @article{barham2013,
+%   author  = {Barham, Tania and Rowberry, Jacob},
+%   title   = {Living longer: The effect of the {Mexican} conditional cash
+%              transfer program on elderly mortality},
+%   journal = {Journal of Development Economics},
+%   year    = {2013},
+%   volume  = {105},
+%   pages   = {226--236},
+%   doi     = {10.1016/j.jdeveco.2013.08.002}
+% }
+%
+% @incollection{parker2008,
+%   author    = {Parker, Susan W. and Rubalcava, Luis and Teruel, Graciela M.},
+%   title     = {Evaluating conditional schooling-health transfer programs},
+%   booktitle = {Handbook of Development Economics},
+%   year      = {2008},
+%   volume    = {4},
+%   pages     = {3963--3035}
+% }
+%===========================================================================
