@@ -199,10 +199,12 @@ local lbl_T4_8 "Orthotics"
 *   inten2005 — enrollment intensity as of 2005 (mature program)
 *
 
-foreach inten in inten1999 inten2005 {
+foreach inten in inten1997 inten1999 inten2005 {
 
 	* human-readable intensity label for figure titles and file names
-	local inten_lbl = cond("`inten'" == "inten1999", "Intensity 1999", "Intensity 2005")
+	if "`inten'" == "inten1997" local inten_lbl "Intensity 1997"
+	if "`inten'" == "inten1999" local inten_lbl "Intensity 1999"
+	if "`inten'" == "inten2005" local inten_lbl "Intensity 2005"
 
 	local fig_note "Each panel: DiD event-study estimate of `inten_lbl' effect by ENIGH wave." ///
 	    " 1996 = reference (omitted, 0 by construction). Red dashed line: PROGRESA rollout." ///
@@ -331,4 +333,4 @@ foreach inten in inten1999 inten2005 {
 
 } // end foreach inten
 
-di as result _n "Done. Eight event-study figures (4 tables x 2 intensities) saved to: $output"
+di as result _n "Done. Twelve event-study figures (4 tables x 3 intensities) saved to: $output"

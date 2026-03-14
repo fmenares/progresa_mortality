@@ -878,23 +878,32 @@ set more off
 	rename cc_sp_mun sp_intensity
 	save "$Data/Work_SR/Temp_data/SP_2001_2018.dta", replace
 	
-*	Progresa intensity in 1999 and 2005
+*	Progresa intensity in 1997, 1999, and 2005
+	use "$Data/Work_SR/Temp_data/aamr_regression_municipality_gender_tb.dta", clear
+	keep if year==1997
+
+	gen inten1997=intensity_new
+	keep cve_ent_mun_super inten1997
+	save "$Data/Work_SR/Temp_data/inten1997.dta", replace
+
 	use "$Data/Work_SR/Temp_data/aamr_regression_municipality_gender_tb.dta", clear
 	keep if year==1999
-	
+
 	gen inten1999=intensity_new
-	keep cve_ent_mun_super inten1999 
+	keep cve_ent_mun_super inten1999
 	save "$Data/Work_SR/Temp_data/inten1999.dta", replace
-	
+
 	use "$Data/Work_SR/Temp_data/aamr_regression_municipality_gender_tb.dta", clear
 	keep if year==2005
-	
+
 	gen inten2005=intensity_new
-	keep cve_ent_mun_super inten2005 
+	keep cve_ent_mun_super inten2005
 	save "$Data/Work_SR/Temp_data/inten2005.dta", replace
-	
-*	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]  
+
+*	Interact with one post-dummy=1 - intensity97*post, intensity99*post, intensity05*post.
 	use "$Data/Work_SR/Temp_data/aamr_regression_municipality_gender_tb.dta", clear
+	merge m:1 cve_ent_mun_super using "$Data/Work_SR/Temp_data/inten1997.dta"
+	drop _merge
 	merge m:1 cve_ent_mun_super using "$Data/Work_SR/Temp_data/inten1999.dta"
 	drop _merge
 	merge m:1 cve_ent_mun_super using "$Data/Work_SR/Temp_data/inten2005.dta"
