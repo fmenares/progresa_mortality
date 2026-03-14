@@ -1,18 +1,29 @@
 /*==============================================================================
  05_diet_financial_enigh.do
 
- Diet quality and financial stress tables using 1997 PROGRESA intensity.
- Produces:
-   T5_diet_enigh_1997.tex    — 8 food-quality outcomes (hh-level)
-   T6_financial_enigh_1997.tex — 4 financial-stress outcomes (hh-level)
+ Tables for diet quality and financial stress outcomes using 1997 PROGRESA
+ intensity.  Follows the same DiD structure as T1–T4 in 03_mechanisms_enigh.do
+ (Panel A weighted / Panel B unweighted; year + mun FE; cluster SE: mun).
 
- Specification (preferred): c.inten1997 # i.post
-   Panel A: survey-weighted (pweight=exp_factor)
-   Panel B: unweighted
-   Absorb: year + cve_ent_mun_super FE
-   Cluster SE: municipality
-   Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5)
-   Unit: household (hh_unique == 1)
+ Outcomes — new variables created at the end of 01_enigh_data.do:
+
+   Diet quality (T5_diet_enigh_1997.tex)
+     protein_share    share of food spending on meat & dairy
+     staples_share    share on cereals
+     vegg_fruit_share share on vegetables & fruit
+     unhealthy_share  share on sugar/fat/drinks + alcohol + tobacco
+     diversity_index  count of non-zero food categories (0–7)
+
+   Financial stress (T6_financial_enigh_1997.tex)
+     net_fin_position savings minus debt service (real 2025 USD)
+     debt_to_income   debt / HH labor earnings (positive earnings only)
+     health_share     health spending / total HH expenditure
+     rx_to_visit_ratio Rx drug spending / outpatient spending
+     otc_to_rx_ratio  OTC / Rx drug spending
+
+ Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5)
+ Unit:   household (hh_unique == 1)
+ Period: 1992–2006
 ==============================================================================*/
 
 clear
@@ -36,7 +47,7 @@ if c(username) == "FELIPEME" {
 }
 
 /*----------------------------------------------------------------------------
- Load and prepare data
+ Load and prepare
 ----------------------------------------------------------------------------*/
 use "$data/enigh_panel", clear
 
@@ -61,53 +72,38 @@ gen post = .
 	lab val post post
 
 global sample_marg = "(gm_mun_1990 == 4 | gm_mun_1990 == 5)"
+global years = "1992 1994 1996 1998 2000 2002 2004 2005 2006"
 
 /*----------------------------------------------------------------------------
  Outlier flags
 
- The following already have _out flags built from the global raw_outcomes loop
- in 03_mechanisms_enigh.do (p99 winsorisation by year):
-   vegg_fruit, cereals, meat_dairy, sugar_fat_drink
-   savings, debt, loans, currency
-
- These are set to 0 in 03_mechanisms_enigh.do:
-   alcohol_out = 0, tobacco_out = 0
-
- New flags needed for this file:
-   coffe_spices_other, outside_food
+ Share / bounded variables (0–1) and diversity_index (0–7) have no meaningful
+ upper-tail outliers → _out = 0.
+ Right-skewed ratios and the net financial position are trimmed at p99 by year.
 ----------------------------------------------------------------------------*/
-global years = "1992 1994 1996 1998 2000 2002 2004 2005 2006"
 
-foreach outcome in coffe_spices_other outside_food {
-	gen `outcome'_out = .
-	foreach year in $years {
-		sum `outcome' if year == `year' & $sample_marg, d
-		replace `outcome'_out = (`outcome' > `r(p99)') if year == `year'
-	}
+* bounded [0,1] or small integers: no trimming needed
+foreach v in protein_share staples_share vegg_fruit_share unhealthy_share ///
+             diversity_index health_share {
+	gen `v'_out = 0
 }
 
-* outlier flags for variables already covered in 03 (recreate if file is run
-* standalone, harmless if they already exist)
-foreach outcome in vegg_fruit cereals meat_dairy sugar_fat_drink ///
-                   food_exp savings debt loans currency {
-	capture gen `outcome'_out = .
-	foreach year in $years {
-		sum `outcome' if year == `year' & $sample_marg, d
-		replace `outcome'_out = (`outcome' > `r(p99)') if year == `year'
+* right-skewed or unbounded: p99 trimming by year
+foreach v in net_fin_position debt_to_income rx_to_visit_ratio otc_to_rx_ratio {
+	gen `v'_out = .
+	foreach y in $years {
+		sum `v' if year == `y' & $sample_marg, d
+		replace `v'_out = (`v' > `r(p99)') if year == `y'
 	}
 }
-
-capture gen alcohol_out  = 0
-capture gen tobacco_out  = 0
-capture gen vice_out     = 0
 
 /*============================================================================
  TABLE 5 — Diet Quality
- Outcomes: vegg_fruit cereals meat_dairy sugar_fat_drink
-           coffe_spices_other outside_food alcohol tobacco
+ Outcomes: protein_share staples_share vegg_fruit_share unhealthy_share
+           diversity_index
 ============================================================================*/
 global hh_diet = ///
-	"vegg_fruit cereals meat_dairy sugar_fat_drink coffe_spices_other outside_food alcohol tobacco"
+	"protein_share staples_share vegg_fruit_share unhealthy_share diversity_index"
 
 local i = 1
 
@@ -122,13 +118,13 @@ foreach outcome in $hh_diet {
 	local SE_w97_`i'       : di %12.3f _se[1.post#c.inten1997]
 	local t_`i' = abs(_b[1.post#c.inten1997] / _se[1.post#c.inten1997])
 
-	if (`t_`i'' >= 2.576)              local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"
-	else if inrange(`t_`i'', 1.96, 2.575) local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"
-	else if inrange(`t_`i'', 1.645, 1.96) local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"
-	else                               local OLS_w97_`i' = "`OLS_w97_`i'_aux'"
+	if (`t_`i'' >= 2.576)                  local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"
+	else if inrange(`t_`i'', 1.96, 2.575)  local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"
+	else if inrange(`t_`i'', 1.645, 1.959) local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"
+	else                                   local OLS_w97_`i' = "`OLS_w97_`i'_aux'"
 
 	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
-	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	local mean_dep_w`i' : di %12.3fc `r(mean)'
 	local N_w`i'        : di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local n_mun`i'      : di %12.0fc `r(ndistinct)'
@@ -142,13 +138,13 @@ foreach outcome in $hh_diet {
 	local SE_uw97_`i'       : di %12.3f _se[1.post#c.inten1997]
 	local t_`i' = abs(_b[1.post#c.inten1997] / _se[1.post#c.inten1997])
 
-	if (`t_`i'' >= 2.576)              local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"
-	else if inrange(`t_`i'', 1.96, 2.575) local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"
-	else if inrange(`t_`i'', 1.645, 1.96) local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"
-	else                               local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"
+	if (`t_`i'' >= 2.576)                  local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"
+	else if inrange(`t_`i'', 1.96, 2.575)  local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"
+	else if inrange(`t_`i'', 1.645, 1.959) local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"
+	else                                   local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"
 
 	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
-	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	local mean_dep_uw`i' : di %12.3fc `r(mean)'
 	local N_uw`i'        : di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 
@@ -158,25 +154,25 @@ foreach outcome in $hh_diet {
 {
 	cap file close sm
 	file open sm using "$tables/T5_diet_enigh_1997.tex", write replace
-	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Vegg \& Fruit} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat \& Dairy} & \multicolumn{1}{c}{Sugar \& Fat} & \multicolumn{1}{c}{Coffee \& Spices} & \multicolumn{1}{c}{Outside Food} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco}   \\ "_n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
+	file write sm "\begin{tabular}{lccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Protein Share} & \multicolumn{1}{c}{Staples Share} & \multicolumn{1}{c}{Vegg \& Fruit Share} & \multicolumn{1}{c}{Unhealthy Share} & \multicolumn{1}{c}{Diet Diversity}  \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
-	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' & `OLS_w97_6' & `OLS_w97_7' & `OLS_w97_8'\\  "_n
-	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') & (`SE_w97_6') & (`SE_w97_7') & (`SE_w97_8') \\ "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' \\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') \\ "_n
 	file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
-	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' & `OLS_uw97_6' & `OLS_uw97_7' & `OLS_uw97_8' \\  "_n
-	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') & (`SE_uw97_6') & (`SE_uw97_7') & (`SE_uw97_8') \\ "_n
-	file write sm " & & & & & & & & \\ "_n
-	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' & `mean_dep_uw6' & `mean_dep_uw7' & `mean_dep_uw8' \\  "_n
-	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' & `N_uw6' & `N_uw7' & `N_uw8' \\ "_n
-	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
-	file write sm " & & & & & & & & \\ "_n
-	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Mun Controls & N & N & N & N & N & N & N & N  \\  "_n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') \\ "_n
+	file write sm " & & & & & \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' \\  "_n
+	file write sm " & & & & & \\ "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N  \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -184,9 +180,11 @@ foreach outcome in $hh_diet {
 
 /*============================================================================
  TABLE 6 — Financial Stress
- Outcomes: savings debt loans currency
+ Outcomes: net_fin_position debt_to_income health_share
+           rx_to_visit_ratio otc_to_rx_ratio
 ============================================================================*/
-global hh_financial = "savings debt loans currency"
+global hh_financial = ///
+	"net_fin_position debt_to_income health_share rx_to_visit_ratio otc_to_rx_ratio"
 
 local i = 1
 
@@ -201,13 +199,13 @@ foreach outcome in $hh_financial {
 	local SE_w97_`i'       : di %12.3f _se[1.post#c.inten1997]
 	local t_`i' = abs(_b[1.post#c.inten1997] / _se[1.post#c.inten1997])
 
-	if (`t_`i'' >= 2.576)              local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"
-	else if inrange(`t_`i'', 1.96, 2.575) local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"
-	else if inrange(`t_`i'', 1.645, 1.96) local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"
-	else                               local OLS_w97_`i' = "`OLS_w97_`i'_aux'"
+	if (`t_`i'' >= 2.576)                  local OLS_w97_`i' = "`OLS_w97_`i'_aux'***"
+	else if inrange(`t_`i'', 1.96, 2.575)  local OLS_w97_`i' = "`OLS_w97_`i'_aux'**"
+	else if inrange(`t_`i'', 1.645, 1.959) local OLS_w97_`i' = "`OLS_w97_`i'_aux'*"
+	else                                   local OLS_w97_`i' = "`OLS_w97_`i'_aux'"
 
 	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
-	local mean_dep_w`i' : di %12.2fc `r(mean)'
+	local mean_dep_w`i' : di %12.3fc `r(mean)'
 	local N_w`i'        : di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local n_mun`i'      : di %12.0fc `r(ndistinct)'
@@ -221,13 +219,13 @@ foreach outcome in $hh_financial {
 	local SE_uw97_`i'       : di %12.3f _se[1.post#c.inten1997]
 	local t_`i' = abs(_b[1.post#c.inten1997] / _se[1.post#c.inten1997])
 
-	if (`t_`i'' >= 2.576)              local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"
-	else if inrange(`t_`i'', 1.96, 2.575) local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"
-	else if inrange(`t_`i'', 1.645, 1.96) local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"
-	else                               local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"
+	if (`t_`i'' >= 2.576)                  local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'***"
+	else if inrange(`t_`i'', 1.96, 2.575)  local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'**"
+	else if inrange(`t_`i'', 1.645, 1.959) local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'*"
+	else                                   local OLS_uw97_`i' = "`OLS_uw97_`i'_aux'"
 
 	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
-	local mean_dep_uw`i' : di %12.2fc `r(mean)'
+	local mean_dep_uw`i' : di %12.3fc `r(mean)'
 	local N_uw`i'        : di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 
@@ -237,25 +235,25 @@ foreach outcome in $hh_financial {
 {
 	cap file close sm
 	file open sm using "$tables/T6_financial_enigh_1997.tex", write replace
-	file write sm "\begin{tabular}{lcccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Loans to Others} & \multicolumn{1}{c}{Currency}   \\ "_n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}"_n
-	file write sm "& (1) & (2) & (3) & (4) \\  \toprule"_n
+	file write sm "\begin{tabular}{lccccc} \hline \hline"_n
+	file write sm "& \multicolumn{1}{c}{Net Financial Position} & \multicolumn{1}{c}{Debt-to-Income} & \multicolumn{1}{c}{Health Share} & \multicolumn{1}{c}{Rx per Visit \$} & \multicolumn{1}{c}{OTC-to-Rx Ratio}   \\ "_n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Weighted}}  \\  "_n
-	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4'\\  "_n
-	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') \\ "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_w97_1' & `OLS_w97_2' & `OLS_w97_3' & `OLS_w97_4' & `OLS_w97_5' \\  "_n
+	file write sm "& (`SE_w97_1') & (`SE_w97_2') & (`SE_w97_3') & (`SE_w97_4') & (`SE_w97_5') \\ "_n
 	file write sm "\underline{\textit{Panel B: Unweighted}}  \\  "_n
-	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' \\  "_n
-	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') \\ "_n
-	file write sm " & & & & \\ "_n
-	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' \\  "_n
-	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' \\ "_n
-	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' \\  "_n
-	file write sm " & & & & \\ "_n
-	file write sm "Year FE & Y & Y & Y & Y  \\ "_n
-	file write sm "Mun FE & Y & Y & Y & Y  \\ "_n
-	file write sm "Mun Controls & N & N & N & N  \\  "_n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y  \\ "_n
+	file write sm "\textit{Intensity 1997 x 1997-2006} & `OLS_uw97_1' & `OLS_uw97_2' & `OLS_uw97_3' & `OLS_uw97_4' & `OLS_uw97_5' \\  "_n
+	file write sm "& (`SE_uw97_1') & (`SE_uw97_2') & (`SE_uw97_3') & (`SE_uw97_4') & (`SE_uw97_5') \\ "_n
+	file write sm " & & & & & \\ "_n
+	file write sm "Mean (1992-1996) & `mean_dep_uw1' & `mean_dep_uw2' & `mean_dep_uw3' & `mean_dep_uw4' & `mean_dep_uw5' \\  "_n
+	file write sm "Obs & `N_uw1' & `N_uw2' & `N_uw3' & `N_uw4' & `N_uw5' \\ "_n
+	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' \\  "_n
+	file write sm " & & & & & \\ "_n
+	file write sm "Year FE & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun FE & Y & Y & Y & Y & Y  \\ "_n
+	file write sm "Mun Controls & N & N & N & N & N  \\  "_n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
