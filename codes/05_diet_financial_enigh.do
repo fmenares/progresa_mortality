@@ -34,16 +34,19 @@ set seed 1234
 if c(username) == "felip" {
 	global data    "C:\Users\felip\Dropbox\2024\70ymas\data/"
 	global tables  "C:/Users/felip/Dropbox/Aplicaciones/Overleaf/70yMas/"
+	global figures "C:/Users/felip/Dropbox/Aplicaciones/Overleaf/70yMas/figures/"
 }
 
 if c(username) == "fmenares" {
 	global data    "/data/Dropbox0/fmenares/Dropbox/2024/70ymas/data/"
 	global tables  "/hdir/0/fmenares/Dropbox/Aplicaciones/Overleaf/70yMas/"
+	global figures "/hdir/0/fmenares/Dropbox/Aplicaciones/Overleaf/70yMas/figures/"
 }
 
 if c(username) == "FELIPEME" {
 	global data    "C:/Users/FELIPEME/OneDrive - Inter-American Development Bank Group/Documents/personal/progresa_mortality/data/"
 	global tables  "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\tables"
+	global figures "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\figures"
 }
 
 /*----------------------------------------------------------------------------
@@ -259,6 +262,40 @@ foreach outcome in $hh_financial {
 	file close sm
 }
 
+/*============================================================================
+ EVENT STUDIES — Figures ES5 (diet quality) and ES6 (financial stress)
+
+ Specification:
+   areg outcome c.inten1997##ib1996.year [pweight=exp_factor] if ...,
+        absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+
+ ENIGH survey years: 1992 1994 1996 1998 2000 2002 2004 2005 2006
+ Base year (ib1996): last pre-program ENIGH wave → position 3 in coefplot.
+ xline(3) marks the omitted reference year; vertical line = treatment onset.
+============================================================================*/
+
+foreach outcome in $hh_diet $hh_financial {
+
+	local lbl : variable label `outcome'
+
+	areg `outcome' c.inten1997##ib1996.year [pweight = exp_factor] if ///
+		hh_unique == 1 & `outcome'_out == 0 & $sample_marg, ///
+		absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+
+	coefplot, drop(*.year _cons inten1997) omitted base vertical             ///
+		coeflabels(, interaction("") wrap(6))                                ///
+		yline(0, lpattern(dash))                                             ///
+		xline(3, lpattern(dash) lcolor(gray))                                ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("Year × PROGRESA Intensity 1997")                             ///
+		ytitle("`lbl'")                                                      ///
+		ciopts(lwidth(1.15) lcolor(*.5))                                     ///
+		xlabel(, labsize(small)) ylabel(, labsize(small))
+
+	graph export "$figures/ES_`outcome'_1997.pdf", as(pdf) replace
+}
+
 di as result _n "Done. Saved:"
 di as result "  $tables/T5_diet_enigh_1997.tex"
 di as result "  $tables/T6_financial_enigh_1997.tex"
+di as result "  $figures/ES_<outcome>_1997.pdf  (10 figures)"
