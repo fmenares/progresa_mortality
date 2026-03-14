@@ -266,8 +266,8 @@ foreach outcome in $hh_financial {
  EVENT STUDIES — Figures ES5 (diet quality) and ES6 (financial stress)
 
  Specification:
-   areg outcome c.inten1997##ib1996.year [pweight=exp_factor] if ...,
-        absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+   reghdfe outcome c.inten1997##ib1996.year [pweight=exp_factor] if ...,
+           a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
  ENIGH survey years: 1992 1994 1996 1998 2000 2002 2004 2005 2006
  Base year (ib1996): last pre-program ENIGH wave → position 3 in coefplot.
@@ -278,9 +278,9 @@ foreach outcome in $hh_diet $hh_financial {
 
 	local lbl : variable label `outcome'
 
-	areg `outcome' c.inten1997##ib1996.year [pweight = exp_factor] if ///
+	reghdfe `outcome' c.inten1997##ib1996.year [pweight = exp_factor] if ///
 		hh_unique == 1 & `outcome'_out == 0 & $sample_marg, ///
-		absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
 	coefplot, drop(*.year _cons inten1997) omitted base vertical             ///
 		coeflabels(, interaction("") wrap(6))                                ///
