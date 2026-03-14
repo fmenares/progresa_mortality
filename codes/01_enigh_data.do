@@ -1923,7 +1923,7 @@ replace progresa_ind = (benef_don_non_gob_ind + benef_don_gob_ind) * `share_2002
 
 *household
 sum benef_don_non_gob_hh if year == 2002
-local m_benef_non_gob = `r(mean)' 
+local m_benef_non_gob = `r(mean)'
 sum benef_don_gob_hh  if year == 2002
 local m_benef_gob = `r(mean)'
 sum progresa_hh if year == 2002
@@ -1931,7 +1931,102 @@ local m_progresa = `r(mean)'
 
 local share_2002 = `m_progresa'/(`m_progresa' + `m_benef_gob' + `m_benef_non_gob')
 replace progresa_hh = (benef_don_non_gob_hh + benef_don_gob_hh) * `share_2002' if inlist(year, 1998, 2000)
-table year, stat(mean benef_don_non_gob_ind) stat(mean benef_don_gob_ind) stat(mean progresa_ind) stat(mean progresa_hh)
+
+/*---------------------------------------------------------------------------
+  ALTERNATIVE PROGRESA PROXIES FOR 1998 AND 2000
+
+  Baseline limitation: a single national share is applied uniformly, and the
+  denominator pools both government (P031) and non-government (P032) transfers.
+  P032 captures private gifts/remittances that are unrelated to PROGRESA,
+  inflating the denominator and understating the share. The SEDESOL ENIGH
+  annotation embedded in the code confirms PROGRESA receipts were recorded
+  under P031 (Becas y Donativos de Instituciones — government channel) only.
+
+  Alt 1 — State-level share, same pool as baseline (gov + non-gov transfers):
+    ENIGH is designed to be representative at the state level. Using state-level
+    shares captures geographic variation in PROGRESA rollout without the noise
+    of municipality-level small samples (the approach in the commented block
+    below was abandoned precisely because ~50 municipalities had missing shares).
+    Falls back to national mean for states with no 2002 observations.
+
+  Alt 2 — State-level share, government-transfers-only pool:
+    Theoretically cleaner: restricts the 2002 denominator to progresa + benef_gob
+    (government institutional transfers, P046 + P043), and scales only
+    benef_don_gob_ind (P031) in 1998/2000. This directly matches the government
+    channel documented in the SEDESOL annotation and avoids contaminating the
+    denominator with private non-governmental flows from P032.
+---------------------------------------------------------------------------*/
+
+* national fallbacks for both alternatives
+sum progresa_ind    if year == 2002
+local m_prog  = r(mean)
+sum benef_don_gob_ind if year == 2002
+local m_gob   = r(mean)
+sum benef_don_non_gob_ind if year == 2002
+local m_nongob = r(mean)
+local share_nat_alt1 = `m_prog' / (`m_prog' + `m_gob' + `m_nongob')
+local share_nat_alt2 = `m_prog' / (`m_prog' + `m_gob')
+
+* ---- Alternative 1 (individual) ----
+gen s1_ind_aux = progresa_ind / (progresa_ind + benef_don_gob_ind + benef_don_non_gob_ind) ///
+    if year == 2002 & (progresa_ind + benef_don_gob_ind + benef_don_non_gob_ind) > 0
+bys cve_ent: egen share1_state = mean(s1_ind_aux)
+replace share1_state = `share_nat_alt1' if share1_state == .
+drop s1_ind_aux
+
+gen progresa_ind_alt1 = progresa_ind
+replace progresa_ind_alt1 = (benef_don_gob_ind + benef_don_non_gob_ind) * share1_state ///
+    if inlist(year, 1998, 2000)
+
+* ---- Alternative 1 (household) ----
+sum progresa_hh    if year == 2002
+local m_prog_hh  = r(mean)
+sum benef_don_gob_hh if year == 2002
+local m_gob_hh   = r(mean)
+sum benef_don_non_gob_hh if year == 2002
+local m_nongob_hh = r(mean)
+local share_nat_hh_alt1 = `m_prog_hh' / (`m_prog_hh' + `m_gob_hh' + `m_nongob_hh')
+
+gen s1_hh_aux = progresa_hh / (progresa_hh + benef_don_gob_hh + benef_don_non_gob_hh) ///
+    if year == 2002 & (progresa_hh + benef_don_gob_hh + benef_don_non_gob_hh) > 0
+bys cve_ent: egen share1_hh_state = mean(s1_hh_aux)
+replace share1_hh_state = `share_nat_hh_alt1' if share1_hh_state == .
+drop s1_hh_aux
+
+gen progresa_hh_alt1 = progresa_hh
+replace progresa_hh_alt1 = (benef_don_gob_hh + benef_don_non_gob_hh) * share1_hh_state ///
+    if inlist(year, 1998, 2000)
+
+drop share1_state share1_hh_state
+
+* ---- Alternative 2 (individual) ----
+gen s2_ind_aux = progresa_ind / (progresa_ind + benef_don_gob_ind) ///
+    if year == 2002 & (progresa_ind + benef_don_gob_ind) > 0
+bys cve_ent: egen share2_state = mean(s2_ind_aux)
+replace share2_state = `share_nat_alt2' if share2_state == .
+drop s2_ind_aux
+
+gen progresa_ind_alt2 = progresa_ind
+replace progresa_ind_alt2 = benef_don_gob_ind * share2_state ///
+    if inlist(year, 1998, 2000)
+
+* ---- Alternative 2 (household) ----
+local share_nat_hh_alt2 = `m_prog_hh' / (`m_prog_hh' + `m_gob_hh')
+
+gen s2_hh_aux = progresa_hh / (progresa_hh + benef_don_gob_hh) ///
+    if year == 2002 & (progresa_hh + benef_don_gob_hh) > 0
+bys cve_ent: egen share2_hh_state = mean(s2_hh_aux)
+replace share2_hh_state = `share_nat_hh_alt2' if share2_hh_state == .
+drop s2_hh_aux
+
+gen progresa_hh_alt2 = progresa_hh
+replace progresa_hh_alt2 = benef_don_gob_hh * share2_state ///
+    if inlist(year, 1998, 2000)
+
+drop share2_state share2_hh_state
+
+* ---- comparison across methods ----
+table year, stat(mean progresa_ind) stat(mean progresa_ind_alt1) stat(mean progresa_ind_alt2)
     
 bys year: sum progresa_ind, d
 /*
