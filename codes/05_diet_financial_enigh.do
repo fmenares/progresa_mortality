@@ -265,34 +265,82 @@ foreach outcome in $hh_financial {
 /*============================================================================
  EVENT STUDIES — Figures ES5 (diet quality) and ES6 (financial stress)
 
- Specification:
-   reghdfe outcome c.inten1997##ib1996.year [pweight=exp_factor] if ...,
-           a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ Manual leads-and-lags approach (no coefplot).
+ For each outcome:
+   1. Create year-intensity interaction dummies explicitly (base = 1996).
+   2. Run reghdfe with year + mun FE absorbed, cluster SE at mun.
+   3. Store coefficients and 95% CI bounds in locals.
+   4. Build a clean 9-obs plot dataset and draw with twoway rcap + scatter.
 
- ENIGH survey years: 1992 1994 1996 1998 2000 2002 2004 2005 2006
- Base year (ib1996): last pre-program ENIGH wave → position 3 in coefplot.
- xline(3) marks the omitted reference year; vertical line = treatment onset.
+ ENIGH survey years: 1992 1994 [1996 base] 1998 2000 2002 2004 2005 2006
+ xline at 1996.5 marks the boundary between pre- and post-program waves.
 ============================================================================*/
+
+local years_all  "1992 1994 1996 1998 2000 2002 2004 2005 2006"
+local years_nonbase "1992 1994 1998 2000 2002 2004 2005 2006"   // all except 1996
 
 foreach outcome in $hh_diet $hh_financial {
 
 	local lbl : variable label `outcome'
 
-	reghdfe `outcome' c.inten1997##ib1996.year [pweight = exp_factor] if ///
+	* --- Step 1: create year × inten1997 interactions (excluding base 1996) ---
+	foreach y of local years_nonbase {
+		gen inter_`y' = (year == `y') * inten1997
+	}
+
+	* --- Step 2: reghdfe absorbing year and mun FE ---
+	reghdfe `outcome' inter_* [pweight = exp_factor] if ///
 		hh_unique == 1 & `outcome'_out == 0 & $sample_marg, ///
-		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
-	coefplot, drop(*.year _cons inten1997) omitted base vertical             ///
-		coeflabels(, interaction("") wrap(6))                                ///
-		yline(0, lpattern(dash))                                             ///
-		xline(3, lpattern(dash) lcolor(gray))                                ///
-		graphregion(fcolor(white))                                           ///
-		xtitle("Year × PROGRESA Intensity 1997")                             ///
-		ytitle("`lbl'")                                                      ///
-		ciopts(lwidth(1.15) lcolor(*.5))                                     ///
-		xlabel(, labsize(small)) ylabel(, labsize(small))
+	* --- Step 3: store coefficients and CI bounds in locals ---
+	foreach y of local years_nonbase {
+		local b_`y'  = _b[inter_`y']
+		local lo_`y' = _b[inter_`y'] - 1.96 * _se[inter_`y']
+		local hi_`y' = _b[inter_`y'] + 1.96 * _se[inter_`y']
+	}
+	* base year: coefficient normalized to zero
+	local b_1996  = 0
+	local lo_1996 = 0
+	local hi_1996 = 0
 
-	graph export "$figures/ES_`outcome'_1997.pdf", as(pdf) replace
+	drop inter_*
+
+	* --- Step 4: build plot dataset and draw figure ---
+	preserve
+		clear
+		set obs 9
+
+		gen xyr  = .
+		gen coef = .
+		gen ci_lo = .
+		gen ci_hi = .
+
+		local j = 1
+		foreach y of local years_all {
+			replace xyr   = `y'       in `j'
+			replace coef  = `b_`y''   in `j'
+			replace ci_lo = `lo_`y''  in `j'
+			replace ci_hi = `hi_`y''  in `j'
+			local ++j
+		}
+
+		twoway                                                               ///
+			(rcap ci_hi ci_lo xyr,                                           ///
+				lcolor(gs10) lwidth(medthin))                                ///
+			(scatter coef xyr,                                               ///
+				mcolor(navy) msymbol(circle) msize(medium)),                 ///
+			yline(0, lpattern(dash) lcolor(gs8))                             ///
+			xline(1996.5, lpattern(dash) lcolor(maroon) lwidth(thin))        ///
+			graphregion(fcolor(white))                                       ///
+			xtitle("Survey Year")                                            ///
+			ytitle("`lbl'")                                                  ///
+			xlabel(1992 1994 1996 1998 2000 2002 2004 2005 2006,             ///
+				labsize(small) angle(45))                                    ///
+			legend(off)
+
+		graph export "$figures/ES_`outcome'_1997.pdf", as(pdf) replace
+	restore
 }
 
 di as result _n "Done. Saved:"
