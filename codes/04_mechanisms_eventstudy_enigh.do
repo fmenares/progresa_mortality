@@ -194,129 +194,141 @@ local lbl_T4_8 "Orthotics"
 * 1996 is set to b=0 / hi95=0 / lo95=0 (reference by construction).
 * Red dashed xline(3.5) marks the PROGRESA rollout (after 1996, before 1998).
 *
+* Outer loop: produces one set of 4 figures per intensity measure.
+*   inten1999 — enrollment intensity as of 1999 (early rollout)
+*   inten2005 — enrollment intensity as of 2005 (mature program)
+*
 
-local fig_note "Each panel: DiD event-study estimate of inten1999 effect by ENIGH wave." ///
-    " 1996 = reference (omitted, 0 by construction). Red dashed line: PROGRESA rollout." ///
-    " Bars = 95% CI. SE clustered by municipality. Weighted by expansion factor." ///
-    " Sample: highly marginalized municipalities (GM 4-5)."
+foreach inten in inten1999 inten2005 {
 
-foreach tbl in T1 T2 T3 T4 {
+	* human-readable intensity label for figure titles and file names
+	local inten_lbl = cond("`inten'" == "inten1999", "Intensity 1999", "Intensity 2005")
 
-	* T1 is individual-level; T2–T4 restrict to unique HH observations
-	local hh_cond = cond("`tbl'" == "T1", "", "hh_unique == 1 & ")
+	local fig_note "Each panel: DiD event-study estimate of `inten_lbl' effect by ENIGH wave." ///
+	    " 1996 = reference (omitted, 0 by construction). Red dashed line: PROGRESA rollout." ///
+	    " Bars = 95% CI. SE clustered by municipality. Weighted by expansion factor." ///
+	    " Sample: highly marginalized municipalities (GM 4-5)."
 
-	local k = 0
-	local gph_list ""
+	foreach tbl in T1 T2 T3 T4 {
 
-	foreach outcome in ${`tbl'} {
+		* T1 is individual-level; T2–T4 restrict to unique HH observations
+		local hh_cond = cond("`tbl'" == "T1", "", "hh_unique == 1 & ")
 
-		local ++k
-		local lb = "`lbl_`tbl'_`k''"
+		local k = 0
+		local gph_list ""
+
+		foreach outcome in ${`tbl'} {
+
+			local ++k
+			local lb = "`lbl_`tbl'_`k''"
+
+			*--------------------------------------------------------------
+			* 4a. Event study regression
+			*--------------------------------------------------------------
+			cap noisily reghdfe `outcome' ib1996.year#c.`inten' ///
+				[pweight = exp_factor] ///
+				if `hh_cond'`outcome'_out == 0 & $sample_marg, ///
+				a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+
+			if _rc != 0 {
+				di as error "  *** reghdfe failed for `outcome' (`inten') in `tbl' — skipping"
+				continue
+			}
+
+			*--------------------------------------------------------------
+			* 4b. Extract estimates into a 9-row plotting dataset
+			*     Rows: 1992 1994 1996(ref=0) 1998 2000 2002 2004 2005 2006
+			*     _b[] / _se[] scalars survive the preserve/clear/restore
+			*--------------------------------------------------------------
+			preserve
+			clear
+			set obs 9
+
+			gen yr_pos = _n    // 1–9
+			gen yr_val = .     // calendar year (for reference)
+			gen b      = .
+			gen hi95   = .
+			gen lo95   = .
+
+			* pre-treatment years
+			local pos = 1
+			foreach yr in 1992 1994 {
+				replace yr_val = `yr'                                                       if yr_pos == `pos'
+				replace b      =  _b[`yr'.year#c.`inten']                                  if yr_pos == `pos'
+				replace hi95   =  _b[`yr'.year#c.`inten'] + 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
+				replace lo95   =  _b[`yr'.year#c.`inten'] - 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
+				local ++pos
+			}
+
+			* reference year 1996 — zero by construction
+			replace yr_val = 1996 if yr_pos == 3
+			replace b      = 0    if yr_pos == 3
+			replace hi95   = 0    if yr_pos == 3
+			replace lo95   = 0    if yr_pos == 3
+
+			* post-treatment years
+			local pos = 4
+			foreach yr in 1998 2000 2002 2004 2005 2006 {
+				replace yr_val = `yr'                                                       if yr_pos == `pos'
+				replace b      =  _b[`yr'.year#c.`inten']                                  if yr_pos == `pos'
+				replace hi95   =  _b[`yr'.year#c.`inten'] + 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
+				replace lo95   =  _b[`yr'.year#c.`inten'] - 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
+				local ++pos
+			}
+
+			*--------------------------------------------------------------
+			* 4c. Panel graph
+			*--------------------------------------------------------------
+			twoway ///
+				(rcap hi95 lo95 yr_pos, lcolor(gs9) lwidth(thin)) ///
+				(connected b yr_pos, ///
+					mcolor(navy) lcolor(navy%60) ///
+					msymbol(circle) msize(small) lwidth(thin)), ///
+				yline(0, lcolor(black) lpattern(solid) lwidth(vthin)) ///
+				xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
+				xlabel(1 "1992" 2 "1994" 3 "1996" 4 "1998" 5 "2000" ///
+				       6 "2002" 7 "2004" 8 "2005" 9 "2006", ///
+				       labsize(tiny) angle(45) grid gmax) ///
+				xscale(range(0.5 9.5)) ///
+				xtitle("") ytitle("") ///
+				title("`lb'", size(small) color(black) margin(b=1)) ///
+				legend(off) ///
+				graphregion(color(white)) plotregion(margin(l=0 r=0)) ///
+				saving("$data/es_panel_`tbl'_`inten'_`k'.gph", replace)
+
+			restore
+
+			local gph_list `"`gph_list' "$data/es_panel_`tbl'_`inten'_`k'.gph""'
+
+		} // end foreach outcome
 
 		*------------------------------------------------------------------
-		* 4a. Event study regression
+		* 4d. Combine panels into one figure per table group × intensity
 		*------------------------------------------------------------------
-		cap noisily reghdfe `outcome' ib1996.year#c.inten1999 ///
-			[pweight = exp_factor] ///
-			if `hh_cond'`outcome'_out == 0 & $sample_marg, ///
-			a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+		local n_panels = `k'
+		local n_cols   = min(`n_panels', 4)
+		local n_rows   = ceil(`n_panels' / `n_cols')
 
-		if _rc != 0 {
-			di as error "  *** reghdfe failed for `outcome' in `tbl' — skipping panel"
-			continue
+		graph combine `gph_list', ///
+			rows(`n_rows') cols(`n_cols') ///
+			title("Event Study (`inten_lbl') — `title_`tbl''", ///
+			      size(medsmall) color(black)) ///
+			note(`fig_note', size(tiny)) ///
+			graphregion(color(white)) ///
+			saving("$output/F_ES_`tbl'_`inten'.gph", replace)
+
+		graph export "$output/F_ES_`tbl'_`inten'.pdf", replace
+		graph export "$output/F_ES_`tbl'_`inten'.png", replace width(2400)
+
+		di as result "  => Saved F_ES_`tbl'_`inten'.pdf / .png"
+
+		* clean up temporary panel gph files
+		forval k_del = 1/`n_panels' {
+			cap erase "$data/es_panel_`tbl'_`inten'_`k_del'.gph"
 		}
 
-		*------------------------------------------------------------------
-		* 4b. Extract estimates into a 9-row plotting dataset
-		*     Rows: 1992 1994 1996(ref=0) 1998 2000 2002 2004 2005 2006
-		*------------------------------------------------------------------
-		preserve
-		clear
-		set obs 9
+	} // end foreach tbl
 
-		gen yr_pos = _n    // 1–9
-		gen yr_val = .     // calendar year (for reference)
-		gen b      = .
-		gen hi95   = .
-		gen lo95   = .
+} // end foreach inten
 
-		* pre-treatment years
-		local pos = 1
-		foreach yr in 1992 1994 {
-			replace yr_val = `yr'                                              if yr_pos == `pos'
-			replace b      =  _b[`yr'.year#c.inten1999]                       if yr_pos == `pos'
-			replace hi95   =  _b[`yr'.year#c.inten1999] + 1.96 * _se[`yr'.year#c.inten1999] if yr_pos == `pos'
-			replace lo95   =  _b[`yr'.year#c.inten1999] - 1.96 * _se[`yr'.year#c.inten1999] if yr_pos == `pos'
-			local ++pos
-		}
-
-		* reference year 1996 — zero by construction
-		replace yr_val = 1996 if yr_pos == 3
-		replace b      = 0    if yr_pos == 3
-		replace hi95   = 0    if yr_pos == 3
-		replace lo95   = 0    if yr_pos == 3
-
-		* post-treatment years
-		local pos = 4
-		foreach yr in 1998 2000 2002 2004 2005 2006 {
-			replace yr_val = `yr'                                              if yr_pos == `pos'
-			replace b      =  _b[`yr'.year#c.inten1999]                       if yr_pos == `pos'
-			replace hi95   =  _b[`yr'.year#c.inten1999] + 1.96 * _se[`yr'.year#c.inten1999] if yr_pos == `pos'
-			replace lo95   =  _b[`yr'.year#c.inten1999] - 1.96 * _se[`yr'.year#c.inten1999] if yr_pos == `pos'
-			local ++pos
-		}
-
-		*------------------------------------------------------------------
-		* 4c. Panel graph
-		*------------------------------------------------------------------
-		twoway ///
-			(rcap hi95 lo95 yr_pos, lcolor(gs9) lwidth(thin)) ///
-			(connected b yr_pos, ///
-				mcolor(navy) lcolor(navy%60) ///
-				msymbol(circle) msize(small) lwidth(thin)), ///
-			yline(0, lcolor(black) lpattern(solid) lwidth(vthin)) ///
-			xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-			xlabel(1 "1992" 2 "1994" 3 "1996" 4 "1998" 5 "2000" ///
-			       6 "2002" 7 "2004" 8 "2005" 9 "2006", ///
-			       labsize(tiny) angle(45) grid gmax) ///
-			xscale(range(0.5 9.5)) ///
-			xtitle("") ytitle("") ///
-			title("`lb'", size(small) color(black) margin(b=1)) ///
-			legend(off) ///
-			graphregion(color(white)) plotregion(margin(l=0 r=0)) ///
-			saving("$data/es_panel_`tbl'_`k'.gph", replace)
-
-		restore
-
-		local gph_list `"`gph_list' "$data/es_panel_`tbl'_`k'.gph""'
-
-	} // end foreach outcome
-
-	*----------------------------------------------------------------------
-	* 4d. Combine panels into one figure per table group
-	*----------------------------------------------------------------------
-	local n_panels = `k'
-	local n_cols   = min(`n_panels', 4)
-	local n_rows   = ceil(`n_panels' / `n_cols')
-
-	graph combine `gph_list', ///
-		rows(`n_rows') cols(`n_cols') ///
-		title("Event Study — `title_`tbl''", ///
-		      size(medsmall) color(black)) ///
-		note(`fig_note', size(tiny)) ///
-		graphregion(color(white)) ///
-		saving("$output/F_ES_`tbl'.gph", replace)
-
-	graph export "$output/F_ES_`tbl'.pdf", replace
-	graph export "$output/F_ES_`tbl'.png", replace width(2400)
-
-	di as result "  => Saved F_ES_`tbl'.pdf / .png"
-
-	* clean up temporary panel gph files
-	forval k_del = 1/`n_panels' {
-		cap erase "$data/es_panel_`tbl'_`k_del'.gph"
-	}
-
-} // end foreach tbl
-
-di as result _n "Done. Four event-study figures saved to: $output"
+di as result _n "Done. Eight event-study figures (4 tables x 2 intensities) saved to: $output"

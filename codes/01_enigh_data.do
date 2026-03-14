@@ -2364,7 +2364,111 @@ g ln_income_pc_tot = log(income_pc_tot)
 g ln_exp_pc = log(expenditure_pc)
 g ln_food_exp_pc = log(food_exp_pc)
 
-* Inelegibles should not be all, may be up t to loc_size == 2? 
+*=============================================================================
+* DERIVED BEHAVIORAL INDICES
+* All monetary inputs are already in real 2025 USD (post-deflation).
+* Shares are set to missing when the denominator is zero (no household
+* spending in that category); this avoids 0/0 and 0/ε artifacts in
+* the regression sample without requiring arbitrary floors.
+*=============================================================================
+
+*-----------------------------------------------------------------------------
+* Diet quality indices
+* Motivation: PROGRESA's nutrition component was designed to shift consumption
+* away from staple grains toward protein and vegetables. These indices capture
+* that shift and proxy nutritional quality improvements linked to mortality.
+*-----------------------------------------------------------------------------
+
+* protein_share: fraction of food spending on meat, fish, dairy, and eggs.
+*   Higher = more animal protein; linked to sarcopenia prevention in the elderly.
+gen protein_share    = meat_dairy  / food_exp  if food_exp > 0 & food_exp != .
+
+* staples_share: fraction on cereals (tortillas, bread, rice, etc.).
+*   Higher = calorie-dense but micronutrient-poor diet; used as food insecurity proxy.
+gen staples_share    = cereals     / food_exp  if food_exp > 0 & food_exp != .
+
+* vegg_fruit_share: fraction on vegetables, legumes, tubers, and fresh fruit.
+*   Higher = micronutrient-dense diet; PROGRESA-predicted improvement.
+gen vegg_fruit_share = vegg_fruit  / food_exp  if food_exp > 0 & food_exp != .
+
+* unhealthy_share: fraction on sugar/fats/soft-drinks, alcohol, and tobacco.
+*   Higher = diet quality risk; expected to fall or remain flat post-PROGRESA.
+gen unhealthy_share  = (sugar_fat_drink + alcohol + tobacco) / food_exp ///
+    if food_exp > 0 & food_exp != .
+
+* diversity_index: count of non-zero food categories (0–7).
+*   Higher = more diversified diet; a simple proxy for dietary variety.
+*   Categories: cereals, meat/dairy, vegg/fruit, sugar/fat/drink,
+*               coffee/spices/other, outside food, alcohol.
+gen diversity_index = (cereals           > 0 & cereals           != .) ///
+                    + (meat_dairy        > 0 & meat_dairy         != .) ///
+                    + (vegg_fruit        > 0 & vegg_fruit         != .) ///
+                    + (sugar_fat_drink   > 0 & sugar_fat_drink    != .) ///
+                    + (coffe_spices_other > 0 & coffe_spices_other != .) ///
+                    + (outside_food      > 0 & outside_food       != .) ///
+                    + (alcohol           > 0 & alcohol            != .)
+replace diversity_index = . if food_exp == 0 | food_exp == .
+
+*-----------------------------------------------------------------------------
+* Healthcare substitution ratios
+* Motivation: PROGRESA's conditionality requires health clinic visits, which
+* should shift households from self-medication (OTC) toward formal prescriptions
+* (Rx), and increase the ratio of Rx drugs per outpatient dollar — the reverse
+* of what a pure income effect (without conditionality) would predict.
+*-----------------------------------------------------------------------------
+
+* rx_to_visit_ratio: prescription drug spending per outpatient dollar.
+*   Defined only for households with positive outpatient spending.
+*   High = visits translate into prescriptions (formal care working).
+*   Low = visits without follow-through (supply constraint or non-compliance).
+gen rx_to_visit_ratio = drugs_prescribed / medical_outpatient ///
+    if medical_outpatient > 0 & medical_outpatient != .
+
+* otc_to_rx_ratio: OTC drug spending relative to prescription drug spending.
+*   Defined only for households with positive prescription drug spending.
+*   High = self-medication dominates; Low = shift toward formal prescriptions.
+*   PROGRESA conditionality predicts this ratio falls post-program.
+gen otc_to_rx_ratio   = drugs_overcounter / drugs_prescribed ///
+    if drugs_prescribed > 0 & drugs_prescribed != .
+
+* health_share: total health spending as fraction of total household expenditure.
+*   Captures overall prioritization of health in the household budget.
+gen health_share = health_exp / hh_expenditure ///
+    if hh_expenditure > 0 & hh_expenditure != .
+
+*-----------------------------------------------------------------------------
+* Financial stress composite
+* Motivation: income uncertainty reduction is a plausible mortality channel
+* (allostatic load / cardiovascular risk). Debt burden and net saving position
+* proxy financial stress independently of income levels.
+*-----------------------------------------------------------------------------
+
+* net_fin_position: monthly savings minus monthly debt service (real 2025 USD).
+*   Positive = net accumulation; Negative = drawing down / servicing debt.
+*   Missing if either component is missing (not if one is zero — both are valid).
+gen net_fin_position = savings - debt
+
+* debt_to_income: debt service relative to household labor earnings.
+*   Denominator = wage + self-employment income only (excludes transfers),
+*   capturing ability-to-service-debt from own labor independently of PROGRESA.
+*   Defined only where earnings are positive to avoid divide-by-zero and
+*   economically meaningless ratios for non-working households.
+gen debt_to_income = debt / hh_earnings ///
+    if hh_earnings > 0 & hh_earnings != .
+
+*--- Labels -------------------------------------------------------------------
+label var protein_share     "Share of food spending: meat & dairy (0–1)"
+label var staples_share     "Share of food spending: cereals (0–1)"
+label var vegg_fruit_share  "Share of food spending: veggies & fruit (0–1)"
+label var unhealthy_share   "Share of food spending: sugar, fat, alcohol, tobacco (0–1)"
+label var diversity_index   "Dietary diversity index (0–7 non-zero food categories)"
+label var rx_to_visit_ratio "Rx drug spending / outpatient spending (if outpatient > 0)"
+label var otc_to_rx_ratio   "OTC drug spending / Rx drug spending (if Rx > 0)"
+label var health_share      "Health spending / total HH expenditure (if expenditure > 0)"
+label var net_fin_position  "Monthly savings minus debt service (real 2025 USD)"
+label var debt_to_income    "Debt service / HH labor earnings (if earnings > 0)"
+
+* Inelegibles should not be all, may be up t to loc_size == 2?
 
  			 
 drop trabajo

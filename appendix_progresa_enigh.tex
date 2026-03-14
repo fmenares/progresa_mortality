@@ -554,6 +554,163 @@ natural logs are generated as \texttt{ln(income)}. All MXN-denominated
 originals are retained with the suffix \texttt{\_mxn}.
 
 %--------------------------------------------------------------------------
+\subsection{Derived Behavioral Indices}
+\label{app:enigh_derived}
+%--------------------------------------------------------------------------
+
+After deflation, three families of derived variables are constructed from the
+real-valued food, health, and financial outflow variables. All monetary inputs
+are in real 2025 USD. Ratios are set to missing when the denominator is zero
+to avoid both arithmetic artifacts and economically meaningless observations
+(e.g., an OTC-to-Rx ratio for a household that never purchased prescription
+drugs). These variables are constructed after the income and food deflation
+loops in \texttt{01\_enigh\_data.do}, immediately before the final
+\texttt{save}.
+
+\subsubsection{Diet Quality Indices}
+\label{app:enigh_diet}
+
+PROGRESA's nutrition component aimed to shift consumption away from
+calorie-dense staple grains toward protein and micronutrient-rich foods
+\citep{hoddinott2008,leroy2008}. Four share variables and one count index
+capture this potential dietary shift:
+
+\begin{align}
+\texttt{protein\_share}    &= \frac{\texttt{meat\_dairy}}{\texttt{food\_exp}}
+    \label{eq:protein_share} \\[4pt]
+\texttt{staples\_share}    &= \frac{\texttt{cereals}}{\texttt{food\_exp}}
+    \label{eq:staples_share} \\[4pt]
+\texttt{vegg\_fruit\_share}&= \frac{\texttt{vegg\_fruit}}{\texttt{food\_exp}}
+    \label{eq:vegg_share} \\[4pt]
+\texttt{unhealthy\_share}  &= \frac{\texttt{sugar\_fat\_drink}
+    + \texttt{alcohol} + \texttt{tobacco}}{\texttt{food\_exp}}
+    \label{eq:unhealthy_share}
+\end{align}
+
+\noindent
+All four are defined only for households with $\texttt{food\_exp} > 0$.
+\texttt{food\_exp} is the sum of cereals, meat/dairy, vegg/fruit,
+sugar/fat/drink, coffee/spices/other, outside food, and packaged and baby food
+(see Section~\ref{app:enigh_food}).
+
+The fifth index is a dietary diversity count:
+\begin{equation}
+\texttt{diversity\_index} = \sum_{c \in \mathcal{C}} \mathbf{1}[\texttt{spend}_c > 0]
+\label{eq:diversity}
+\end{equation}
+where $\mathcal{C} = \{\text{cereals, meat/dairy, vegg/fruit, sugar/fat/drink,
+coffee/spices/other, outside food, alcohol}\}$, giving a score of 0–7.
+Set to missing if \texttt{food\_exp} = 0.
+
+\paragraph{Interpretation.}
+\texttt{staples\_share} is a food insecurity proxy: households under chronic
+caloric scarcity anchor their diet on cheap, filling grains. A PROGRESA effect
+would manifest as a \emph{fall} in \texttt{staples\_share} and a
+\emph{rise} in \texttt{protein\_share}, \texttt{vegg\_fruit\_share}, and
+\texttt{diversity\_index} — directly mapping onto reduced micronutrient
+deficiency and protein-energy malnutrition, pathways linked to lower
+infectious disease mortality and reduced frailty in the elderly
+\citep{leroy2008,barham2013}.
+
+\subsubsection{Healthcare Substitution Ratios}
+\label{app:enigh_healthcare_ratios}
+
+PROGRESA conditionality required bimonthly health clinic visits; the
+behavioral prediction is a shift from self-medication toward formal care.
+Three variables test different facets of this channel:
+
+\begin{align}
+\texttt{rx\_to\_visit\_ratio}  &= \frac{\texttt{drugs\_prescribed}}
+    {\texttt{medical\_outpatient}},
+    \quad \text{if } \texttt{medical\_outpatient} > 0
+    \label{eq:rx_visit} \\[4pt]
+\texttt{otc\_to\_rx\_ratio}    &= \frac{\texttt{drugs\_overcounter}}
+    {\texttt{drugs\_prescribed}},
+    \quad \text{if } \texttt{drugs\_prescribed} > 0
+    \label{eq:otc_rx} \\[4pt]
+\texttt{health\_share}         &= \frac{\texttt{health\_exp}}
+    {\texttt{hh\_expenditure}},
+    \quad \text{if } \texttt{hh\_expenditure} > 0
+    \label{eq:health_share}
+\end{align}
+
+\noindent
+\texttt{health\_exp} $= \texttt{medical\_outpatient} + \texttt{drugs\_prescribed}
++ \texttt{medical\_inpatient} + \texttt{drugs\_overcounter} + \texttt{ortho}$
+(see Section~\ref{app:enigh_health}).
+
+\paragraph{Interpretation.}
+$\texttt{rx\_to\_visit\_ratio}$ captures whether outpatient visits translate
+into prescriptions. A \emph{rise} indicates that formal medical encounters
+produce more follow-through care — consistent with PROGRESA clinic visits
+increasing diagnostic depth. $\texttt{otc\_to\_rx\_ratio}$ captures the
+self-medication intensity: if conditionality shifts households from pharmacy
+runs to clinic visits, this ratio should \emph{fall} post-program. A pure
+income effect without conditionality would not necessarily change
+$\texttt{otc\_to\_rx\_ratio}$, making this ratio a useful diagnostic to
+separate the conditionality channel from the income channel.
+$\texttt{health\_share}$ tests whether health receives a larger fraction of
+the household budget under PROGRESA — an overall budget-allocation channel.
+
+\subsubsection{Financial Stress Composite}
+\label{app:enigh_fin_stress}
+
+Income uncertainty reduction is a plausible indirect mortality channel
+through allostatic load \citep{aizer2016}: households with lower debt burdens
+and positive saving positions face less chronic financial stress, with downstream
+effects on cardiovascular and stress-related mortality. Two variables proxy
+financial stress:
+
+\begin{align}
+\texttt{net\_fin\_position} &= \texttt{savings} - \texttt{debt}
+    \label{eq:net_fin} \\[4pt]
+\texttt{debt\_to\_income}   &= \frac{\texttt{debt}}{\texttt{hh\_earnings}},
+    \quad \text{if } \texttt{hh\_earnings} > 0
+    \label{eq:debt_income}
+\end{align}
+
+\noindent
+\texttt{savings} and \texttt{debt} are monthly real 2025 USD amounts from
+\texttt{eroga.dta} (see Section~\ref{app:enigh_savings}).
+\texttt{hh\_earnings} = \texttt{wage\_hh} + \texttt{indep\_w\_hh} captures
+own-labor income only, excluding transfers, so the denominator is independent
+of the PROGRESA transfer itself — the ratio measures the burden of debt service
+relative to the household's own productive capacity.
+
+\paragraph{Interpretation.}
+A positive treatment effect on \texttt{net\_fin\_position} (savings
+accumulation net of debt service) and a negative effect on
+\texttt{debt\_to\_income} (debt burden relative to earnings) would support
+the financial stress relief channel. These patterns are informative regardless
+of whether income itself rises, because PROGRESA transfers could allow
+households to retire debt even without changing earnings.
+
+\begin{table}[h!]
+\centering
+\caption{Summary of Derived Behavioral Indices}
+\label{tab:derived_indices}
+\small
+\begin{tabular}{llll}
+\hline\hline
+Variable & Formula & Defined when & Predicted direction \\
+\hline
+\texttt{protein\_share}    & meat\_dairy / food\_exp     & food\_exp $> 0$ & $\uparrow$ \\
+\texttt{staples\_share}    & cereals / food\_exp          & food\_exp $> 0$ & $\downarrow$ \\
+\texttt{vegg\_fruit\_share}& vegg\_fruit / food\_exp      & food\_exp $> 0$ & $\uparrow$ \\
+\texttt{unhealthy\_share}  & (sugar+fat+alc+tob) / food\_exp & food\_exp $> 0$ & ambiguous \\
+\texttt{diversity\_index}  & $\sum \mathbf{1}[\text{spend}_c > 0]$ & food\_exp $> 0$ & $\uparrow$ \\[3pt]
+\texttt{rx\_to\_visit\_ratio} & drugs\_Rx / outpatient  & outpatient $> 0$ & $\uparrow$ \\
+\texttt{otc\_to\_rx\_ratio}   & drugs\_OTC / drugs\_Rx  & Rx $> 0$         & $\downarrow$ \\
+\texttt{health\_share}        & health\_exp / hh\_exp   & hh\_exp $> 0$    & $\uparrow$ \\[3pt]
+\texttt{net\_fin\_position} & savings $-$ debt          & always           & $\uparrow$ \\
+\texttt{debt\_to\_income}   & debt / hh\_earnings       & earnings $> 0$   & $\downarrow$ \\
+\hline\hline
+\multicolumn{4}{l}{\footnotesize Predicted direction: under PROGRESA income + conditionality effects.}\\
+\multicolumn{4}{l}{\footnotesize ``ambiguous'': income effect could raise spending on sugar/fat; conditionality unlikely to change it directly.}
+\end{tabular}
+\end{table}
+
+%--------------------------------------------------------------------------
 \subsection{Literature Context}
 \label{app:enigh_lit}
 %--------------------------------------------------------------------------
@@ -623,6 +780,33 @@ vital statistics to estimate effects on elderly mortality.
 %   volume  = {105},
 %   pages   = {226--236},
 %   doi     = {10.1016/j.jdeveco.2013.08.002}
+% }
+% @article{hoddinott2008,
+%   author  = {Hoddinott, John and Bassett, Lucy},
+%   title   = {Conditional Cash Transfer Programs and Nutrition in {Latin America}:
+%              Assessment of Impacts and Strategies for Improvement},
+%   journal = {IFPRI Discussion Paper},
+%   year    = {2008},
+%   number  = {00708}
+% }
+% @article{leroy2008,
+%   author  = {Leroy, Jef L. and Ruel, Marie and Verhofstadt, Ellen},
+%   title   = {The impact of conditional cash transfer programmes on child
+%              nutrition: a review of evidence using a programme theory framework},
+%   journal = {Journal of Development Effectiveness},
+%   year    = {2009},
+%   volume  = {1},
+%   number  = {2},
+%   pages   = {103--129}
+% }
+% @article{aizer2016,
+%   author  = {Aizer, Anna and Eli, Shari and Ferrie, Joseph and Lleras-Muney, Adriana},
+%   title   = {The Long-Run Impact of Cash Transfers to Poor Families},
+%   journal = {American Economic Review},
+%   year    = {2016},
+%   volume  = {106},
+%   number  = {4},
+%   pages   = {935--971}
 % }
 % @incollection{parker2008,
 %   author    = {Parker, Susan W. and Rubalcava, Luis and Teruel, Graciela M.},
