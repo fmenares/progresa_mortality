@@ -1,0 +1,819 @@
+%===========================================================================
+% APPENDIX: ENIGH Data Construction
+% For: "The Effect of PROGRESA on Adult Mortality"
+% Journal: Journal of Development Economics
+%===========================================================================
+
+\clearpage
+\appendix
+
+\section{ENIGH Data Construction}
+\label{app:enigh}
+
+This appendix documents the complete construction of all outcome variables
+drawn from the Encuesta Nacional de Ingresos y Gastos de los Hogares (ENIGH)
+used in the mechanisms analysis (Section~\ref{sec:mechanisms}). We use nine
+waves: 1992, 1994, 1996, 1998, 2000 (processed in \texttt{01\_enigh\_data.do}
+as the early-wave loop) and 2002, 2004, 2005, and 2006 (processed in the
+late-wave loop). All spending variables are drawn from \texttt{gastos.dta}
+(expenditure records), income variables from \texttt{ingresos.dta}, financial
+outflows from \texttt{eroga.dta}, and individual-level characteristics from
+\texttt{pob.dta} and \texttt{concen.dta}, all merged on household identifier
+\texttt{FOLIO}. A-prefix codes denote expenditure items; J-prefix codes denote
+health expenditures; P-prefix codes denote income sources; Q-prefix codes
+denote financial outflows.
+
+All quarterly reported amounts (\texttt{GAS\_TRI}, \texttt{ING\_TRI},
+\texttt{ERO\_TRI}) are converted to monthly by dividing by three. The 1992
+wave reports monetary values in old Mexican pesos (prior to the 1993
+redenomination at 1,000:1); these are rescaled by dividing by 1,000 before
+all other operations. Section~\ref{app:enigh_deflation} describes the CPI and
+exchange-rate deflation applied uniformly after all waves are appended.
+
+%--------------------------------------------------------------------------
+\subsection{Food Expenditure Variables}
+\label{app:enigh_food}
+%--------------------------------------------------------------------------
+
+Food spending is extracted from \texttt{gastos.dta} at the item level, with
+each record identified by a catalogue code (\texttt{CLAVE}) composed of a
+letter prefix (``A'' for food) and a numeric suffix. An indicator variable is
+constructed for each food category based on the numeric range of the A-code;
+the monthly household spending in that category equals the indicator times
+\texttt{GAS\_TRI/3}. The dataset is then collapsed to the household level by
+summing all items within each category.
+
+The final analysis variables are formed by aggregating sub-categories:
+
+\begin{align*}
+\texttt{cereals}          &= \texttt{cereals\_d} \times \texttt{GAS\_TRI}/3 \\
+\texttt{meat\_dairy}      &= (\texttt{meat\_fish\_seafood\_d} + \texttt{dairy\_d})
+                              \times \texttt{GAS\_TRI}/3 \\
+\texttt{vegg\_fruit}      &= \texttt{vegg\_fruit\_d} \times \texttt{GAS\_TRI}/3 \\
+\texttt{sugar\_fat\_drink}&= (\texttt{oils\_fats\_d} + \texttt{sugar\_d}
+                              + \texttt{soft\_drink\_d} + \texttt{desserts\_d})
+                              \times \texttt{GAS\_TRI}/3 \\
+\texttt{coffe\_spices\_other} &= (\texttt{coffe\_d} + \texttt{specias\_d}
+                              + \texttt{others\_d}) \times \texttt{GAS\_TRI}/3 \\
+\texttt{outside\_food}    &= (\texttt{takeout\_d} + \texttt{outside\_d})
+                              \times \texttt{GAS\_TRI}/3 \\
+\texttt{tobacco}          &= \texttt{tobacco\_d} \times \texttt{GAS\_TRI}/3 \\
+\texttt{alcohol}          &= \texttt{alcohol\_d} \times \texttt{GAS\_TRI}/3
+\end{align*}
+
+\noindent
+\texttt{packaged\_food} (pre-packaged despensas), \texttt{baby\_food}, and
+\texttt{pet\_food} are constructed analogously. \texttt{packaged\_food\_d} is
+set to zero for all 1992--2000 waves; the category only appears in the
+catalogue from 2002 onward, identified by the specific codes A209 and A243.
+
+Table~\ref{tab:food_acodes} reports the A-code boundaries for each food
+category by wave. The numbering of catalogue items shifts across waves as INEGI
+expands or reorganises the catalogue; boundaries were verified against the
+official ENIGH catalogue PDFs for each year.
+
+\begin{table}[h!]
+\centering
+\caption{Food Expenditure A-Code Boundaries by ENIGH Wave}
+\label{tab:food_acodes}
+\scriptsize
+\begin{tabular}{lrrrrrrrrr}
+\hline\hline
+Category & 1992 & 1994 & 1996/1998 & 2000 & 2002 & 2004/2005 & 2006 \\
+\hline
+Cereals              & A001--020 & A001--021 & A001--021 & A001--021 & A001--021 & A001--022 & A001--024 \\
+Meat/fish/seafood    & A021--058 & A022--059 & A022--059 & A022--059 & A022--070 & A023--071 & A025--074 \\
+Dairy + eggs         & A059--078 & A060--079 & A060--079 & A060--079 & A071--090 & A072--091 & A075--094 \\
+Oils and fats        & A079--083 & A080--084 & A080--084 & A080--084 & A091--096 & A092--097 & A095--100 \\
+Vegetables \& fruit  & A084--143 & A085--145 & A085--146 & A085--146 & A097--168 & A098--169 & A101--172 \\
+Sugar and honey      & A144--146 & A146--148 & A147--149 & A147--149 & A169--171 & A170--172 & A173--175 \\
+Soft drinks          & A185--189 & A188--193 & A189--194 & A189--194 & A212--218 & A212--218 & A212--218 \\
+Desserts             & A174--181 & A177--183 & A178--184 & A178--184 & A201--206 & A202--206 & A202--206 \\
+Coffee               & A147--153 & A149--155 & A150--156 & A150--156 & A172--178 & A173--179 & A173--179 \\
+Spices               & A154--165 & A156--166 & A157--167 & A157--167 & A179--190 & A180--191 & A180--191 \\
+Other food prep.     & A182      & A184--185 & A185--186 & A185--186 & A207--208 & A207--208 & A207--208 \\
+Baby food            & A166--167 & A167--169 & A168--170 & A168--170 & A191--193 & A192--194 & A192--194 \\
+Takeout (for home)   & A168--172 & A170--175 & A171--176 & A171--176 & A194--198 & A195--199 & A195--199 \\
+Food eaten outside   & A199--202 & A204--207 & A205--208 & A206--209 & A235--239 & A235--239 & A243--247 \\
+Tobacco              & A203--205 & A208--210 & A209--211 & A211--213 & A240--242 & A240--242 & A239--241 \\
+Alcohol              & A190--198 & A194--203 & A195--204 & A195--204 & A219--234 & A219--234 & A219--234 \\
+Pet food             & A183--184 & A186--187 & A187--188 & A187--188 & A210--211 & A210--211 & A210--211 \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Cross-wave catalogue corrections.}
+Several code boundaries were corrected relative to prior versions of the code
+based on verification against the official INEGI catalogue PDFs:
+
+\begin{itemize}
+  \item \textbf{Outside food, 1994}: starts at A204 (not A203), because A203
+    in 1994 belongs to the tobacco section (\textit{Cigarros}). The 1992
+    outside-food range (A199--A202) anchors the correct boundary; the 1994
+    catalogue inserts one additional tobacco item, shifting outside food up by
+    one.
+  \item \textbf{Outside food and tobacco, 1996/1998 vs.\ 2000}: the catalogue
+    shifts by one code between 1996/1998 and 2000, handled by a conditional
+    \texttt{if inlist(`year', 1996, 1998)} block in the code (outside food:
+    A205--A208 vs.\ A206--A209; tobacco: A209--A211 vs.\ A211--A213).
+  \item \textbf{Vegetables and fruit, 2004/2005}: the upper bound is A169,
+    which includes \textit{Jalea y mermelada} (jam/jelly), a processed fruit
+    product. This item was correctly retained within \texttt{vegg\_fruit\_d}
+    rather than being reclassified to the sugar category.
+  \item \textbf{Packaged food, 2002+}: identified by two specific codes A209
+    and A243 using \texttt{inlist(CLAVE, "A209", "A243")} rather than a range,
+    because these two codes are non-contiguous in the catalogue.
+\end{itemize}
+
+%--------------------------------------------------------------------------
+\subsection{Health Expenditure Variables}
+\label{app:enigh_health}
+%--------------------------------------------------------------------------
+
+Health spending is extracted from the same \texttt{gastos.dta} file using
+J-prefix catalogue codes. Six categories are constructed:
+
+\begin{description}
+  \item[\texttt{medical\_outpatient}] Outpatient consultations with doctors,
+    dentists, nurses, and midwives; laboratory tests; X-rays; and related
+    outpatient diagnostic services.
+  \item[\texttt{drugs\_prescribed}] Prescription medications obtained through
+    outpatient and inpatient channels.
+  \item[\texttt{medical\_inpatient}] Hospital fees, surgical procedures,
+    overnight stays, and inpatient diagnostic tests.
+  \item[\texttt{drugs\_overcounter}] Over-the-counter medications and first-aid
+    materials (bandages, antiseptics, analgesics without prescription).
+  \item[\texttt{ortho}] Eyeglasses, contact lenses, dentures, hearing aids,
+    prosthetics, orthopedic devices, and repairs of such devices.
+  \item[\texttt{insurance\_cost}] Health insurance premiums and hospital
+    membership fees paid out of pocket.
+\end{description}
+
+Table~\ref{tab:health_jcodes} reports the J-code ranges by wave. A key
+correction involved \texttt{drugs\_overcounter}: the lower bound in
+1992/1994 is J029 and in 1996/1998 is J033, rather than J028 and J032
+respectively, because the preceding code in each case captures a different item
+(surgical/dental appliances). The 2000 lower bound differs by one from
+1996/1998 (J034 vs.\ J033), handled via a conditional block.
+
+\begin{table}[h!]
+\centering
+\caption{Health Expenditure J-Code Ranges by ENIGH Wave}
+\label{tab:health_jcodes}
+\small
+\begin{tabular}{llllll}
+\hline\hline
+Variable & 1992/1994 & 1996/1998 & 2000 & 2002 & 2004/2005/2006 \\
+\hline
+\texttt{medical\_outpatient} & J001--003, & J001--003, & same & J001--004 & J016--019, \\
+                              & J005, J006, J009 & J005, J006, J009 & & & J036 \\
+\texttt{drugs\_prescribed}   & J004, J011 & J004, J011 & same & J005--023 & J020--035, \\
+                              &            &            &      &           & J037--038 \\
+\texttt{medical\_inpatient}  & J010, J012--015 & same & same & J026--030 & J039--043 \\
+\texttt{drugs\_overcounter}  & J029--036 & J033--038 & J034--038 & J048--065 & J044--059 \\
+\texttt{ortho}               & J037--041 & J039--043 & same & J070--075 & J065--069 \\
+\texttt{insurance\_cost}     & J042--043 & J044--045 & same & J076--077 & J070--072 \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+%--------------------------------------------------------------------------
+\subsection{Household Income Variables}
+\label{app:enigh_income}
+%--------------------------------------------------------------------------
+
+Income data are extracted from \texttt{ingresos.dta}, which records individual
+income sources identified by P-prefix codes. Each source is an indicator
+variable (1 if the P-code belongs to that category, 0 otherwise), multiplied by
+\texttt{ING\_TRI/3} to yield monthly amounts. Individual-level totals are
+summed within person (\texttt{bys FOLIO NUM\_REN: egen total = total(aux)}) and
+household-level totals are summed across all household members
+(\texttt{bys FOLIO: egen total = total(aux)}).
+
+The five income components are:
+
+\begin{description}
+  \item[\texttt{wage\_d}] Subordinate-employment income: wages, salaries,
+    commissions, overtime, Christmas bonus (\textit{aguinaldo}), vacation
+    premiums, and profit-sharing (\textit{reparto de utilidades}) paid by
+    private employers, cooperatives, and enterprise partnerships.
+  \item[\texttt{indep\_w\_d}] Self-employment income: net income from own
+    agricultural, livestock, industrial, commercial, and service businesses.
+    Does not include capital returns from cooperatives or enterprise
+    memberships (those go to \texttt{capital\_d}).
+  \item[\texttt{capital\_d}] Capital income: rental income from land,
+    buildings, and machinery; interest; dividends; royalties; and net profits
+    from cooperative and enterprise ownership (\textit{ganancias netas}).
+  \item[\texttt{transfer\_d}] All transfers: pensions, severance pay,
+    scholarships, government and NGO donations, family remittances, PROGRESA,
+    and PROCAMPO. See Section~\ref{app:enigh_progresa} for the PROGRESA
+    sub-component.
+  \item[\texttt{other\_d}] Other current income: proceeds from the sale of
+    second-hand goods and miscellaneous current receipts.
+  \item[\texttt{financial\_d}] Financial/liquidity receipts: loans received,
+    pension fund withdrawals, proceeds from sale of real estate or financial
+    assets. \textit{Excluded from all income aggregates;} these capture
+    balance-sheet events rather than current income flows.
+\end{description}
+
+Table~\ref{tab:income_pcodes} summarises the P-code mappings across waves.
+Several boundaries required careful handling:
+
+\begin{itemize}
+  \item In 1992, P012 (\textit{venta de productos agr\'icolas}) and P014
+    (\textit{venta de animales}) are farm sales revenue of uncertain
+    classification and are excluded from all categories.
+  \item In 2002, the code P023 was tentatively assigned to \texttt{indep\_w\_d}
+    based on catalogue position; in 2004/2005/2006 the corresponding category
+    was moved to \texttt{capital\_d} as cooperative/enterprise net profits were
+    separated from own-business income.
+  \item Cooperative and enterprise wages (codes P018 in 2002; P017, P019--P037
+    in 2004--2006) are included in \texttt{wage\_d}, not \texttt{capital\_d},
+    because they represent labor compensation rather than returns to ownership.
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\caption{Income P-Code Assignments by ENIGH Wave}
+\label{tab:income_pcodes}
+\small
+\begin{tabular}{llllll}
+\hline\hline
+Variable & 1992 & 1994/1996 & 1998/2000 & 2002 & 2004/2005/2006 \\
+\hline
+\texttt{wage\_d}     & P001--006 & P001--005, P014 & P001--009, P018 & P001--009, & P001--009, \\
+                     &           &                 &                 & P018, P020, P022 & P017, P019--037 \\
+\texttt{indep\_w\_d} & P007--011, P013 & P006--013 & P010--017 & P010--017, P023 & P010--016 \\
+\texttt{capital\_d}  & P015--021 & P015--022 & P019--027 & P019, P021, & P018, P028, P038, \\
+                     &           &           &           & P024--036   & P039--047 \\
+\texttt{transfer\_d} & P022--027 & P023--028, P043 & P028--034 & P037--047 & P048--060 \\
+\texttt{other\_d}    & P028--029 & P029--030 & P035--036 & P048 & P061 \\
+\texttt{financial\_d}& Q012, Q014$^*$ & P031--036 & P037--043 & P049--065 & P062--075 \\
+\hline\hline
+\multicolumn{6}{l}{\footnotesize $^*$In 1992, financial receipts were coded in the income file under Q-prefix codes rather than in a separate eroga file.}
+\end{tabular}
+\end{table}
+
+\paragraph{Income aggregates.}
+Two aggregate income measures are constructed after appending all waves:
+
+\begin{align*}
+\texttt{earnings} &= \texttt{wage} + \texttt{indep\_w} \\
+\texttt{income}   &= \texttt{wage} + \texttt{indep\_w} + \texttt{capital}
+                     + \texttt{transfer} + \texttt{other\_inc}
+\end{align*}
+
+available at both the individual (\texttt{\_ind}) and household (\texttt{\_hh})
+level. The survey's own total-income aggregate (\texttt{INGMON} from
+\texttt{concen.dta}) is retained as \texttt{hh\_income\_mxn\_tot} for
+comparison; it is computed quarterly and divided by three, then rescaled for
+1992. \texttt{financial\_d} is excluded from the constructed aggregate,
+consistent with national accounts conventions.
+
+%--------------------------------------------------------------------------
+\subsection{Financial Outflows: Savings, Debt, and Currency}
+\label{app:enigh_savings}
+%--------------------------------------------------------------------------
+
+Financial outflow variables are drawn from \texttt{eroga.dta} (available for
+1994 and later; in 1992 the equivalent items appear under Q-prefix codes in
+\texttt{ingresos.dta}) using Q-prefix catalogue codes. Monthly amounts are
+\texttt{ERO\_TRI/3}. Four variables are constructed:
+
+\begin{description}
+  \item[\texttt{savings}] Deposits into savings accounts (Q001 in all waves).
+  \item[\texttt{loans}] Loans made by the household to persons outside the
+    household (Q002 in all waves).
+  \item[\texttt{debt}] Credit-card payments, loan repayments, and mortgage
+    payments. The codes differ slightly: Q003--Q004 plus Q010 for 1994--2002;
+    Q003--Q005 plus Q011 for 2004--2006.
+  \item[\texttt{currency}] Purchase of coins, precious metals, and foreign
+    currency (Q005 for 1992--2002; Q006 for 2004--2006).
+\end{description}
+
+These variables capture household balance-sheet activity rather than current
+income or expenditure. In the mechanisms regressions they test whether PROGRESA
+affects household saving behaviour or debt repayment---channels that could link
+the transfer to long-run welfare and mortality.
+
+%--------------------------------------------------------------------------
+\subsection{PROGRESA Transfer Variables}
+\label{app:enigh_progresa}
+%--------------------------------------------------------------------------
+
+This section documents the construction of two distinct variables used to
+capture PROGRESA exposure in the ENIGH: (i) the \textit{income amount} of
+PROGRESA transfers received by a household or individual (\texttt{progresa\_hh},
+\texttt{progresa\_ind}), and (ii) a binary \textit{beneficiary flag} indicating
+whether any household member holds a PROGRESA scholarship
+(\texttt{progresa\_benef\_hh}, \texttt{progresa\_benef\_ind}). Both variables
+are used as \textit{outcome variables} in the mechanisms analysis; they are
+\textit{not} used to assign program treatment, which is drawn from
+administrative enrollment records (see \texttt{aamr\_011326.do} and
+Section~\ref{sec:data}). The purpose of including them as outcomes is to verify
+that the program's cash transfers are credibly visible in the household survey
+for the treated municipalities, providing a survey-based check on program reach.
+
+\subsubsection{Survey Instrument Evolution}
+\label{app:enigh_evolution}
+
+Table~\ref{tab:enigh_pcodes} summarises how PROGRESA/Oportunidades transfers
+are recorded in the ENIGH income questionnaire across waves.
+
+\begin{table}[h!]
+\centering
+\caption{ENIGH P-Codes for PROGRESA/Oportunidades Transfers, by Wave}
+\label{tab:enigh_pcodes}
+\small
+\begin{tabular}{lllll}
+\hline\hline
+Wave & PROGRESA code & Govt.\ transfers & Non-govt.\ transfers & Notes \\
+\hline
+1992--1996 & --- & P025/P026 & P026/P027 & Program did not exist \\
+1998       & P031 (implicit) & P031 & P032 & Bundled with all institutional grants \\
+2000       & P031 (explicit) & P031 & P032 & SEDESOL annotation in enumerator manual \\
+2002       & P046 (own code) & P043 & P042 & First dedicated PROGRESA code \\
+2004/2005  & P059 (own code) & P056 & P055 & Fully disaggregated \\
+2006       & P059 (own code) & P056 & P055 & Same as 2004/2005 \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+\noindent
+The 2000 ENIGH enumerator manual (\textit{Manual del Entrevistador}, INEGI
+2000) contains an explicit SEDESOL annotation for P031:
+
+\begin{quote}
+\textit{``La Secretar\'ia de Desarrollo Social (SEDESOL) ha implementado un
+mecanismo de ayuda para las familias de escasos recursos (Programa Progresa).
+Cuando los ingresos monetarios sean otorgados por este programa el cual es un
+apoyo econ\'omico que se proporciona en efectivo en la modalidad de beca o
+donativo, se registran en este rengl\'on al miembro del hogar responsable del
+menor.''}
+\end{quote}
+
+This confirms that PROGRESA transfers were directed to P031 for the 2000 wave.
+The same P-code structure applied in 1998, though the 1998 manual did not yet
+contain this annotation.
+
+\subsubsection{Income Amount: Waves 1992--1996}
+
+PROGRESA did not exist prior to 1997. \texttt{progresa\_d = 0} for all
+pre-program waves; \texttt{progresa\_ind} and \texttt{progresa\_hh} are zero
+for all observations in 1992, 1994, and 1996.
+
+\subsubsection{Income Amount: Waves 2002--2006}
+
+Starting in 2002, PROGRESA/Oportunidades has a dedicated P-code (P046 in 2002;
+P059 in 2004--2006). The income variable is constructed directly from these
+codes with no imputation. This is the cleanest identification of PROGRESA
+amounts in the ENIGH.
+
+\subsubsection{Income Amount: Waves 1998 and 2000 --- Imputation}
+\label{app:enigh_imputation}
+
+For 1998 and 2000, P031 aggregates PROGRESA transfers together with all other
+government institutional scholarships and grants. There is no way to
+disentangle them at the respondent level. We use the following imputation,
+applied after appending all waves:
+
+\begin{equation}
+\widehat{\texttt{progresa}}_{i,t} =
+  \bigl(\texttt{benef\_don\_gob}_{i,t}
+    + \texttt{benef\_don\_non\_gob}_{i,t}\bigr)
+  \times \hat{\omega}_{2002}, \quad t \in \{1998, 2000\}
+\label{eq:progresa_share}
+\end{equation}
+
+where $\hat{\omega}_{2002}$ is PROGRESA's share of the combined institutional
+transfer pool in 2002, computed from national sample means:
+
+\begin{equation}
+\hat{\omega}_{2002} =
+  \frac{\overline{\texttt{progresa}}_{2002}}
+       {\overline{\texttt{progresa}}_{2002}
+        + \overline{\texttt{benef\_don\_gob}}_{2002}
+        + \overline{\texttt{benef\_don\_non\_gob}}_{2002}}
+\label{eq:share_2002}
+\end{equation}
+
+The Stata implementation:
+
+\begin{verbatim}
+sum benef_don_non_gob_ind if year == 2002
+local m_benef_non_gob = `r(mean)'
+sum benef_don_gob_ind   if year == 2002
+local m_benef_gob = `r(mean)'
+sum progresa_ind        if year == 2002
+local m_progresa = `r(mean)'
+
+local share_2002 = `m_progresa' / ///
+    (`m_progresa' + `m_benef_gob' + `m_benef_non_gob')
+
+replace progresa_ind = ///
+    (benef_don_non_gob_ind + benef_don_gob_ind) * `share_2002' ///
+    if inlist(year, 1998, 2000)
+\end{verbatim}
+
+\paragraph{Alternative proxies.}
+Two robustness alternatives are also constructed and retained in the dataset:
+
+\begin{description}
+  \item[Alt1: State-level share, same pool.] $\hat{\omega}_{e,2002}$ is
+    computed separately for each state $e$ using state-specific means; falls
+    back to the national mean for states with no positive 2002 observations.
+    Captures geographic variation in PROGRESA rollout without the noise of
+    municipality-level small samples.
+  \item[Alt2: State-level share, government-transfers pool only.] Restricts the
+    denominator to P043 (government institutional transfers) in 2002 and
+    scales only \texttt{benef\_don\_gob\_ind} (P031) in 1998/2000, excluding
+    the non-governmental channel P032. Theoretically cleaner because the SEDESOL
+    annotation directs PROGRESA to the government channel only.
+\end{description}
+
+\paragraph{Identifying assumptions and limitations.}
+The imputation rests on three assumptions, each with caveats:
+
+\begin{enumerate}
+  \item \textit{Stable composition.} PROGRESA's fraction of institutional
+    transfers in 2002 proxies its fraction in 1998/2000. Plausible in highly
+    marginalized rural municipalities, where PROGRESA dominated the
+    institutional transfer category.
+  \item \textit{No over-reporting bias in 2002.} \citet{hernandez2007}
+    document that Oportunidades income in the 2002 ENIGH grew by more than 100
+    percent relative to 2000, versus only 59 percent in administrative budget
+    data, attributable in part to SEDESOL oversampling of beneficiary
+    households. If 2002 PROGRESA income is over-reported, $\hat\omega_{2002}$
+    is inflated and imputed 1998/2000 amounts are biased upward in levels.
+    Within-municipality fixed effects in our DiD estimator absorb any
+    level bias; the concern is relevant only for cross-wave levels comparisons.
+  \item \textit{No contamination from non-PROGRESA transfers.} P031 also
+    includes CONAFE stipends and other institutional grants. In our sample of
+    highly marginalized municipalities, PROGRESA was the dominant government
+    transfer programme, making contamination likely small.
+\end{enumerate}
+
+\subsubsection{Beneficiary Flag}
+\label{app:enigh_benef_flag}
+
+The binary beneficiary indicator (\texttt{progresa\_benef\_ind}) comes from
+the population file \texttt{pob.dta} and captures whether an individual holds a
+current PROGRESA scholarship. Its construction differs by wave:
+
+\begin{table}[h!]
+\centering
+\caption{Construction of \texttt{progresa\_benef\_ind} by ENIGH Wave}
+\label{tab:benef_flag}
+\small
+\begin{tabular}{lll}
+\hline\hline
+Wave & Population variable & Condition \\
+\hline
+1992--1996 & --- & = 0 (program did not exist) \\
+1998       & --- & = 0 (no PROGRESA entry in \texttt{pob.dta}) \\
+2000       & \texttt{PROP\_BECA} & = 1 if \texttt{PROP\_BECA == 5}
+             (\textit{Becas de PROGRESA}) \\
+2002       & \texttt{BECA}       & = 1 if \texttt{BECA == 5} \\
+2004       & \texttt{BECAS}      & = 1 if \texttt{BECAS == 1} \\
+2005/2006  & \texttt{BECA}       & = 1 if \texttt{BECA == 1} \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+\noindent
+The household flag equals one if any member satisfies the individual condition:
+\texttt{bys FOLIO: egen progresa\_benef\_hh = max(progresa\_benef\_ind)}.
+
+Two coverage limitations apply. First, the 1998 population file does not
+contain a scholarship-type variable identifying PROGRESA recipients despite the
+program being active; \texttt{progresa\_benef\_ind = 0} for all 1998
+observations. Second, \texttt{PROP\_BECA == 5} in 2000 identifies only the
+\textit{educational} scholarship component---households with a school-age child
+receiving beca PROGRESA. Nutrition and health transfers disbursed to mothers
+without school-age children are not captured, making the 2000 flag a lower
+bound on true beneficiary status. Since both variables are used as outcomes
+rather than treatment indicators, these limitations affect our ability to
+\textit{detect} program reach in the survey, not the validity of the
+causal identification.
+
+\subsubsection{Role in the Empirical Analysis}
+
+\texttt{progresa\_hh} and \texttt{progresa\_benef\_hh} appear in the mechanisms
+table as dependent variables to verify that program cash is visible in the
+survey among households in high-intensity municipalities. Measurement error
+in these outcome variables inflates standard errors but does not bias the
+difference-in-differences coefficients, which are identified from
+within-municipality variation absorbed by municipality fixed effects.
+
+%--------------------------------------------------------------------------
+\subsection{Deflation and Real Value Construction}
+\label{app:enigh_deflation}
+%--------------------------------------------------------------------------
+
+After all waves are appended, every nominal monetary variable is converted to
+real 2025 USD using a wave-specific conversion factor:
+
+\begin{equation}
+\text{real}_{i,t} = \text{nominal}_{i,t} \times
+  \frac{\text{CPI}_{2025}}{\text{CPI}_{t}} \times
+  \frac{1}{\text{MXN/USD}_{2025}}
+\end{equation}
+
+The Mexican CPI series (base July 2018 = 100) is evaluated at September of
+each survey year, matching the typical ENIGH fieldwork period. The exchange
+rate is the September 2025 MXN/USD rate. The conversion factors used are:
+
+\begin{table}[h!]
+\centering
+\caption{CPI and Exchange-Rate Deflators by Wave}
+\label{tab:deflators}
+\small
+\begin{tabular}{lrr}
+\hline\hline
+Wave & CPI (Sep, base July 2018 = 100) & Combined factor (real 2025 USD / MXN nominal) \\
+\hline
+1992 & 12.443 & $\times (141.197/12.443) \times (1/20.52)$ \\
+1994 & 14.536 & $\times (141.197/14.536) \times (1/20.52)$ \\
+1996 & 27.113 & $\times (141.197/27.113) \times (1/20.52)$ \\
+1998 & 37.327 & $\times (141.197/37.327) \times (1/20.52)$ \\
+2000 & 47.061 & $\times (141.197/47.061) \times (1/20.52)$ \\
+2002 & 52.422 & $\times (141.197/52.422) \times (1/20.52)$ \\
+2004 & 57.298 & $\times (141.197/57.298) \times (1/20.52)$ \\
+2005 & 59.309 & $\times (141.197/59.309) \times (1/20.52)$ \\
+2006 & 61.737 & $\times (141.197/61.737) \times (1/20.52)$ \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+\noindent
+The 1992 wave additionally requires a pre-deflation rescaling by 1/1,000 to
+convert old Mexican pesos to new pesos (redenomination of January 1993).
+For food variables, per-capita versions are generated as \texttt{food / n\_hh}
+and natural-log versions as \texttt{ln(food\_pc)}. For income variables,
+natural logs are generated as \texttt{ln(income)}. All MXN-denominated
+originals are retained with the suffix \texttt{\_mxn}.
+
+%--------------------------------------------------------------------------
+\subsection{Derived Behavioral Indices}
+\label{app:enigh_derived}
+%--------------------------------------------------------------------------
+
+After deflation, three families of derived variables are constructed from the
+real-valued food, health, and financial outflow variables. All monetary inputs
+are in real 2025 USD. Ratios are set to missing when the denominator is zero
+to avoid both arithmetic artifacts and economically meaningless observations
+(e.g., an OTC-to-Rx ratio for a household that never purchased prescription
+drugs). These variables are constructed after the income and food deflation
+loops in \texttt{01\_enigh\_data.do}, immediately before the final
+\texttt{save}.
+
+\subsubsection{Diet Quality Indices}
+\label{app:enigh_diet}
+
+PROGRESA's nutrition component aimed to shift consumption away from
+calorie-dense staple grains toward protein and micronutrient-rich foods
+\citep{hoddinott2008,leroy2008}. Four share variables and one count index
+capture this potential dietary shift:
+
+\begin{align}
+\texttt{protein\_share}    &= \frac{\texttt{meat\_dairy}}{\texttt{food\_exp}}
+    \label{eq:protein_share} \\[4pt]
+\texttt{staples\_share}    &= \frac{\texttt{cereals}}{\texttt{food\_exp}}
+    \label{eq:staples_share} \\[4pt]
+\texttt{vegg\_fruit\_share}&= \frac{\texttt{vegg\_fruit}}{\texttt{food\_exp}}
+    \label{eq:vegg_share} \\[4pt]
+\texttt{unhealthy\_share}  &= \frac{\texttt{sugar\_fat\_drink}
+    + \texttt{alcohol} + \texttt{tobacco}}{\texttt{food\_exp}}
+    \label{eq:unhealthy_share}
+\end{align}
+
+\noindent
+All four are defined only for households with $\texttt{food\_exp} > 0$.
+\texttt{food\_exp} is the sum of cereals, meat/dairy, vegg/fruit,
+sugar/fat/drink, coffee/spices/other, outside food, and packaged and baby food
+(see Section~\ref{app:enigh_food}).
+
+The fifth index is a dietary diversity count:
+\begin{equation}
+\texttt{diversity\_index} = \sum_{c \in \mathcal{C}} \mathbf{1}[\texttt{spend}_c > 0]
+\label{eq:diversity}
+\end{equation}
+where $\mathcal{C} = \{\text{cereals, meat/dairy, vegg/fruit, sugar/fat/drink,
+coffee/spices/other, outside food, alcohol}\}$, giving a score of 0–7.
+Set to missing if \texttt{food\_exp} = 0.
+
+\paragraph{Interpretation.}
+\texttt{staples\_share} is a food insecurity proxy: households under chronic
+caloric scarcity anchor their diet on cheap, filling grains. A PROGRESA effect
+would manifest as a \emph{fall} in \texttt{staples\_share} and a
+\emph{rise} in \texttt{protein\_share}, \texttt{vegg\_fruit\_share}, and
+\texttt{diversity\_index} — directly mapping onto reduced micronutrient
+deficiency and protein-energy malnutrition, pathways linked to lower
+infectious disease mortality and reduced frailty in the elderly
+\citep{leroy2008,barham2013}.
+
+\subsubsection{Healthcare Substitution Ratios}
+\label{app:enigh_healthcare_ratios}
+
+PROGRESA conditionality required bimonthly health clinic visits; the
+behavioral prediction is a shift from self-medication toward formal care.
+Three variables test different facets of this channel:
+
+\begin{align}
+\texttt{rx\_to\_visit\_ratio}  &= \frac{\texttt{drugs\_prescribed}}
+    {\texttt{medical\_outpatient}},
+    \quad \text{if } \texttt{medical\_outpatient} > 0
+    \label{eq:rx_visit} \\[4pt]
+\texttt{otc\_to\_rx\_ratio}    &= \frac{\texttt{drugs\_overcounter}}
+    {\texttt{drugs\_prescribed}},
+    \quad \text{if } \texttt{drugs\_prescribed} > 0
+    \label{eq:otc_rx} \\[4pt]
+\texttt{health\_share}         &= \frac{\texttt{health\_exp}}
+    {\texttt{hh\_expenditure}},
+    \quad \text{if } \texttt{hh\_expenditure} > 0
+    \label{eq:health_share}
+\end{align}
+
+\noindent
+\texttt{health\_exp} $= \texttt{medical\_outpatient} + \texttt{drugs\_prescribed}
++ \texttt{medical\_inpatient} + \texttt{drugs\_overcounter} + \texttt{ortho}$
+(see Section~\ref{app:enigh_health}).
+
+\paragraph{Interpretation.}
+$\texttt{rx\_to\_visit\_ratio}$ captures whether outpatient visits translate
+into prescriptions. A \emph{rise} indicates that formal medical encounters
+produce more follow-through care — consistent with PROGRESA clinic visits
+increasing diagnostic depth. $\texttt{otc\_to\_rx\_ratio}$ captures the
+self-medication intensity: if conditionality shifts households from pharmacy
+runs to clinic visits, this ratio should \emph{fall} post-program. A pure
+income effect without conditionality would not necessarily change
+$\texttt{otc\_to\_rx\_ratio}$, making this ratio a useful diagnostic to
+separate the conditionality channel from the income channel.
+$\texttt{health\_share}$ tests whether health receives a larger fraction of
+the household budget under PROGRESA — an overall budget-allocation channel.
+
+\subsubsection{Financial Stress Composite}
+\label{app:enigh_fin_stress}
+
+Income uncertainty reduction is a plausible indirect mortality channel
+through allostatic load \citep{aizer2016}: households with lower debt burdens
+and positive saving positions face less chronic financial stress, with downstream
+effects on cardiovascular and stress-related mortality. Two variables proxy
+financial stress:
+
+\begin{align}
+\texttt{net\_fin\_position} &= \texttt{savings} - \texttt{debt}
+    \label{eq:net_fin} \\[4pt]
+\texttt{debt\_to\_income}   &= \frac{\texttt{debt}}{\texttt{hh\_earnings}},
+    \quad \text{if } \texttt{hh\_earnings} > 0
+    \label{eq:debt_income}
+\end{align}
+
+\noindent
+\texttt{savings} and \texttt{debt} are monthly real 2025 USD amounts from
+\texttt{eroga.dta} (see Section~\ref{app:enigh_savings}).
+\texttt{hh\_earnings} = \texttt{wage\_hh} + \texttt{indep\_w\_hh} captures
+own-labor income only, excluding transfers, so the denominator is independent
+of the PROGRESA transfer itself — the ratio measures the burden of debt service
+relative to the household's own productive capacity.
+
+\paragraph{Interpretation.}
+A positive treatment effect on \texttt{net\_fin\_position} (savings
+accumulation net of debt service) and a negative effect on
+\texttt{debt\_to\_income} (debt burden relative to earnings) would support
+the financial stress relief channel. These patterns are informative regardless
+of whether income itself rises, because PROGRESA transfers could allow
+households to retire debt even without changing earnings.
+
+\begin{table}[h!]
+\centering
+\caption{Summary of Derived Behavioral Indices}
+\label{tab:derived_indices}
+\small
+\begin{tabular}{llll}
+\hline\hline
+Variable & Formula & Defined when & Predicted direction \\
+\hline
+\texttt{protein\_share}    & meat\_dairy / food\_exp     & food\_exp $> 0$ & $\uparrow$ \\
+\texttt{staples\_share}    & cereals / food\_exp          & food\_exp $> 0$ & $\downarrow$ \\
+\texttt{vegg\_fruit\_share}& vegg\_fruit / food\_exp      & food\_exp $> 0$ & $\uparrow$ \\
+\texttt{unhealthy\_share}  & (sugar+fat+alc+tob) / food\_exp & food\_exp $> 0$ & ambiguous \\
+\texttt{diversity\_index}  & $\sum \mathbf{1}[\text{spend}_c > 0]$ & food\_exp $> 0$ & $\uparrow$ \\[3pt]
+\texttt{rx\_to\_visit\_ratio} & drugs\_Rx / outpatient  & outpatient $> 0$ & $\uparrow$ \\
+\texttt{otc\_to\_rx\_ratio}   & drugs\_OTC / drugs\_Rx  & Rx $> 0$         & $\downarrow$ \\
+\texttt{health\_share}        & health\_exp / hh\_exp   & hh\_exp $> 0$    & $\uparrow$ \\[3pt]
+\texttt{net\_fin\_position} & savings $-$ debt          & always           & $\uparrow$ \\
+\texttt{debt\_to\_income}   & debt / hh\_earnings       & earnings $> 0$   & $\downarrow$ \\
+\hline\hline
+\multicolumn{4}{l}{\footnotesize Predicted direction: under PROGRESA income + conditionality effects.}\\
+\multicolumn{4}{l}{\footnotesize ``ambiguous'': income effect could raise spending on sugar/fat; conditionality unlikely to change it directly.}
+\end{tabular}
+\end{table}
+
+%--------------------------------------------------------------------------
+\subsection{Literature Context}
+\label{app:enigh_lit}
+%--------------------------------------------------------------------------
+
+The challenge of identifying PROGRESA in pre-2002 ENIGH waves is documented
+by \citet{hernandez2007}, who show that the number of income questions grew from
+36 in 2000 to 48 in 2002 to 61 in 2004, and that SEDESOL partially funded the
+2002 ENIGH to achieve representativeness among Oportunidades beneficiaries.
+Researchers requiring clean PROGRESA identification typically adopt one of three
+strategies: (i) use the PROGRESA experimental evaluation surveys (ENCEL/ENCASEH)
+\citep{gertler2004,parker2005,skoufias2001}; (ii) merge administrative enrollment
+records at the municipality level and bypass the survey altogether
+\citep{barham2013}; or (iii) restrict ENIGH-based analysis to 2002 and later
+\citep{parker2008}. Our approach---using 1998/2000 with the share imputation as
+a \textit{dependent} variable check on survey-based program reach---is most
+similar in spirit to strategy (ii), with the ENIGH serving as a validity check
+on the administrative treatment variable rather than as an identification source.
+\citet{barham2013} is the closest existing study to our design: a
+municipality-level DiD exploiting PROGRESA administrative enrollment records and
+vital statistics to estimate effects on elderly mortality.
+
+%--------------------------------------------------------------------------
+% REFERENCES (add to main .bib file)
+%--------------------------------------------------------------------------
+% @article{hernandez2007,
+%   author  = {Hern\'andez Meza, Gonzalo and others},
+%   title   = {Los problemas de comparabilidad de las {ENIGH} y su efecto
+%              en la medici\'on de la pobreza},
+%   journal = {Papeles de Poblaci\'on},
+%   year    = {2007},
+%   number  = {51},
+%   pages   = {95--125}
+% }
+% @article{gertler2004,
+%   author  = {Gertler, Paul},
+%   title   = {Do Conditional Cash Transfers Improve Child Health?},
+%   journal = {American Economic Review},
+%   year    = {2004},
+%   volume  = {94},
+%   number  = {2},
+%   pages   = {336--341}
+% }
+% @article{parker2005,
+%   author  = {Parker, Susan W. and Teruel, Graciela M.},
+%   title   = {Randomization and Social Program Evaluation: The Case of {Progresa}},
+%   journal = {The Annals of the American Academy of Political and Social Science},
+%   year    = {2005},
+%   volume  = {599},
+%   pages   = {199--219}
+% }
+% @article{skoufias2001,
+%   author  = {Skoufias, Emmanuel and Parker, Susan W. and Behrman, Jere R.
+%              and Pessino, Carola},
+%   title   = {Conditional Cash Transfers and Their Impact on Child Work and Schooling},
+%   journal = {Econom\'ia},
+%   year    = {2001},
+%   volume  = {2},
+%   number  = {1},
+%   pages   = {45--96}
+% }
+% @article{barham2013,
+%   author  = {Barham, Tania and Rowberry, Jacob},
+%   title   = {Living longer: The effect of the {Mexican} conditional cash
+%              transfer program on elderly mortality},
+%   journal = {Journal of Development Economics},
+%   year    = {2013},
+%   volume  = {105},
+%   pages   = {226--236},
+%   doi     = {10.1016/j.jdeveco.2013.08.002}
+% }
+% @article{hoddinott2008,
+%   author  = {Hoddinott, John and Bassett, Lucy},
+%   title   = {Conditional Cash Transfer Programs and Nutrition in {Latin America}:
+%              Assessment of Impacts and Strategies for Improvement},
+%   journal = {IFPRI Discussion Paper},
+%   year    = {2008},
+%   number  = {00708}
+% }
+% @article{leroy2008,
+%   author  = {Leroy, Jef L. and Ruel, Marie and Verhofstadt, Ellen},
+%   title   = {The impact of conditional cash transfer programmes on child
+%              nutrition: a review of evidence using a programme theory framework},
+%   journal = {Journal of Development Effectiveness},
+%   year    = {2009},
+%   volume  = {1},
+%   number  = {2},
+%   pages   = {103--129}
+% }
+% @article{aizer2016,
+%   author  = {Aizer, Anna and Eli, Shari and Ferrie, Joseph and Lleras-Muney, Adriana},
+%   title   = {The Long-Run Impact of Cash Transfers to Poor Families},
+%   journal = {American Economic Review},
+%   year    = {2016},
+%   volume  = {106},
+%   number  = {4},
+%   pages   = {935--971}
+% }
+% @incollection{parker2008,
+%   author    = {Parker, Susan W. and Rubalcava, Luis and Teruel, Graciela M.},
+%   title     = {Evaluating conditional schooling-health transfer programs},
+%   booktitle = {Handbook of Development Economics},
+%   year      = {2008},
+%   volume    = {4},
+%   pages     = {3963--3035}
+% }
+%===========================================================================

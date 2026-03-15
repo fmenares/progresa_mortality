@@ -1,0 +1,2641 @@
+Clasificación
+ENIGH
+1996
+
+Decenas de levantamiento
+Decena
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+Descripción
+Del 12 al 18 de Agosto
+Del 22 al 28 de Agosto
+Del 01 al 07 de Septiembre
+Del 11 al 17 de Septiembre
+Del 21 al 27 de Septiembre
+Del 01 al 07 de Octubre
+Del 11 al 17 de Octubre
+Del 21 al 27 de Octubre
+Del 31 de Octubre al 07 de Noviembre
+Del 10 al 16 de Noviembre
+
+Tiempo de construcción de la mayor parte de los muros
+exteriores de la vivienda
+Código
+00
+01 a 97
+98
+99
+
+Descripción
+Para los muros exteriores de la vivienda que tienen menos de un año de
+haberse construido.
+Para los muros exteriores de la vivienda que tienen de uno hasta 97 años
+de haberse construido.
+Para los muros exteriores de la vivienda que tienen 98 y más años de
+haberse construido.
+Para los casos en que los informantes no saben cuanto tiempo tienen de
+construidos la mayor parte de los muros exteriores de la vivienda.
+
+Tiempo de construcción de la mayor parte de los techos de la
+vivienda
+Código
+00
+01 a 97
+98
+99
+
+Descripción
+Para los techos de la vivienda que tienen menos de un año de haberse
+construido.
+Para los techos de la vivienda que tienen de uno hasta 97 años de
+haberse construido.
+Para los techos de la vivienda que tienen 98 y más años de haberse
+construido.
+Para los casos en que los informantes no saben cuanto tiempo tienen de
+construidos la mayor parte de los techos de la vivienda.
+
+Parentesco de los residentes de la vivienda
+Código
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+
+Descripción
+Jefe del hogar.
+Jefe del hogar ausente.
+Esposa (o) o compañera (o).
+Hijos (as) (propios)
+Hijos (as) (Adoptivos, entenados o reconocidos)
+Padres
+Hermanos (as), hermanastros (as)
+Nietos (as)
+Bisnietos (as) y tataranietos (as)
+Abuelos
+Bisabuelos y tatarabuelos
+Tíos (as), primos (as), sobrinos (as) y demás parientes consanguíneos
+Yernos y nueras
+Suegros
+Cuñados (as)
+Concuños (as)
+Tíos (as), primos (as), sobrinos (as) y demás parientes políticos
+Amigos, compadres, ahijados y demás personas que no son parientes del
+jefe del hogar
+Corresidentes
+Servidores domésticos (Sirviente, chofer, jardinero, mozo, etc.) y
+parientes de éstos
+Huéspedes
+
+Sexo
+Código
+1
+2
+
+Descripción
+Hombre.
+Mujer.
+
+Edad
+Código
+00
+01 a 96
+97
+
+Descripción
+Para los menores de 1 año
+Para las personas de 1 a 96 años de edad
+Para las personas de 97 años y más
+
+Tipo de escuela
+Código
+0
+1
+2
+3
+
+Sector
+No aplica
+Escuela pública u oficial
+Escuela privada o particular
+Otros
+
+Nivel de instrucción en educación básica, media o superior
+Código
+
+Nivel de Instrucción
+
+Clasificación
+
+00
+
+Sin instrucción:
+
+01
+
+Preprimaria
+
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+
+Nunca ha asistido a algún centro de enseñanza
+formal ni ha aprobado ningún grado
+Si aprobó el grado de educación básica que
+precede al primer año de primaria
+Si aprobó el 1er. año de primaria
+Si aprobó el 2° año de primaria
+Si aprobó el 3er. año de primaria
+Si aprobó el 4° año de primaria
+Si aprobó el 5° año de primaria
+Si aprobó el ciclo de instrucción primaria
+Si aprobó el 1er. año de secundaria
+Si aprobó el 2° año de secundaria
+Si aprobó el ciclo de instrucción secundaria
+
+1° Primaria
+2° Primaria
+3° Primaria
+4° Primaria
+5° Primaria
+6° Primaria
+1° Secundaria
+2° Secundaria
+3° Secundaria
+Preparatoria, vocacional
+ó normal incompleta
+Para preparatoria o vocacional, si aprobó 1° y
+2° grado; para educación normal, si aprobó de 1
+a 3 años
+Preparatoria, vocacional
+ó normal completa
+Aprobó el último año de educación preparatoria,
+vocacional o normal
+Superior incompleta
+Aprobó algún grado de carrera universitaria,
+politécnica ó normal superior, sin obtener un
+título
+Superior completa
+Terminó alguna carrera universitaria o normal
+superior y obtuvo el título
+Posgrado
+Tiene por lo menos el primer grado aprobado de
+estudios realizados después de obtener el título
+profesional
+Debe materias de secundaria completa
+
+12
+
+13
+
+14
+15
+
+16
+
+Nivel de Instrucción en educación básica, media o superior
+(Equivalencias al Sistema Educativo Nacional de Estudios Realizados en los Estados
+Unidos)
+Niveles Educativos en
+los Estados Unidos
+
+Correspondencia
+
+Equivalencia en el Sistema
+Educativo Nacional
+
+Elementary School
+Junior High
+High School
+University o College
+Master o Doctor
+
+6 años
+3 años
+3 años
+Varía de acuerdo a la carrera
+Varía de acuerdo al posgrado
+
+Primaria
+Secundaria
+Preparatoria o bachillerato
+Superior
+Maestría o doctorado
+
+Nivel de Instrucción de educación técnica o comercial
+Código
+
+Nivel de Instrucción
+
+Descripción
+
+0
+
+Sin instrucción:
+
+Nunca ha asistido a algún centro de enseñanza
+técnica o comercial
+
+1
+2
+
+Técnico si requisito previo:
+Incompleta
+Asistió pero no terminó ningún grado
+Completa
+Terminó una carrera técnica o comercial sin
+necesidad de cursar otro nivel de estudio formal
+
+3
+4
+
+5
+6
+
+Técnico o comercial con primaria:
+Incompleta
+Asistió pero no terminó ningún grado
+Completa
+Terminó una carrera técnica o comercial para la
+cual tuvo que concluir previamente su
+instrucción primaria
+Técnico o comercial con secundaria:
+Incompleta
+Asistió pero no terminó ningún grado
+Completa
+Terminó una carrera técnica o comercial para la
+cual tuvo que concluir previamente su
+educación secundaria
+
+Técnico con preparatoria, vocacional o normal:
+Incompleta
+Asistió pero no terminó ningún grado
+Completa
+Terminó una carrera técnica o comercial para la
+cual tuvo que concluir previamente su
+instrucción preparatoria, vocacional o normal
+La educación técnica se toma en cuenta, siempre que se estudie con la finalidad de
+incorporarse a la fuerza de trabajo.
+7
+8
+
+Becas y créditos educativos
+Código
+0
+1
+2
+3
+4
+
+Descripción
+No aplica
+Beca
+Crédito educativo
+No Sabe
+No tiene
+
+Becas
+Código
+
+Descripción
+
+00
+No aplica
+01
+Becas de APROBEE
+02
+Becas económicas
+03
+Becas académicas
+04
+Becas federales
+05
+Becas provenientes del presupuesto específico de las escuelas públicas
+06
+Becas provenientes del presupuesto específico de las escuelas privadas
+07
+Becas provenientes de otras instituciones públicas
+08
+Becas provenientes de otras instituciones privadas
+Los códigos del 01 al 04 corresponden al programa de becas otorgadas por la Secretaría de
+Educación Pública, (SEP).
+
+Créditos Educativos
+Código
+09
+10
+11
+12
+13
+
+Descripción
+Créditos educativos provenientes de la SEP
+Créditos educativos provenientes del presupuesto específico de las
+escuelas públicas.
+Créditos educativos provenientes del presupuesto específico de las
+escuelas privadas.
+Créditos provenientes de otras instituciones públicas.
+Créditos provenientes de otras instituciones privadas.
+
+Como otorgan la beca o crédito educativo
+Código
+0
+1
+2
+3
+
+Descripción
+No aplica
+En dinero
+Descuento parcial del costo de la colegiatura
+Excención del pago de la colegiatura
+
+Estado Civil
+Código
+
+Descripción
+
+0
+1
+2
+3
+4
+5
+6
+
+No aplica
+Unión libre
+Casado (a)
+Separado (a)
+Divorciado (a)
+Viudo (a)
+Soltero (a)
+
+Clase de Hogar
+Código
+
+Clase
+
+Composición
+
+1
+2
+3
+
+Unipersonal
+Nuclear
+Ampliado
+
+4
+
+Compuesto
+
+5
+
+Corresidentes
+
+Hogar con una persona (generalmente es el jefe).
+Jefe con o sin cónyuge con o sin hijos.
+Jefe con o sin cónyuge con o sin hijos, con otros
+familiares. (Tíos, primos, hermanos, suegros,
+etc.).
+Jefe con miembros familiares y con miembros no
+familiares.
+Jefe y miembros sin lazos de parentesco entre sí.
+
+Para determinar el tipo de hogar no considere a sirvientes, huéspedes ni familiares de éstos.
+
+Tamaño del Hogar
+Se determina por el número de renglones con información en parentesco, sin incluir el jefe
+ausente, huéspedes, servidores domésticos y sus familiares.
+
+Total de residentes de la vivienda que forman parte del hogar
+Se deberá considerar a todos los miembros que residen en el hogar, sin incluir al jefe
+ausente.
+
+Total de hombres y mujeres
+Se deberá anotar el total de residentes del hogar, según corresponda al sexo, sin incluir al
+jefe ausente.
+
+Causas de no trabajo
+
+Población económicamente activa (P.E.A.)
+Código
+00
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+
+Descripción
+No aplica
+Incapacidad temporal (por enfermedad, accidente, maternidad, etc.).
+Por vacaciones.
+Falta de trabajo (Cierre temporal de la empresa, negocio o comercio, pero
+sin haber sido despedido).
+Escasez de materiales para la producción o venta.
+Reparación del equipo de trabajo.
+Está esperando continuar con las labores agrícolas.
+Conflicto laboral o huelga.
+Por mal tiempo.
+Está contratado pero no ha iniciado sus actividades.
+Otros: No trabajó por algún motivo diferente a los anteriores pero sin ser
+desempleado
+Buscó trabajo dentro del país y estaba dispuesto a aceptarlo de
+inmediato.
+Buscó trabajo en el extranjero y estaba dispuesto a aceptarlo de
+inmediato.
+
+Población económicamente inactiva (P.E.I.)
+Código
+13
+14
+15
+16
+17
+18
+
+Descripción
+Rentista
+Pensionado o Jubilado
+Estudiante
+Dedicados a los quehaceres domésticos
+Incapacidad permanente (No está en condiciones físicas y/o mentales
+para trabajar)
+Otros inactivos
+
+Ocupación
+Código
+
+Descripción
+
+00
+11
+12
+13
+14
+21
+41
+
+No Aplica
+Profesionistas.
+Técnicos.
+Trabajadores en la educación.
+Trabajadores del arte, espectáculos y deportes.
+Funcionarios y directivos de los sectores público, privado y social.
+Trabajadores en actividades agrícolas, ganaderas, silvícolas, y de
+caza y pesca.
+Jefes, supervisores y otros trabajadores de control en la fabricación
+artesanal e industrial y en actividades de reparación y mantenimiento.
+Artesanos y trabajadores fabriles en la industria de la transformación y
+trabajadores en actividades de reparación y mantenimiento.
+Operadores de maquinaria fija de movimiento continuo y equipos en el
+proceso de producción industrial.
+Ayudantes, peones y similares en el proceso de la fabricación
+artesanal e industrial y en actividades de reparación y mantenimiento.
+Conductores y ayudantes de conductores de maquinaria móvil y
+medios de transporte.
+Jefes de departamento, coordinadores y supervisores en actividades
+administrativas y de servicios.
+Trabajadores de apoyo en actividades administrativas.
+Comerciantes, empleados de comercio y agentes de ventas.
+Vendedores ambulantes y trabajadores ambulantes en servicios.
+Trabajadores en servicios personales en establecimientos.
+Trabajadores en servicios domésticos.
+Trabajadores en servicios de protección y vigilancia y fuerzas
+armadas.
+Otros trabajadores con ocupaciones no clasificados anteriormente,
+insuficientemente especificado y no especificado.
+
+51
+52
+53
+54
+55
+61
+62
+71
+72
+81
+82
+83
+99
+
+Rama de Actividad
+Descripción
+
+Código
+
+Actividades primarias
+
+1111, 1112, 1200, 1300 y 9710
+
+Actividades extractivas
+
+2100, 2200, 2310, 2320 2910 y 2920
+
+Industria manufacturera
+
+3111, 3112, 3113, 3114, 3115, 3116, 3117, 3118,
+3119, 3121, 3122, 3130, 3140, 3211, 3212, 3213,
+3214, 3220, 3230, 3240, 3311, 3312, 3320, 3410,
+3420, 3511, 3512, 3513, 3521, 3522, 3530, 3540,
+3550, 3560, 3611, 3612, 3620, 3691, 3710, 3720,
+3811, 3812, 3813, 3814, 3821, 3822, 3823, 3831,
+3832, 3833,3841,3842, 3850 y 3900
+
+Electricidad, gas y agua
+
+4100, 4200
+
+Construcción
+
+5011, 5012, 5013, 5014, 5020, 5030, 9720
+
+Comercio
+
+6110, 6120, 6140, 6210, 6220, 6230, 6240, 6250,
+6260, 9750
+
+Restaurantes y hoteles
+
+9310, 9320
+
+Transporte, comunicaciones y
+agencias de viajes
+7111,7112,7113,7120,7130,7200,9790,9731,9732,
+9733
+Servicios privados, asistenciales y financieros 8110, 8120, 8130, 8211, 8212, 8311, 8312, 9510,
+9740
+Servicios de administración pública, defensa y
+saneamiento
+9100
+Servicios de educación, de investigación,
+médicos y de asistencia social
+Otros servicios
+
+9211, 9212, 9221, 9222, 9231, 9232, 9241, 9242
+9411, 9412, 9421, 9422, 9491, 9492, 9250, 9290,
+9520, 9530, 9540, 9611, 9612, 9613, 9800
+
+Nombre de la empresa, negocio o institución
+Código
+0
+1
+2
+3
+
+Descripción
+No aplica
+Si el nombre aparece en el "Listado alfabético de entidades del sector
+público 1996"
+Si no aparece el nombre en el listado y dicha institución o empresa
+pertenece al sector privado.
+Si no aparece el nombre en dicho listado y se tiene la certeza de que
+dicha institución o empresa pertenece al gobierno estatal o municipal.
+
+Posición en el empleo
+Código
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+Descripción
+No aplica
+Obrero o empleado no agropecuario
+Jornalero rural o peón de campo
+Patrón, empleador o propietario de un negocio (de 1 a 5 trabajadores)
+Patrón, empleador o propietario de un negocio (de 6 y más trabajadores)
+Trabajador por cuenta propia
+Trabajador familiar sin retribución de un negocio propiedad del hogar
+Trabajador familiar sin retribución, de un empleado
+Trabajador sin retribución de un negocio o empresa que no es propiedad
+del hogar
+Miembro de una cooperativa
+
+Horas trabajadas
+Código
+00
+01 a 98
+99
+
+Descripción
+No aplica
+Para las personas que trabajaron de una a noventa y ocho horas a la
+semana.
+Para las personas que trabajaron 99 y más horas a la semana.
+
+Días de pago
+Código
+00
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+
+Descripción
+No aplica
+Por día
+Cada 3 días
+Por semana (7 días)
+Por decena (10 días)
+Por quincena (15 días)
+Por mes (30 días)
+Cada 3 meses (90 días)
+Cada 6 meses (180 días)
+Por año (365 días)
+Irregular: Lapsos de tiempo inconstante en el transcurso de un período que
+varía de un día hasta 3 meses.
+Esporádico: Lapsos largos de tiempo (más de 3 meses) sin una frecuencia
+constante.
+
+Prestaciones sociales
+Código
+00
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15
+16
+17
+
+Descripción
+No aplica
+Servicios médicos del IMSS
+Servicios médicos del ISSSTE
+Servicios médicos por parte de PEMEX
+Servicios médicos de la SECMAR
+Servicios médicos de la SEDENA
+Servicios médicos de universidades
+Servicios médicos privados
+Ayuda alimentaria o despensa
+Guarderías o estancias infantiles
+Capacitación (Cursos, becas, etc.)
+Créditos para vivienda
+Préstamos en dinero
+Acceso a actividades recreativas y/o culturales
+Transporte
+Descuento o excención en el pago de servicios (Luz, electricidad,
+teléfono, etc.)
+Otras
+No tiene prestaciones sociales
+
+Tipo de contratación
+Código
+0
+1
+2
+3
+4
+
+Descripción
+No aplica
+Tuvo contrato por tiempo indeterminado (Base, planta o confianza)
+Trabajó por contrato con tiempo u obra determinada
+No firmó contrato
+Otros
+
+Lugar de compra
+Código
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+
+Descripción
+Mercado
+Tianguis o mercado sobre ruedas y vendedores ambulantes
+Tiendas específicas del ramo: misceláneas, tiendas de abarrotes,
+ultramarinos, vinaterías, pollerías, etc.
+Supermercados y tiendas departamentales
+Compras fuera del país
+Restaurantes
+Loncherías, fondas, torterías, antojerías, cocinas económicas, cenadurías.
+cafeterías
+Pulquería, cantina o bares
+Otros
+En el trabajo
+En la escuela
+
+Alimentos y bebidas consumidas fuera del hogar, recibidas como
+prestación
+Código
+2
+3
+
+Descripción
+Pago en Especie
+Regalos
+
+Nivel de educación formal y educación técnica
+Código
+000
+001
+002
+003
+004
+005
+006
+007
+
+Descripción
+No aplica
+Preprimaria
+Primaria
+Secundaria
+Preparatoria, vocacional, normal
+Superior (Licenciaturas, médicos, etc.)
+Posgrado (Maestrías, doctorados, especialidades)
+Carrera técnica o comercial
+
+Instituciones públicas y lugares de compra para productos y
+servicios para el cuidado de la salud
+Código
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15
+
+Descripción
+Mercado
+Tianguis o mercado sobre ruedas y vendedores ambulantes
+Tiendas específicas del ramo
+Supermercado y tiendas departamentales
+Compras fuera del país
+Médicos, laboratorios y hospitales particulares
+Servicios médicos del IMSS
+Servicios médicos del ISSSTE
+Servicios médicos de la SSA
+Servicios médicos del DIF
+Servicios médicos de PEMEX
+Servicios médicos de la SECMAR
+Servicios médicos de la SEDENA
+Servicios médicos de universidades públicas
+Otros servicios médicos: Cruz roja, cruz verde, etc.
+
+Períodos de referencia por decena, Gasto Mensual
+Decena
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+Periodo de Levantamiento
+
+Periodo de Referencia
+
+del 12 al 18 de Agosto
+del 22 al 28 de Agosto
+del 01 al 07 de Septiembre
+del 11 al 17 de Septiembre
+del 21 al 27 de Septiembre
+del 01 al 07 de Octubre
+del 11 al 17 de Octubre
+del 21 al 27 de Octubre
+del 31 de Octubre al 06 de Noviembre
+del 10 al 16 de Noviembre
+
+Julio del 96
+Julio del 96
+Agosto del 96
+Agosto del 96
+Agosto del 96
+Septiembre del 96
+Septiembre del 96
+Septiembre del 96
+Octubre del 96
+Octubre del 96
+
+Períodos de referencia por decena, Gasto Trimestral
+Decena
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+Periodo de Levantamiento
+
+Periodo de Referencia
+
+del 12 al 18 de Agosto
+del 22 al 28 de Agosto
+del 01 al 07 de Septiembre
+del 11 al 17 de Septiembre
+del 21 al 27 de Septiembre
+del 01 al 07 de Octubre
+del 11 al 17 de Octubre
+del 21 al 27 de Octubre
+del 31 de Octubre al 06 de Noviembre
+del 10 al 16 de Noviembre
+
+Mayo a Julio del 96
+Mayo a Julio del 96
+Junio a Agosto del 96
+Junio a Agosto del 96
+Junio a Agosto del 96
+Julio a Septiembre del 96
+Julio a Septiembre del 96
+Julio a Septiembre del 96
+Agosto a Octubre del 96
+Agosto a Octubre del 96
+
+Períodos de referencia por decena, para Gasto Semestral e
+Ingresos Netos del Hogar
+Decena
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+Periodo de Levantamiento
+
+Periodo de Referencia
+
+del 12 al 18 de Agosto
+del 22 al 28 de Agosto
+del 01 al 07 de Septiembre
+del 11 al 17 de Septiembre
+del 21 al 27 de Septiembre
+del 01 al 07 de Octubre
+del 11 al 17 de Octubre
+del 21 al 27 de Octubre
+del 31 de Octubre al 06 de Noviembre
+del 10 al 16 de Noviembre
+
+Febrero a Julio del 96
+Febrero a Julio del 96
+Marzo a Agosto del 96
+Marzo a Agosto del 96
+Marzo a Agosto del 96
+Abril a Septiembre del 96
+Abril a Septiembre del 96
+Abril a Septiembre del 96
+Mayo a Octubre del 96
+Mayo a Octubre del 96
+
+Estrato
+1
+2
+3
+4
+5
+
+Área Metropolitana (AM)
+Localidades de 100,000 y más habitantes
+Localidades de 15,000 a 99,999 habitantes
+Localidades de 2,500 a 14,999 habitantes
+Localidades de menos de 2500 habitantes
+
+Características de la vivienda
+Tipo de vivienda
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+Casa sola que no comparte muros
+Casa sola que comparte muros
+Casa que comparte muros y áreas comunes
+Departamento en edificio o condominio vertical
+Departamento en vecindad
+Cuarto de azotea
+Local usado como vivienda (Bodega, taller, etc.)
+Vivienda móvil
+Refugio
+
+Tenencia de la vivienda
+1
+2
+3
+4
+5
+6
+7
+8
+
+¿Propia y totalmente pagada en terreno propio?
+¿Propia en terreno ejidal o comunal?
+¿Propia en terreno de asentamiento irregular?
+¿Propia y la están pagando?
+¿Rentada o alquilada?
+¿Recibida como prestación?
+¿Prestada?
+Otros
+
+Material predominante en:
+Muros
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15
+
+Cartón, hule, tela, llantas, etc.
+Lámina de cartón
+Carrizo, bambú, palma o tejamanil.
+Embarro o bajareque.
+Lámina de asbesto
+Lámina de asbesto, metálica, fibra de vidrio, plástico o mica.
+Tablaroca
+Madera
+Vidrio o cristal
+Panel de concreto
+Concreto monolítico
+Adobe
+Tabique, ladrillo, tabicón, block
+Piedra o cemento (Incluye cantera)
+Otros materiales.
+
+Techos
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+
+Cartón, hule, tela, llantas, etc.
+Lámina de cartón
+Palma, tejamanil o madera
+Lámina metálica, fibra de vidrio, plástico o mica.
+Carrizo, bambú y terrado
+Lámina de asbesto
+Teja
+Panel de concreto
+Concreto monolítico
+Tabique, ladrillo, tabicón o loza de concreto
+Block
+Vigueta y poliuretano, vigueta y bovedilla, vigueta y cuña (Bóveda)
+Otros materiales.
+
+Pisos
+1
+2
+3
+
+Tierra.
+Cemento o firme.
+Madera, mosaico, loseta de concreto, loseta de plástico u otros recubrimientos.
+
+Servicios en la vivienda
+Agua
+El agua está
+1
+dentro de la vivienda? (Cocina, baño o en algún otro cuarto)
+2
+fuera de la vivienda pero sí dentro del edificio, vecindad o terreno?
+Con que frecuencia llega el agua de la red pública a su vivienda
+1
+De 1 a 3 días por semana
+2
+De 4 a 6 días por semana
+3
+Diario algunas horas al día
+4
+Diario durante todo el día
+5
+Otros
+Entonces de donde obtiene el agua o cuando no le alcanza
+1
+Agua de llave pública
+2
+Agua por pipa de servicio público
+3
+Agua por pipa de servicio particular
+4
+Agua de pozo
+5
+Agua por acarreo (Arroyo, jagüey, río, etc.)
+6
+Otras
+La frecuencia del servicio es
+1
+De 1 a 3 días por semana
+2
+De 4 a 6 días por semana
+3
+Diario algunas horas al día
+4
+Diario durante todo el día
+5
+Otros
+Servicio Sanitario
+1
+Hoyo negro o pozo ciego
+2
+Letrina
+3
+Excusado
+4
+No dispone de servicio sanitario
+Drenaje
+El excusado cuenta con drenaje
+1
+Con desagüe al río, lago, etc.
+2
+Conectado a una fosa séptica?
+3
+Conectado al de la calle
+4
+Con otro tipo de desagüe
+En esta vivienda a donde van a dar las aguas jabonosas, grises o sucias
+1
+Drenaje al suelo, río, lago, etc.
+2
+Drenaje conectado a una fosa séptica
+3
+Drenaje conectado al de la calle
+4
+Drenaje con otro tipo de desagüe
+Basura
+¿Habitualmente qué hace con la basura?
+1
+La tira en el río
+2
+La quema
+
+3
+4
+5
+6
+7
+
+La tira en un terreno baldío o la calle
+La entierra
+La tira en el basurero público
+Utiliza el servicio de recolección publico
+La recicla
+
+Combustible
+¿Habitualmente qué combustible utiliza para cocinar o calentar sus alimentos?
+1
+Leña
+2
+Carbón
+3
+Petróleo
+4
+Electricidad
+5
+Gas
+6
+Otros
+7
+No utiliza
+Electricidad
+¿Cuál es la fuente de donde obtiene la luz?
+1
+Un acumulador
+2
+Una planta particular
+3
+Servicio público
+4
+Otros
+
+Claves de gasto
+Alimentos, bebidas y tabaco
+A.- Alimentos
+1.- Cereales
+A001
+Maíz en grano, pozolero, palomero
+A002
+Harina de maíz
+A003
+Masa de maíz
+A004
+Tortilla de maíz
+A005
+Fécula de maíz (Maicena, polvo para atole)
+A006
+Otros productos de maíz: tostadas, hojuelas, pinole, etc.
+A007
+Harina de trigo (Refinada o integral)
+A008
+Tortilla de harina
+A009
+Galletas saladas
+A010
+Galletas dulces
+A011
+Pan blanco incluya pan molido
+A012
+Pan de dulce
+A013
+Pan de caja
+A014
+Pan de marca (Panecillos y pasteles)
+A015
+Pasta para sopa
+A016
+Otros productos de trigo: pasta para fritura, hojuelas, harina preparada, etc.
+A017
+Arroz en grano
+A018
+Otros productos de arroz: harina, tostado, etc.
+A019
+Avena
+A020
+Otros cereales: centeno, cebada, etc.
+A021
+Frituras procesadas de trigo o maíz
+2.- Carnes
+a) De res y ternera
+A022
+Bistec y milanesa
+A023
+Pulpa (Trozo y molida)
+A024
+Cocido o retazo con hueso
+A025
+Lomo y filete
+A026
+Cortes especiales: t-bone, roast beef agujas, etc.
+A027
+Chuleta y costilla
+A028
+Vísceras: hígado, riñones, sesos, corazón, medula y otras partes de res
+b) De puerco
+A029
+Lomo y pierna
+A030
+Chuleta y costilla
+A031
+Pulpa, bistec, trozo y molida
+A032
+Vísceras: hígado, riñones, sesos, corazón, medula y otras partes de puerco
+c) Aves
+A033
+Pollo en piezas
+A034
+Pollo entero
+A035
+Gallina entera o en piezas
+A036
+Vísceras: corazón, hígado, etc., y otras partes del pollo
+A037
+Otras aves: pavo, pichón, pato, etc.
+
+d) Otras carnes
+A038
+Carnero y borrego
+A039
+Cabrito
+A040
+Otros: conejo, venado, iguana, etc.
+e) Carnes procesadas
+A041
+Jamón
+A042
+Tocino
+A043
+Salchicha
+A044
+Chorizo y longaniza
+A045
+Carnes enchiladas o ahumadas
+A046
+Queso de puerco
+A047
+Carne de res seca: cecina, machaca, rellena, etc.
+A048
+Otros: pastel de pollo, salami, mortadela, etc.
+3.- Pescados y mariscos
+a) Pescados y mariscos frescos
+A049
+Huachinango
+A050
+Mojarra
+A051
+Robalo
+A052
+Mero
+A053
+Cazón, liza y bagre
+A054
+Camarón
+A055
+Otros pescados y mariscos: trucha, jaiba, ostión, almeja, etc.
+b) Pescados y mariscos procesados
+A056
+Sardinas
+A057
+Atún
+A058
+Secos: bacalao, charal, camarón, etc.
+A059
+Otros: abulón, ostión, pulpo, etc.
+4.- Leche y derivados
+a) Leche
+A060
+Pasteurizada
+A061
+No pasteurizada (Bronca)
+A062
+Evaporada
+A063
+Condensada
+A064
+En polvo (Entera o descremada)
+A065
+Maternizada
+A066
+Otras: cabra, burra, etc.
+b) Quesos
+A067
+Fresco
+A068
+Chihuahua
+A069
+Oaxaca y asadero
+A070
+Manchego
+A071
+Amarillo
+A072
+Anejo y cotija
+A073
+Requesón
+A074
+Otros: enchilado, gruyere, parmesano, holandés, crema, etc.
+
+c) Otros derivados de la leche
+A075
+Crema
+A076
+Mantequilla
+A077
+Otros: yoghurt, jocoque, etc.
+5.- Huevos
+A078
+Gallina
+A079
+Otros: tortuga, pato, pavo, etc.
+6.- Aceites y grasas
+A080
+Aceite vegetal
+A081
+Manteca vegetal
+A082
+Manteca de puerco
+A083
+Margarina
+A084
+Otros: aceite de oliva, enjundia, etc.
+7.- Tubérculos
+A085
+Papa
+A086
+Harina de papa para puré
+A087
+Otros: camote, yuca, ñame, betabel, etc.
+A088
+Papas fritas en bolsa
+8.- Verduras, legumbres, leguminosas y semillas
+a) Verduras y legumbres frescas
+A089
+Tomate rojo (Jitomate)
+A090
+Tomate verde
+A091
+Chile serrano y jalapeño
+A092
+Chile poblano para rellenar
+A093
+Otros chiles: habanero, árbol, etc.
+A094
+Cebolla
+A095
+Ajo
+A096
+Aguacate
+A097
+Repollo o col
+A098
+Lechuga
+A099
+Zanahoria
+A100
+Pepino
+A101
+Ejote
+A102
+Chícharo
+A103
+Elote
+A104
+Chayote
+A105
+Calabacitas
+A106
+Nopales
+A107
+Verdolagas, espinacas y acelgas
+A108
+Perejil
+A109
+Cilantro
+A110
+Epazote, pápalo y apio
+A111
+Verduras mixtas en bolsa
+A112
+Otros: alcachofa, quelites, romeritos, rábanos, poro, etc.
+b) Verduras y legumbres procesadas
+A113
+Chiles envasados
+A114
+Chiles secos o en polvo
+A115
+Verduras envasadas (Incluya aceitunas)
+A116
+Verduras y legumbres congeladas
+
+c) Leguminosas
+A117
+Frijol
+A118
+Garbanzo
+A119
+Otras: lentejas, haba, etc.
+d) Leguminosas procesadas
+A120
+Frijol (en caja o lata)
+A121
+Otras leguminosas (en lata o secas)
+e) Semillas
+A122
+Semillas a granel (Nuez, piñón, almendra, cacahuate, etc.)
+A123
+Semillas envasadas (Nuez, piñón, almendra, cacahuate, etc.)
+9.- Frutas
+a) Frutas frescas
+A124
+Naranja
+A125
+Limón
+A126
+Otros cítricos: lima, toronja, mandarina, etc.
+A127
+Plátano tabasco
+A128
+Otros plátanos: macho, dominico morado y manzano
+A129
+Manzana o perón
+A130
+Pera
+A131
+Durazno y chabacano
+A132
+Ciruela
+A133
+Fresa
+A134
+Guayaba
+A135
+Mango
+A136
+Mamey
+A137
+Papaya
+A138
+Melón
+A139
+Sandía
+A140
+Piña
+A141
+Jícama
+A142
+Uva
+A143
+Otras: guanábana, granada, tuna, higo, coco, tamarindo, etc.
+b) Frutas procesadas
+A144
+Almíbar o conserva: durazno, mango, piña, cereza, etc.
+A145
+Cristalizadas y secas: pasitas, dátiles, chabacano, etc.
+A146
+Otras: frutas endulzadas, enchiladas, etc.
+10.- Azúcar y mieles
+A147
+Azúcar (Blanca y morena)
+A148
+Miel de abeja
+A149
+Otras: glass, moscabada, piloncillo, miel de maíz, etc.
+11.- Café, té, chocolate
+A150
+Café tostado (en grano o molido)
+A151
+Café sin tostar (en grano)
+A152
+Café soluble o instantáneo
+A153
+Hojas para té (Manzanilla, naranja, etc.)
+A154
+Té soluble o instantáneo
+A155
+Chocolate en tableta o en polvo
+A156
+Otros: cocoa, etc.
+
+12.- Especias y Aderezos
+A157
+Sal
+A158
+Pimienta, clavo y comino
+A159
+Canela
+A160
+Mayonesa
+A161
+Mostaza
+A162
+Salsa catsup
+A163
+Salsas picantes
+A164
+Mole
+A165
+Concentrados de pollo y tomate
+A166
+Vinagre
+A167
+Otros condimentos: aderezos, ablandadores, polvo para hornear
+13.- Otros alimentos
+a) Alimentos preparados para bebé
+A168
+Alimentos colados y picados de cualquier combinación
+A169
+Cereales, sopas y galletas para bebé
+A170
+Jugos de frutas y verduras de cualquier combinación
+b) Alimentos preparados (para consumir en casa)
+A171
+Carnitas y chicharrón
+A172
+Pollos rostizados
+A173
+Barbacoa
+A174
+Birria
+A175
+Pizzas
+A176
+Otros: sopa, guisados, ensaladas, tortas, encurtidos, etc.
+c) Alimentos diversos
+A177
+Chapulines, gusano de maguey, etc.
+d) Dulces y postres
+A178
+Gelatinas, flanes y pudines en polvo
+A179
+Gelatinas, flanes y pudines
+A180
+Paletas, caramelos y otras golosinas
+A181
+Cajetas, jamoncillos y dulces de leche
+A182
+Mermeladas, ates, jaleas y crema de cacahuate
+A183
+Helados y nieves
+A184
+Otros: chilacayote, cocada, visnaga, alegrías, etc.
+14.- Servicio de molino
+A185
+Nixtamal y otros
+A186
+Gastos conexos para preparar alimentos
+15.- Alimentos para animales domésticos
+A187
+Animales de esparcimiento
+A188
+Animales para trabajo y de producción
+16.- Bebidas
+1.- Bebidas no alcohólicas
+A189
+Refrescos o bebidas con o sin gas y jugos naturales
+A190
+Agua mineral (con o sin sabor)
+A191
+Jugos y néctares enlatados
+A192
+Agua purificada
+A193
+Concentrado y polvo para preparar agua
+
+A194
+
+Otros: hielo, granadina, jarabe natural, etc.
+
+2.- Bebidas alcohólicas
+A195
+Cerveza
+A196
+Brandy
+A197
+Pulque
+A198
+Tequila
+A199
+Whisky
+A200
+Ron
+A201
+Aguardiente, mezcal, sotol
+A202
+Vinos de mesa
+A203
+Otros: sidra, rompope, jerez cremas, vodka, etc.
+A204
+Bebidas preparadas
+B.- Alimentos y bebidas consumidas fuera del hogar
+A205
+1) Desayuno
+A206
+2) Comida
+A207
+3) Cena
+A208
+4) Entrecomidas
+C.- Tabaco
+A209
+Cigarros
+A210
+Puros
+A211
+Tabaco (en hoja y picado)
+
+Transporte público
+B001
+B002
+B003
+B004
+B005
+B006
+B007
+
+Metro
+Autobús
+Trolebús, tranvía
+Colectivo (Pesero)
+Taxi, radio taxi (Sitio)
+Autobús foráneo
+Otros (Bono de transporte, carretas; etc.)
+
+Limpieza y cuidado de la casa
+A. Artículos de limpieza y cuidado de la casa
+C001
+Detergentes
+C002
+Jabón de barra
+C003
+Blanqueadores
+C004
+Limpiadores (en polvo o líquido)
+C005
+Papel sanitario
+C006
+Servilletas y papel absorbente
+C007
+Platos y vasos desechables, papel aluminio y encerado
+C008
+Escobas y trapeadores
+C009
+Fibras, estropajos y escobetas
+C010
+Jergas y trapos de cocina
+C011
+Cerillos
+C012
+Pilas
+C013
+Focos
+C014
+Cera y limpia muebles
+C015
+Insecticidas
+C016
+Desodorante ambiental y sanitario
+C017
+Recipientes de lámina (Cubetas, tinas, etc.)
+C018
+Recipientes de plástico (Cubetas, tinas, mangueras, etc.)
+C019
+Otros artículos: suavizantes de telas, etc.
+B. Servicios para el hogar
+C020
+Servicio doméstico
+C021
+Lavandería
+C022
+Tintorería
+C023
+Jardinería
+C024
+Otros servicios: fumigación, etc.
+
+Cuidados personales
+A. Artículos para el cuidado personal
+D001
+Jabón de tocador
+D002
+Lociones y perfumes
+D003
+Pasta dental y enjuague bucal
+D004
+Champús, tintes y enjuagues
+D005
+Desodorante
+D006
+Crema, brillantina y crema para afeitar
+D007
+Navajas y rastrillos para afeitar
+D008
+Polvo y maquillaje facial
+D009
+Sombra, lápiz labial y de cejas, delineador, etc.
+D010
+Artículos de tocador para bebé
+D011
+Pañuelos desechables
+D012
+Pañales desechables
+D013
+Toallas sanitarias
+D014
+Cepillo, peine y cepillo dentrífico
+D015
+Artículos eléctricos (Rasuradora, secadora, etc.)
+D016
+Reparación y/o mantenimiento de artículos anteriores
+D017
+Otros: esmaltes y limas para uñas, pasadores, etc.
+B. Servicios para el cuidado personal
+D018
+Corte de cabello y peinado
+D019
+Baños y masajes
+D020
+Permanentes y tintes
+D021
+Manicure
+D022
+Otros servicios: rasurar, depilar, etc.
+
+Educación, cultura y recreación
+A. Servicios de educación
+E001
+Preprimaria
+E002
+Primaria
+E003
+Secundaria
+E004
+Preparatoria, vocacional o normal
+E005
+Superior (Licenciaturas, médicos, etc.)
+E006
+Posgrado (Maestrías, doctorados, especialidades)
+E007
+Carrera técnica o comercial
+B. Servicios de educación
+E008
+Estancias infantiles (Excepto preprimaria)
+E009
+Enseñanza adicional
+E010
+Educación especial para discapacitados
+E011
+Internados
+E012
+Cuidado de niños (Persona particular)
+E013
+Transporte escolar
+C. Artículos educativos
+E014
+Libros para la escuela
+E015
+Material escolar: cuadernos, carpetas, etc.
+E016
+Equipo escolar: máquinas de escribir, calculadoras, etc.
+E017
+Material para actividades tecnológicas (Educación formal)
+E018
+Material para Educación Técnica
+E019
+Material para Educación Adicional
+E020
+Reparación y/o mantenimiento de equipo escolar
+
+D. Artículos de cultura y recreación
+E021
+Enciclopedias y libros (Excluya los de la escuela)
+E022
+Periódicos
+E023
+Revistas
+E024
+Audiocassete, discos y discos compactos
+E025
+Otros
+E. Servicios de recreación
+E026
+Cines
+E027
+Teatros y conciertos
+E028
+Bares y Centros nocturnos (Incluye alimentos, bebidas tabaco, cover, propinas,
+etc.)
+E029
+Espectáculos deportivos
+E030
+Lotería y juegos de azar
+E031
+Cuotas a: centros sociales, asociaciones, clubes, etc.
+E032
+Servicio de televisión por cable, satélite, pago por evento y paquetes.
+E033
+Renta de: cassetes para video juego, discos compactos y video cassete.
+E034
+Otros gastos de recreación: circos, museos, ferias, juegos mecánicos, balnearios,
+etc.
+
+Comunicaciones y servicios para vehículos
+A. Comunicaciones
+F001
+Teléfono particular
+F002
+Teléfono público
+F003
+Correo: estampillas, paquetería, etc.
+F004
+Telégrafo
+F005
+Otros: Telex, giros, fax público, etc.
+B. Combustible, Mantenimiento y Servicios para vehículos
+F006
+Gasolina, diesel o gas
+F007
+Aceites y lubricantes
+F008
+Pensión y estacionamiento
+F009
+Lavado y engrasado
+F010
+Otros servicios: encerado, reparación de llantas, etc.
+
+Vivienda y servicios de conservación
+A.
+Vivienda
+B.
+1. Propia
+G001
+Valor estimado del alquiler
+G002
+Cuota pagada
+G003
+Agua
+G004
+Impuesto predial
+2. Rentada o alquilada
+G005
+Alquiler
+G006
+Agua
+3. Recibida como prestación
+G007
+Valor estimado del alquiler
+G008
+Agua
+G009
+Cuota o pago por la vivienda
+4. Prestada
+G010
+Valor estimado del alquiler
+G011
+Agua
+G012
+Impuesto predial
+5. Alquiler de terrenos para uso exclusivo de la vivienda
+G013
+Alquiler
+G014
+Agua
+6. Otra situación de la vivienda
+G015
+Valor estimado del alquiler
+G016
+Cuota, renta o pago por la vivienda
+G017
+Agua
+G018
+Impuesto predial
+7. Sólo para hogares adicionales
+G019
+Cuota, renta o pago por la vivienda
+G020
+Agua
+G021
+Impuesto predial
+B. Servicios por conservación
+1. Cuota por servicios de conservación
+G022
+Recolección de basura
+G023
+Cuotas de vigilancia
+G024
+Cuotas de administración
+G025
+Otros servicios
+2. Electricidad y combustible
+G026
+Energía eléctrica
+G027
+Gas
+G028
+Petróleo
+G029
+Carbón
+G030
+Leña
+G031
+Combustible para calentar
+G032
+Velas y veladoras
+G033
+Otros combustibles: cartón, papel, etc.
+
+Prendas de vestir, calzado y accesorios
+A. Para personas de 3 años y más
+H001
+Pantalones para hombre de fibras sintéticas
+H002
+Pantalones para hombre de mezclilla
+H003
+Otros pantalones para hombre
+H004
+Pantalones para mujer de fibras sintéticas
+H005
+Pantalones para mujer de mezclilla
+H006
+Otros pantalones para mujer
+H007
+Camisas para hombre
+H008
+Playeras para hombre
+H009
+Blusas y playeras para mujer
+H010
+Trajes
+H011
+Sacos para hombre
+H012
+Vestidos
+H013
+Conjuntos
+H014
+Faldas
+H015
+Suéteres
+H016
+Abrigos
+H017
+Chamarras y chaquetas
+H018
+Calzoncillos y truzas
+H019
+Camisetas
+H020
+Calcetines, calcetas y mallas
+H021
+Pantaletas
+H022
+Brasieres y fajas
+H023
+Fondos y corpiños
+H024
+Medias, pantimedias y tobimedias
+H025
+Pijamas y camisones
+H026
+Batas
+H027
+Gabardinas
+H028
+Impermeables y mangas
+H029
+Uniformes y prendas de vestir para actividades educativas, artísticas y deportivas
+H030
+Vestimenta para eventos especiales derivados de la educación
+H031
+Telas, confecciones y reparaciones
+H032
+Otras prendas para hombre (Corbatas, etc.)
+H033
+Otras prendas para mujer (Rebozo, etc.)
+B. Para menores de 3 años
+H034
+Pañales de tela
+H035
+Calzones de hule
+H036
+Pantalones
+H037
+Vestidos, trajes y mamelucos
+H038
+Blusas y playeras
+H039
+Suéteres y chambritas
+H040
+Camisetas
+H041
+Calzones de tela
+H042
+Calcetines y calcetas
+H043
+Pijamas y batas
+H044
+Telas, confecciones y reparación
+H045
+Otras prendas para bebé: baberos, delantales, fajillas, etc.
+C. Calzado y su reparación
+H046
+Zapatos de piel para hombre
+H047
+Zapatos de piel para mujer
+H048
+Zapatos de piel para menores de 3 años
+H049
+Zapatos de plástico para hombre
+
+H050
+H051
+H052
+H053
+H054
+H055
+
+Zapatos de plástico para mujer
+Zapatos de plástico para menores de 3 años
+Tenis
+Otros tipos de calzado: huaraches, etc.
+Servicios de limpieza y reparación de calzado
+Otros: agujetas, cremas, cepillos, etc.
+
+D. Accesorios y efectos personales
+H056
+Sombreros, gorros y cachuchas
+H057
+Bolsas
+H058
+Portafolios
+H059
+Cinturones, carteras, monederos
+H060
+Joyería de fantasía
+H061
+Relojes de pulso
+H062
+Encendedores, cigarreras y polveras
+H063
+Otros accesorios: diademas, lentes oscuros, etc.
+H064
+Artículos y accesorios para el bebé.
+H065
+Reparación y/o mantenimiento de los artículos anteriores
+
+Cristalería, blancos y utensilios domésticos
+A. Cristalería, vajillas y utensilios domésticos
+I001
+Vajilla completa de cristal, barro, plástico, etc.
+I002
+Piezas sueltas de vajilla de cristal, barro, plástico, etc.
+I003
+Recipientes o cajas de plástico para la cocina
+I004
+Vasos, copas y jarras de cristal, plástico, cerámica, etc.
+I005
+Cubiertos
+I006
+Objetos ornamentales
+I007
+Accesorios de hule y plástico: jabonera, tapetes, etc.
+I008
+Reloj de pared o mesa
+I009
+Batería de cocina y piezas sueltas
+I010
+Olla express
+I011
+Otros utensilios: tijeras, abrelatas, pinzas para hielo, etc.
+I012
+Herramientas: pinzas, martillo, taladro, etc.
+I013
+Reparación y/o mantenimiento de los artículos anteriores
+B. Blancos, mantelería y artículos de mercería
+I014
+Colchones
+I015
+Colchonetas
+I016
+Cobertores y cobijas
+I017
+Sábanas
+I018
+Fundas
+I019
+Colchas
+I020
+Manteles y servilletas
+I021
+Toallas
+I022
+Cortinas
+I023
+Telas, confecciones y reparaciones de artículos para el hogar
+I024
+Hilos, hilazas y estambres
+I025
+Agujas, cierres, botones y broches
+I026
+Otros artículos: hamacas, almohadas, cojines, secadores, etc.
+
+Cuidados de la salud
+A. Atención primaria o ambulatoria (No hospitalaria ni embarazo)
+J001
+Consultas médicas
+J002
+Consultas dentales
+J003
+Consultas con el oculista, optometrista u oftalmólogo
+J004
+Medicamentos recetados y vacunas
+J005
+Análisis clínicos
+J006
+Rayos X, ultrasonidos, tomografías, electroencefalogramas, etc.
+J007
+Hierbas medicinales, amuletos y remedios caseros
+J008
+Servicios no profesionales (Curandero, huesero, etc.)
+J009
+Otros: ambulancias, aplicaciones de inyecciones, etc.
+B. Atención hospitalaria (No incluye parto)
+J010
+Honorarios por servicios profesionales
+J011
+Medicamentos recetados
+J012
+Análisis clínicos
+J013
+Estudios médicos: Rayos X, ultrasonidos, tomografías, electrocardiogramas
+J014
+Hospitalización
+J015
+Otros: ambulancias, etc.
+C. Servicios médicos y medicamentos durante el embarazo
+J016
+Consultas médicas
+J017
+Servicios de partera
+J018
+Medicamentos recetados
+J019
+Análisis clínicos
+J020
+Estudios médicos: Rayos X, ultrasonido, etc.
+J021
+Servicios no profesionales (Comadrona, bruja, etc.)
+J022
+Hierbas medicinales, remedios caseros y otros
+J023
+Hospitalización durante el embarazo no parto
+J024
+Otros: Aplicación, inyecciones, ambulancias
+D. Servicios médicos durante el parto
+J025
+Honorarios por servicios profesionales
+J026
+Servicios de partera
+J027
+Medicamentos recetados
+J028
+Hospitalización, sanatorios, clínicas, etc.
+J029
+Análisis clínicos
+J030
+Estudios médicos, rayos X, ultrasonido, etc.
+J031
+Servicios no profesionales (Comadrona, curandero, etc.)
+J032
+Otros: ambulancias, etc.
+E. Medicamentos sin receta
+J033
+Material para primeros auxilios (Algodón, gasa, jeringas, etc.)
+J034
+Anticonceptivos
+J035
+Vitaminas
+J036
+Analgésicos, antibióticos, antidiarréicos
+J037
+Jarabes, tónicos y brebajes
+J038
+Otros medicamentos sin receta
+F. Aparatos ortopédicos y terapéuticos
+J039
+Anteojos y lentes de contacto
+J040
+Placas y puentes dentales
+J041
+Aparatos para sordera
+J042
+Otros aparatos: ortopédicos (Muletas, sillas de ruedas, etc.)
+J043
+Reparación y/o mantenimiento de los aparatos anteriores
+
+G. Seguro médico
+J044
+Cuotas a hospitales o clínicas
+J045
+Cuotas a compañías aseguradoras
+
+Enseres domésticos y mantenimiento de la vivienda
+A. Enseres domésticos
+K001
+Ventilador
+K002
+Aparatos telefónicos
+K003
+Aparatos de aire acondicionado
+K004
+Máquina de coser
+K005
+Cocina integral
+K006
+Estufa de gas
+K007
+Estufas de otros combustibles (Petróleo, carbón, etc.)
+K008
+Refrigerador
+K009
+Licuadora
+K010
+Batidora
+K011
+Plancha
+K012
+Extractor de jugos
+K013
+Lavadora
+K014
+Aspiradora
+K015
+Calentador de gas
+K016
+Calentador de otros combustibles
+K017
+Lámparas eléctricas
+K018
+Lámparas de otros combustibles
+K019
+Otros aparatos: tostador, calefactor, horno de microondas, etc.
+K020
+Reparación y/o mantenimiento de los artículos anteriores
+B. Muebles
+K021
+Juego de recámara
+K022
+Piezas sueltas de recámara (Camas, tocadores, literas, cunas, cómodas, buros,
+roperos, etc.)
+K023
+Juego de comedor o antecomedor
+K024
+Piezas sueltas para comedor o antecomedor (Mesa, silla, etc.)
+K025
+Juego de sala
+K026
+Piezas sueltas para sala (Mesa de centro, etc.)
+K027
+Muebles para cocina (Gabinete, mesa, etc.)
+K028
+Alfombras y tapetes
+K029
+Otros muebles: librero, escritorio, mesa para t.v., etc.
+K030
+Reparación y/o mantenimiento de los artículos anteriores
+C. Mantenimiento, reparación y ampliación de la vivienda que habita el hogar.
+K031
+Materiales para: reparación, mantenimiento y ampliación
+K032
+Servicios de: reparación, mantenimiento y ampliación, etc.
+D. Mantenimiento, reparación, ampliación y construcción de la vivienda que no habita el
+hogar.
+K033
+Materiales para: reparación, mantenimiento, ampliación y construcción
+K034
+Servicios para: reparación, mantenimiento, ampliación y construcción
+
+Artículos de esparcimiento
+A. Artículos y equipo audiovisual
+L001
+Radio y radio despertador sin tocacintas
+L002
+Estéreo o modular
+L003
+Grabadora con o sin despertador excepto con disco compacto
+L004
+T. V. blanco y negro
+L005
+T. V. color
+L006
+Videocassetera
+L007
+Computadora
+L008
+Antena parabólica
+L009
+Accesorios: bocinas, audífonos, antena aérea, etc.
+L010
+Videocassetes
+L011
+Reproductor de discos compactos para vehículo y auto estéreo
+L012
+Reproductor de disco compacto
+L013
+Alquiler de t.v. y equipo
+L014
+Otros aparatos: regresadora de video, reproductor de cassete personal (Walkman),
+etc.
+L015
+Reparación y mantenimiento de los artículos anteriores
+B. Equipo fotográfico y de video
+L016
+Proyectores
+L017
+Cámaras fotográficas y de video
+L018
+Material fotográfico, películas, lentes, etc.
+L019
+Otros artículos y servicios: tripie, alquiler de equipo: proyectores, etc.
+L020
+Reparación y mantenimiento de los artículos anteriores
+C. Otros artículos de esparcimiento
+L021
+Juguetes
+L022
+Juegos electrónicos, videojuegos
+L023
+Instrumentos musicales
+L024
+Artículos de deporte y cacería
+L025
+Artículos de jardinería: plantas, flores, macetas, tierra, abono, etc.
+L026
+Reparación y mantenimiento de los artículos anteriores
+L027
+Compra y cuidado de animales domésticos (Excluya alimentación)
+
+Transporte
+A. Servicios de transporte
+M001
+Transporte foráneo
+M002
+Transporte ferroviario
+M003
+Transporte aéreo
+M004
+Servicios de carga y mudanza
+M005
+Cuotas de autopista
+M006
+Otros: lancha, barco, carreta, alquiler de vehículos, etc.
+B. Adquisición de vehículos de uso particular
+M007
+Automóvil y/o guayin
+M008
+Camioneta (Pick Up)
+M009
+Motoneta y motocicleta
+M010
+Bicicleta
+M011
+Otros: remolque, lancha, etc.
+C. Refacciones, partes, accesorios y mantenimiento de vehículos
+M012
+Llantas
+M013
+Acumulador
+M014
+Refacciones: bujías, bandas, filtros, etc.
+M015
+Partes de vehículos: vidrios, salpicadera, etc.
+M016
+Accesorios: espejos, manijas, antenas, etc.
+M017
+Servicio de afinación, alineación y balanceo
+M018
+Otros servicios: ajuste de motor, de frenos, hojalatería, pintura, etc.
+
+Otros gastos
+A. Gastos diversos
+N001
+Servicios profesionales: abogados, notarios, arquitectos, etc. (no incluya médicos)
+N002
+Funerales, cementerios
+N003
+Paquetes para fiesta (Salón, comida, orquesta)
+N004
+Gastos turísticos: paquetes, hospedaje, alimentos, tours, etc.
+N005
+Hospedaje o alojamiento (con o sin alimento)
+N006
+Gastos en cargos comunales para festividades locales
+N007
+Contribuciones para obras de servicio público local
+N008
+Seguros de automóvil
+N009
+Seguros contra incendio, daños, riesgos, educación y seguro de vida
+N010
+Otros gastos diversos no comprendidos en las categorías anteriores
+B. Transferencias
+N011
+Indemnizaciones pagadas a terceros
+N012
+Pérdidas y robos en dinero (Excluya negocios)
+N013
+Ayuda a parientes y personas no miembros del hogar (en dinero)
+N014
+Contribuciones a instituciones benéficas, iglesias, cruz roja (en dinero), incluye los
+servicios eclesiásticos
+N015
+Servicios del sector público: expedición de pasaportes, actas, títulos, etc.
+N016
+Trámites para vehículos: licencias, tenencias, placas, verificación vehicular, etc.
+
+Erogaciones financieras y de capital
+Q001
+Q002
+Q003
+Q004
+Q005
+Q006
+Q007
+Q008
+Q009
+Q010
+Q011
+Q012
+Q013
+Q014
+Q015
+T905
+
+Depósitos en cuentas de ahorros, tandas, cajas de ahorro, etc.
+Préstamos a terceros
+Pagos a tarjeta de crédito bancaria o casa comercial
+Pago de deudas a la empresa donde trabajan y/o a otras personas o instituciones
+(Excluya créditos hipotecarios)
+Compra de monedas nacionales o extranjeras, metales preciosos, alhajas, obras
+de arte, etc.
+Seguro de vida
+Herencias, dotes y legados
+Compra de casas, condominios, locales o terrenos que no habite el hogar
+Compra de terrenos, casas o condominios que habita el hogar
+Pago de hipotecas de bienes inmuebles: casas, terrenos, edificios, etc.
+Otras erogaciones no consideradas en las preguntas anteriores
+Compra de maquinaria, equipo, animales destinados a la producción, etc.,
+utilizados en negocios propiedad del hogar
+Balance negativo en negocios propiedad del hogar no agropecuario y agropecuario
+Compra de valores: cédulas, acciones y bonos
+Compra de marcas, patentes y derechos de autor
+Erogaciones regaladas
+
+Ingresos netos del hogar
+A. Ingresos netos por remuneraciones al trabajo
+P001
+Sueldos, salarios, jornal y horas extras
+P002
+Comisiones, propinas y destajo
+P003
+Aguinaldo, gratificaciones, premios y recompensas adicionales
+P004
+Primas vacacionales y otras prestaciones en efectivo
+P005
+Reparto de utilidades
+B. Ingresos netos de negocios propios
+P006
+Negocios industriales
+P007
+Negocios comerciales
+P008
+Prestación de servicios
+P009
+Producción agrícola
+P010
+Producción pecuaria y derivados
+P011
+Producción forestal
+P012
+Recolección de flora, productos forestales y caza
+P013
+Acuacultura y pesca
+C. Ingresos netos por cooperativas
+P014
+Sueldos o salarios
+P015
+Ganancias o utilidades
+D. Ingresos netos por renta de la propiedad
+P016
+Alquiler de tierras y terrenos
+P017
+Alquiler de casa, edificios, locales y otros inmuebles
+P018
+Intereses provenientes de inversiones a plazo fijo
+P019
+Intereses provenientes de cuentas de ahorro
+P020
+Intereses provenientes de préstamos a terceros
+P021
+Intereses provenientes de acciones, bonos y cédulas
+P022
+Alquiler de marcas, patentes y derechos de autor
+E. Transferencias
+P023
+Jubilaciones y/o pensiones
+P024
+Indemnizaciones recibidas de seguros contra riesgos y terceros
+P025
+Indemnizaciones por despido y accidentes de trabajo
+P026
+Becas y donativos provenientes de instituciones
+P027
+Regalos y donativos originados dentro del país
+P028
+Ingresos provenientes de otros países
+P029
+Beneficio de PROCAMPO
+F. Otros Ingresos corrientes
+P030
+Venta de vehículos, aparatos eléctricos de segunda mano, etc.
+P031
+Otros ingresos corrientes no considerados en los anteriores
+
+Percepciones financieras y de capital
+P032
+P033
+P034
+P035
+P036
+P037
+P038
+P039
+P040
+P041
+P042
+P043
+
+Retiro de inversiones, ahorros, tandas, cajas de ahorros, etc.
+Ingresos por préstamos a terceros que hizo a otras personas no miembros del
+hogar
+Préstamos de personas no miembros del hogar o instituciones (Excluya préstamos
+hipotecarios)
+Venta de monedas, metales preciosos, joyas y obras de arte
+Venta de valores, acciones, cédulas y bonos
+Venta de derechos de autor, patentes y marcas
+Herencias, dotes, loterías y legados
+Venta de casas, terrenos, condominios, etc.
+Venta de maquinaria, equipos, animales destinados a la producción, vehículos, etc.
+utilizados en el negocio propiedad del hogar
+Préstamos hipotecarios por bienes inmuebles: casas, terrenos, edificios y locales
+Seguros de vida
+Otras percepciones de capital no consideradas en las anteriores
+
+

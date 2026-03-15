@@ -1,0 +1,81 @@
+Construcción de variables sociodemográficas ENIGH 1994
+Concepto
+
+Criterios
+
+Total de hogares
+
+Se deben incluir a todos los folios de VIVENDA
+
+Total de viviendas
+
+Se deben incluir todos los folios con
+terminación cero de VIVIENDA
+
+Población total
+
+Se deben incluir a todas las personas
+reportadas en PERSONAS excluyendo al
+código 02 de PARENTESCO
+
+Población objeto
+
+Se deben incluir a todas las personas
+reportadas en PERSONAS excluyendo al
+código 02, 20 y 21 de PARENTESCO
+
+Perceptores
+Perceptores de ingreso
+
+Incluir a todas las personas que tengan
+código 1 en PER_ING de PERSONAS
+
+Perceptores de ingreso corriente
+
+Incluir a todas las personas que reportaron
+percibir ingresos en PER_ING igual a 1 y en
+cualquiera de las claves P001 a P030 y
+P042, excluyendo de la P011 a P014 de
+INGRESO
+
+Perceptores de capital
+
+Incluir a todas las personas que reportaron
+percibir ingresos en PER_ING igual a 1 y en
+cualquiera de las claves P031 a la P042
+excluyendo P036, P037 y P041 de
+INGRESO
+
+PEA (Población económicamente activa)
+
+Incluir a todas las personas que reportaron
+por lo menos un empleo en N_EMPLEOS y
+NO_TRABAJO códigos del 11 ó 12 en
+PERSONAS
+
+Ocupados
+
+Incluir a todas las personas que reportaron
+por lo menos un empleo en N_EMPLEOS
+en PERSONAS
+
+Desocupados
+
+Incluir a todas las personas que reportaron
+en NO_TRABAJO códigos del 11 ó 12 en
+PERSONAS
+
+PEI (Población económicamente inactiva)
+
+Incluir a todas las personas que en
+NO_TRABAJO tengan códigos 13 al 18 de
+PERSONAS
+
+Número de mayores y menores
+
+Los mayores son las personas de 12 años y
+más.
+Los menores son las personas de menos de
+12 años.
+
+

@@ -1,0 +1,2358 @@
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2000
+Descripción de la Base de Datos
+
+Nombre de la tabla
+
+Número de
+registros
+
+Contenido
+
+HOGARES.DBF
+
+10 108
+
+Características de los hogares, de las viviendas que
+habitan y el factor de expansión.
+
+POBLACION.DBF
+
+42 535
+
+Características sociodemográficas y ocupacionales de
+los miembros de los hogares.
+
+INGRESOS.DBF
+
+34 229
+
+Ingresos y percepciones de capital de cada uno de los
+miembros de los hogares.
+
+GASTOS.DBF
+
+597 187
+
+Gastos realizados por el hogar.
+
+EROGACIONES.DBF
+
+5 775
+
+Erogaciones de capital por hogar.
+
+NOMONETARIO.DBF
+
+71 321
+
+Gastos o ingresos realizados por hogar y algunos por
+persona.
+
+Para obtener cualquier tipo de información se requiere expandirla; esto es, multiplicar el valor de la variable en estudio
+por el factor de expansión, por lo que generalmente es necesario “pegar” el factor a cualquiera de las otras tablas.
+Adicionalmente, se incluye un concentrado por hogar que contiene las principales variables de la encuesta. Este
+concentrado está en la tabla denominada CONCEN.DBF, que contiene los mismos 10 108 registros que la tabla de
+hogar.
+Este disco compacto incluye un manejador basado en SQL de Access que nos permite de manera paulatina, hacer
+cruces de información.
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+La base de datos de la ENIGH está conformada por seis tablas que contienen toda la información captada en el
+levantamiento. A continuación se detalla el nombre de estas tablas, el número de registros y su contenido:
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2000
+Descripción de la Base de Datos
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+Tabla: Hogares
+Nombre de Campo
+FOLIO
+
+Tipo
+C
+
+Long.
+12
+
+Decimal Descripción
+Identificador único del hogar
+
+ESTRATO
+
+C
+
+1
+
+Estrato
+
+UBICA_GEO
+
+C
+
+5
+
+Ubicación geográfica
+
+GT
+HNC
+SNC
+TENENCIA
+NUM_CUA
+CUA_DOR
+
+C
+C
+C
+C
+N
+N
+
+2
+3
+3
+1
+2
+2
+
+0
+0
+
+CUA_HOGD
+
+N
+
+2
+
+0
+
+RECAMARAS
+
+N
+
+2
+
+0
+
+CUA_COC
+COC_DUER
+MUROS08
+MUROS09
+MUROS10
+MUROS11
+
+C
+C
+C
+C
+C
+C
+
+1
+1
+2
+1
+2
+1
+
+MUROS12
+TECHOS13
+TECHOS14
+TECHOS15
+TECHOS16
+
+C
+C
+C
+C
+C
+
+2
+2
+1
+2
+1
+
+Hogares en la vivienda
+Huéspedes
+Servidores domésticos en el hogar
+Tenencia de la vivienda
+¿Cuántos cuartos tiene la vivienda?
+¿Cuántos cuartos usan para dormir?
+¿Cuántos cuartos usa este hogar para
+dormir?
+¿Cuántas recámaras tiene esta
+vivienda?
+¿Esta vivienda tiene cuarto para
+cocinar?
+¿En la cocina también duermen?
+Material predominante en muros
+Recubrimiento muros exteriores
+Tiempo de construcción de muros
+Reparación de muros
+Tiempo de la última reparación de
+muros
+Material predominante techos
+Recubrimiento en techos
+Tiempo de construcción techos
+Reparación de techos
+
+Observaciones
+4 posiciones para año
+2 posiciones para entidad
+2 posiciones para decena
+3 posiciones para el
+consecutivo
+Seleccionadas 001-799
+Omitidas
+801-899
+1 posición identificador de
+hogar
+Principal
+0
+Adicional 1 a 9
+1 localidades de
+100,000 habitantes y
+más
+2 localidades de 15,000
+a 99,999 habitantes
+3 localidades de 2,500
+a 14,999 habitantes
+4 localidades de menos
+de 2,500 habitantes
+2 posiciones para
+entidad
+3 posiciones para
+municipio
+
+(ver clasificación)
+
+1 Si, 2 No
+1 Si, 2 No
+(ver clasificación)
+1 Si, 2 No
+1 Si, 2 No, 3 No sabe
+
+(ver clasificación)
+1 Si, 2 No
+1 Si, 2 No, 3 No sabe
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+C
+C
+C
+
+2
+1
+1
+
+AGUA20
+
+C
+
+1
+
+AGUA21
+
+C
+
+1
+
+AGUA22
+
+C
+
+1
+
+AGUA23
+
+C
+
+1
+
+AGUA24
+
+C
+
+1
+
+AGUA25
+
+C
+
+1
+
+AGUA26
+BANO27
+BANO28
+
+C
+C
+C
+
+1
+1
+1
+
+BANO29
+
+C
+
+1
+
+BANO30
+DRENAJE31
+
+C
+C
+
+1
+1
+
+DRENAJE32
+
+C
+
+1
+
+DRENAJE33
+
+C
+
+1
+
+BASURA34_1
+
+C
+
+1
+
+BASURA34_2
+
+C
+
+1
+
+BASURA34_3
+
+C
+
+1
+
+BASURA34_4
+
+C
+
+1
+
+BASURA34_5
+
+C
+
+1
+
+BASURA35
+
+C
+
+1
+
+BASURA36
+
+C
+
+2
+
+COMBUSTI
+LUZ38
+
+C
+C
+
+1
+1
+
+LUZ39_1
+LUZ39_2
+
+C
+C
+
+1
+1
+
+Tiempo de última reparación de techos
+Material predominante en pisos
+(ver clasificación)
+¿La vivienda tiene agua entubada?
+(ver clasificación)
+1 Dentro
+¿El agua esta?
+2 Fuera
+¿El agua que llega vivienda es de la red
+pública?
+1 Si, 2 No
+¿Frecuencia con que llega agua de la
+red pública a su vivienda?
+(ver clasificación)
+¿Almacena el agua para que no le falta
+cuando no llega de la red pública?
+1 Si, 2 No
+¿Le alcanza el agua que almacena para
+1 Si, 2 No
+cubrir sus necesidades?
+¿De donde obtiene el agua cuando no
+alcanza?
+(ver clasificación)
+¿La frecuencia del servicio de
+abastecimiento de agua es…?
+(ver clasificación)
+¿Esta vivienda tiene cuarto de baño?
+(ver clasificación)
+¿Esta vivienda tiene?
+1 Hoyo negro o pozo
+ciego
+2 Letrina
+3 Excusado
+4 No dispone de
+servicio sanitario
+¿El excusado tiene conexión de agua? 1 Si, 2 No
+¿El hoyo negro o pozo ciego, letrina o
+excusado es exclusivo para los
+residentes?
+1 Si, 2 No
+¿El excusado cuenta con drenaje?
+(ver clasificación)
+¿Esta vivienda cuenta con drenaje para
+desalojo de aguas jabonosas?
+1 Si, 2 No
+¿En esta vivienda a donde van las
+(ver clasificación)
+aguas grises?
+¿Habitualmente que hace con la
+(ver clasificación)
+basura? Primera opción
+¿Habitualmente que hace con la
+basura? Segunda opción
+¿Habitualmente que hace con la
+basura? Tercera opción
+¿Habitualmente que hace con la
+basura? Cuarta opción
+¿Habitualmente que hace con la
+basura? Quinta opción
+¿Cuanta con servicio recolección
+público?
+1 Si, 2 No
+¿Cada cuantos días pasa el servicio de
+recolección público?
+1 Si, 2 No
+¿Habitualmente que combustible
+(ver clasificación)
+utiliza?
+¿Esta vivienda tiene luz eléctrica?
+1 Si, 2 No
+¿Cuál es la fuente donde obtiene la
+luz? Primera opción
+(ver clasificación)
+¿Cuál es la fuente donde obtiene la
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+TECHOS17
+PISOS
+AGUA19
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+luz? Segunda opción
+LUZ39_3
+
+C
+
+1
+
+LUZ39_4
+
+C
+
+1
+
+LUZ40
+LUZ41
+TELEFONO42
+
+C
+C
+C
+
+1
+1
+1
+
+TELEFONO43
+VEHICULOS
+
+C
+C
+
+1
+14
+
+APARATOS1
+APARATOS2
+APARATOS3
+APARATOS4
+
+C
+C
+C
+C
+
+14
+14
+14
+10
+
+CR_VIV48
+CR_VIV49_1
+
+C
+C
+
+1
+1
+
+CR_VIV49_2
+
+C
+
+1
+
+CR_VIV49_3
+
+C
+
+1
+
+CR_VIV49_4
+
+C
+
+1
+
+TIPO_VIV
+CLASE_HOG
+TAM_HOG
+TOT_RESI
+TOT_HOM
+TOT_MUJ
+FACTOR
+
+C
+C
+N
+N
+N
+N
+N
+
+1
+1
+2
+2
+2
+2
+8
+
+¿Cuál es la fuente donde obtiene la
+luz? Tercera opción
+¿Cuál es la fuente donde obtiene la
+luz? Cuarta opción
+
+0
+0
+0
+0
+2
+
+¿En los cuartos hay instalaciones fija
+para focos?
+1 Si, 2 No
+¿Tiene contrato de luz?
+1 Si, 2 No
+¿Esta vivienda tiene teléfono?
+1 Si, 2 No
+¿El teléfono lo presta o usa en
+negocio?
+1 Si, 2 No
+Vehículos para uso del hogar (número (ver cuestionario,
+de unidades)
+capítulo 2)
+Dos posiciones por vehículo
+La primera posición es para hogar
+La segunda para negocio
+Aparatos del hogar
+(número de unidades)
+Dos posiciones por aparatos
+(ver cuestionario,
+La primera posición es para hogar
+capítulo 2)
+La segunda para negocios
+¿Recibió crédito de institución pública? 1 Si, 2 No
+¿Quién proporcionó el crédito?
+(ver clasificación)
+Primera opción
+¿Quién proporcionó el crédito?
+Segunda opción
+¿Quién proporcionó el crédito?
+Tercera opción
+¿Quién proporcionó el crédito?
+Cuarta opción
+Tipo de vivienda
+(ver clasificación)
+Clase de Hogar
+(ver clasificación)
+Tamaño del hogar
+Total de residentes
+Total de hombres
+Total de mujeres
+Factor de expansión
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Nombre de Campo
+FOLIO
+NUM_REN
+PARENTESCO
+SEXO
+EDAD
+PER_ING
+LEER_ESC
+ASIS_ESC_F
+TIPO_ESC_T
+TIPO_ESC
+ED_FORMAL
+DEBE_MAT
+GRADO_DEBE
+ED_TECNICA
+BECA
+PROP_BECA
+COMO_BECA
+EDO_CIVIL
+TRABAJO
+NO_TRABAJO
+N_EMPLEOS
+EMP_DPAIS
+POSICION
+OCUPACION
+RAMA
+NOM_EMP
+NUMPER
+HRS_SEM
+DIA_PAGO
+CONTRATO1
+SINDICATO1
+PRESTACIO1
+EMP_DPAIS2
+POSICI_SEC
+OCUP_SEC
+RAMA_SEC
+NOM_EMPR2
+NUM_PER2
+HRS_SEC
+DIA_PAGO2
+CONTRATO2
+SINDICATO2
+TOT_HRS
+PRESTACIO2
+
+Tipo
+C
+C
+C
+C
+N
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+N
+C
+C
+C
+C
+C
+N
+N
+C
+C
+C
+C
+C
+C
+C
+C
+C
+N
+N
+C
+C
+C
+C
+C
+
+Long.
+12
+2
+2
+1
+2
+1
+1
+1
+1
+1
+2
+1
+2
+1
+1
+2
+1
+1
+3
+2
+1
+1
+1
+4
+3
+1
+5
+5
+2
+1
+1
+40
+1
+1
+4
+3
+1
+5
+2
+2
+1
+1
+3
+40
+
+OTROTRAB
+
+C
+
+4
+
+Decimal Descripción
+Observaciones
+Identificador único del hogar
+Número de renglón
+Parentesco
+(ver clasificación)
+Sexo
+(ver clasificación)
+0
+Edad
+¿Percibió ingresos?
+¿Sabe leer y escribir?
+1 Si, 2 No
+¿Asiste centro educativo formal?
+1 Si, 2 No
+¿Asiste centro educativo técnico?
+1 Si, 2 No
+¿La escuela a la que asiste es?
+(ver clasificación)
+Educación formal
+(ver clasificación)
+¿Quedó a deber materias?
+1 Si, 2 No
+¿En qué grado debe materias?
+(ver clasificación)
+Educación técnica
+(ver clasificación)
+¿Le otorgaron beca o crédito educativo? 1 Si, 2 No
+¿Quién proporciona beca…?
+(ver clasificación)
+¿Cómo recibe su beca o crédito?
+(ver clasificación)
+Estado civil
+(ver clasificación)
+Trabajó (preg. 2, 3, y 4 Cap. 4 cuest.
+1 Si, 2 No
+Causa de no trabajo
+(ver clasificación)
+0
+Número de empleos
+¿El empleo lo realizó dentro del país?
+1 Si, 2 No
+Posición
+(ver clasificación)
+Ocupación
+Rama
+Sector de la empresa
+(ver clasificación)
+0
+Número de trabajadores
+0
+Horas trabajadas
+(ver clasificación)
+Días de pago
+(ver clasificación)
+Tipo de contratación
+Afiliado a sindicato
+1 Si, 2 No
+Prestaciones sociales
+(ver clasificación)
+2° empleo ¿El empleo dentro del país? 1 Si, 2 No
+2° empleo Posición
+(ver clasificación)
+2° empleo Ocupación
+2° empleo Rama
+(ver clasificación)
+2° empleo Sector de la empresa
+0
+2° empleo Número de trabajadores
+0
+2° empleo Horas trabajadas
+2° empleo Días de pago
+(ver clasificación)
+2° empleo Tipo de contratación
+(ver clasificación)
+2° empleo Afiliación a sindicato
+1 Si, 2 No
+Total horas trabajadas
+2° Prestaciones sociales
+(ver clasificación)
+Condición de actividad diferente a la
+realizada el mes pasado
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+Tabla: Población
+
+Tabla: Gastos
+Nombre de campo
+FOLIO
+CLAVE
+LUG_COM
+DIA
+NUM_REN
+CANTIDAD
+PRECIO
+GASTO
+PAGO_MP
+GAS_TRI
+
+Tipo Long.
+C
+12
+C
+4
+C
+2
+C
+2
+C
+2
+N
+20
+N
+20
+N
+20
+N
+20
+N
+20
+
+Decimal
+
+Nombre de Campo
+FOLIO
+NUM_REN
+EMPLEO
+
+Tipo
+C
+C
+C
+
+Long.
+12
+2
+1
+
+Decimal Descripción
+Identificador único del Hogar
+Número de renglón
+Empleo del que provienen ingresos
+
+MESES
+
+C
+
+12
+
+CLAVE
+ING_1
+ING_TRI
+ING_2
+ING_3
+ING_4
+ING_5
+ING_6
+
+C
+N
+N
+N
+N
+N
+N
+N
+
+4
+9
+9
+9
+9
+9
+9
+9
+
+5
+5
+5
+5
+5
+
+Descripción
+Identificador del hogar
+Clave del gasto
+Lugar de compra
+Día de referencia
+Numero de renglón
+Cantidad en Kilogramos o litros
+Precio del producto
+Gasto efectuado
+Pago el mes pasado
+Gasto trimestral normalizado
+
+Observaciones
+(ver clasificación)
+(ver clasificación)
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+Tabla: Ingresos
+
+2
+2
+2
+2
+2
+2
+2
+
+6 meses de referencia
+2 posiciones por mes
+Clave de ingreso
+Ingreso mes pasado
+Ingreso trimestral normalizado
+Ingreso del segundo mes
+Ingreso del tercer mes
+Ingreso del cuarto mes
+Ingreso del quinto mes
+Ingreso del sexto mes
+
+Observaciones
+
+0 Para PEI,
+desocupados y
+menores de 12 años
+1 Empleo principal
+2-7 de 2° a 7°
+Empleo
+8 Ingresos por
+actividades diferentes
+9 ingresos por
+actividades
+realizadas antes de 6
+meses
+
+(ver clasificación)
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Tabla: NoMonetario
+Nombre del campo
+FOLIO
+NUM_REN
+TIPO_GAS
+
+Tipo
+C
+C
+C
+
+Long.
+12
+2
+1
+
+DIA
+LUG_COM
+CLAVE
+CANTIDAD
+PRECIO
+GASTO
+GAS_TRI
+
+C
+C
+C
+N
+N
+N
+N
+
+1
+2
+4
+20
+20
+20
+20
+
+Decimal Descripción
+Identificador del hogar
+Número de renglón
+Tipo de gasto
+
+5
+5
+5
+5
+
+Día de consumo
+Lugar de compra
+Clave del producto
+Cantidad
+Precio
+Gasto estimado
+Gasto trimestral normalizado
+
+Observaciones
+
+0 Estimación del
+alquiler de la vivienda
+1 Autoconsumo
+2 Pago en especie
+3 Regalos
+(ver clasificación)
+(ver clasificación)
+
+Nombre del Campo
+FOLIO
+
+Tipo
+C
+
+Long.
+12
+
+MESES
+CLAVE
+ERO_TRI
+ERO_1
+ERO_2
+ERO_3
+ERO_4
+ERO_5
+ERO_6
+
+C
+C
+N
+N
+N
+N
+N
+N
+N
+
+12
+4
+9
+9
+9
+9
+9
+9
+9
+
+Decimal Descripción
+Identificador único del hogar
+
+2
+2
+2
+2
+2
+2
+2
+
+Meses de referencia del gasto
+Clave del producto
+Erogación trimestral
+Erogaciones del mes pasado
+Erogaciones del segundo mes
+Erogaciones del tercer mes
+Erogaciones del cuarto mes
+Erogaciones del quinto mes
+Erogaciones del sexto mes
+
+Observaciones
+2 posiciones para
+cada mes
+(ver clasificación)
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+Tabla: Erogaciones
+
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2000
+Descripción de la Base de Datos
+10,108 Registros
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+Tabla: Concentrado
+Campo
+
+Tipo
+
+Long.
+
+Decimal
+
+Descripción
+
+1. FOLIO
+
+C
+
+8
+
+2. HOG
+
+N
+
+10
+
+3. ESTRATO
+
+C
+
+1
+
+Estrato
+
+4. UBICA_GEO
+
+C
+
+20
+
+Ubicación geográfica
+
+5. TENENCIA
+
+C
+
+1
+
+Tenencia de la vivienda
+
+6. EDAD
+
+N
+
+2
+
+7. ED_FORMAL
+
+C
+
+2
+
+8. TAM_HOG
+
+N
+
+2
+
+0
+
+Miembros del hogar
+
+9. HOMBRES
+
+N
+
+2
+
+0
+
+Miembros del hogar hombres
+
+10. MUJERES
+
+N
+
+2
+
+0
+
+Miembros del hogar mujeres
+
+11. TOT_RESI
+
+N
+
+2
+
+0
+
+Población total
+
+12. TOT_HOM
+
+N
+
+2
+
+0
+
+Población total hombres
+
+13. TOT_MUJ
+
+N
+
+2
+
+0
+
+Población total mujeres
+
+14. MAYORES
+
+N
+
+2
+
+0
+
+Miembros del hogar mayores
+
+15. MENORES
+
+N
+
+2
+
+0
+
+Miembros del hogar menores
+
+16. P0A11
+
+N
+
+2
+
+0
+
+Miembros del hogar de 0 a 11 años
+
+17. P12_64
+
+N
+
+2
+
+0
+
+Miembros del hogar de 12 a 64 años
+
+18. P65MAS
+
+N
+
+2
+
+0
+
+Miembros del hogar de 65 años y mas
+
+19. N_OCUP
+
+N
+
+2
+
+0
+
+Miembros Ocupados
+
+20. PERING
+
+N
+
+2
+
+0
+
+Perceptores de ingreso
+
+21. PEROCU
+
+N
+
+2
+
+0
+
+Perceptores ocupados
+
+22. INGTOT
+
+N
+
+13
+
+2
+
+Ingreso total
+
+23. INGCOR
+
+N
+
+13
+
+2
+
+Ingreso corriente total
+
+24. INGMON
+
+N
+
+13
+
+2
+
+Ingreso corriente monetario
+
+25. TRABAJO
+
+N
+
+13
+
+2
+
+Remuneraciones al trabajo asalariado
+
+26. SUELDOS
+
+N
+
+13
+
+2
+
+Sueldos y horas extras
+
+27. OTRA_REM
+
+N
+
+13
+
+2
+
+Otras remuneraciones
+
+28. NEGOCIO
+
+N
+
+13
+
+2
+
+Renta empresarial
+
+29. NO_AGROP
+
+N
+
+13
+
+2
+
+Negocios no agropecuarios
+
+30. AGROPE
+
+N
+
+13
+
+2
+
+Negocios agropecuarios
+
+31. COOPERA
+
+N
+
+13
+
+2
+
+Cooperativa de producción
+
+32. SOCIE
+
+N
+
+13
+
+2
+
+Ingresos por sociedades
+
+33. RENTAS
+
+N
+
+13
+
+2
+
+Renta de la propiedad
+
+34. TRANSFER
+
+N
+
+13
+
+2
+
+Transferencias
+
+35. JUBILA
+
+N
+
+13
+
+2
+
+Jubilaciones y pensiones
+
+36. BECA_DON
+
+N
+
+13
+
+2
+
+Becas y donativos
+
+37. DONATIVO
+
+N
+
+13
+
+2
+
+Regalos o donativos en dinero provenientes de otros hogares
+
+Identificador único del Hogar
+2
+
+0
+
+Representación del hogar a nivel nacional
+
+Edad del jefe del hogar
+Nivel de instrucción del jefe del hogar
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Tipo
+
+Long.
+
+Decimal
+
+Descripción
+
+38. OTROS
+
+N
+
+13
+
+2
+
+Otros ingresos corrientes
+
+39. GASNOM
+
+N
+
+13
+
+2
+
+Ingreso corriente no monetario
+
+40. AUTO
+
+N
+
+13
+
+2
+
+Autoconsumo
+
+41. PAGO
+
+N
+
+13
+
+2
+
+Pago en especie
+
+42. REGA
+
+N
+
+13
+
+2
+
+Regalos
+
+43. ESTI
+
+N
+
+13
+
+2
+
+Estimación del alquiler de la vivienda
+
+44. PERTOT
+
+N
+
+13
+
+2
+
+Percepciones financieras y de capital totales
+
+45. PERMON
+
+N
+
+13
+
+2
+
+Percepciones financieras y de capital monetarias
+
+46. RETIRO
+
+N
+
+13
+
+2
+
+Retiro de inversiones, tandas, cajas de ahorro, etcétera.
+
+47. PRESTAMO
+
+N
+
+13
+
+2
+
+Préstamos recibidos de personas no miembros del hogar o instituciones,
+excluye préstamos hipotecarios
+
+48. OTRAS_PR
+
+N
+
+13
+
+2
+
+Otras percepciones
+
+49. ERONOM
+
+N
+
+13
+
+2
+
+Erogaciones financieras y de capital no monetarias
+
+50. GASTOT
+
+N
+
+13
+
+2
+
+Gasto total
+
+51. GASCOR
+
+N
+
+13
+
+2
+
+Gasto corriente monetario
+
+52. GASMON
+
+N
+
+13
+
+2
+
+Gasto corriente monetario
+
+53. ALIMENTOS
+
+N
+
+13
+
+2
+
+Alimentos y bebidas consumidas dentro y fuera del hogar y tabaco
+
+54. ALI_DENT
+
+N
+
+13
+
+2
+
+Alimentos y bebidas consumidas dentro del hogar
+
+55. CEREALES
+
+N
+
+13
+
+2
+
+Cereales
+
+56. CARNES
+
+N
+
+13
+
+2
+
+Carnes
+
+57. PESCADO
+
+N
+
+13
+
+2
+
+Pescados y mariscos
+
+58. LECHE
+
+N
+
+13
+
+2
+
+Leche y sus derivados
+
+59. HUEVO
+
+N
+
+13
+
+2
+
+Huevo
+
+60. ACEITES
+
+N
+
+13
+
+2
+
+Aceites
+
+61. TUBERCULO
+
+N
+
+13
+
+2
+
+Tubérculo
+
+62. VERDURAS
+
+N
+
+13
+
+2
+
+Verduras
+
+63. FRUTAS
+
+N
+
+13
+
+2
+
+Frutas
+
+64. AZUCAR
+
+N
+
+13
+
+2
+
+Azúcar
+
+65. CAFÉ
+
+N
+
+13
+
+2
+
+Café
+
+66. ESPECIAS
+
+N
+
+13
+
+2
+
+Especias
+
+67. OTRO_ALI
+
+N
+
+13
+
+2
+
+Otros alimentos
+
+68. BEBIDAS
+
+N
+
+13
+
+2
+
+Bebidas
+
+69. FUERA_HOG
+
+N
+
+13
+
+2
+
+Alimentos o bebidas consumidas fuera del hogar
+
+70. TABACO
+
+N
+
+13
+
+2
+
+Tabaco
+
+71. VESTIDO
+
+N
+
+13
+
+2
+
+Vestido y calzado
+
+72. VESTIDO_C
+
+N
+
+12
+
+2
+
+Vestido
+
+73. VES_3YMAS
+
+N
+
+13
+
+2
+
+Vestido para personas de 4 años o más
+
+74. VES_3MEN
+
+N
+
+13
+
+2
+
+Vestido para personas de 0 a 3 años
+
+75. CALZADO
+
+N
+
+13
+
+2
+
+Calzado y su reparación
+
+76. VIVIENDA
+
+N
+
+13
+
+2
+
+Vivienda, servicios de conservación, energía eléctrica y combustibles
+
+77. ALQUILER
+
+N
+
+13
+
+2
+
+Alquileres brutos, impuestos, predial y cuotas por servicio de conservación
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+Campo
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+Campo
+
+Tipo
+
+Long.
+
+Decimal
+
+Descripción
+
+78. AGUA
+
+N
+
+13
+
+2
+
+Agua
+
+79. ENERGIA
+
+N
+
+13
+
+2
+
+Energía eléctrica y combustibles
+
+80. LIMPIEZA
+
+N
+
+13
+
+2
+
+Artículos y servicios para la limpieza y cuidados de la casa, enseres
+domésticos, muebles, cristalería, utensilios domésticos y blancos
+
+81. CUIDADOS
+
+N
+
+13
+
+2
+
+Artículos y servicios para la limpieza y cuidados de la casa
+
+82. ENSERES
+
+N
+
+13
+
+2
+
+Enseres domésticos y muebles, cristalería, utensilios domésticos y blancos
+
+83. SALUD
+
+N
+
+13
+
+2
+
+Cuidados médicos y conservación de la salud
+
+84. ATEN_PRI
+
+N
+
+13
+
+2
+
+Atención primaria o ambulatoria
+
+85. HOSPITAL
+
+N
+
+13
+
+2
+
+Atención hospitalaria, servicios médicos y medicamentos durante el
+embarazo o parto, aparatos ortopédicos, terapéuticos y seguros médicos
+
+86. MEDICA
+
+N
+
+13
+
+2
+
+Medicamentos sin receta
+
+87. TRANSPORTE
+
+N
+
+13
+
+2
+
+Transporte, adquisición, mantenimiento y accesorios para vehículos y
+comunicaciones
+
+88. TRANS_AD
+
+N
+
+13
+
+2
+
+Transporte, adquisición, mantenimiento y accesorios para vehículos
+
+89. PUBLICO
+
+N
+
+13
+
+2
+
+Transporte público
+
+90. FORANEO
+
+N
+
+13
+
+2
+
+Transporte foráneo terrestre, aéreo y otros servicios especiales de
+transporte
+
+91. VEHICULO
+
+N
+
+13
+
+2
+
+Adquisición de vehículos de uso particular, mantenimiento y accesorios
+para vehículos
+
+92. COMUNICA
+
+N
+
+13
+
+2
+
+Comunicaciones
+
+93. EDUCACION
+
+N
+
+13
+
+2
+
+Servicios y artículos de educación y esparcimiento, paquetes turísticos y
+para fiestas, hospedaje y alojamiento
+
+94. EDUCA
+
+N
+
+13
+
+2
+
+Artículos y servicios de educación
+
+95. ESPARCI
+
+N
+
+13
+
+2
+
+Artículos y servicios de esparcimiento, paquetes para: fiestas, turísticos,
+hospedaje y alojamiento
+
+96. PERSONAL
+
+N
+
+13
+
+2
+
+Artículos y servicios para el cuidado personal, accesorios y efectos
+personales, otros gastos diversos y transferencias
+
+97. CUIDADO
+
+N
+
+13
+
+2
+
+Artículos y servicios para el cuidado personal
+
+98. ACCESORIO
+
+N
+
+13
+
+2
+
+Accesorios y efectos personales
+
+99. TRANSFE
+
+N
+
+13
+
+2
+
+Otros gastos diversos y transferencias
+
+100. EROTOT
+
+N
+
+13
+
+2
+
+Erogaciones financieras y de capital totales
+
+101. EROMON
+
+N
+
+13
+
+2
+
+Erogaciones financieras y de capital monetarias
+
+102. CUOTA
+
+N
+
+13
+
+2
+
+Cuota pagada por la vivienda propia
+
+103. MATERIAL
+
+N
+
+13
+
+2
+
+Materiales para reparación, mantenimiento y/o ampliación de la vivienda
+
+104. SERVICIO
+
+N
+
+13
+
+2
+
+Servicios de reparación, mantenimiento y/o ampliación de la vivienda
+
+105. DEPOSITO
+
+N
+
+13
+
+2
+
+Depósito de cuenta de ahorros, tandas, cajas de ahorro, etc.
+
+106. TERCEROS
+
+N
+
+13
+
+2
+
+Préstamos a terceros
+
+107. PAGO_TAR
+
+N
+
+13
+
+2
+
+Pago por tarjeta de crédito al banco o casa comercial
+
+108. DEUDAS
+
+N
+
+13
+
+2
+
+Pago de deudas a empresas donde trabaja y/o a otras personas o
+instituciones
+
+109. MONEDAS
+
+N
+
+13
+
+2
+
+Compra de monedas, metales preciosos, joyas y obras de arte
+
+110. CASAS
+
+N
+
+13
+
+2
+
+Compra de casas, condominios, locales y terrenos
+
+111. BALANCE
+
+N
+
+13
+
+2
+
+Balance negativo en negocios propiedad del hogar
+
+112. OTRA_ERO
+
+N
+
+13
+
+2
+
+Otras erogaciones
+Fecha de última actualización: 30 de agosto de 2024.
+
+C
+
+1
+
+Clase de hogar
+
+114. SMG
+
+N
+
+13
+
+2
+
+Salarios mínimos generales
+
+115. EST_DIS
+
+C
+
+3
+
+0
+
+Estrato de diseño muestral
+
+116. UPM
+
+C
+
+5
+
+0
+
+Unidad Primaria de Muestreo
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2000. Descripción de la base de datos. 2024.
+
+113. CLASE_HOG
+
+

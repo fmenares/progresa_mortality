@@ -1,0 +1,7959 @@
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2006
+CLASIFICACIÓN DE VARIABLES
+FOLIO
+POSICIÓN
+
+DESCRIPCIÓN
+
+1a4
+
+Año de levantamiento
+
+5y6
+
+Entidad federativa
+
+7
+
+Decena
+
+8 a 10
+
+Consecutivo
+
+11
+
+Tipo de hogar
+0
+Hogar principal
+1 a 9 Hogar adicional
+
+ESTRATO
+DESCRIPCIÓN
+
+1
+
+Localidades de 100 000 habitantes y más
+
+2
+
+Localidades de 15 000 a 99 999 habitantes
+
+3
+
+Localidades de 2 500 a 14 999 habitantes
+
+4
+
+Localidades menores de 2 500 habitantes
+
+UBICACIÓN GEOGRÁFICA
+
+UBICA_GEO
+
+POSICIONES
+
+DESCRIPCIÓN
+
+1y2
+
+Clave de entidad federativa
+
+3, 4 y 5
+
+Clave de municipio
+
+APARTADO 1.1 CARACTERÍSTICAS DE LA VIVIENDA
+MATERIAL EN MUROS
+
+MUROS01
+
+Pregunta 01
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Material de desecho
+
+02
+
+Lámina de cartón
+
+03
+
+Lámina metálica o de asbesto
+
+04
+
+Carrizo, bambú o palma
+
+05
+
+Embarro o bajareque
+
+06
+
+Madera o tejamanil
+
+07
+
+Adobe
+
+08
+
+Multipanel o panel
+
+09
+
+Tabique, ladrillo, tabicón, block
+
+10
+
+Piedra o cantera
+
+11
+
+Concreto
+
+12
+
+Otro material
+
+1 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+MATERIAL DE TECHOS
+
+TECHOS02
+
+Pregunta 02
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Material de desecho
+
+02
+
+Lámina de cartón
+
+03
+
+Lámina metálica o de asbesto
+
+04
+
+Carrizo, bambú o palma
+
+05
+
+Madera o tejamanil
+
+06
+
+Terrado con viguería
+
+07
+
+Teja
+
+08
+
+Losa de concreto sólida o con tabique, tabicón o unicel
+
+09
+
+Vigueta de acero con tabique, tabicón, unicel, cuña o bovedilla
+
+10
+
+Otro material
+
+MATERIAL DE PISOS
+
+PISOS04
+
+Pregunta 04
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Tierra
+
+2
+
+Cemento-firme
+
+3
+
+Loseta vinílica, linóleum o congóleum
+
+4
+
+Mosaico o loseta de cemento
+
+5
+
+Vitropiso, mármol o terrazo
+
+6
+
+Madera, duela o parquet
+
+7
+
+Alfombra
+
+8
+
+Otro material
+
+ANTIGÜEDAD DE LA VIVIENDA
+
+ANTIGUA
+
+Pregunta 05
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Menos de un año
+
+2
+
+De 1 a 5 años
+
+3
+
+De 6 a 10 años
+
+4
+
+De 11 a 20 años
+
+5
+
+De 21 a 30 años
+
+6
+
+De 31 a 50 años
+
+7
+
+Más de 50 años
+
+8
+
+No sabe
+
+2 de 53
+
+COMBUSTIBLE PARA COCINAR Y FRECUENCIA DE USO
+
+COMBUS10
+COMBUS11
+
+Preguntas 10 y 11
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Gas
+
+2
+
+Leña
+
+3
+
+Carbón
+
+4
+
+Petróleo
+
+5
+
+Electricidad
+
+6
+
+Otro combustible
+
+TENENCIA DE LA VIVIENDA
+
+TENENCIA12
+
+Pregunta 12
+DESCRIPCIÓN
+
+1
+
+Renta o alquila la vivienda
+
+2
+
+Le prestan la vivienda por parte de su trabajo
+
+3
+
+Le presta la vivienda un familiar o amigo
+
+4
+
+Está pagando la vivienda
+
+5
+
+Es el propietario de esta vivienda
+
+6
+
+Otra situación
+
+DISPONIBILIDAD DE AGUA
+
+AGUA15
+
+Pregunta 15
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+La red pública, dentro de la vivienda
+
+2
+
+La red pública, fuera de la vivienda pero dentro del terreno
+
+3
+
+Una llave pública o hidrante
+
+4
+
+Otra vivienda
+
+5
+
+Una pipa
+
+6
+
+Un pozo
+
+7
+
+Un río, arroyo o lago
+
+8
+
+Otra fuente
+
+3 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+FRECUENCIA DE AGUA
+
+AGUA16
+
+Pregunta 16
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Un día a la semana
+
+2
+
+Dos días a la semana
+
+3
+
+Tres días a la semana
+
+4
+
+Cuatro días a la semana
+
+5
+
+Cinco días a la semana
+
+6
+
+Seis días a la semana
+
+7
+
+Diario algunas horas al día
+
+8
+
+Diario durante todo el día
+
+9
+
+Otro periodo
+
+DRENAJE
+
+DRENAJE21
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+Pregunta 21
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+La red pública
+
+2
+
+Una fosa séptica
+
+3
+
+Una tubería que va a dar a una barranca o grieta
+
+4
+
+Una tubería que va a dar a un río, lago o mar
+
+5
+
+No tiene drenaje
+
+ENERGÍA ELÉCTRICA
+
+LUZ22
+
+Pregunta 22
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Del servicio público
+
+2
+
+De una planta particular
+
+3
+
+De otra fuente
+
+4
+
+No tiene luz eléctrica
+
+ELIMINACIÓN DE BASURA
+
+BASURA24
+
+Pregunta 24
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+La tiran al río, lago o mar
+
+2
+
+La tiran en la barranca o grieta
+
+3
+
+La tiran en un terreno baldío o a la calle
+
+4
+
+La tiran en el basurero público
+
+5
+
+La entierran
+
+6
+
+La queman
+
+7
+
+La tiran en un contenedor
+
+8
+
+La recoge un camión o carrito de basura
+
+4 de 53
+
+FRECUENCIA DEL SERVICIO DE RECOLECCIÓN DE BASURA
+Pregunta 25
+CÓDIGO
+DESCRIPCIÓN
+1
+Un día a la semana
+2
+Dos días a la semana
+3
+Tres días a la semana
+4
+Cuatro días a la semana
+5
+Cinco días a la semana
+6
+Seis días a la semana
+7
+Diario
+8
+Otro periodo
+9
+No sabe
+
+EQV26_??
+DESCRIPCIÓN
+Lavadero
+Fregadero o tarja
+Lavabo
+Regadera
+Tinaco en la azotea
+Cisterna o aljibe
+Pileta, tanque o deposito de agua
+Calentador o boiler de gas
+Calentador o boiler de otro combustible
+Bomba de agua
+Tanque de gas estacionario
+Sistema de aire acondicionado
+Sistema de calefacción
+
+EQV26_01
+EQV26_02
+EQV26_03
+EQV26_04
+EQV26_05
+EQV26_06
+EQV26_07
+EQV26_08
+EQV26_09
+EQV26_10
+EQV26_11
+EQV26_12
+EQV26_13
+
+APARTADO 1.2 RESIDENTES E IDENTIFICACIÓN DE HOGARES EN LA VIVIENDA
+PERIODOS DE REFERENCIA PARA IDENTIFICAR A LOS HOGARES DE NUEVA CREACIÓN QUE SÍ SE DEBEN
+ENTREVISTAR
+DECENA
+PERIODO DE LEVANTAMIENTO
+EL HOGAR DEBIÓ ESTAR
+CONFORMADO DESDE EL
+0
+Del 10 al 16 de Agosto
+1 de Julio o antes
+1
+Del 20 al 26 de Agosto
+1 de Julio o antes
+2
+Del 30 de Agosto al 05 de Septiembre
+1 de Julio o antes
+3
+Del 09 al 15 de Septiembre
+1 de Agosto o antes
+4
+Del 19 al 25 de Septiembre
+1 de Agosto o antes
+5
+Del 29 de Septiembre al 04 de Octubre
+1 de Agosto o antes
+6
+Del 08 al 14 de Octubre
+1 de Septiembre o antes
+7
+Del 19 al 25 de Octubre
+1 de Septiembre o antes
+8
+Del 29 de Octubre al 04 de Noviembre
+1 de Septiembre o antes
+9
+Del 08 al 14 de Noviembre
+1 de Octubre o antes
+Decena de
+Del 18 al 24 de Noviembre
+1 de Octubre o antes
+recuperación
+5 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+EQUIPAMIENTO
+Pregunta 26
+CÓDIGO
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+
+BASURA25
+
+APARTADO 1.3 CARACTERÍSTICAS SOCIODEMOGRÁFICAS
+A. HOJA DE REGISTRO BÁSICO (H.R.B.)
+PARENTESCO
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+Pregunta 2
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+JEFE O JEFA
+
+100
+
+Jefe o jefa
+
+2
+
+ESPOSO (A), COMPAÑERO (A)
+
+200
+
+Esposa (o)
+
+200
+
+Compañera (o)
+
+200
+
+Amasia (o)
+
+200
+
+Concubina (o)
+
+200
+
+Querida (o)
+
+200
+
+Marido
+
+200
+
+Mujer
+
+200
+
+Señora
+
+200
+
+Consorte
+
+200
+
+Cónyuge
+
+200
+
+Pareja
+
+3
+
+HIJO (A)
+
+300
+
+Hijo (a)
+
+300
+
+Hijastro (a)
+
+300
+
+Entenado (a)
+
+300
+
+Adoptado (a)
+
+300
+
+Recogido (a)
+
+300
+
+Hijo (a) reconocido (a)
+
+4
+
+TRABAJADOR (ES) DOMÉSTICO (S)
+
+400
+
+Sirvienta (e)
+
+400
+
+Acompañante
+
+400
+
+Asistente
+
+400
+
+Dama de compañía
+
+400
+
+Criado (a)
+
+400
+
+Empleado (a) doméstico (a)
+
+400
+
+Empleado (a)
+
+400
+
+Trabajador (a) doméstico (a)
+
+400
+
+Doméstico (a)
+
+400
+
+Trabajador (a)
+
+400
+
+Mucama
+
+400
+
+Recamarera (o)
+6 de 53
+
+Cocinero (a)
+
+400
+
+Lavandera (o)
+
+400
+
+Niñera (o)
+
+400
+
+Nodriza
+
+400
+
+Mozo
+
+400
+
+Jardinero
+
+400
+
+Vigilante
+
+400
+
+Velador
+
+400
+
+Portero (a)
+
+400
+
+Chofer
+
+400
+
+Ama de llaves
+
+400
+
+Mayordomo
+
+420
+
+Esposa (o) del (la) sirviente (a)
+
+420
+
+Esposa del jardinero
+
+420
+
+Esposa del chofer
+
+420
+
+Esposa del vigilante y descripciones semejantes
+
+430
+
+Hijo (a) del (la) sirviente (a)
+
+430
+
+Hijo (a) del (la) cocinero (a)
+
+430
+
+Hijo (a) del (la) criado (a)
+
+430
+
+Hijo (a) del (la) recamarero (a) y descripciones semejantes
+
+440
+
+Madre de la sirvienta
+
+440
+
+Padre de la sirvienta
+
+440
+
+Sobrino (a) del jardinero
+
+440
+
+Sobrino (a) del (la) sirviente (a)
+
+440
+
+Tía del ama de llaves
+
+440
+
+Primo (a) del vigilante
+
+440
+
+Otros parientes de los sirvientes
+
+5
+
+NO TIENE PARENTESCO
+
+500
+
+No tiene parentesco
+
+500
+
+Ninguno
+
+500
+
+Nada
+
+500
+
+No es nada
+
+500
+
+Sin parentesco
+
+500
+
+No hay parentesco
+
+500
+
+Compañero de vivienda
+
+500
+
+Amigo (a)
+
+500
+
+Ex esposo (a)
+
+500
+
+Novio (a)
+
+6
+
+OTRO PARENTESCO
+
+601
+
+Madre
+
+601
+
+Mamá
+7 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+400
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+601
+
+Padre
+
+601
+
+Papá
+
+601
+
+Tata
+
+601
+
+Progenitor
+
+602
+
+Padrastro
+
+602
+
+Madrastra
+
+603
+
+Hermano(a)
+
+603
+
+Hermanito(a)
+
+604
+
+Hermanastro(a)
+
+605
+
+Abuelo (a)
+
+605
+
+Abuelito (a)
+
+606
+
+Bisabuelo (a)
+
+607
+
+Tatarabuelo (a)
+
+608
+
+Nieto (a)
+
+609
+
+Bisnieto (a)
+
+610
+
+Tataranieto (a)
+
+611
+
+Tío (a)
+
+612
+
+Sobrino (a)
+
+613
+
+Primo (a)
+
+614
+
+Suegro (a)
+
+615
+
+Consuegro (a)
+
+616
+
+Nuera
+
+616
+
+Yerno
+
+617
+
+Cuñado (a)
+
+618
+
+Concuño (a)
+
+619
+
+Tutor (a)
+
+620
+
+Tutelado (a)
+
+621
+
+Padrino
+
+621
+
+Madrina
+
+622
+
+Ahijado (a)
+
+623
+
+Compadre
+
+623
+
+Comadre
+
+624
+
+Familiar
+
+624
+
+Pariente
+
+624
+
+Otro parentesco
+
+7
+
+HUÉSPED
+
+700
+
+Huésped
+
+8 de 53
+
+ENTIDAD O PAÍS DE RESIDENCIA
+
+RESIDENCIA
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Aguascalientes
+
+02
+
+Baja California
+
+03
+
+Baja California Sur
+
+04
+
+Campeche
+
+05
+
+Coahuila de Zaragoza
+
+06
+
+Colima
+
+07
+
+Chiapas
+
+08
+
+Chihuahua
+
+09
+
+Distrito Federal
+
+10
+
+Durango
+
+11
+
+Guanajuato
+
+12
+
+Guerrero
+
+13
+
+Hidalgo
+
+14
+
+Jalisco
+
+15
+
+Estado de México
+
+16
+
+Michoacán de Ocampo
+
+17
+
+Morelos
+
+18
+
+Nayarit
+
+19
+
+Nuevo León
+
+20
+
+Oaxaca
+
+21
+
+Puebla
+
+22
+
+Querétaro Arteaga
+
+23
+
+Quintana Roo
+
+24
+
+San Luis Potosí
+
+25
+
+Sinaloa
+
+26
+
+Sonora
+
+27
+
+Tabasco
+
+28
+
+Tamaulipas
+
+29
+
+Tlaxcala
+
+30
+
+Veracruz de Ignacio de la Llave
+
+31
+
+Yucatán
+
+32
+
+Zacatecas
+
+33
+
+Estados Unidos de América
+
+34
+
+Otro país
+
+9 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+Pregunta 6 y columna código
+
+NIVEL DE ASISTENCIA A LA ESCUELA
+
+NIVEL
+
+Pregunta 9 Y 14 y columna Nivel y Año o Grado
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Preescolar
+
+2
+
+Primaria
+
+3
+
+Secundaria
+
+4
+
+Carrera técnica con secundaria terminada
+
+5
+
+Preparatoria o bachillerato
+
+6
+
+Carrera técnica con preparatoria terminada
+
+7
+
+Normal
+
+8
+
+Profesional
+
+9
+
+Maestría o doctorado
+
+EQUIVALENCIA DE ESTUDIOS REALIZADOS EN ESTADOS UNIDOS DE AMÉRICA
+Pregunta 9 y 14 y columnas Nivel y Año o Grado
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+NIVEL EDUCATIVO
+
+NIVEL EQUIVALENTE
+
+CORRESPONDEN A:
+
+Elementary School
+
+Primaria
+
+6 años
+
+Junior High
+
+Secundaria
+
+3 años
+
+High School
+
+Preparatoria o Bachillerato
+
+3 años
+
+University o Collage
+
+Profesional
+
+Varía de acuerdo con la carrera
+
+Master o Doctor
+
+Maestría o Doctorado
+
+Varía de acuerdo con el posgrado
+
+EQUIVALENCIA DE AÑO O GRADO AL QUE ASISTE O EL QUE APROBÓ
+Pregunta 9 y columna Año o Grado
+Bimestres
+
+Trimestres
+
+Cuatrimestres
+
+Semestres
+
+Grados o años
+
+1a6
+
+1a4
+
+1a3
+
+1a2
+
+1
+
+7 a 12
+
+5a8
+
+4a6
+
+3a4
+
+2
+
+13 a 18
+
+9 a 12
+
+7a9
+
+5a6
+
+3
+
+19 a 24
+
+13 a 16
+
+10 a 12
+
+7a8
+
+4
+
+25
+
+17
+
+13
+
+9 a 10
+
+5
+
+EQUIVALENCIA DE AÑO O GRADO TERMINADO Y APROBADO
+Pregunta 14 y columna Año o Grado
+Bimestres
+
+Trimestres
+
+Cuatrimestres
+
+Semestres
+
+Grados o años
+
+1a5
+
+1a3
+
+1a2
+
+1
+
+*
+
+6 a 11
+
+4a7
+
+3a5
+
+2a3
+
+1
+
+12 a 17
+
+8 a 11
+
+6a8
+
+4a5
+
+2
+
+18 a 23
+
+12 a 15
+
+9 a 11
+
+6a7
+
+3
+
+24
+
+16
+
+12
+
+8a9
+
+4
+
+10
+
+5
+
+* Nota: Si te reportan alguno de los datos del renglón sombreado, se tomará como año terminado el inmediato
+anterior.
+
+10 de 53
+
+EQUIVALENCIA DE NIVEL DE INSTRUCCIÓN DE ESTUDIOS REALIZADOS EN LAS MODALIDADES NO
+ESCOLARIZADAS
+Pregunta 9 y 14 y columnas Nivel y Año o Grado
+EDUCACIÓN ABIERTA
+
+EQUIVALENTE EN SEMESTRES
+NIVEL
+
+GRADO O AÑO
+
+2ª etapa (Primaria)
+
+1er. Nivel
+2do. Nivel
+
+3° Primaria
+6° Primaria
+
+3ª etapa (Secundaria)
+
+1er. Grado
+2do. Grado
+3er. Grado
+
+1° Secundaria
+2° Secundaria
+3° Secundaria
+
+De 1 a 6 materias
+De 7 a 12 materias
+De 13 a 18 materias
+De 19 a 24 materias
+De 25 a 30 materias
+De 31 a 36 materias
+
+Preparatoria
+
+1 semestre
+2 semestres
+3 semestres
+4 semestres
+5 semestres
+6 semestres
+
+Nota: Para codificar las preguntas 9 y 14 en el Nivel, los semestres conviértalos a años consultando la tabla.
+EQUIVALENCIA DE NIVEL DE INSTRUCCIÓN DE ESTUDIOS REALIZADOS EN EDUCACIÓN VIRTUAL
+NIVEL
+
+EQUIVALENCIA
+
+PROFESIONAL
+De 1 a 9 materias
+
+1 Semestre
+
+De 10 a 18 materias
+
+2 Semestres
+
+De 19 a 27 materias
+
+3 Semestres
+
+De 28 a 36 materias
+
+4 Semestres
+
+De 37 a 45 materias
+
+5 Semestres
+
+De 46 a 54 materias
+
+6 Semestres
+
+MAESTRÍA
+De 1 a 2 materias
+
+1 Trimestre
+
+De 3 a 4 materias
+
+2 Trimestres
+
+De 5 a 6 materias
+
+3 Trimestres
+
+De 7 a 8 materias
+
+4 Trimestres
+
+De 9 a 10 materias
+
+5 Trimestres
+
+De 11 a 12 materias
+
+6 Trimestres
+
+De 13 a 14 materias
+
+7 Trimestres
+
+De 15 a 16 materias
+
+8 Trimestres
+
+De 17 a 18 materias
+
+9 Trimestres
+
+Nota: Para codificar las preguntas 9 y 14 en el Nivel, los semestres conviértalos a años consultando la tabla.
+
+11 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+Pregunta 9 y 14 y columnas Año o Grado
+
+TIPO DE ESCUELA
+
+TIPO_ESC
+
+Pregunta 10
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Pública o de gobierno
+
+2
+
+Privada o de paga
+
+3
+
+De otro tipo
+
+BECAS
+
+BECA
+
+Pregunta 11
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Programa OPORTUNIDADES
+
+2
+
+Escuela pública o de gobierno
+
+3
+
+Escuela privada o de paga
+
+4
+
+Un organismo de gobierno
+
+5
+
+Una institución privada
+
+6
+
+No le otorgaron beca
+
+CRÉDITOS EDUCATIVOS
+
+CREDITO_ED
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+Pregunta 12
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Escuela pública o de gobierno
+
+2
+
+Escuela privada o de paga
+
+3
+
+Un organismo de gobierno
+
+4
+
+Una institución privada
+
+5
+
+No le otorgaron crédito
+
+CLASE DE BECA O CRÉDITO
+
+FORMA_BC
+
+Pregunta 13
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Sólo en dinero
+
+2
+
+Sólo en artículos
+
+3
+
+En dinero y en artículos
+
+4
+
+No paga colegiatura
+
+5
+
+Sólo paga parte de la colegiatura
+
+12 de 53
+
+N_INSTR161
+DESCRIPCIÓN
+Ninguno
+Preescolar
+Primaria
+Secundaria
+Preparatoria o bachillerato
+Normal
+Carrera técnica o comercial
+Profesional
+Maestría
+Doctorado
+
+EQUIVALENCIA DE GRADO O AÑO TERMINADO Y APROBADO
+Preguta 14
+Bimestres
+Trimestres
+Cuatrimestres
+1a5
+1a3
+1a2
+6 a 11
+4a7
+3a5
+12 a 17
+8 a 11
+6a8
+18 a 23
+12 a 15
+9 a 11
+24
+16
+12
+
+N_INSTR162
+Semestres
+1
+2a3
+4a5
+6a7
+8a9
+10
+
+Grados o años
+Inmediato anterior
+1
+2
+3
+4
+5
+
+EQUIVALENCIA DE NIVEL DE INSTRUCCIÓN DE ESTUDIOS REALIZADOS EN EDUCACIÓN VIRTUAL
+Pregunta 9 y 14 y columnas Año o Grado
+NIVEL
+EQUIVALENCIA
+PROFESIONAL
+De 1 a 9 materias
+1 Semestre
+De 10 a 18 materias
+2 Semestres
+De 19 a 27 materias
+3 Semestres
+De 28 a 36 materias
+4 Semestres
+De 37 a 45 materias
+5 Semestres
+De 46 a 54 materias
+6 Semestres
+MAESTRÍA
+De 1 a 2 materias
+1 Trimestre
+De 3 a 4 materias
+2 Trimestres
+De 5 a 6 materias
+3 Trimestres
+De 7 a 8 materias
+4 Trimestres
+De 9 a 10 materias
+5 Trimestres
+De 11 a 12 materias
+6 Trimestres
+De 13 a 14 materias
+7 Trimestres
+De 15 a 16 materias
+8 Trimestres
+De 17 a 18 materias
+9 Trimestres
+Nota: Para codificar las preguntas 9 y 14 en el Nivel, los semestres conviértalos a años consultando la tabla.
+13 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+NIVEL DE INSTRUCCIÓN
+Pregunta 14
+CÓDIGO
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+ESTADO CONYUGAL
+
+EDOCONY
+
+Pregunta 19
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Vive con su pareja en unión libre
+
+2
+
+Separado (a)
+
+3
+
+Divorciado (a)
+
+4
+
+Viudo (a)
+
+5
+
+Casado (a)
+
+6
+
+Soltero (a)
+
+APARTADO 1.4 CONDICIÓN DE ACTIVIDAD Y CARACTERÍSTICAS OCUPACIONALES
+VERIFICACIÓN DE ACTIVIDAD
+
+VERIFIC
+
+Pregunta 2
+CÓDIGO
+1
+
+Vendió o hizo algún producto para su venta
+
+2
+
+Prestó algún servicio a cambio de un pago
+(cortar el cabello, dar clases, lavar ropa ajena, etc)
+
+3
+
+Ayudó en las tierras o en el negocio de un familiar u otra persona
+
+4
+
+No trabajó el mes pasado
+
+MOTIVO DE AUSENCIA
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+DESCRIPCIÓN
+
+MOT_AUSEN
+
+Preguta 3
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Estaba enfermo o tenía permiso para no trabajar
+
+2
+
+Estaba de vacaciones o recibiendo capacitación
+
+3
+
+Había conflicto laboral o huelga
+
+4
+
+No tenía materias primas, clientes o el equipo estaba descompuesto
+
+5
+
+No es temporada de trabajo agrícola
+
+6
+
+Había mal clima u otro fenómeno natural
+
+7
+
+Ninguna de las anteriores
+
+BUSCADORES DE TRABAJO Y PNEA
+
+BUS_TRAB
+
+(Columna 05.1)
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Estuvo buscando trabajo
+
+2
+
+Rentó o alquiló alguna propiedad
+
+3
+
+Es pensionado o jubilado por su trabajo
+
+4
+
+Se dedicó a los quehaceres del hogar
+
+5
+
+Se dedicó a estudiar
+
+6
+
+Es una persona con alguna limitación física o mental que le impide trabajar
+
+7
+
+Está en otra situación diferente a las anteriores
+
+14 de 53
+
+POSICIÓN EN EL TRABAJO
+
+POSICION07 Y POSICION18
+
+Pregunta 7
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Obrero (a) o empleado (a)
+
+2
+
+Jornalero (a) rural o peón de campo
+
+3
+
+Trabajador (a) sin pago en un negocio que no es del hogar
+
+4
+
+Trabajador (a) sin pago en un negocio propiedad del hogar
+
+5
+
+Trabajador (a) por cuenta propia (solo(a) o con trabajadores sin pago)
+
+6
+
+Patrón (a) (contrata uno o más trabajadores con pago)
+
+7
+
+Miembro de una cooperativa
+
+NOMBRE DE LA OCUPACIÓN
+
+CMO091 Y CMO201
+
+Pregunta 10 Los dos primeros dígitos
+DESCRIPCIÓN
+
+00
+
+No Aplica
+
+11
+
+Profesionistas
+
+12
+
+Técnicos
+
+13
+
+Trabajadores en la educación
+
+14
+
+Trabajadores del arte, espectáculos y deportes
+
+21
+
+Funcionarios y directivos de los sectores público, privado y social
+
+41
+
+Trabajadores en actividades agrícolas, ganaderas, silvícolas, y de caza y pesca
+
+51
+
+Jefes supervisores u otros trabajadores de control en la fabricación artesanal e
+industrial y en actividades de reparación y mantenimiento
+
+52
+
+Artesanos, trabajadores fabriles en la industria de la transformación y trabajadores en
+actividades de reparación y mantenimiento
+
+53
+
+Operadores de maquinaria fija de movimiento continuo y equipos en el proceso de
+fabricación industrial
+
+54
+
+Ayudantes, peones y similares en el proceso de la fabricación artesanal e industrial y
+en actividades de reparación y mantenimiento
+
+55
+
+Conductores y ayudantes de conductores de maquinaria móvil y medios de transporte
+
+61
+
+Jefes de departamento, coordinadores y supervisores en actividades administrativas y
+de servicios
+
+62
+
+Trabajadores de apoyo en actividades administrativas
+
+71
+
+Comerciantes, empleados de comercio y agentes de ventas
+
+72
+
+Vendedores ambulantes y trabajadores ambulantes en servicios
+
+81
+
+Trabajadores en servicios personales en establecimientos
+
+82
+
+Trabajadores en servicios domésticos
+
+83
+
+Trabajadores en servicios de protección y vigilancia y fuerzas armadas
+
+98 y 99
+
+Otros trabajadores con ocupaciones insuficientemente especificadas
+
+15 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+ACTIVIDAD ECONÓMICA DE LA EMPRESA O INSTITUCIÓN
+
+SCIAN101 Y SCIAN211
+
+Pregunta 12
+CÓDIGO
+
+DESCRIPCIÓN
+
+111, 112, 113, 114, 115
+
+Agricultura, ganadería, acuicultura animal, aprovechamiento forestal,
+pesca, caza y captura, servicios relacionados con actividades agrícolas,
+ganaderas y forestales
+
+211, 212, 213, 221, 222
+
+Extracción de petróleo y gas, minería de carbón mineral, de minerales
+metálicos, de minerales no metálicos, servicios relacionados con la
+minería, perforación de pozos petroleros o de gas, electricidad, agua, y
+suministro de gas por ducto al consumidor final
+
+236, 237, 238, 239
+
+Construcción
+
+311, 312, 313, 314, 315, 316, 321, 322, Industria manufacturera
+323, 324, 325, 326, 327, 331, 332, 333,
+334, 335, 336, 337, 338, 339
+400, 431, 432, 433, 434, 435, 436, 437, Comercio
+439, 461, 462, 463, 464, 465, 466, 467,
+468, 469
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+481, 482, 483, 484, 485, 486, 487, 488, Transportes, correos y almacenamiento
+489, 491, 492, 493
+511 a 515, 521 a 524, 531 a 533, 541, Servicios
+551, 561, 562, 611, 619, 621 a 625,
+629, 711 a 713, 721, 722, 811 a 814,
+931, 932
+541
+
+Servicios profesionales, científicos y técnicos
+
+561, 562
+
+Servicios de apoyo a los negocios, manejo de desechos y servicios de
+remediación
+
+611-615, 619
+
+Servicios educativos
+
+621, 622, 623, 624,625,629
+
+Servicios de salud y asistencia social
+
+721, 722
+
+Servicios de alojamiento temporal y de preparación de alimentos y bebidas
+
+511 a 519, 521 a 524, 531 a 533, 551,
+711 a 713, 811 a 814
+
+Otros servicios excepto actividades de gobierno
+
+931 y 932
+
+Actividades de gobierno y de organismos internacionales
+
+TAMAÑO DE LA EMPRESA
+
+NUMPER131
+
+Pregunta 13
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+1 persona
+
+2
+
+2 a 5 personas
+
+3
+
+6 a 10 personas
+
+4
+
+11 a 15 personas
+
+5
+
+16 y más personas
+
+16 de 53
+
+TIPO DE CONTRATACIÓN
+
+CONTR141 Y CONTR241
+
+Pregunta 14
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Temporal o por obra determinada
+
+2
+
+De base, planta o por tiempo indefinido
+
+3
+
+No tiene contrato por escrito
+
+IDENTIFICACIÓN DE OTRO (S) TRABAJO (S)
+
+OTRO_TRA16
+
+Pregunta 16
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Vendió o hizo algún producto para su venta
+
+2
+
+Prestó algún servicio a cambio de un pago? (cortar el cabello, dar clases, lavar ropa
+ajena, etc.)
+
+3
+
+Ayudó en las tierras o en el negocio de un familiar u otra persona
+
+4
+
+No tiene otro trabajo
+
+PRESTACIONES PROVENIENTES DE LOS TRABAJOS PRINCIPAL Y SECUNDARIO
+
+PRESTA1_??
+
+Pregunta 27
+DESCRIPCIÓN
+
+01
+
+Servicios médicos del IMSS
+
+PRESTA1_01
+
+02
+
+Servicios médicos ISSSTE
+
+PRESTA1_02
+
+03
+
+Servicios médicos del ISSSTE estatal
+
+PRESTA1_03
+
+04
+
+Servicios médicos de PEMEX, del ejército o de la marina
+
+PRESTA1_04
+
+05
+
+Servicios médicos de universidades
+
+PRESTA1_05
+
+06
+
+Servicios médicos privados
+
+PRESTA1_06
+
+07
+
+Aguinaldo
+
+PRESTA1_07
+
+08
+
+Vacaciones con goce de sueldo
+
+PRESTA1_08
+
+09
+
+SAR o AFORE
+
+PRESTA1_09
+
+10
+
+Prima vacacional
+
+PRESTA1_10
+
+11
+
+Crédito para vivienda
+
+PRESTA1_11
+
+12
+
+Capacitación y otro tipo de cursos
+
+PRESTA1_12
+
+13
+
+Becas y apoyos educativos
+
+PRESTA1_13
+
+14
+
+Seguro de vida
+
+PRESTA1_14
+
+15
+
+Reparto de utilidades
+
+PRESTA1_15
+
+16
+
+Fondo de ahorro o caja de ahorro
+
+PRESTA1_16
+
+17
+
+Préstamo en dinero
+
+PRESTA1_17
+
+18
+
+Guarderías y estancias infantiles
+
+PRESTA1_18
+
+19
+
+Tiempo para cuidados maternos o paternos
+
+PRESTA1_19
+
+20
+
+Acceso a actividades recreativas y/o culturales
+
+PRESTA1_20
+
+21
+
+Ayuda de despensa
+
+PRESTA1_21
+
+22
+
+Servicios de comedor
+
+PRESTA1_22
+
+23
+
+Ayuda alimentaria en efectivo
+
+PRESTA1_23
+
+17 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+24
+
+Crédito FONACOT
+
+PRESTA1_24
+
+25
+
+Ayuda de transporte en efectivo
+
+PRESTA1_25
+
+26
+
+Otro tipo de ayuda para transporte
+
+PRESTA1_26
+
+27
+
+Obtención de algún servicio sin pago o con descuento (como
+luz, agua, teléfono, etcétera)
+
+PRESTA1_27
+
+28
+
+Ayuda para renta de la casa habitación
+
+PRESTA1_28
+
+29
+
+Seguro privado de gastos médicos
+
+PRESTA1_29
+
+30
+
+Otras prestaciones
+
+PRESTA1_30
+
+31
+
+No tiene prestaciones provenientes de su (s) trabajo (s)
+
+PRESTA1_31
+
+CONDICIÓN DE ACTIVIDAD DIFERENTE A LA REALIZADA EN LOS CINCO MESES ANTERIORES AL MES
+PASADO
+Preguntas 28 y 29
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+DECENA
+
+P_OCUP28, B_TRAB29
+PERIODO DE REFERENCIA
+
+0
+
+Febrero de 2006 -
+
+Junio de 2006
+
+1
+
+Febrero de 2006 -
+
+Junio de 2006
+
+2
+
+Marzo de 2006
+
+-
+
+Julio de 2006
+
+3
+
+Marzo de 2006
+
+-
+
+Julio de 2006
+
+4
+
+Marzo de 2006
+
+-
+
+Julio de 2006
+
+5
+
+Abril de 2006
+
+-
+
+Agosto de 2006
+
+6
+
+Abril de 2006
+
+-
+
+Agosto de 2006
+
+7
+
+Abril de 2006
+
+-
+
+Agosto de 2006
+
+8
+
+Mayo de 2006
+
+-
+
+Septiembre de 2006
+
+9
+
+Mayo de 2006
+
+-
+
+Septiembre de 2006
+
+Decena de recuperación
+
+Mayo de 2006
+
+-
+
+Septiembre de 2006
+
+PERCEPCIÓN DE INGRESOS POR TRABAJO (S) DE LOS CINCO MESES ANTERIORES AL MES PASADO
+Pregunta 30
+
+PER_ING30
+
+DECENA
+
+PERIODO DE REFERENCIA
+
+0
+
+Febrero de 2006 -
+
+Junio de 2006
+
+1
+
+Febrero de 2006 -
+
+Junio de 2006
+
+2
+
+Marzo de 2006
+
+-
+
+Julio de 2006
+
+3
+
+Marzo de 2006
+
+-
+
+Julio de 2006
+
+4
+
+Marzo de 2006
+
+-
+
+Julio de 2006
+
+5
+
+Abril de 2006
+
+-
+
+Agosto de 2006
+
+6
+
+Abril de 2006
+
+-
+
+Agosto de 2006
+
+7
+
+Abril de 2006
+
+-
+
+Agosto de 2006
+
+8
+
+Mayo de 2006
+
+-
+
+Septiembre de 2006
+
+9
+
+Mayo de 2006
+
+-
+
+Septiembre de 2006
+
+Decena de recuperación
+
+Mayo de 2006
+
+-
+
+Septiembre de 2006
+
+18 de 53
+
+PERCEPCIÓN DE INGRESOS POR TRABAJO (S) REALIZADO (S) HACE MÁS DE SEIS MESES
+Pregunta 31
+
+PER_ING38
+DECENA
+
+PERIODO DE REFERENCIA
+
+0
+
+Febrero de 2006 - Junio de 2006
+
+Enero de 2006
+
+1
+
+Febrero de 2006 - Junio de 2006
+
+Enero de 2006
+
+2
+
+Marzo de 2006 - Julio de 2006
+
+Febrero de 2006
+
+3
+
+Marzo de 2006 - Julio de 2006
+
+Febrero de 2006
+
+4
+
+Marzo de 2006 - Julio de 2006
+
+Febrero de 2006
+
+5
+
+Abril de 2006
+
+- Agosto de 2006
+
+Marzo de 2006
+
+6
+
+Abril de 2006
+
+- Agosto de 2006
+
+Marzo de 2006
+
+7
+
+Abril de 2006
+
+- Agosto de 2006
+
+Marzo de 2006
+
+8
+
+Mayo de 2006 - Septiembre de 2006
+
+Abril de 2006
+
+9
+
+Mayo de 2006 - Septiembre de 2006
+
+Abril de 2006
+
+Decena de recuperación
+
+Mayo de 2006 - Septiembre de 2006
+
+Abril de 2006
+
+APARTADO 1.5 EQUIPAMIENTO DEL HOGAR
+SERVICIOS CON QUE CUENTA EL HOGAR
+
+SERV01_?
+
+Pregunta 1
+DESCRIPCIÓN
+
+1
+
+Línea telefónica fija
+
+SERV01_1
+
+2
+
+Teléfono móvil o celular
+
+SERV01_2
+
+3
+
+Televisión por cable, SKY o DIRECTV, Multivisión
+
+SERV01_3
+
+4
+
+Internet
+
+SERV01_4
+
+SERVICIOS QUE SE USAN TAMBIÉN EN SU NEGOCIO
+
+SERV02_?
+
+Pregunta 2
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Línea telefónica fija
+
+SERV02_1
+
+2
+
+Teléfono móvil o celular
+
+SERV02_2
+
+3
+
+Televisión por cable, SKY o DIRECTV, Multivisión
+
+SERV02_3
+
+4
+
+Internet
+
+SERV02_4
+
+VEHÍCULOS PROPIEDAD DEL HOGAR
+
+VEHI04_?
+
+Pregunta 3
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Automóvil
+
+2
+
+Cualquier camioneta cerrada o con cabina (van o VEHI04_2
+minivan), suburban, combi, ichivan, etcétera
+
+3
+
+Camioneta de caja (pick up, redilas, estaquitas, VEHI04_3
+etcétera)
+
+4
+
+Motocicleta o motoneta
+
+VEHI04_4
+
+5
+
+Bicicleta que se utilice como medio de transporte
+
+VEHI04_5
+
+VEHI04_1
+
+19 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+6
+
+Triciclo de carga utilizado como medio de
+transporte
+
+7
+
+Carreta, calandria u otros vehículos de tracción VEHI04_7
+animal
+
+8
+
+Canoa, lancha, trajinera u otros vehículos para VEHI04_8
+navegar
+
+9
+
+Otro tipo de vehículo
+
+VEH104_6
+
+VEHI04_9
+
+VEHÍCULOS QUE SE USAN TAMBIÉN EN SU NEGOCIO
+
+VEHI05_?
+
+Pregunta 5
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Automóvil
+
+2
+
+Cualquier camioneta cerrada o con cabina (van o VEHI05_2
+minivan), suburban, combi, ichivan, etcétera
+
+3
+
+Camioneta de caja (pick up, redilas, estaquitas, VEHI05_3
+etcétera)
+
+4
+
+Motocicleta o motoneta
+
+VEHI05_4
+
+5
+
+Bicicleta que se utilice como medio de transporte
+
+VEHI05_5
+
+6
+
+Triciclo de carga utilizado como medio de
+transporte
+
+VEH105_6
+
+7
+
+Carreta, calandria u otros vehículos de tracción VEHI05_7
+animal
+
+8
+
+Canoa, lancha, trajinera u otros vehículos para VEHI05_8
+navegar
+
+9
+
+Otro tipo de vehículo
+
+VEHI05_1
+
+VEHI05_9
+
+APARATOS Y ARTÍCULOS PROPIEDAD DEL HOGAR
+
+EQH07_??
+
+Pregunta 6
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Estéreo, modular, minicomponente o consola
+
+EQH07_01
+
+02
+
+Reproductor de discos compactos
+
+EQH07_02
+
+03
+
+Radio grabadora con reproductor de CD
+
+EQH07_03
+
+04
+
+Radio grabadora sin reproductor de CD
+
+EQH07_04
+
+05
+
+Radio
+
+EQH07_05
+
+06
+
+Televisión blanco y negro
+
+EQH07_06
+
+07
+
+Televisión a color
+
+EQH07_07
+
+08
+
+Videocasetera
+
+EQH07_08
+
+09
+
+DVD (Reproductor de discos de video)
+
+EQH07_09
+
+10
+
+Licuadora
+
+EQH07_10
+
+11
+
+Batidora
+
+EQH07_11
+
+12
+
+Extractor de jugos eléctrico
+
+EQH07_12
+
+13
+
+Tostador
+
+EQH07_13
+
+14
+
+Cafetera eléctrica
+
+EQH07_14
+20 de 53
+
+Sandwichera eléctrica
+
+EQH07_15
+
+16
+
+Exprimidor de jugos eléctrico
+
+EQH07_16
+
+17
+
+Abrelatas eléctrico
+
+EQH07_17
+
+18
+
+Horno eléctrico
+
+EQH07_18
+
+19
+
+Horno de microondas
+
+EQH07_19
+
+20
+
+Refrigerador
+
+EQH07_20
+
+21
+
+Estufa de gas o eléctrica
+
+EQH07_21
+
+22
+
+Molino de mano
+
+EQH07_22
+
+23
+
+Lavadora
+
+EQH07_23
+
+24
+
+Plancha eléctrica
+
+EQH07_24
+
+25
+
+Máquina de coser
+
+EQH07_25
+
+26
+
+Ventilador
+
+EQH07_26
+
+27
+
+Aparato de aire acondicionado (excluya sistema)
+
+EQH07_27
+
+28
+
+Aparato calefactor (excluya sistema)
+
+EQH07_28
+
+29
+
+Aspiradora
+
+EQH07_29
+
+30
+
+Computadora
+
+EQH07_30
+
+31
+
+Impresora
+
+EQH07_31
+
+32
+
+Escáner, quemador, MODEM y otros aparatos
+
+EQH07_32
+
+33
+
+Video juegos: nintendo, play station, sega u otros
+
+EQH07_33
+
+34
+
+Otros aparatos que no le hayan mencionado
+
+EQH07_34
+
+APARATOS Y ARTÍCULOS QUE SE USAN TAMBIÉN EN SU NEGOCIO
+
+EQH08_??
+
+Pregunta 8
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Estéreo, modular, minicomponente o consola
+
+EQH08_01
+
+02
+
+Reproductor de discos compactos
+
+EQH08_02
+
+03
+
+Radio grabadora con reproductor de CD
+
+EQH08_03
+
+04
+
+Radio grabadora sin reproductor de CD
+
+EQH08_04
+
+05
+
+Radio
+
+EQH08_05
+
+06
+
+Televisión blanco y negro
+
+EQH08_06
+
+07
+
+Televisión a color
+
+EQH08_07
+
+08
+
+Videocasetera
+
+EQH08_08
+
+09
+
+DVD (Reproductor de discos de video)
+
+EQH08_09
+
+10
+
+Licuadora
+
+EQH08_10
+
+11
+
+Batidora
+
+EQH08_11
+
+12
+
+Extractor de jugos eléctrico
+
+EQH08_12
+
+13
+
+Tostador
+
+EQH08_13
+
+14
+
+Cafetera eléctrica
+
+EQH08_14
+
+15
+
+Sandwichera eléctrica
+
+EQH08_15
+
+16
+
+Exprimidor de jugos eléctrico
+
+EQH08_16
+
+17
+
+Abrelatas eléctrico
+
+EQH08_17
+21 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+15
+
+18
+
+Horno eléctrico
+
+EQH08_18
+
+19
+
+Horno de microondas
+
+EQH08_19
+
+20
+
+Refrigerador
+
+EQH08_20
+
+21
+
+Estufa de gas o eléctrica
+
+EQH08_21
+
+22
+
+Molino de mano
+
+EQH08_22
+
+23
+
+Lavadora
+
+EQH08_23
+
+24
+
+Plancha eléctrica
+
+EQH08_24
+
+25
+
+Máquina de coser
+
+EQH08_25
+
+26
+
+Ventilador
+
+EQH08_26
+
+27
+
+Aparato de aire acondicionado (excluya sistema)
+
+EQH08_27
+
+28
+
+Aparato calefactor (excluya sistema)
+
+EQH08_28
+
+29
+
+Aspiradora
+
+EQH08_29
+
+30
+
+Computadora
+
+EQH08_30
+
+31
+
+Impresora
+
+EQH08_31
+
+32
+
+Escáner, quemador, MODEM y otros aparatos
+
+EQH08_32
+
+33
+
+Video juegos: nintendo, play station, sega u otros
+
+EQH08_33
+
+34
+
+Otros aparatos que no le hayan mencionado
+
+EQH08_34
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+GASTO SEMANAL CLAVES A001 – A247
+TRANSPORTE DIARIO CLAVES B001 – B007
+CEREALES
+
+CLAVE
+
+Pregunta 2
+01 Maíz
+CÓDIGO
+
+DESCRIPCIÓN
+
+A001
+
+Maíz en grano
+
+A002
+
+Harina de maíz
+
+A003
+
+Masa de maíz
+
+A004
+
+Tortilla de maíz
+
+A005
+
+Tostadas
+
+A006
+
+Otros productos de maíz
+
+02 Trigo
+CÓDIGO
+
+DESCRIPCIÓN
+
+A007
+
+Harina de trigo
+
+A008
+
+Tortillas de harina
+
+A009
+
+Pasta para sopa
+
+A010
+
+Galletas dulces
+
+A011
+
+Galletas saladas
+
+A012
+
+Pan blanco: bolillo, telera, baguete, etc.
+
+A013
+
+Pan de dulce: en pieza
+
+A014
+
+Pan de dulce empaquetado
+
+A015
+
+Pan para sándwich, hamburguesas, hot-dog y tostado
+
+A016
+
+Pasteles y pastelillos en pieza o a granel
+
+A017
+
+Pasteles y pastelillos empaquetados
+
+A018
+
+Otros productos de trigo: grano, salvado, etc.
+22 de 53
+
+03 Arroz
+CÓDIGO
+
+DESCRIPCIÓN
+
+A019
+
+Arroz en grano
+
+A020
+
+Otros productos de arroz: harina
+
+04 Otros cereales
+CÓDIGO
+
+DESCRIPCIÓN
+
+A021
+
+Cereal de maíz, de trigo, de arroz, de avena, granola, etc.
+
+A022
+
+Frituras, palomitas, cheetos, doritos, etc.
+
+A023
+
+Sopas instantáneas
+
+A024
+
+Otros cereales: avena, cebada, centeno, etc.
+
+05 Carne de res y ternera
+DESCRIPCIÓN
+
+A025
+
+Bistec: aguayón, cuete, paloma, pierna, etc.
+
+A026
+
+Arrachera, filete
+
+A027
+
+Milanesa
+
+A028
+
+Chamorro de res
+
+A029
+
+Chuleta de costilla
+
+A030
+
+Aldilla, fajilla para asar, diezmillo
+
+A031
+
+Cocido o retazo con hueso
+
+A032
+
+Cortes especiales: t-bone, roast beef, etc.
+
+A033
+
+Hamburguesas para asar
+
+A034
+
+Molida
+
+A035
+
+Pulpa en trozo
+
+A036
+
+Otras partes de la res: cabeza, ubre, etc.
+
+A037
+
+Vísceras: corazón, hígado, médula, panza, etc.
+
+06 Carne de cerdo
+CÓDIGO
+
+DESCRIPCIÓN
+
+A038
+
+Bistec
+
+A039
+
+Pierna (en trozo)
+
+A040
+
+Pulpa en trozo, (lomo, etc.)
+
+A041
+
+Molida
+
+A042
+
+Costilla y chuleta
+
+A043
+
+Espaldilla
+
+A044
+
+Codillo
+
+A045
+
+Otras partes del puerco: cabeza, espinazo, panza, pecho, etc.
+
+A046
+
+Vísceras: corazón, hígado, riñones, etc.
+
+07 Carnes procesadas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A047
+
+Carne enchilada
+
+A048
+
+Chicharrón
+
+A049
+
+Chorizo y longaniza
+
+A050
+
+Chuleta ahumada
+
+A051
+
+Machaca y carnes secas
+23 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+A052
+
+Jamón
+
+A053
+
+Mortadela, queso de puerco y salami
+
+A054
+
+Lardo o tocino
+
+A055
+
+Salchicha
+
+A056
+
+Otras carnes procesadas de res y puerco: rellena, cecina, etc.
+
+08 Carne de pollo
+CÓDIGO
+
+DESCRIPCIÓN
+
+A057
+
+Pierna, muslo y pechuga con hueso
+
+A058
+
+Pierna, muslo y pechuga sin hueso
+
+A059
+
+Pollo entero o en piezas (excepto, pierna, muslo y pechuga)
+
+A060
+
+Vísceras y otras partes del pollo: alas, cabeza, pescuezo, mollejas, hígado, etc.
+
+A061
+
+Otras aves: gallina, pavo, pato, etc.
+
+09 Carnes procesadas de aves
+CÓDIGO
+A062
+
+DESCRIPCIÓN
+Chorizo de pollo, jamón y nugget, salchicha, mortadela, etc.
+
+10 Otras carnes
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+A063
+
+Cordero: borrego y carnero
+
+A064
+
+Chivo y cabrito
+
+A065
+
+Otras carnes: Caballo, iguana, conejo, rana, venado, etc.
+
+11 Pescados frescos
+CÓDIGO
+
+DESCRIPCIÓN
+
+A066
+
+Pescado entero limpio y sin limpiar (bagre, carpa, mojarra, etc.)
+
+A067
+
+Filete de pescado
+
+12 Pescados procesados
+CÓDIGO
+
+DESCRIPCIÓN
+
+A068
+
+Atún
+
+A069
+
+Salmón y bacalao
+
+A070
+
+Ahumado, seco, nuggets, sardina
+
+13 Otros pescados
+CÓDIGO
+A071
+
+DESCRIPCIÓN
+Angula, mantarraya, anguilas, hueva, etc.
+
+14 Mariscos
+CÓDIGO
+
+DESCRIPCIÓN
+
+A072
+
+Fresco: camarón
+
+A073
+
+Otros mariscos frescos: almeja, jaiba, ostión, pulpo, etc.
+
+A074
+
+Procesados: ahumado, envasado, harina, camarón seco
+
+15 Leche
+CÓDIGO
+
+DESCRIPCIÓN
+
+A075
+
+De vaca, líquida pasteruizada, deslactosada, descremada, entera, light, saborizada,
+semidescremada, etc.
+
+A076
+
+Condensada
+
+A077
+
+Evaporada
+24 de 53
+
+A078
+
+En polvo (entera o descremada)
+
+A079
+
+Modificada o maternizada
+
+A080
+
+No pasteurizada (leche bronca)
+
+A081
+
+Otras leches: de burra, de cabra, etc.
+
+16 Quesos
+CÓDIGO
+
+DESCRIPCIÓN
+
+A082
+
+Amarillo
+
+A083
+
+Añejo y cotija
+
+A084
+
+Chihuahua
+
+A085
+
+Fresco
+
+A086
+
+Manchego
+
+A087
+
+Oaxaca o asadero
+
+A088
+
+Otros quesos: cottage, doble crema, enchilado, etc.
+
+17 Otros derivados de la leche
+CÓDIGO
+
+DESCRIPCIÓN
+
+A089
+
+Crema
+
+A090
+
+Mantequilla
+
+A091
+
+Yogur
+
+A092
+
+Otros: jocoque, requesón, suero, media crema, coffemate, etc.
+
+18 Huevos
+DESCRIPCIÓN
+
+A093
+
+De gallina: blanco y rojo
+
+A094
+
+Otros: codorniz, pata, pava, tortuga, etc.
+
+19 Aceites
+CÓDIGO
+
+DESCRIPCIÓN
+
+A095
+
+Aceite vegetal: cánola, cártamo, girasol, maíz, etc.
+
+A096
+
+Aceite de coco, oliva, soya
+
+20 Grasas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A097
+
+Margarina
+
+A098
+
+Manteca de puerco
+
+A099
+
+Manteca vegetal
+
+A100
+
+Otros: aceite de tortuga, bacalao, tiburón, enjundia, etc.
+
+21 Tubérculos crudos o frescos
+CÓDIGO
+
+DESCRIPCIÓN
+
+A101
+
+Betabel y camote
+
+A102
+
+Papa
+
+A103
+
+Rábano
+
+A104
+
+Otros tubérculos: jengibre, nabo, yuca, etc.
+
+22 Tubérculos procesados
+CÓDIGO
+
+DESCRIPCIÓN
+
+A105
+
+Harina para puré (papa)
+
+A106
+
+Papas fritas en bolsa o a granel
+
+25 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+23 Verduras y legumbres frescas
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+A107
+
+Acelgas, espinacas y verdolagas
+
+A108
+
+Aguacate
+
+A109
+
+Ajo
+
+A110
+
+Brócoli
+
+A111
+
+Calabaza y calabacita
+
+A112
+
+Cebolla
+
+A113
+
+Chayote
+
+A114
+
+Chícharo
+
+A115
+
+Chile jalapeño
+
+A116
+
+Chile poblano
+
+A117
+
+Chile serrano
+
+A118
+
+Otros chiles: Ancho, árbol, habanero, chipotle, etc.
+
+A119
+
+Cilantro
+
+A120
+
+Col y Repollo
+
+A121
+
+Ejote
+
+A122
+
+Elote
+
+A123
+
+Epazote
+
+A124
+
+Jitomate (bola, guajillo, saladet, etc.)
+
+A125
+
+Lechuga
+
+A126
+
+Nopal
+
+A127
+
+Pepino
+
+A128
+
+Perejil y hierbabuena
+
+A129
+
+Tomate verde
+
+A130
+
+Zanahoria
+
+A131
+
+Otras verduras: aceitunas, apio, alcachofa, berenjena, berro, quelites, flor de calabaza,
+etc.
+
+A132
+
+Germinados: de maíz, de trigo, de soya, etc.
+
+24 Verduras y legumbres procesadas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A133
+
+Chiles envasados: en escabeche (rajas, rodajas y enteros)
+
+A134
+
+Chiles secos o en polvo: guajillo, pasilla, ancho, piquín, puya, de árbol, etc.
+
+A135
+
+Verduras y legumbres envasadas: Aceitunas, alcaparras, champiñones, jitomate, sopa
+de verduras, etc.
+
+A136
+
+Verduras y legumbres congeladas: verduras mixtas en bolsa, etc.
+
+25 Leguminosas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A137
+
+Frijol: bayo, flor de mayo, negro, etc.
+
+A138
+
+Garbanzo
+
+A139
+
+Haba: amarilla y verde
+
+A140
+
+Lenteja
+
+A141
+
+Otras leguminosas: alubia, alverjón, huajes, etc.
+
+26 de 53
+
+26 Leguminosas procesadas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A142
+
+Frijol envasado: en caja, en lata, en bolsa, etc.
+
+A143
+
+Otras leguminosas: Alubias, garbanzo, haba, lenteja, gluten de soya, etc.
+
+27 Semilllas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A144
+
+A granel: ajonjolí, almendra, nuez, piñón, pistache, cacahuate, etc.
+
+A145
+
+Envasadas: ajonjolí, amaranto, girasol, nuez, piñón, etc.
+
+A146
+
+Procesadas: harina de ajonjolí, castaña asada, calabaza, pepita verde, cacahuate
+japonés, etc.
+
+28 Frutas frescas
+DESCRIPCIÓN
+
+A147
+
+Anona, chirimoya y guanábana
+
+A148
+
+Cereza, fresa, frambuesa y zarzamora
+
+A149
+
+Chabacano, durazno y melocotón
+
+A150
+
+Chicozapote y mamey
+
+A151
+
+Ciruela y jobo
+
+A152
+
+Guayaba
+
+A153
+
+Lima
+
+A154
+
+Limón
+
+A155
+
+Mandarina, tangerina
+
+A156
+
+Toronja
+
+A157
+
+Mango
+
+A158
+
+Manzana y perón
+
+A159
+
+Melón
+
+A160
+
+Naranja
+
+A161
+
+Papaya
+
+A162
+
+Pera
+
+A163
+
+Piña
+
+A164
+
+Pitahaya y tuna
+
+A165
+
+Plátano macho y de castilla
+
+A166
+
+Plátano tabasco
+
+A167
+
+Otros plátanos: dominico, morado, roatan, etc.
+
+A168
+
+Sandía
+
+A169
+
+Uva
+
+A170
+
+Otras frutas: caña, coco, granada, higo, jícama, nanche, tamarindo, etc.
+
+29 Frutas procesadas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A171
+
+Almíbar y conserva (chabacano, durazno, fresa, mango, etc.)
+
+A172
+
+Cristalizadas, secas y enchiladas: acitrón, pasitas, ciruela pasa, dátiles, etc.
+
+30 Azúcar y mieles
+CÓDIGO
+
+DESCRIPCIÓN
+
+A173
+
+Azúcar (blanca y morena)
+
+A174
+
+Miel de abeja
+
+A175
+
+Otros: azúcar glass, dietética, moscabado, miel de caña, piloncillo
+27 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+31 Café
+CÓDIGO
+
+DESCRIPCIÓN
+
+A176
+
+Tostado en grano molido
+
+A177
+
+Tostado soluble
+
+32 Té
+CÓDIGO
+
+DESCRIPCIÓN
+
+A178
+
+Flor y hojas para té: (anis, jamaica, manzanilla, naranja, etc.)
+
+A179
+
+Soluble: (azahar, canela, limón, manzanilla, negro, etc.)
+
+33 Chocolate
+CÓDIGO
+
+DESCRIPCIÓN
+
+A180
+
+En tableta
+
+A181
+
+En polvo
+
+A182
+
+Otros: cocoa, jarabe de chocolate, etc.
+
+34 Especies y aderezos
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+A183
+
+Canela
+
+A184
+
+Clavo
+
+A185
+
+Comino, tomillo y orégano
+
+A186
+
+Concentrado de pollo y tomate
+
+A187
+
+Mayonesa
+
+A188
+
+Mole en polvo o en pasta
+
+A189
+
+Mostaza
+
+A190
+
+Pimienta
+
+A191
+
+Sal
+
+A192
+
+Salsas (dulces y picantes)
+
+A193
+
+Vinagre
+
+A194
+
+Otros: ablandadores de carne, aderezos, polvo para hornear, salsa de soya, etc.
+
+35 Alimentos preparados para bebé
+CÓDIGO
+
+DESCRIPCIÓN
+
+A195
+
+Cereal: arroz, avena, plátano, mixto, etc.
+
+A196
+
+Papilla: ejote con jamón colado; jamón, vegetales, cereal picado, etc.
+
+A197
+
+Jugos de frutas y verduras de cualquier combinación
+
+36 Alimentos preparados para consumir en casa
+CÓDIGO
+
+DESCRIPCIÓN
+
+A198
+
+Pizzas
+
+A199
+
+Carnitas
+
+A200
+
+Pollo rostizado
+
+A201
+
+Barbacoa y birria
+
+A202
+
+Otros alimentos preparados: atole, flautas, guisados, hot dog, emparedados, sopas,
+tacos, tamales, tortas, sopes, menudo, pozole, arroz con leche, etc.
+
+37 Alimentos diversos
+CÓDIGO
+
+DESCRIPCIÓN
+
+A203
+
+Hongos: (champiñones, huitlacoche, setas, etc.)
+
+A204
+
+Insectos: chapulín, chinicuil, gusano de maguey, hormiga (chicatana), etc.
+28 de 53
+
+38 Dulces y postres
+CÓDIGO
+
+DESCRIPCIÓN
+
+A205
+
+Flanes, gelatinas y pudines en polvo
+
+A206
+
+Cajetas, dulces de leche y jamoncillos
+
+A207
+
+Ates, crema de cacahuate, mermeladas y jaleas
+
+A208
+
+Helados, nieves y paletas de hielo
+
+A209
+
+Caramelos, paletas de dulce y otras golosinas
+
+39 Gastos relacionados con la elaboración de alimentos
+CÓDIGO
+
+DESCRIPCIÓN
+
+A210
+
+Molienda de nixtamal
+
+A211
+
+Otros gastos relacionados con la preparación de alimentos: hojas de maíz y plátano
+para tamal, cal para nixtamal, etc.
+
+40 Gastos en alimentos y/o bebidas en paquete
+CÓDIGO
+A212
+
+DESCRIPCIÓN
+Alimentos y/o bebidas en paquete: despensa
+
+41 Alimento para animales domésticos
+CÓDIGO
+
+DESCRIPCIÓN
+
+A213
+
+Alimentos para animales de esparcimiento
+
+A214
+
+Alimentos para animales para uso del hogar
+
+42 Bebidas no alcohólicas
+DESCRIPCIÓN
+
+A215
+
+Agua natural embotellada
+
+A216
+
+Agua mineral, quina, desmineralizada con o sin sabor
+
+A217
+
+Agua preparada y jugos naturales
+
+A218
+
+Jugos y néctares envasados
+
+A219
+
+Concentrados y polvo para preparar bebidas
+
+A220
+
+Refrescos de cola y de sabores
+
+A221
+
+Bebidas energéticas: gatorade, enerplex, etc.
+
+A222
+
+Jarabe natural: granadina, sangrita, hielo, etc.
+
+43 Bebidas alcohólicas
+CÓDIGO
+
+DESCRIPCIÓN
+
+A223
+
+Brandy
+
+A224
+
+Cerveza: de barril, en botella, en lata
+
+A225
+
+Anís
+
+A226
+
+Jerez
+
+A227
+
+Licor o crema de frutas: de café, guayaba, naranja, etc.
+
+A228
+
+Aguamiel, pulque, tlachique
+
+A229
+
+Mezcal
+
+A230
+
+Ron: añejo, blanco, con limón
+
+A231
+
+Rompope
+
+A232
+
+Sidra: blanca y rosada
+
+A233
+
+Tequila: añejo, azul y blanco
+
+A234
+
+Vino de mesa: blanco, rosado, tinto
+
+A235
+
+Vodka
+29 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+A236
+
+Wisky
+
+A237
+
+Bebidas preparadas envasadas: caribe cooler, viña real, xtassy, zas, president-cola,
+ron & cola, cockteles: daiquiri, margarita, piña colada, etc.
+
+A238
+
+Otros: Champange, etc.
+
+44 Tabaco
+CÓDIGO
+
+DESCRIPCIÓN
+
+A239
+
+Cigarros
+
+A240
+
+Puros
+
+A241
+
+Tabaco: en hoja y picado
+
+45 Alimentos de organizaciones
+CÓDIGO
+A242
+
+DESCRIPCIÓN
+Despensa de alimentos que otorgan organizaciones privadas o de gobierno
+
+46 Alimentos y bebidas consumidas fuera del hogar
+CÓDIGO
+
+DESCRIPCIÓN
+
+A243
+
+Desayuno
+
+A244
+
+Comida
+
+A245
+
+Cena
+
+A246
+
+Entrecomidas y almuerzos
+
+A247
+
+Otros eventos fuera del hogar
+
+47 Transporte público
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+B001
+
+Metro
+
+B002
+
+Autobús
+
+B003
+
+Trolebús o tranvía
+
+B004
+
+Colectivo, combi o microbús
+
+B005
+
+Taxi, radio taxi (sitio)
+
+B006
+
+Autobús foráneo
+
+B007
+
+Otros: lancha, panga, peaje
+
+APARTADOS 1.1 Y 1.2 GASTO SEMANAL, 2.1 AL 2.5 GASTO MENSUAL, 3.1 AL 3.3 GASTO TRIMESTRAL, 4.1
+AL 4.3 GASTO SEMESTRAL
+LUGAR DE COMPRA
+
+LUG_COM
+
+Preguntas 4 y 3 y columna código de cuadernillo
+Preguntas 3, 5 y 10 y columna código de cuestionario
+CÓDIGO
+
+DESCRIPCIÓN
+
+01 *
+
+Mercado
+
+02 *
+
+Tianguis o mercado sobre ruedas
+
+03 *
+
+Vendedores ambulantes
+
+04 *
+
+Tiendas de abarrotes
+
+05 *
+
+Tiendas específicas del ramo: (pollerías tortillerías, loncerías, etcétera)
+
+06 *
+
+Supermercados y tiendas departamentales
+
+07 *
+
+Tiendas departamentales
+
+08 *
+
+Compras fuera del país
+
+09 *
+
+Tiendas con membresía
+30 de 53
+
+10 *
+
+Tiendas de conveniencia
+
+11
+
+Restaurantes
+
+12
+
+Loncherías, fondas, torterías, taquerías, cocinas económicas, cenadurías
+
+13
+
+Cafeterías
+
+14
+
+Pulquería, cantinas o bares
+
+15 *
+
+Otros
+
+* Para el apartado 3.3, en la columna lugar de compra, sólo es permitido usar estos códigos.
+SECCIONES DE REGALOS, PAGO EN ESPECIE Y AUTOCONSUMO SEMANAL
+EQUIVALENCIA POR UNIDAD
+
+LUG_COM
+
+Columnas de secciones de gasto: regalos, pago en especie y autoconsumo semanal
+INFORMACIÓN REPORTADA EN LA COLUMNA CANTIDAD
+
+EQUIVALENCIA POR UNIDAD EN
+KILOGRAMOS O LITROS *
+
+Medio cuarto
+Un cuarto
+
+(1/4)
+
+Cuarto y medio
+
+=
+
+0.125
+
+Kg., l
+
+=
+
+0.250
+
+Kg., l
+
+=
+
+0.375
+
+Kg., l
+
+Tres cuartos
+
+(3/4)
+
+=
+
+0.750
+
+Kg., l
+
+Un tercio
+
+(1/3)
+
+=
+
+0.333
+
+Kg., l
+
+Dos tercios
+
+(2/3)
+
+=
+
+0.667
+
+Kg., l
+
+Un medio
+
+(1/2)
+
+=
+
+0.500
+
+Kg., l
+
+EQUIVALENCIA POR UNIDAD PARA CIGARROS
+Columnas de secciones de gasto: regalos, pago en especie y autoconsumo semanal
+DESCRIPCIÓN
+Cajetilla con 14, 15, 16 ó 18 cigarros de 70 mm., cortos, cajetilla suave, (papel arroz) = .010 Kg. *
+Cajetilla con 14 cigarros de 80 mm., medianos, cajetilla dura = .015 Kg.
+Cajetilla con 20 cigarros medianos, cajetilla suave = .015 Kg.
+Cajetilla con 20 cigarros medianos, cajetilla dura = .025 Kg.
+Cajetilla con 20 cigarros largos, cajetilla suave = .025 Kg.
+Cajetilla con 20 cigarros largos, cajetilla dura = .030 Kg.
+Cajetilla con 20 cigarros super largos, cajetilla suave = .025 Kg.
+*Peso promedio de las diferentes marcas en el mercado.
+APARTADOS 1.1 Y 1.2 GASTO SEMANAL, 2.1 AL 2.5 GASTO MENSUAL, 3.1 AL 3.3 GASTO TRIMESTRAL, 4.1
+AL 4.4 GASTO SEMESTRAL
+REGALOS QUE RECIBE EL HOGAR
+
+COD
+
+Pregunta 4 y columna código de cuadernillo
+Preguntas 18, 21, 23, 25, 28 y columna código de cuestionario
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Institución de Gobierno (excepto PROGRESA)
+
+2
+
+Organización privada
+
+3
+
+Proveniente de otro hogar
+
+4
+
+Progresa u Oportunidades
+31 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+* Para utilizar esta equivalencia, la unidad de medida reportada debe ser kilogramos o litros.
+
+APOYOS QUE RECIBE EL HOGAR
+
+COD
+
+Pregunta 4 y columna código en el cuadernillo
+Preguntas 22, 25, 27, 29, 32 y columna código en cuestionario
+CÓDIGO
+
+DESCRIPCIÓN
+
+1
+
+Institución de Gobierno (excepto PROGRESA)
+
+2
+
+Organización privada
+
+SECCIONES DE PAGO EN ESPECIE, REGALOS Y APOYOS QUE RECIBE EL HOGAR
+INSTITUCIONES PÚBLICAS Y PRIVADAS QUE OTORGAN PRODUCTOS Y SERVICIOS COD
+PARA EL CUIDADO DE LA SALUD
+Preguntas 20, 25, 29 y columna código
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Médicos, laboratorios y hospitales particulares
+
+02
+
+Servicios médicos del IMSS
+
+03
+
+Servicios médicos del ISSSTE
+
+04
+
+Servicios médicos de PEMEX
+
+05
+
+Servicios médicos de la Marina
+
+06
+
+Servicios médicos del Ejército
+
+07
+
+Servicios médicos de la SSA
+
+08
+
+Servicios médicos del DIF
+
+09
+
+Servicios médicos de universidades públicas
+
+10
+
+Otros servicios médicos: cruz roja, cruz verde, etcétera
+
+11
+
+Servicios médicos provenientes del programa Progresa u Oportunidades
+
+12
+
+Provenientes de otro hogar
+
+APARTADO 2.1 A 2.5
+PERIODOS DE REFERENCIA POR DECENA, GASTO MENSUAL
+DECENA
+
+PERIODO DE LEVANTAMIENTO
+
+PERIODO DE REFERENCIA
+
+0
+
+del 10 al 16 de Agosto
+
+Julio de 2006
+
+1
+
+del 20 al 26 de Agosto
+
+Julio de 2006
+
+2
+
+del 30 de Agosto al 05 de Septiembre
+
+Agosto de 2006
+
+3
+
+del 09 al 15 de Septiembre
+
+Agosto de 2006
+
+4
+
+del 09 al 25 de Septiembre
+
+Agosto de 2006
+
+5
+
+del 29 de Septiembre al 05 de Octubre
+
+Septiembre de 2006
+
+6
+
+del 09 al 15 de Octubre
+
+Septiembre de 2006
+
+7
+
+del 19 al 25 de Octubre
+
+Septiembre de 2006
+
+8
+
+del 29 de Octubre al 04 de Noviembre
+
+Octubre de 2006
+
+9
+
+del 08 al 14 de Noviembre
+
+Octubre de 2006
+
+Decena de recuperación
+
+del 18 al 24 de Noviembre
+
+Octubre de 2006
+
+32 de 53
+
+GASTO MENSUAL
+APARTADO 2.1 LIMPIEZA Y CUIDADOS DE LA CASA
+A) ARTÍCULOS DE LIMPIEZA Y CUIDADOS DE LA CASA
+DESCRIPCIÓN
+
+C001
+
+Detergentes (polvo, líquido, pasta, gel)
+
+C002
+
+Jabón de barra
+
+C003
+
+Blanqueadores
+
+C004
+
+Suavizantes de telas
+
+C005
+
+Limpiadores (en polvo o líquido)
+
+C006
+
+Servilletas y papel absorbente
+
+C007
+
+Platos y vasos desechables, papel aluminio y encerado
+
+C008
+
+Escobas, trapeadores, recogedor
+
+C009
+
+Fibras, estropajos, escobetas, pinzas para ropa, lazos
+
+C010
+
+Jergas y trapos de cocina
+
+C011
+
+Cerillos
+
+C012
+
+Pilas
+
+C013
+
+Focos
+
+C014
+
+Cera y limpia muebles
+
+C015
+
+Insecticidas líquido, en polvo, pastilla, raid eléctrico
+
+C016
+
+Desodorante ambiental y sanitario
+
+C017
+
+Recipientes de lámina (cubetas, tinas, etcétera)
+
+C018
+
+Recipientes de plástico (cubetas, tinas, mangueras, etcétera)
+
+C019
+
+Otros artículos
+
+B) SERVICIOS PARA EL HOGAR
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+C020
+
+Servicio doméstico
+
+C021
+
+Lavandería
+
+C022
+
+Tintorería
+
+C023
+
+Jardinería
+
+C024
+
+Otros servicios: fumigaciones, etcétera
+
+APARTADO 2.2 CUIDADOS PERSONALES
+A) ARTÍCULOS PARA EL CUIDADO PERSONAL
+
+CLAVE
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+D001
+
+Jabón de tocador
+
+D002
+
+Lociones y perfumes
+
+D003
+
+Pasta dental y enjuague bucal
+
+D004
+
+Hilo y cepillo dental
+
+D005
+
+Champús, enjuagues, tratamiento para el cabello
+
+D006
+
+Tintes y líquidos para permanente
+
+D007
+
+Desodorante y talco
+33 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+
+D008
+
+Bronceadores y bloqueadores
+
+D009
+
+Crema para el cuerpo, para la cara y tratamiento facial
+
+D010
+
+Gel, spray, mousse para el cabello
+
+D011
+
+Crema para afeitar y rastillos
+
+D012
+
+Cosméticos, polvo y maquillaje, sombra, lápiz labial, delineador de ojos, etcétera
+
+D013
+
+Esmalte para uñas
+
+D014
+
+Papel sanitario, pañuelos desechables
+
+D015
+
+Toallas sanitarias
+
+D016
+
+Pañales desechables
+
+D017
+
+Artículos de tocador para bebé
+
+D018
+
+Cepillos y peines
+
+D019
+
+Artículos eléctricos: rasuradora, secadora, etcétera
+
+D020
+
+Reparación y/o mantenimiento de los artículos anteriores
+
+D021
+
+Otros: donas y mariposas para el cabello, limas de uñas, pasadores, etcétera
+
+B) SERVICIOS PARA EL CUIDADO PERSONAL
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+D022
+
+Corte de cabello y peinado
+
+D023
+
+Baños y masajes
+
+D024
+
+Permanentes y tintes
+
+D025
+
+Manicure
+
+D026
+
+Otros servicios: rasurar, depilar, etcétera
+
+APARTADO 2.3 EDUCACIÓN CULTURA Y RECREACIÓN
+NIVEL DE EDUCACIÓN BÁSICA, MEDIA O SUPERIOR
+
+CLAVE
+
+Columna 01
+CÓDIGO
+
+DESCRIPCIÓN
+
+E001
+
+Preprimaria
+
+E002
+
+Primaria
+
+E003
+
+Secundaria
+
+E004
+
+Preparatoria
+
+E005
+
+Profesional
+
+E006
+
+Posgrado
+
+E007
+
+Educación técnica
+
+C) SERVICIOS DE EDUCACIÓN
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+E008
+
+Estancias infantiles (excepto preprimaria)
+
+E009
+
+Enseñanza adicional
+
+E010
+
+Educación especial para discapacitados
+
+E011
+
+Internados
+
+E012
+
+Cuidado de niños (persona particular)
+
+E013
+
+Transporte escolar
+34 de 53
+
+D) ARTÍCULOS E IMPREVISTOS EDUCATIVOS
+DESCRIPCIÓN
+
+E014
+
+Libros para la escuela
+
+E015
+
+Pago de imprevistos como: derecho a examen extraordinario, cursos de
+regularización, etcétera
+
+E016
+
+Equipo escolar: máquinas de escribir, calculadora, etcétera
+
+E017
+
+Pago de imprevistos para educación técnica como: derecho a examen, cursos de
+regularización, etcétera
+
+E018
+
+Material para la educación adicional
+
+E019
+
+Reparación y/o mantenimiento de equipo escolar
+
+E) ARTÍCULOS DE CULTURA Y RECREACIÓN
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+E020
+
+Enciclopedia y libros (excluya los de la escuela)
+
+E021
+
+Periódicos
+
+E022
+
+Revistas
+
+E023
+
+Audio cassetes, discos y discos compactos
+
+E024
+
+Otros
+
+F) SERVICIOS DE RECREACIÓN
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+E025
+
+Cines
+
+E026
+
+Teatros y conciertos
+
+E027
+
+Centros nocturnos (incluye alimentos, bebidas, tabaco, cover, propinas, etcétera)
+
+E028
+
+Espectáculos deportivos
+
+E029
+
+Lotería y juegos de azar
+
+E030
+
+Cuotas a centros sociales, asociaciones, clubes, etcétera
+
+E031
+
+Servicios de televisión por cable, satélite, pago por evento y paquetes
+
+E032
+
+Renta de cassetes para video juegos, discos compactos y video cassetes
+
+E033
+
+Otros gastos de recreación: museos, ferias, juegos mecánicos, balnearios, etcétera
+
+APARTADO 2.4 COMUNICACIONES Y SERVICIOS PARA VEHÍCULOS
+A) COMUNICACIONES
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+F001
+
+Instalación de la línea de teléfono particular
+
+F002
+
+Largas distancias de línea particular
+
+F003
+
+Llamadas locales de la línea particular
+
+F004
+
+Teléfonos celulares: pago inicial y equipo
+
+F005
+
+Compra de tarjeta y pago por el servicio de teléfono celular
+
+F006
+
+Teléfono público
+
+F007
+
+Estampillas para correo, paquetería, telégrafo
+
+F008
+
+Internet
+
+F009
+
+Otros servicios: fax público, beeper, etcétera
+35 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+
+B) COMBUSTIBLES, MANTENIMIENTO Y SERVICIOS PARA VEHÍCULOS
+
+CLAVE
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+F010
+
+Gasolina Magna
+
+F011
+
+Gasolina Premium
+
+F012
+
+Diesel y gas
+
+F013
+
+Aceites y lubricantes
+
+F014
+
+Reparación de llantas
+
+F015
+
+Pensión y estacionamiento
+
+F016
+
+Lavado y engrasado
+
+F017
+
+Otros servicios: encerado, inflado de llantas, etcétera
+
+APARTADO 2.5 VIVIENDA Y SERVICIOS DE CONSERVACIÓN
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+A) VIVIENDA
+
+CLAVE
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+G001
+
+Vivienda propia
+
+G002
+
+Cuota por la vivienda recibida como prestación en el trabajo
+
+G003
+
+Renta o alquiler de la vivienda
+
+G004
+
+Cuota de la vivienda en otra situación
+
+G005
+
+Cuota o pago del hogar adicional
+
+G006
+
+Alquiler de terrenos
+
+G007
+
+Agua
+
+G008
+
+Energía eléctrica
+
+G009
+
+Gas licuado de petróleo (LP)
+
+G010
+
+Gas natural
+
+G011
+
+Impuesto predial
+
+G012 y 13
+
+Está pagando la vivienda o es el propietario de esta vivienda
+
+G014 y G015
+
+Le prestaron la vivienda por parte de su trabajo
+
+G016 y G017
+
+Le presta un familiar o amigo esta vivienda
+
+G018 y G019
+
+Otra situación
+
+B) SERVICIOS DE CONSERVACIÓN
+
+CLAVE
+
+1. Cuota por servicios de conservación
+CÓDIGO
+
+DESCRIPCIÓN
+
+G020
+
+Recolección de basura
+
+G021
+
+Cuotas de vigilancia
+
+G022
+
+Cuotas de administración
+
+G023
+
+Otros servicios
+
+2. Combustible
+CÓDIGO
+
+DESCRIPCIÓN
+
+G024
+
+Petróleo
+
+G025
+
+Diesel
+
+G026
+
+Carbón
+36 de 53
+
+G027
+
+Leña
+
+G028
+
+Combustible para calentar
+
+G029
+
+Velas y veladoras
+
+G030
+
+Otros combustibles: cartón, papel, etcétera
+
+APARTADOS DEL 3.1 AL 3.3
+DECENA
+
+CLAVE
+
+PERIODO DE LEVANTAMIENTO
+
+PERIODO DE REFERENCIA
+
+0
+
+del 10 al 16 de Agosto
+
+Mayo a Julio de 2006
+
+1
+
+del 20 al 26 de Agosto
+
+Mayo a Julio de 2006
+
+2
+
+del 30 de Agosto al 05 de Septiembre
+
+Junio a Agosto de 2006
+
+3
+
+del 09 al 15 de Septiembre
+
+Junio a Agosto de 2006
+
+4
+
+del 19 al 25 de Septiembre
+
+Junio a Agosto de 2006
+
+5
+
+del 29 de Septiembre al 05 de Octubre
+
+Julio a Septiembre de 2006
+
+6
+
+del 09 al 15 de Octubre
+
+Julio a Septiembre de 2006
+
+7
+
+del 19 al 25 de Octubre
+
+Julio a Septiembre de 2006
+
+8
+
+del 29 de Octubre al 04 de Noviembre
+
+Agosto a Octubre de 2006
+
+9
+
+del 08 al 14 de Noviembre
+
+Agosto a Octubre de 2006
+
+Decena de recuperación
+
+del 18 al 24 de Noviembre
+
+Agosto a Octubre de 2006
+
+GASTO TRIMESTRAL
+APARTADO 3.1 PRENDAS DE VESTIR, CALZADO Y ACCESORIOS
+A) PRENDAS DE VESTIR PARA PERSONAS DE 0 A 4 AÑOS
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+H001
+
+Pantalones
+
+H002
+
+Trajes, sacos, conjuntos, abrigos, gabardinas e impermeables
+
+H003
+
+Vestidos
+
+H004
+
+Camisas
+
+H005
+
+Playeras
+
+H006
+
+Camisetas
+
+H007
+
+Suéteres, sudaderas y chambritas
+
+H008
+
+Blusas
+
+H009
+
+Pants
+
+H010
+
+Truzas y bóxer
+
+H011
+
+Pantaletas
+
+H012
+
+Calcetines, calcetas, tobilleras y tines
+
+H013
+
+Calzones de hule
+
+H014
+
+Pañales de tela
+
+H015
+
+Telas, confecciones y reparaciones
+
+H016
+
+Otras prendas de vestir: baberos, delantales, fajillas, batas, pijamas, etcétera
+
+37 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+PERIODOS DE REFERENCIA POR DECENA, GASTO MENSUAL
+
+B) PRENDAS DE VESTIR PARA PERSONAS DE 5 A 17 AÑOS
+PRENDAS DE VESTIR PARA HOMBRE
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+H017
+
+Pantalones
+
+H018
+
+Camisas
+
+H019
+
+Playeras
+
+H020
+
+Trajes, sacos, abrigos, gabardinas e impermeables
+
+H021
+
+Chamarras
+
+H022
+
+Suéteres y sudaderas
+
+H023
+
+Truzas y bóxer
+
+H024
+
+Camisetas
+
+H025
+
+Calcetines, calcetas y tines
+
+H026
+
+Pants
+
+H027
+
+Telas, confecciones y reparaciones
+
+H028
+
+Otras prendas de vestir para hombre: corbatas, batas, pijamas, etcétera
+
+PRENDAS DE VESTIR PARA MUJER
+CÓDIGO
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CLAVE
+
+CLAVE
+
+DESCRIPCIÓN
+
+H029
+
+Pantalones
+
+H030
+
+Blusas
+
+H031
+
+Playeras
+
+H032
+
+Trajes, sacos, conjuntos, abrigos, gabardinas e impermeables
+
+H033
+
+Vestidos
+
+H034
+
+Faldas
+
+H035
+
+Suéteres y sudaderas
+
+H036
+
+Chamarras
+
+H037
+
+Calcetas, tobilleras, tines y mallas
+
+H038
+
+Pantaletas y fajas
+
+H039
+
+Brassieres
+
+H040
+
+Fondos y corpiños
+
+H041
+
+Medias, pantimedias y tobimedias
+
+H042
+
+Pants
+
+H043
+
+Telas, confecciones y reparaciones
+
+H044
+
+Otras prendas de vestir para mujer: rebozo, pijamas, camisones, batas, etcétera
+
+C) PRENDAS DE VESTIR PARA PERSONAS DE 18 AÑOS O MÁS AÑOS
+PRENDAS DE VESTIR PARA HOMBRE
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+H045
+
+Pantalones
+
+H046
+
+Camisas
+
+H047
+
+Playeras
+
+H048
+
+Trajes, sacos, conjuntos, abrigos, gabardinas e impermeables
+38 de 53
+
+H049
+
+Suéteres y sudaderas
+
+H050
+
+Chamarras
+
+H051
+
+Truzas y bóxer
+
+H052
+
+Camisetas
+
+H053
+
+Calcetines, calcetas y tines
+
+H054
+
+Pants
+
+H055
+
+Telas, confecciones y reparaciones
+
+H056
+
+Otras prendas de vestir para hombre: corbatas, batas, pijamas, etcétera
+
+PRENDAS DE VESTIR PARA MUJER
+H057
+
+DESCRIPCIÓN
+Pantalones
+
+H058
+
+Blusas
+
+H059
+
+Playeras
+
+H060
+
+Trajes, sacos, conjuntos, abrigos, gabardinas e impermeables
+
+H061
+
+Vestidos
+
+H062
+
+Faldas
+
+H063
+
+Suéteres y sudaderas
+
+H064
+
+Chamarras
+
+H065
+
+Calcetas, tobilleras, tines y mallas
+
+H066
+
+Pantaletas y fajas
+
+H067
+
+Brassieres
+
+H068
+
+Fondos y corpiños
+
+H069
+
+Medias, pantimedias y tobimedias
+
+H070
+
+Pants
+
+H071
+
+Telas, confecciones y reparaciones
+
+H072
+
+Otras prendas de vestir para mujer: rebozo, pijamas, camisones, batas, etcétera
+
+D) OTROS
+
+CLAVE
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+H073
+
+Uniformes y prendas de vestir para actividades educativas, artísticas y deportivas
+
+H074
+
+Prendas de vestir para eventos especiales derivados de la educación
+
+H075
+
+Telas, confecciones y reparaciones
+
+E) CALZADO PARA PERSONAS DE 0 A 4 AÑOS
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+H076
+
+Zapatos y sandalias para vestir
+
+H077
+
+Botas
+
+H078
+
+Tenis
+
+H079
+
+Huaraches
+
+H080
+
+Sandalias para baño o descanso
+
+H081
+
+Pantuflas
+
+39 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+
+F) CALZADO PARA PERSONAS DE 5 A 17 AÑOS
+CALZADO PARA HOMBRE
+CÓDIGO
+H082
+H083
+H084
+H085
+H086
+H087
+
+CLAVE
+DESCRIPCIÓN
+Zapatos
+Botas
+Tenis
+Huaraches
+Sandalias para baño o descanso
+Pantuflas
+
+CALZADO PARA MUJER
+CÓDIGO
+H088
+H089
+H090
+H091
+H092
+H093
+
+CLAVE
+DESCRIPCIÓN
+Zapatos y sandalias para vestir
+Botas
+Tenis
+Huaraches
+Sandalias para baño o descanso
+Pantuflas
+
+G) CALZADO PARA PERSONAS DE 18 AÑOS Y MÁS
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CALZADO PARA HOMBRE
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+H094
+
+Zapatos
+
+H095
+
+Botas
+
+H096
+
+Tenis
+
+H097
+
+Huaraches
+
+H098
+
+Sandalias para baño o descanso
+
+H099
+
+Pantuflas
+
+CALZADO PARA MUJER
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+H100
+
+Zapatos y sandalias para vestir
+
+H101
+
+Botas
+
+H102
+
+Tenis
+
+H103
+
+Huaraches
+
+H104
+
+Sandalias para baño o descanso
+
+H105
+
+Pantuflas
+
+H) MANTENIMIENTO, REPARACIÓN Y ACCESORIOS DE CALZADO
+CÓDIGO
+
+DESCRIPCIÓN
+
+H106
+
+Servicio de limpieza y reparación de calzado
+
+H107
+
+Crema para calzado
+
+H108
+
+Otros: agujetas, cepillos, etcétera
+
+40 de 53
+
+CLAVE
+
+APARTADO 3.2 CRISTALERÍA, BLANCOS Y UTENSILIOS DOMÉSTICOS
+A) CRISTALERÍA, VAJILLAS Y UTENSILIOS DOMÉSTICOS
+CLAVE
+CÓDIGO
+DESCRIPCIÓN
+I001
+Vajilla completa de cristal, barro, plástico, etcétera
+I002
+Piezas sueltas de vajilla de cristal, barro, plástico, etcétera
+I003
+Recipientes o cajas de plástico para la cocina
+I004
+Vasos, copas y jarras de cristal, plástico, cerámica, etcétera
+I005
+Cubiertos
+I006
+Objetos ornamentales
+I007
+Accesorios de hule y plástico: jabonera, tapetes, espejos, etcétera
+I008
+Reloj de pared o mesa
+I009
+Batería de cocina y piezas sueltas
+I010
+Olla Express
+I011
+Otros utensilios: tijeras, abrelatas, pinzas para hielo, etcétera
+I012
+Herramientas: martillo, pinzas, taladro, etcétera
+I013
+Reparación y/o mantenimiento de los artículos anteriores
+B) BLANCOS, MANTELERÍA Y ARTÍCULOS DE MERCERÍA
+CLAVE
+CÓDIGO
+DESCRIPCIÓN
+I014
+Colchones
+I015
+Colchonetas
+I016
+Cobertores y cobijas
+I017
+Sábanas
+I018
+Fundas
+I019
+Colchas, edredones
+I020
+Manteles y servilletas
+I021
+Toallas
+I022
+Cortinas
+I023
+Telas, confecciones y reparaciones de artículos anteriores
+I024
+Hilos, hilazas y estambres
+I025
+Agujas, cierres, botones y broches
+I026
+Otros artículos: hamacas, almohadas, cojines, secadores, etcétera
+41 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+I) ACCESORIOS Y EFECTOS PERSONALES
+CLAVE
+CÓDIGO
+DESCRIPCIÓN
+H109
+Bolsas
+H110
+Cinturones, carteras y monederos
+H111
+Diademas
+H112
+Encendedores, cigarreras y polveras
+H113
+Joyería de fantasía
+H114
+Portafolios
+H115
+Relojes de pulso
+H116
+Sombreros, gorros y cachuchas
+H117
+Otros accesorios: lentes oscuros, etcétera
+H118
+Artículos y accesorios para el cuidado del bebé
+H119
+Reparación y/o mantenimiento de los artículos anteriores
+
+APARTADO 3.3 CUIDADOS DE LA SALUD
+INSTITUCIONES PÚBLICAS Y PRIVADAS PARA LA ADQUISICIÓN DE PRODUCTOS Y
+SERVICIOS PARA EL CUIDADO DE LA SALUD
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Médicos, laboratorios y hospitales particulares
+
+02
+
+Servicios médicos del IMSS
+
+03
+
+Servicios médicos del ISSSTE
+
+04
+
+Servicios médicos de PEMEX
+
+05
+
+Servicios médicos de la Marina
+
+06
+
+Servicios médicos del Ejército
+
+07
+
+Servicios médicos de la SSA
+
+08
+
+Servicios médicos del DIF
+
+09
+
+Servicios médicos de universidades públicas
+
+10
+
+Servicios médicos: Cruz roja, Cruz verde, etc.
+
+11
+
+Servicios médicos provenientes del programa PROGRESA u OPORTUNIDADES
+
+12
+
+Provenientes de otro hogar
+
+A) SERVICIOS MÉDICOS DURANTE EL PARTO
+CÓDIGO
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CLAVE
+
+CLAVE
+
+DESCRIPCIÓN
+
+J001
+
+Honorarios por servicios profesionales: cirugía, anestesia, etcétera
+
+J002
+
+Hospitalización
+
+J003
+
+Análisis clínicos y estudios médicos: Rayos X, ultrasonido, etcétera
+
+J004
+
+Medicamentos recetados y material de curación
+
+J005
+
+Servicio de partera
+
+J006
+
+Otros: servicio de ambulancia
+
+B) SERVICIOS MÉDICOS Y MEDICAMENTOS DURANTE EL EMBARAZO
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+J007
+
+Consultas médicas
+
+J008
+
+Consultas, placas, puentes dentales y otros
+
+J009
+
+Medicamentos recetados
+
+J010
+
+Vitaminas y complementos alimenticios
+
+J011
+
+Análisis clínicos y estudios médicos: Rayos X, ultrasonido, etcétera
+
+J012
+
+Hospitalización durante el embarazo (no parto)
+
+J013
+
+Servicios de partera
+
+J014
+
+Hierbas medicinales, remedios caseros, etcétera
+
+J015
+
+Otros servicios: ambulancias, aplicación de inyecciones, vacunas, etcétera
+
+42 de 53
+
+C) CONSULTA EXTERNA (NO HOSPITALARIA NI EMBARAZO)
+
+CLAVE
+
+SERVICIOS MÉDICOS
+DESCRIPCIÓN
+
+J016
+
+Consulta médico general
+
+J017
+
+Consultas médico especialista (pediatría y ginecología, etcétera)
+
+J018
+
+Consultas dentales (placas dentales o prótesis dentales
+
+J019
+
+Análisis clínicos y estudios médicos: Rayos X
+
+MEDICAMENTOS RECETADOS PARA:
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+J020
+
+Diarrea, infecciones y malestar estomacal
+
+J021
+
+Gripe
+
+J022
+
+Piel
+
+J023
+
+Alergias
+
+J024
+
+Tos
+
+J025
+
+Infecciones de la garganta
+
+J026
+
+Fiebre
+
+J027
+
+Inflamación
+
+J028
+
+Otras infecciones (antibióticos)
+
+J029
+
+Dolor de cabeza y migraña
+
+J030
+
+Otro tipo de dolores
+
+J031
+
+Presión arterial
+
+J032
+
+Diabetes
+
+J033
+
+Vitaminas
+
+J034
+
+Anticonceptivos
+
+J035
+
+Otros medicamentos
+
+D) CONTROL DE PESO
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+J036
+
+Consultas médicas
+
+J037
+
+Medicamentos y productos para el control de peso
+
+J038
+
+Tratamiento
+
+E) ATENCIÓN HOSPITALARIA (NO INCLUYE PARTO)
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+J039
+
+Honorarios por servicios profesionales: cirujano, anestesista, etcétera
+
+J040
+
+Hospitalización
+
+J041
+
+Análisis clínicos y estudios médicos (Rayos X, electros, etcétera)
+
+J042
+
+Medicamentos recetados y material de curación
+
+J043
+
+Otros: servicios de ambulancia, oxígeno, suero, sondas, bolsas de diálisis y de orina,
+cómodos, etcétera
+
+43 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+F) MEDICAMENTOS SIN RECETA Y MATERIAL DE CURACIÓN
+MEDICAMENTOS PARA:
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+J044
+
+Diarrea, infecciones y malestar estomacal
+
+J045
+
+Gripe
+
+J046
+
+Piel
+
+J047
+
+Alergias
+
+J048
+
+Tos
+
+J049
+
+Infecciones de la garganta
+
+J050
+
+Fiebre
+
+J051
+
+Inflamación
+
+J052
+
+Otras infecciones (antibióticos)
+
+J053
+
+Dolor de cabeza y migraña
+
+J054
+
+Otro tipo de dolores
+
+J055
+
+Vitaminas
+
+J056
+
+Presión arterial
+
+J057
+
+Diabetes
+
+J058
+
+Anticonceptivos
+
+J059
+
+Otros medicamentos
+
+MATERIAL DE CURACIÓN
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+J060
+
+Algodón, gasas, vendas, etcétera
+
+J061
+
+Alcohol, merthiolate, solución antiséptica, etcétera
+
+G) MEDICINA ALTERNATIVA
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+J062
+
+Consultas con el curandero, huesero, quiropráctico, etcétera
+
+J063
+
+Medicamento naturista, hierbas medicinales, remedios caseros
+
+J064
+
+Medicamentos homeopáticos
+
+H) APARATOS ORTOPÉDICOS Y TERAPÉUTICOS
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+J065
+
+Anteojos y lentes de contacto
+
+J066
+
+Aparatos para sordera
+
+J067
+
+Aparatos ortopédicos y para terapia, silla de ruedas, andadera, muletas, etcétera
+
+J068
+
+Reparación y mantenimiento de aparatos ortopédicos
+
+J069
+
+Otros: pago de enfermeras y personal al cuidado de enfermos, terapias, etcétera
+
+44 de 53
+
+I) SEGURO MÉDICO
+
+CLAVE
+
+CÓDIGO
+
+DESCRIPCIÓN
+
+J070
+
+Cuotas a hospitales o clínicas
+
+J071
+
+Cuotas a compañías de seguros
+
+J072
+
+Cuotas de seguro popular
+
+APARTADOS 4.1 AL 4.5, 5.1, 5.2, 5.3, 5.5
+
+DECENA
+0
+
+CLAVE
+
+PERIODO DE LEVANTAMIENTO
+
+PERIODO DE REFERENCIA
+
+del 10 al 16 de Agosto
+
+Febrero a Julio de 2006
+
+1
+
+del 20 al 26 de Agosto
+
+Febrero a Julio de 2006
+
+2
+
+del 30 de Agosto al 05 de Septiembre
+
+Marzo a Agosto de 2006
+
+3
+
+del 09 al 15 de Septiembre
+
+Marzo a Agosto de 2006
+
+4
+
+del 19 al 25 de Septiembre
+
+Marzo a Agosto de 2006
+
+5
+
+del 29 de Septiembre al 05 de Octubre
+
+Abril a Septiembre de 2006
+
+6
+
+del 09 al 15 de Octubre
+
+Abril a Septiembre de 2006
+
+7
+
+del 19 al 25 de Octubre
+
+Abril a Septiembre de 2006
+
+8
+
+del 29 de Octubre al 04 de Noviembre
+
+Mayo a Octubre de 2006
+
+9
+
+del 08 al 14 de Noviembre
+
+Mayo a Octubre de 2006
+
+Decena de
+recuperación
+
+del 18 al 24 de Noviembre
+
+Mayo a Octubre de 2006
+
+GASTO SEMESTRAL
+APARTADO 4.1 ENSERES DOMÉSTICOS Y MANTENIMIENTO DE LA VIVIENDA
+A) ENSERES DOMÉSTICOS
+CÓDIGO
+K001
+K002
+K003
+K004
+K005
+K006
+K007
+K008
+K009
+K010
+K011
+K012
+K013
+K014
+K015
+K016
+K017
+K018
+
+CLAVE
+DESCRIPCIÓN
+Ventilador
+Aparatos telefónicos
+Identificador de llamadas, fax, etcétera
+Aparatos de aire acondicionado para casa (incluye refrigeración o clima)
+Máquina de coser y accesorios
+Cocina integral
+Estufa de gas
+Estufa de otro combustible: electricidad, petróleo
+Refrigerador
+Licuadora
+Batidora
+Plancha
+Extractor de jugos
+Horno de microondas
+Lavadora
+Aspiradora
+Calentador de gas
+Calentador de otro combustible
+45 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+PERIODOS DE REFERENCIA POR DECENA, GASTO SEMESTRAL, INGRESOS Y
+NEGOCIOS NO AGROPECUARIOS
+
+K019
+K020
+K021
+K022
+
+Lámparas eléctricas (incluye candiles)
+Lámparas de otro combustible
+Tanque de gas e instalación
+Lavadero, tinaco y bomba de agua
+
+K023
+
+Otros aparatos: tostador, calefactor, horno eléctrico, etcétera
+
+K024
+
+Reparación y/o mantenimiento de los artículos anteriores
+
+B) MUEBLES
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+K025
+
+Juego de recámara
+
+K026
+
+Piezas sueltas de recámara: camas, tocadores, literas, etcétera
+
+K027
+
+Juego de comedor o antecomedor
+
+K028
+
+Piezas sueltas para comedor o antecomedor (mesas, sillas)
+
+K029
+
+Juego de sala
+
+K030
+
+Piezas sueltas para sala (mesa de centro)
+
+K031
+
+Muebles para cocina (gabinete, mesa, etcétera)
+
+K032
+
+Muebles para baño (taza, tina, tina de hidromasaje, etcétera)
+
+K033
+
+Muebles para jardín
+
+K034
+
+Alfombras y tapetes
+
+K035
+
+Otros muebles: libreros, escritorio, mesa para televisión
+
+K036
+
+Reparación y/o mantenimiento de los artículos anteriores
+
+C) MANTENIMIENTO, REPARACIÓN, REMODELACIÓN Y AMPLIACIÓN DE LA
+VIVIENDA QUE HABITA EL HOGAR
+CÓDIGO
+
+DESCRIPCIÓN
+
+K037
+
+Materiales para reparación y mantenimiento
+
+K038
+
+Servicios de reparación y mantenimiento
+
+K039
+
+Materiales para ampliación y remodelación
+
+K040
+
+Servicios para ampliación, construcción y remodelación
+
+D) MANTENIMIENTO, REPARACIÓN, AMPLIACIÓN, CONSTRUCCIÓN Y
+REMODELACIÓN DE LA VIVIENDA QUE NO HABITA EL HOGAR
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+K041
+
+Materiales para reparación y mantenimiento
+
+K042
+
+Servicios de reparación y mantenimiento
+
+K043
+
+Materiales para ampliación y remodelación
+
+K044
+
+Servicios para ampliación, construcción y remodelación
+
+46 de 53
+
+CLAVE
+
+APARTADO 4.2 ARTÍCULOS DE ESPARCIMIENTO
+A) ARTÍCULOS Y EQUIPO AUDIOVISUAL
+CLAVE
+CÓDIGO
+DESCRIPCIÓN
+L001
+Radio y radio despertador sin tocacintas
+L002
+Estéreo y modular
+L003
+Grabadora con o sin despertador (excepto con reproductor de CD’s)
+L004
+Televisión blanco y negro (incluye portátil)
+L005
+Televisión de color (incluye portátil)
+L006
+Video casetera y DVD
+L007
+Computadora
+L008
+Accesorios para computadora (mouse, módem, etcétera)
+L009
+Antena parabólica, decodificador, control remoto, etcétera
+L010
+Accesorios: bocinas, audífonos, antena aérea, control remoto, etcétera
+L011
+Videocassettes, cartuchos y discos para video juegos
+L012
+Reproductor de discos compactos (incluye discman, grabadora con CD)
+L013
+Reproductor de discos compactos para vehículos y auto estéreos
+L014
+Alquiler de televisión, videocaseteras, videocámaras, computadoras y equipo
+L015
+Otros aparatos: regresadora de video, walkman, etcétera
+Reparación y/o mantenimiento de los artículos anteriores
+
+B) EQUIPO FOTOGRÁFICO Y DE VIDEO
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+L017
+
+Proyectores
+
+L018
+
+Cámaras fotográficas y de video
+
+L019
+
+Material fotográfico, películas
+
+L020
+
+Servicio fotográfico, revelado e impresión
+
+L021
+
+Otros artículos y servicios: tripie, alquiler del equipo, proyectores, etcétera
+
+L022
+
+Reparación y mantenimiento de los artículos anteriores
+
+C) OTROS ARTÍCULOS DE ESPARCIMIENTO
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+L023
+
+Juguetes, juegos de mesa
+
+L024
+
+Juegos electrónicos, video juegos
+
+L025
+
+Instrumentos musicales
+
+L026
+
+Artículos de deporte y cacería (aparatos para ejercicio, etcétera)
+
+L027
+
+Artículos de jardinería: plantas, flores, macetas, tierra, abono, etcétera
+
+L028
+
+Reparación y/o mantenimiento de los artículos anteriores (especifique)
+
+L029
+
+Compra y cuidado de animales domésticos: patos, perros, etcétera
+
+47 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+L016
+
+APARTADO 4.3 TRANSPORTE
+A) TRANSPORTE
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+M001
+
+Transporte foráneo
+
+M002
+
+Transporte ferroviario
+
+M003
+
+Transporte aéreo
+
+M004
+
+Servicio de carga y mudanza
+
+M005
+
+Cuotas de autopista
+
+M006
+
+Otros: lancha, barco, carreta, alquiler de vehículos, etcétera
+
+B) ADQUISICIÓN DE VEHÍCULOS DE USO PARTICULAR
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+M007
+
+Automóvil y/o Guayin
+
+M008
+
+Camioneta (Pick up)
+
+M009
+
+Motoneta, motocicleta
+
+M010
+
+Bicicleta
+
+M011
+
+Otros: remolque, lancha, triciclo, etcétera
+
+C) REFACCIONES, PARTES, ACCESORIOS Y MANTENIMIENTO DE VEHÍCULOS
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+M012
+
+Llantas
+
+M013
+
+Acumulador
+
+M014
+
+Refacciones: bujías, bandas, filtros, etcétera
+
+M015
+
+Partes de vehículos: vidrios, salpicaderas, etcétera
+
+M016
+
+Accesorios: espejos, manijas, antenas, etcétera
+
+M017
+
+Servicios de afinación, alineación y balanceo
+
+M018
+
+Otros servicios: ajuste de motor, de frenos, hojalatería, pintura, etcétera
+
+APARTADO 4.4 OTROS GASTOS
+A) GASTOS DIVERSOS
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+N001
+
+Servicios profesionales de: abogados, notarios, arquitectos, etcétera (no médicos)
+
+N002
+
+Funerales y cementerios
+
+N003
+
+Paquetes para fiesta (salón, comida, orquesta)
+
+N004
+
+Gastos turísticos: paquetes, hospedajes, alimentos, tours, etcétera
+
+N005
+
+Hospedaje o alojamiento sin fines turísticos (con o sin alimentos)
+
+N006
+
+Gastos en cargos comunales para festividades locales
+
+N007
+
+Contribuciones para obras del servicio público local
+
+N008
+
+Seguro de automóvil
+
+N009
+
+Seguros contra incendio, daños y riesgos para la vivienda, educación y seguro de
+vida (no capitalizable)
+
+N010
+
+Otros gastos diversos no comprendidos en las categorías anteriores
+
+48 de 53
+
+B) TRANSFERENCIAS
+CÓDIGO
+
+CLAVE
+DESCRIPCIÓN
+
+N011
+
+Indemnizaciones pagadas a terceros
+
+N012
+
+Pérdidas y robos en dinero (excluya negocios)
+
+N013
+
+Ayuda a parientes y personas ajenas al hogar (en dinero)
+
+N014
+
+Contribuciones a instituciones benéficas en dinero, iglesias, cruz roja, incluye
+servicios eclesiásticos
+
+N015
+
+Servicios del sector público: expedición de pasaporte, actas, títulos, etcétera
+
+N016
+
+Trámites para vehículos: licencias, placas, verificación vehicular, etcétera
+
+APARTADO 4.5 EROGACIONES FINANCIERAS Y DE CAPITAL
+DESCRIPCIÓN
+
+Q001
+
+Depósitos en cuentas de ahorro, tandas, cajas de ahorro, etcétera
+
+Q002
+
+Préstamos a personas ajenas al hogar
+
+Q003
+
+Pago a tarjeta de crédito bancaria o comercial (incluye intereses)
+
+Q004
+
+Pago de deudas a la empresa donde trabajan y/o a otras personas o instituciones
+(excluya créditos hipotecarios)
+
+Q005
+
+Pago de intereses por prestamos recibidos
+
+Q006
+
+Compra de monedas nacionales o extranjeras, metales preciosos, alhajas, obras de
+arte, etcétera
+
+Q007
+
+Seguro de vida capitalizable
+
+Q008
+
+Herencias, dotes y legados
+
+Q009
+
+Compra de casas, condominios, locales o terrenos que no habita el hogar
+
+Q010
+
+Compra de terrenos, casas o condominios que habita el hogar
+
+Q011
+
+Pago de hipotecas de bienes inmuebles: casas, locales, terrenos, edificios, etcétera
+
+Q012
+
+Otras erogaciones no consideradas en las preguntas anteriores
+
+Q013
+
+Compra de maquinaria, equipo, animales destinados a la reproducción, utilizados en
+negocios propiedad del hogar
+
+Q014
+
+Balance negativo en negocios propiedad del hogar agropecuarios y no
+agropecuarios
+
+Q015
+
+Compra de valores: cédulas, acciones y bonos
+
+Q016
+
+Compra de marcas, patentes y derechos de autor
+
+APARTADO 5.1 INGRESOS DEL HOGAR
+INGRESOS INDIVIDUALES DE LOS MIEMBROS DEL HOGAR DE 12 O MÁS AÑOS
+A) INGRESOS POR REMUNERACIONES AL TRABAJO ASALARIADO
+CÓDIGO
+
+DESCRIPCIÓN
+
+P001
+
+Sueldos, salarios o jornal
+
+P002
+
+Destajo
+
+P003
+
+Comisiones y propinas
+
+P004
+
+Horas extras
+
+P005
+
+Aguinaldo
+49 de 53
+
+CLAVE
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+P006
+
+Incentivos, gratificaciones o premios
+
+P007
+
+Bono, percepción adicional o sobresueldo
+
+P008
+
+Primas vacacionales y otras prestaciones en efectivo
+
+P009
+
+Reparto de utilidades
+
+B) INGRESOS DE NEGOCIOS PROPIOS
+CLAVE
+CÓDIGO
+DESCRIPCIÓN
+P010
+Negocios industriales
+P011
+Negocios comerciales
+P012
+Negocios de prestación de servicios
+P013
+Negocios agrícolas
+P014
+Negocios de cría, explotación y productos derivados de animales
+P015
+Negocios de reproducción, recolección de productos forestales y tala de árboles
+P016
+Negocios de pesca, caza y captura de animales
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+C) INGRESOS POR COOPERATIVAS
+CÓDIGO
+DESCRIPCIÓN
+P017
+Sueldos o salarios
+P018
+Ganancias o utilidades
+
+CLAVE
+
+D) INGRESOS DE SOCIEDADES
+CLAVE
+CÓDIGO
+DESCRIPCIÓN
+P019
+Sueldos, salarios o jornal
+P020
+Destajo
+P021
+Comisiones y propinas
+P022
+Horas extras
+P023
+Aguinaldo
+P024
+Incentivos, gratificaciones o premios
+P025
+Bono, percepción adicional o sobresueldo
+P026
+Primas vacacionales y otras prestaciones en efectivo
+P027
+Reparto de utilidades
+P028
+Ganancias o utilidades
+E) INGRESOS DE EMPRESAS QUE FUNCIONAN COMO SOCIEDADES
+CLAVE
+CÓDIGO
+DESCRIPCIÓN
+P029
+Sueldos, salarios o jornal
+P030
+Destajo
+P031
+Comisiones y propinas
+P032
+Horas extras
+P033
+Aguinaldo
+P034
+Incentivos, gratificaciones o premios
+P035
+Bono, percepción adicional o sobresueldo
+P036
+Primas vacacionales y otras prestaciones en efectivo
+P037
+Reparto de utilidades
+P038
+Ganancias o utilidades
+50 de 53
+
+F) INGRESOS POR RENTA DE LA PROPIEDAD
+DESCRIPCIÓN
+
+P039
+
+Alquiler de tierras y terrenos, dentro y fuera del país
+
+P040
+
+Alquiler de casas, edificios, locales y otros inmuebles que están dentro del país
+
+P041
+
+Alquiler de casas, edificios, locales y otros inmuebles que están fuera del país
+
+P042
+
+Intereses provenientes de inversiones a plazo fijo
+
+P043
+
+Intereses provenientes de cuentas de ahorro
+
+P044
+
+Intereses provenientes de préstamos a terceros
+
+P045
+
+Rendimientos provenientes de acciones o dividendos, bonos y cédulas
+
+P046
+
+Alquiler de marcas, patentes y derechos de autor
+
+P047
+
+Otros ingresos por renta de la propiedad no considerados en los anteriores
+
+G) INGRESOS POR TRANSFERENCIAS
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+P048
+
+Jubilaciones y/o pensiones originadas dentro del país
+
+P049
+
+Jubilaciones y/o pensiones provenientes de otros países
+
+P050
+
+Indemnizaciones recibidas de seguros contra riesgos a terceros
+
+P051
+
+Indemnizaciones por accidentes de trabajo
+
+P052
+
+Indemnizaciones por despido y retiro voluntario
+
+P053
+
+Becas provenientes de organizaciones no gubernamentales
+
+P054
+
+Becas provenientes del gobierno
+
+P055
+
+Donativos provenientes de organizaciones no gubernamentales
+
+P056
+
+Donativos provenientes del gobierno
+
+P057
+
+Regalos o donativos en dinero provenientes de otros hogares
+
+P058
+
+Ingresos provenientes de otros países
+
+P059
+
+Beneficio de PROGRESA u OPORTUNIDADES
+
+P060
+
+Beneficio de PROCAMPO
+
+H) OTROS INGRESOS CORRIENTES
+CÓDIGO
+P061
+
+CLAVE
+
+DESCRIPCIÓN
+Otros ingresos corrientes no considerados en los anteriores
+
+I) PERCEPCIONES FINANCIERAS Y DE CAPITAL
+CÓDIGO
+
+CLAVE
+
+DESCRIPCIÓN
+
+P062
+
+Retiro de inversiones, ahorros, tandas, cajas de ahorro, etcétera
+
+P063
+
+Pagos recibidos de préstamos que usted hizo a personas ajenas al hogar
+
+P064
+
+Préstamos recibidos de personas ajenas al hogar o instituciones, excluya préstamos
+hipotecarios
+
+P065
+
+Venta de monedas, metales preciosos, joyas y obras de arte, etcétera
+
+P066
+
+Venta de acciones, bonos y cédulas
+
+P067
+
+Venta de marcas, patentes y derechos de autor
+
+P068
+
+Herencias, dotes y legados
+
+P069
+
+Loterías y juegos de azar
+51 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CÓDIGO
+
+CLAVE
+
+P070
+
+Venta de casas, condominios, etcétera, que están dentro y fuera del país
+
+P071
+
+Venta de terrenos, etcétera, que están dentro y fuera del país
+
+P072
+
+Venta de maquinaria, equipos, animales de producción, vehículos, etcétera,
+utilizados en el negocio
+
+P073
+
+Venta de vehículos, aparatos eléctricos de segunda mano, etcétera
+
+P074
+
+Préstamos hipotecarios por bienes inmuebles, casas, terrenos, edificios y locales
+
+P075
+
+Seguros de vida
+
+P076
+
+Otras percepciones financieras y de capital no consideradas en las anteriores
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+CAUSAS POR LAS QUE NO SE PERCIBIERON INGRESOS MONETARIOS *
+
+P491 a P495
+
+01
+
+Pago en especie
+
+02
+
+No le han pagado
+
+03
+
+Está contratado pero no ha iniciado sus actividades
+
+04
+
+Incapacidad temporal (enfermedad, accidente, etcétera)
+
+05
+
+Falta de trabajo (cierre temporal de la empresa, negocio o comercio pero sin haber
+sido despedido)
+
+06
+
+Está esperando continuar con las labores agrícolas
+
+07
+
+Conflicto laboral o huelga
+
+08
+
+Inicio de labores y no hay gastos ni ingresos
+
+09
+
+Escasez de materiales y reparación del equipo para la producción o venta
+
+10
+
+Trabajador(a) sin pago en un negocio propiedad del hogar
+
+11
+
+Trabajador (a) sin pago en un negocio que no es del hogar
+
+12
+
+Socio de un negocio del hogar
+
+13
+
+No ha tenido reparto de utilidades en el periodo de referencia o no hubo utilidades
+
+14
+
+Balance negativo
+
+15
+
+Otras causas no consideradas en las anterioes
+
+CAUSAS DE NO COSECHA EN NEGOCIOS AGRÍCOLAS
+Columnas 5 y 28
+CÓDIGO
+
+DESCRIPCIÓN
+
+01
+
+Se inundó la siembra
+
+02
+
+Se quemó la siembra
+
+03
+
+Se heló la siembra
+
+04
+
+No llovió y se perdió la siembra
+
+05
+
+No tuvo dinero para cosechar
+
+06
+
+Se incapacitó temporalmente y no pudo cosechar a tiempo
+
+07
+
+No contó con mano de obra suficiente para cosechar
+
+08
+
+Se plagó la siembra y ya no pudo cosechar
+
+09
+
+Aún no es tiempo, está en desarrollo
+
+10
+
+Se la comieron los animales
+
+11
+
+Eran tierras agotadas o cansadas (no eran propias para el cultivo)
+
+12
+
+Se enyerbó
+
+13
+
+Otras causas no consideradas en las categorías anteriores (especifique)
+52 de 53
+
+PERIODOS DE REFERENCIA POR DECENA PARA CADA CICLO DE PRODUCCIÓN EN NEGOCIOS
+AGRÍCOLAS
+PERIODO DE REFERENCIA
+PERIODO DE LEVANTAMIENTO
+
+CICLO OTOÑO-INVIERNO
+
+0
+
+del 10 al 16 de Agosto
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+1
+
+del 20 al 26 de Agosto
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+2
+
+del 30 de Agosto al 05 de Septiembre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+3
+
+del 09 al 15 de Septiembre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+4
+
+del 19 al 25 de Septiembre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+5
+
+del 29 de Septiembre al 05 de Octubre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+6
+
+del 09 al 15 de Octubre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+7
+
+del 19 al 25 de Octubre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+8
+
+del 29 de Octubre al 04 de Noviembre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+9
+
+del 08 al 14 de Noviembre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+Decena de
+recuperación
+
+del 18 al 24 de Noviembre
+
+Octubre de 2005 a
+Febrero de 2006
+
+Marzo de 2006 al momento
+de la entrevista
+
+CICLO PRIMAVERAVERANO
+
+PERIODOS DE REFERENCIA POR DECENA PARA NEGOCIOS
+• CRÍA, EXPLOTACIÓN Y PRODUCTOS DERIVADOS DE ANIMALES
+• REPRODUCCIÓN, RECOLECCIÓN DE PRODUCTOS FORESTALES Y TALA DE ÁRBOLES
+• PESCA, CAZA Y CAPTURA DE ANIMALES
+DECENA
+
+PERIODO DE LEVANTAMIENTO
+
+PERIODO DE REFERENCIA
+
+0
+
+del 10 al 16 de Agosto
+
+Agosto de 2005 a Julio de 2006
+
+1
+
+del 20 al 26 de Agosto
+
+Agosto de 2005 a Julio de 2006
+
+2
+
+del 30 de Agosto al 05 de Septiembre
+
+Septiembre de 2005 a Agosto de 2006
+
+3
+
+del 09 al 15 de Septiembre
+
+Septiembre de 2005 a Agosto de 2006
+
+4
+
+del 19 al 25 de Septiembre
+
+Septiembre de 2005 a Agosto de 2006
+
+5
+
+del 29 de Septiembre al 05 de Octubre
+
+Octubre de 2005 a Septiembre de 2006
+
+6
+
+del 09 al 15 de Octubre
+
+Octubre de 2005 a Septiembre de 2006
+
+7
+
+del 19 al 25 de Octubre
+
+Octubre de 2005 a Septiembre de 2006
+
+8
+
+del 29 de Octubre al 04 de Noviembre
+
+Noviembre de 2005 a Octubre de 2006
+
+9
+
+del 08 al 14 de Noviembre
+
+Noviembre de 2005 a Octubre de 2006
+
+Decena de
+recuperación
+
+del 18 al 24 de Noviembre
+
+Noviembre de 2005 a Octubre de 2006
+
+53 de 53
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 2006. Clasificación de variables
+
+DECENA
+
+

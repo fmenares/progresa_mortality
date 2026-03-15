@@ -192,8 +192,8 @@ if `year' == 1994 {
 
 	g alcohol_d = (code_l == "A" & inrange(code_n, 194, 203))
 
-	*food ate outside
-	g outside_d = (code_l == "A" & inrange(code_n, 205, 207))
+	*food ate outside (A204=Desayuno, A205=Comida, A206=Cena, A207=Entrecomidas)
+	g outside_d = (code_l == "A" & inrange(code_n, 204, 207))
 
 	g tobacco_d = (code_l == "A" & inrange(code_n, 208, 210))
 }
@@ -206,13 +206,13 @@ else if `year' > 1994 {
 
 	*eggs and milk
 	g dairy_d = (code_l == "A" & (inrange(code_n, 60, 79)))
-			   
-	g oils_fats_d = (code_l == "A" & inrange(code_n, 80, 84)) 
-	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 85, 146)) 
 
-	g sugar_d = (code_l == "A" & inrange(code_n, 147, 149)) 
+	g oils_fats_d = (code_l == "A" & inrange(code_n, 80, 84))
+	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 85, 146))
 
-	g coffe_d = (code_l == "A" & inrange(code_n, 150, 156)) 
+	g sugar_d = (code_l == "A" & inrange(code_n, 147, 149))
+
+	g coffe_d = (code_l == "A" & inrange(code_n, 150, 156))
 	g specias_d = (code_l == "A" & inrange(code_n, 157, 167))
 
 	g baby_food_d = (code_l == "A" & inrange(code_n, 168, 170))
@@ -234,10 +234,20 @@ else if `year' > 1994 {
 
 	g alcohol_d = (code_l == "A" & inrange(code_n, 195, 204))
 
-	*food ate outside
-	g outside_d = (code_l == "A" & inrange(code_n, 205, 208))
-
-	g tobacco_d = (code_l == "A" & inrange(code_n, 209, 211))
+	*outside food and tobacco differ by 1 code between 1996/1998 and 2000 catalogs
+	if inlist(`year', 1996, 1998) {
+		*food ate outside (A205=Desayuno, A206=Comida, A207=Cena, A208=Entrecomidas)
+		g outside_d = (code_l == "A" & inrange(code_n, 205, 208))
+		*tobacco (A209=Cigarros, A210=Puros, A211=Tabaco en hoja)
+		g tobacco_d = (code_l == "A" & inrange(code_n, 209, 211))
+	}
+	else {
+		*year == 2000
+		*food ate outside (A206=Desayuno, A207=Comida, A208=Cena, A209=Entrecomidas)
+		g outside_d = (code_l == "A" & inrange(code_n, 206, 209))
+		*tobacco (A211=Cigarros, A212=Puros, A213=Tabaco en hoja)
+		g tobacco_d = (code_l == "A" & inrange(code_n, 211, 213))
+	}
 }
 
 g cereals = cereals_d * GAS_TRI/ 3
@@ -260,7 +270,7 @@ if inlist(`year', 1992, 1994) {
 	g medical_outpatient_d = (code_l == "J" & (inrange(code_n, 01, 03) | inlist(code_n, 5, 6, 9)))
 	g drugs_prescribed_d = (code_l =="J" & (inlist(code_n, 4, 11)))
 	g medical_inpatient_d = (code_l == "J" & inlist(code_n, 10, 12, 13, 14, 15))
-	g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 30, 36))
+	g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 29, 36))
 	g ortho_d = (code_l == "J" & inrange(code_n, 37, 41))
 	g insurance_cost_d = (code_l == "J" & inrange(code_n, 42, 43))
 }
@@ -269,7 +279,14 @@ else {
 	g medical_outpatient_d = (code_l == "J" & (inrange(code_n, 01, 03) | inlist(code_n, 5, 6, 9)))
 	g drugs_prescribed_d = (code_l =="J" & (inlist(code_n, 4, 11)))
 	g medical_inpatient_d = (code_l == "J" & inlist(code_n, 10, 12, 13, 14, 15))
-	g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 34, 38))
+	*J033/J034 = material primeros auxilios differs by 1 between 1996/1998 and 2000 catalogs
+	if inlist(`year', 1996, 1998) {
+		g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 33, 38))
+	}
+	else {
+		*year == 2000
+		g drugs_overcounter_d = (code_l == "J" & inrange(code_n, 34, 38))
+	}
 	g ortho_d = (code_l == "J" & inrange(code_n, 39, 43))
 	g insurance_cost_d = (code_l == "J" & inrange(code_n, 44, 45))
 }
@@ -486,8 +503,8 @@ if inlist(`year', 1992) {
 	g indep_w_d = (code_l == "P"  & (inrange(code_n, 7, 11) | code_n == 13))
 	*what about 12 and 14? These are sales, I put them under financial
 
-	g capital_d = (code_l == "P" & (inrange(code_n, 15, 21))
-	
+	g capital_d = (code_l == "P" & (inrange(code_n, 15, 21)))
+
 	*transfers
 	g transfer_d = (code_l == "P" & inrange(code_n, 22, 27))
 	*other income
@@ -536,9 +553,10 @@ if inlist(`year', 1992) {
 
 
 if `year' == 1994 {
-	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) & code_n == 14))
-	
-	g indep_w_d = (code_l == "P"  & (inrange(code_n, 6, 14))
+	*wages: sueldos P001-P005, cooperativa sueldos P014
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) | code_n == 14))
+	*self-employment: negocios propios P006-P013 (P014 cooperativa sueldos excluded to avoid double-count)
+	g indep_w_d = (code_l == "P"  & inrange(code_n, 6, 13))
 	
 	*earnings from property (capital) 
 	g capital_d = (code_l == "P" & (inrange(code_n, 15, 22)))
@@ -570,7 +588,7 @@ if `year' == 1994 {
 
 if `year' == 1996 {
 	*wages from main job
-	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) & code_n == 14))
+	g wage_d = (code_l == "P" & (inrange(code_n, 1, 5) | code_n == 14))
 	g indep_w_d = (code_l == "P"  & inrange(code_n, 6, 13))
 		*earnings from property (capital) 
 	g capital_d = (code_l == "P" & inrange(code_n, 15, 22))
@@ -708,7 +726,7 @@ bys FOLIO: egen benef_don_non_gob_hh = total(benef_don_non_gob_hh_aux)
 drop *_aux
 drop financial_d other_d transfer_d capital_d indep_w_d wage_d ///
 pensions_d severance_d becas_don_non_gob_d becas_don_gob_d ///
-family_trans_d remit_d progresa_d procampo_d  benef_gob_d family_trans_d remit_d
+family_trans_d remit_d progresa_d procampo_d benef_gob_d
 
 bys FOLIO NUM_REN: keep if _n == 1
 
@@ -917,10 +935,11 @@ else {
 	*eggs and milk
 	g dairy_d = (code_l == "A" & (inrange(code_n, 72, 91)))
 			   
-	g oils_fats_d = (code_l == "A" & inrange(code_n, 92, 97)) 
-	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 98, 168)) 
+	g oils_fats_d = (code_l == "A" & inrange(code_n, 92, 97))
+	*A169 = Jalea y mermelada (processed fruit), included in vegg_fruit
+	g vegg_fruit_d = (code_l == "A" & inrange(code_n, 98, 169))
 
-	g sugar_d = (code_l == "A" & inrange(code_n, 170, 172)) 
+	g sugar_d = (code_l == "A" & inrange(code_n, 170, 172))
 
 	g coffe_d = (code_l == "A" & inrange(code_n, 173, 179)) 
 	g specias_d = (code_l == "A" & inrange(code_n, 180, 191))
@@ -1298,10 +1317,11 @@ g financial_d = (code_l == "P" & inrange(code_n, 49, 65))
 
 g pensions_d = (code_l == "P" & inrange(code_n, 37, 38))
 g severance_d = (code_l == "P" & inrange(code_n, 39, 41))
-*in 2000, donations and scholarships were together by government and non-government
-*thus, that year the transfer can be overestimated mostly by the donatios from other families (family transfers). 
-*it seems that most of this was under the non governmental, and thus associated with those becas_don_non_gob that year. 
-g becas_don_non_gob_d = (code_l == "P" & inlist(code_n, 42, 44))
+*P042 = Becas ONG (non-governmental scholarships/donations)
+*P043 = Becas y donativos del gobierno (government scholarships)
+*P044 = Regalos/donativos de otros hogares (family transfers — captured separately in family_trans_d)
+*Note: P044 was previously included in becas_don_non_gob_d causing double-counting; removed.
+g becas_don_non_gob_d = (code_l == "P" & code_n == 42)
 g becas_don_gob_d = (code_l == "P" & code_n == 43)
 g family_trans_d = (code_l == "P" & code_n == 44)
 *remittances / remesas
@@ -1331,12 +1351,15 @@ bys FOLIO: egen benef_don_non_gob_hh = total(benef_don_non_gob_hh_aux)
 
 else {
 	    	
-*wages from main job
-g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code_n, 29, 36) | inrange(code_n, 19, 26)))
-*wages from cooperatives, societities/bussines and secondary jobs
-g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 16) | inlist(code_n, 18, 27, 37)))
-*income from bussines (utilidadeS) and property (rent from capital) 
-g capital_d = (code_l == "P" & | inrange(code_n, 39, 47) | inlist(code_n, 28, 38))
+*wages from main job: asalariado P001-P009, cooperativa sueldos P017,
+*  sociedades sueldos P019-P027 (incl. reparto utilidades P027),
+*  empresas sueldos P029-P037 (incl. reparto utilidades P037)
+g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code_n, 19, 27) | inrange(code_n, 29, 37)))
+*self-employment income: negocios propios P010-P016
+g indep_w_d = (code_l == "P"  & inrange(code_n, 10, 16))
+*capital income: cooperativa ganancias P018, sociedades ganancias P028,
+*  empresas ganancias P038, renta propiedad P039-P047
+g capital_d = (code_l == "P" & (inlist(code_n, 18, 28, 38) | inrange(code_n, 39, 47)))
 *transfers
 g transfer_d = (code_l == "P" & inrange(code_n, 48, 60))
 *other income
@@ -1434,7 +1457,7 @@ bys FOLIO: egen family_trans_hh = total(family_trans_hh_aux)
 drop *_aux
 drop financial_d other_d transfer_d capital_d indep_w_d wage_d ///
 pensions_d severance_d becas_don_non_gob_d becas_don_gob_d ///
-family_trans_d remit_d progresa_d procampo_d  benef_gob_d family_trans_d remit_d
+family_trans_d remit_d progresa_d procampo_d benef_gob_d
 bys FOLIO NUM_REN: keep if _n == 1
 
 	g hhh_insured_aux = insurance * hhh
@@ -1668,11 +1691,14 @@ g progresa_benef_ind = (becas == 1)
 {
 	    
 	
-*wages from main job
-g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | inrange(code_n, 19, 26) | inrange(code_n, 29, 35) | code_n == 17))
-*wages from cooperatives, societities/bussines and secondary jobs
-g indep_w_d = (code_l == "P"  & (inrange(code_n, 10, 16) | inlist(code_n, 27, 37)))
-*income from bussines (utilidadeS) and property (rent from capital) 
+*wages from main job: asalariado P001-P009, cooperativa sueldos P017,
+*  sociedades sueldos P019-P027 (incl. reparto utilidades P027),
+*  empresas sueldos P029-P037 (incl. reparto utilidades P037)
+g wage_d = (code_l == "P" & (inrange(code_n, 1, 9) | code_n == 17 | inrange(code_n, 19, 27) | inrange(code_n, 29, 37)))
+*self-employment income: negocios propios P010-P016
+g indep_w_d = (code_l == "P"  & inrange(code_n, 10, 16))
+*capital income: cooperativa ganancias P018, sociedades ganancias P028,
+*  empresas ganancias P038, renta propiedad P039-P047
 g capital_d = (code_l == "P" & (inlist(code_n, 18, 28, 38) | inrange(code_n, 39, 47)))
 
 *transfers
@@ -1758,8 +1784,8 @@ gen benef_don_non_gob_hh = 0
 
 drop *_aux
 drop financial_d other_d transfer_d capital_d indep_w_d wage_d ///
-pensions_d severance_d becas_d  donation_non_gob_d donation_gob_d ///
-family_trans_d remit_d progresa_d procampo_d benef_gob_d remit_d family_trans_d
+pensions_d severance_d becas_d donation_non_gob_d donation_gob_d ///
+family_trans_d remit_d progresa_d procampo_d benef_gob_d
 
 bys folio num_ren: keep if _n == 1
 }
@@ -1897,7 +1923,7 @@ replace progresa_ind = (benef_don_non_gob_ind + benef_don_gob_ind) * `share_2002
 
 *household
 sum benef_don_non_gob_hh if year == 2002
-local m_benef_non_gob = `r(mean)' 
+local m_benef_non_gob = `r(mean)'
 sum benef_don_gob_hh  if year == 2002
 local m_benef_gob = `r(mean)'
 sum progresa_hh if year == 2002
@@ -1905,7 +1931,102 @@ local m_progresa = `r(mean)'
 
 local share_2002 = `m_progresa'/(`m_progresa' + `m_benef_gob' + `m_benef_non_gob')
 replace progresa_hh = (benef_don_non_gob_hh + benef_don_gob_hh) * `share_2002' if inlist(year, 1998, 2000)
-table year, stat(mean benef_don_non_gob_ind) stat(mean benef_don_gob_ind) stat(mean progresa_ind) stat(mean progresa_hh)
+
+/*---------------------------------------------------------------------------
+  ALTERNATIVE PROGRESA PROXIES FOR 1998 AND 2000
+
+  Baseline limitation: a single national share is applied uniformly, and the
+  denominator pools both government (P031) and non-government (P032) transfers.
+  P032 captures private gifts/remittances that are unrelated to PROGRESA,
+  inflating the denominator and understating the share. The SEDESOL ENIGH
+  annotation embedded in the code confirms PROGRESA receipts were recorded
+  under P031 (Becas y Donativos de Instituciones — government channel) only.
+
+  Alt 1 — State-level share, same pool as baseline (gov + non-gov transfers):
+    ENIGH is designed to be representative at the state level. Using state-level
+    shares captures geographic variation in PROGRESA rollout without the noise
+    of municipality-level small samples (the approach in the commented block
+    below was abandoned precisely because ~50 municipalities had missing shares).
+    Falls back to national mean for states with no 2002 observations.
+
+  Alt 2 — State-level share, government-transfers-only pool:
+    Theoretically cleaner: restricts the 2002 denominator to progresa + benef_gob
+    (government institutional transfers, P046 + P043), and scales only
+    benef_don_gob_ind (P031) in 1998/2000. This directly matches the government
+    channel documented in the SEDESOL annotation and avoids contaminating the
+    denominator with private non-governmental flows from P032.
+---------------------------------------------------------------------------*/
+
+* national fallbacks for both alternatives
+sum progresa_ind    if year == 2002
+local m_prog  = r(mean)
+sum benef_don_gob_ind if year == 2002
+local m_gob   = r(mean)
+sum benef_don_non_gob_ind if year == 2002
+local m_nongob = r(mean)
+local share_nat_alt1 = `m_prog' / (`m_prog' + `m_gob' + `m_nongob')
+local share_nat_alt2 = `m_prog' / (`m_prog' + `m_gob')
+
+* ---- Alternative 1 (individual) ----
+gen s1_ind_aux = progresa_ind / (progresa_ind + benef_don_gob_ind + benef_don_non_gob_ind) ///
+    if year == 2002 & (progresa_ind + benef_don_gob_ind + benef_don_non_gob_ind) > 0
+bys cve_ent: egen share1_state = mean(s1_ind_aux)
+replace share1_state = `share_nat_alt1' if share1_state == .
+drop s1_ind_aux
+
+gen progresa_ind_alt1 = progresa_ind
+replace progresa_ind_alt1 = (benef_don_gob_ind + benef_don_non_gob_ind) * share1_state ///
+    if inlist(year, 1998, 2000)
+
+* ---- Alternative 1 (household) ----
+sum progresa_hh    if year == 2002
+local m_prog_hh  = r(mean)
+sum benef_don_gob_hh if year == 2002
+local m_gob_hh   = r(mean)
+sum benef_don_non_gob_hh if year == 2002
+local m_nongob_hh = r(mean)
+local share_nat_hh_alt1 = `m_prog_hh' / (`m_prog_hh' + `m_gob_hh' + `m_nongob_hh')
+
+gen s1_hh_aux = progresa_hh / (progresa_hh + benef_don_gob_hh + benef_don_non_gob_hh) ///
+    if year == 2002 & (progresa_hh + benef_don_gob_hh + benef_don_non_gob_hh) > 0
+bys cve_ent: egen share1_hh_state = mean(s1_hh_aux)
+replace share1_hh_state = `share_nat_hh_alt1' if share1_hh_state == .
+drop s1_hh_aux
+
+gen progresa_hh_alt1 = progresa_hh
+replace progresa_hh_alt1 = (benef_don_gob_hh + benef_don_non_gob_hh) * share1_hh_state ///
+    if inlist(year, 1998, 2000)
+
+drop share1_state share1_hh_state
+
+* ---- Alternative 2 (individual) ----
+gen s2_ind_aux = progresa_ind / (progresa_ind + benef_don_gob_ind) ///
+    if year == 2002 & (progresa_ind + benef_don_gob_ind) > 0
+bys cve_ent: egen share2_state = mean(s2_ind_aux)
+replace share2_state = `share_nat_alt2' if share2_state == .
+drop s2_ind_aux
+
+gen progresa_ind_alt2 = progresa_ind
+replace progresa_ind_alt2 = benef_don_gob_ind * share2_state ///
+    if inlist(year, 1998, 2000)
+
+* ---- Alternative 2 (household) ----
+local share_nat_hh_alt2 = `m_prog_hh' / (`m_prog_hh' + `m_gob_hh')
+
+gen s2_hh_aux = progresa_hh / (progresa_hh + benef_don_gob_hh) ///
+    if year == 2002 & (progresa_hh + benef_don_gob_hh) > 0
+bys cve_ent: egen share2_hh_state = mean(s2_hh_aux)
+replace share2_hh_state = `share_nat_hh_alt2' if share2_hh_state == .
+drop s2_hh_aux
+
+gen progresa_hh_alt2 = progresa_hh
+replace progresa_hh_alt2 = benef_don_gob_hh * share2_state ///
+    if inlist(year, 1998, 2000)
+
+drop share2_state share2_hh_state
+
+* ---- comparison across methods ----
+table year, stat(mean progresa_ind) stat(mean progresa_ind_alt1) stat(mean progresa_ind_alt2)
     
 bys year: sum progresa_ind, d
 /*
@@ -2243,7 +2364,111 @@ g ln_income_pc_tot = log(income_pc_tot)
 g ln_exp_pc = log(expenditure_pc)
 g ln_food_exp_pc = log(food_exp_pc)
 
-* Inelegibles should not be all, may be up t to loc_size == 2? 
+*=============================================================================
+* DERIVED BEHAVIORAL INDICES
+* All monetary inputs are already in real 2025 USD (post-deflation).
+* Shares are set to missing when the denominator is zero (no household
+* spending in that category); this avoids 0/0 and 0/ε artifacts in
+* the regression sample without requiring arbitrary floors.
+*=============================================================================
+
+*-----------------------------------------------------------------------------
+* Diet quality indices
+* Motivation: PROGRESA's nutrition component was designed to shift consumption
+* away from staple grains toward protein and vegetables. These indices capture
+* that shift and proxy nutritional quality improvements linked to mortality.
+*-----------------------------------------------------------------------------
+
+* protein_share: fraction of food spending on meat, fish, dairy, and eggs.
+*   Higher = more animal protein; linked to sarcopenia prevention in the elderly.
+gen protein_share    = meat_dairy  / food_exp  if food_exp > 0 & food_exp != .
+
+* staples_share: fraction on cereals (tortillas, bread, rice, etc.).
+*   Higher = calorie-dense but micronutrient-poor diet; used as food insecurity proxy.
+gen staples_share    = cereals     / food_exp  if food_exp > 0 & food_exp != .
+
+* vegg_fruit_share: fraction on vegetables, legumes, tubers, and fresh fruit.
+*   Higher = micronutrient-dense diet; PROGRESA-predicted improvement.
+gen vegg_fruit_share = vegg_fruit  / food_exp  if food_exp > 0 & food_exp != .
+
+* unhealthy_share: fraction on sugar/fats/soft-drinks, alcohol, and tobacco.
+*   Higher = diet quality risk; expected to fall or remain flat post-PROGRESA.
+gen unhealthy_share  = (sugar_fat_drink + alcohol + tobacco) / food_exp ///
+    if food_exp > 0 & food_exp != .
+
+* diversity_index: count of non-zero food categories (0–7).
+*   Higher = more diversified diet; a simple proxy for dietary variety.
+*   Categories: cereals, meat/dairy, vegg/fruit, sugar/fat/drink,
+*               coffee/spices/other, outside food, alcohol.
+gen diversity_index = (cereals           > 0 & cereals           != .) ///
+                    + (meat_dairy        > 0 & meat_dairy         != .) ///
+                    + (vegg_fruit        > 0 & vegg_fruit         != .) ///
+                    + (sugar_fat_drink   > 0 & sugar_fat_drink    != .) ///
+                    + (coffe_spices_other > 0 & coffe_spices_other != .) ///
+                    + (outside_food      > 0 & outside_food       != .) ///
+                    + (alcohol           > 0 & alcohol            != .)
+replace diversity_index = . if food_exp == 0 | food_exp == .
+
+*-----------------------------------------------------------------------------
+* Healthcare substitution ratios
+* Motivation: PROGRESA's conditionality requires health clinic visits, which
+* should shift households from self-medication (OTC) toward formal prescriptions
+* (Rx), and increase the ratio of Rx drugs per outpatient dollar — the reverse
+* of what a pure income effect (without conditionality) would predict.
+*-----------------------------------------------------------------------------
+
+* rx_to_visit_ratio: prescription drug spending per outpatient dollar.
+*   Defined only for households with positive outpatient spending.
+*   High = visits translate into prescriptions (formal care working).
+*   Low = visits without follow-through (supply constraint or non-compliance).
+gen rx_to_visit_ratio = drugs_prescribed / medical_outpatient ///
+    if medical_outpatient > 0 & medical_outpatient != .
+
+* otc_to_rx_ratio: OTC drug spending relative to prescription drug spending.
+*   Defined only for households with positive prescription drug spending.
+*   High = self-medication dominates; Low = shift toward formal prescriptions.
+*   PROGRESA conditionality predicts this ratio falls post-program.
+gen otc_to_rx_ratio   = drugs_overcounter / drugs_prescribed ///
+    if drugs_prescribed > 0 & drugs_prescribed != .
+
+* health_share: total health spending as fraction of total household expenditure.
+*   Captures overall prioritization of health in the household budget.
+gen health_share = health_exp / hh_expenditure ///
+    if hh_expenditure > 0 & hh_expenditure != .
+
+*-----------------------------------------------------------------------------
+* Financial stress composite
+* Motivation: income uncertainty reduction is a plausible mortality channel
+* (allostatic load / cardiovascular risk). Debt burden and net saving position
+* proxy financial stress independently of income levels.
+*-----------------------------------------------------------------------------
+
+* net_fin_position: monthly savings minus monthly debt service (real 2025 USD).
+*   Positive = net accumulation; Negative = drawing down / servicing debt.
+*   Missing if either component is missing (not if one is zero — both are valid).
+gen net_fin_position = savings - debt
+
+* debt_to_income: debt service relative to household labor earnings.
+*   Denominator = wage + self-employment income only (excludes transfers),
+*   capturing ability-to-service-debt from own labor independently of PROGRESA.
+*   Defined only where earnings are positive to avoid divide-by-zero and
+*   economically meaningless ratios for non-working households.
+gen debt_to_income = debt / hh_earnings ///
+    if hh_earnings > 0 & hh_earnings != .
+
+*--- Labels -------------------------------------------------------------------
+label var protein_share     "Share of food spending: meat & dairy (0–1)"
+label var staples_share     "Share of food spending: cereals (0–1)"
+label var vegg_fruit_share  "Share of food spending: veggies & fruit (0–1)"
+label var unhealthy_share   "Share of food spending: sugar, fat, alcohol, tobacco (0–1)"
+label var diversity_index   "Dietary diversity index (0–7 non-zero food categories)"
+label var rx_to_visit_ratio "Rx drug spending / outpatient spending (if outpatient > 0)"
+label var otc_to_rx_ratio   "OTC drug spending / Rx drug spending (if Rx > 0)"
+label var health_share      "Health spending / total HH expenditure (if expenditure > 0)"
+label var net_fin_position  "Monthly savings minus debt service (real 2025 USD)"
+label var debt_to_income    "Debt service / HH labor earnings (if earnings > 0)"
+
+* Inelegibles should not be all, may be up t to loc_size == 2?
 
  			 
 drop trabajo
