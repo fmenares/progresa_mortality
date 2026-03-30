@@ -42,6 +42,7 @@ drop cve_ent_mun_super
 rename cve_mun2 cve_ent_mun_super
 sort cve_ent_mun_super
 merge m:1 cve_ent_mun_super year using "$data/mortality_muni.dta", keep(3)
+merge m:1 cve_ent_mun_super using "$data/inten1999.dta", keep(1 3) nogen
 
 * --- Reconstruct derived variables ---
 g hrs_worked_pos = hrs_worked if hrs_worked != . & hrs_worked != 0
@@ -60,6 +61,374 @@ foreach outcome in $raw_outcomes {
 		replace `outcome'_out = (`outcome' > `r(p99)') if year == `year'
 	}
 }
+
+
+* ============================================================
+* SECTION 0: TREATMENT VARIATION ANALYSIS
+*
+* Compares three treatment intensity measures across highly
+* marginalized municipalities:
+*
+*   inten1997     — PROGRESA share of HH enrolled as of 1997
+*                   (municipality-level constant; fixed snapshot)
+*   inten1999     — PROGRESA share enrolled as of 1999 (fixed)
+*   intensity_new — cumulative beneficiaries / total HH by year
+*                   (time-varying continuous measure)
+*
+* Two dimensions of variation are assessed:
+*
+*   (1) CROSS-SECTIONAL: Is there sufficient spread across
+*       municipalities at a given point in time?
+*       → kdensity, CV, and summary tables (inten1997, inten1999)
+*
+*   (2) TEMPORAL / ROLLOUT: Does intensity_new grow meaningfully
+*       post-1997?  Is there enough rollout by 1997 and 1999?
+*       → mean + IQR and penetration rate by year
+*         (ENIGH survey waves, and full annual mortality panel)
+*
+* Figures: FA0a–FA0i   (→ $figures/)
+* Tables:  TA0a–TA0c   (→ $output/)
+* ============================================================
+
+* --- post dummy (also used in Sections 8–9) ---
+gen post = (year >= 1997) if year != .
+
+* ============================================================
+* 0A: inten1997 — cross-sectional variation
+* ============================================================
+
+di _newline(2) "========================================================"
+di "SECTION 0A: inten1997 — CROSS-SECTIONAL VARIATION"
+di "========================================================"
+
+qui sum inten1997 if $sample_marg, d
+local cv97 : di %5.3f (r(sd) / max(r(mean), 0.0001))
+qui count if $sample_marg & inten1997 == 0
+local n0_97  = r(N)
+qui count if $sample_marg & inten1997 != .
+local ntot97 = r(N)
+local pct0_97 : di %4.1f (100 * `n0_97' / max(`ntot97', 1))
+di "  Mean=" %6.3f r(mean) "  SD=" %6.3f r(sd) "  CV=" "`cv97'" ///
+   "  Median=" %6.3f r(p50) "  % zero=" "`pct0_97'" "%"
+
+* -- FA0a: kernel density (unique municipalities) --
+preserve
+	keep if $sample_marg & inten1997 != .
+	bysort cve_ent_mun_super: keep if _n == 1
+	qui sum inten1997
+	local mn97_d : di %5.3f r(mean)
+	twoway kdensity inten1997,                                               ///
+		lcolor(navy) lwidth(medthick)                                        ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("PROGRESA Beneficiary Share (1997)")                          ///
+		ytitle("Density")                                                    ///
+		title("Treatment Intensity: inten1997")                              ///
+		subtitle("Highly marginalized municipalities (gm{subscript:1990} = 4–5)") ///
+		xline(`mn97_d', lpattern(dash) lcolor(gs8))                          ///
+		note("One obs per municipality.  Mean = `mn97_d'  CV = `cv97'  % zero = `pct0_97'%", size(small))
+	graph export "$figures/FA0a_inten1997_kdensity.pdf", as(pdf) replace
+restore
+
+* -- FA0b: box plot by ENIGH survey wave --
+preserve
+	keep if $sample_marg & inten1997 != .
+	bysort cve_ent_mun_super year: keep if _n == 1
+	graph box inten1997, over(year, label(angle(45) labsize(small)))         ///
+		graphregion(fcolor(white))                                           ///
+		ytitle("PROGRESA Beneficiary Share (1997)")                          ///
+		title("inten1997 by Survey Wave")                                    ///
+		subtitle("Highly marginalized municipalities")                       ///
+		note("One obs per municipality × wave.", size(small))
+	graph export "$figures/FA0b_inten1997_bywave.pdf", as(pdf) replace
+restore
+
+* -- TA0a: summary statistics table (LaTeX) --
+preserve
+	keep if $sample_marg & inten1997 != .
+	bysort cve_ent_mun_super year: keep if _n == 1
+	cap file close sm
+	file open sm using "$output/TA0a_inten1997_variation.tex", write replace
+	file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
+	file write sm "Wave & N & Mean & SD & CV & p25 & p50 & p75 & Max \\ \toprule"_n
+	foreach y in $years {
+		qui count if year == `y'
+		if r(N) > 0 {
+			local n_m = r(N)
+			qui sum inten1997 if year == `y', d
+			local mn  : di %6.3f r(mean)
+			local sd_ : di %6.3f r(sd)
+			local cv  : di %5.3f (r(sd) / max(r(mean), 0.0001))
+			local p25 : di %6.3f r(p25)
+			local p50 : di %6.3f r(p50)
+			local p75 : di %6.3f r(p75)
+			local mx  : di %6.3f r(max)
+			file write sm "`y' & `n_m' & `mn' & `sd_' & `cv' & `p25' & `p50' & `p75' & `mx' \\"_n
+		}
+	}
+	qui sum inten1997, d
+	local cv_all  : di %5.3f (r(sd) / max(r(mean), 0.0001))
+	local mean_all : di %6.3f r(mean)
+	local sd_all   : di %6.3f r(sd)
+	file write sm "\midrule"_n
+	file write sm "\multicolumn{9}{l}{\textit{Pooled}: Mean = `mean_all'  SD = `sd_all'  CV = `cv_all'} \\"_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+restore
+
+
+* ============================================================
+* 0B: inten1999 — cross-sectional variation
+* ============================================================
+
+di _newline(2) "========================================================"
+di "SECTION 0B: inten1999 — CROSS-SECTIONAL VARIATION"
+di "========================================================"
+
+qui sum inten1999 if $sample_marg, d
+local cv99 : di %5.3f (r(sd) / max(r(mean), 0.0001))
+qui count if $sample_marg & inten1999 == 0
+local n0_99  = r(N)
+qui count if $sample_marg & inten1999 != .
+local ntot99 = r(N)
+local pct0_99 : di %4.1f (100 * `n0_99' / max(`ntot99', 1))
+di "  Mean=" %6.3f r(mean) "  SD=" %6.3f r(sd) "  CV=" "`cv99'" ///
+   "  Median=" %6.3f r(p50) "  % zero=" "`pct0_99'" "%"
+
+* -- FA0c: kernel density (unique municipalities) --
+preserve
+	keep if $sample_marg & inten1999 != .
+	bysort cve_ent_mun_super: keep if _n == 1
+	qui sum inten1999
+	local mn99_d : di %5.3f r(mean)
+	twoway kdensity inten1999,                                               ///
+		lcolor(maroon) lwidth(medthick)                                      ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("PROGRESA Beneficiary Share (1999)")                          ///
+		ytitle("Density")                                                    ///
+		title("Treatment Intensity: inten1999")                              ///
+		subtitle("Highly marginalized municipalities (gm{subscript:1990} = 4–5)") ///
+		xline(`mn99_d', lpattern(dash) lcolor(gs8))                          ///
+		note("One obs per municipality.  Mean = `mn99_d'  CV = `cv99'  % zero = `pct0_99'%", size(small))
+	graph export "$figures/FA0c_inten1999_kdensity.pdf", as(pdf) replace
+restore
+
+* -- FA0d: box plot by survey wave --
+preserve
+	keep if $sample_marg & inten1999 != .
+	bysort cve_ent_mun_super year: keep if _n == 1
+	graph box inten1999, over(year, label(angle(45) labsize(small)))         ///
+		graphregion(fcolor(white))                                           ///
+		ytitle("PROGRESA Beneficiary Share (1999)")                          ///
+		title("inten1999 by Survey Wave")                                    ///
+		subtitle("Highly marginalized municipalities")                       ///
+		note("One obs per municipality × wave.", size(small))
+	graph export "$figures/FA0d_inten1999_bywave.pdf", as(pdf) replace
+restore
+
+* -- TA0b: summary statistics table (LaTeX) --
+preserve
+	keep if $sample_marg & inten1999 != .
+	bysort cve_ent_mun_super year: keep if _n == 1
+	cap file close sm
+	file open sm using "$output/TA0b_inten1999_variation.tex", write replace
+	file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
+	file write sm "Wave & N & Mean & SD & CV & p25 & p50 & p75 & Max \\ \toprule"_n
+	foreach y in $years {
+		qui count if year == `y'
+		if r(N) > 0 {
+			local n_m = r(N)
+			qui sum inten1999 if year == `y', d
+			local mn  : di %6.3f r(mean)
+			local sd_ : di %6.3f r(sd)
+			local cv  : di %5.3f (r(sd) / max(r(mean), 0.0001))
+			local p25 : di %6.3f r(p25)
+			local p50 : di %6.3f r(p50)
+			local p75 : di %6.3f r(p75)
+			local mx  : di %6.3f r(max)
+			file write sm "`y' & `n_m' & `mn' & `sd_' & `cv' & `p25' & `p50' & `p75' & `mx' \\"_n
+		}
+	}
+	qui sum inten1999, d
+	local cv_all  : di %5.3f (r(sd) / max(r(mean), 0.0001))
+	local mean_all : di %6.3f r(mean)
+	local sd_all   : di %6.3f r(sd)
+	file write sm "\midrule"_n
+	file write sm "\multicolumn{9}{l}{\textit{Pooled}: Mean = `mean_all'  SD = `sd_all'  CV = `cv_all'} \\"_n
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+restore
+
+
+* ============================================================
+* 0C: intensity_new — cross-section by ENIGH survey year
+*
+* intensity_new is time-varying: cumulative PROGRESA beneficiaries
+* divided by total households in the municipality, measured each
+* year.  The ENIGH panel covers waves 1992, 1994, 1996, 1998,
+* 2000, 2002, 2004, 2005, 2006, providing pre- and post-1997
+* snapshots of how the distribution evolves across waves.
+* ============================================================
+
+di _newline(2) "========================================================"
+di "SECTION 0C: intensity_new — VARIATION ACROSS ENIGH SURVEY YEARS"
+di "========================================================"
+
+* -- FA0e: box plot by survey year --
+preserve
+	keep if $sample_marg & intensity_new != .
+	bysort cve_ent_mun_super year: keep if _n == 1
+	graph box intensity_new,                                                 ///
+		over(year, label(angle(45) labsize(small)))                          ///
+		graphregion(fcolor(white))                                           ///
+		ytitle("Intensity (cumul. beneficiaries / HH)")                      ///
+		title("intensity{subscript:new} by Survey Year")                     ///
+		subtitle("Highly marginalized municipalities")                       ///
+		note("One obs per municipality × year.", size(small))
+	graph export "$figures/FA0e_intensity_new_bywave.pdf", as(pdf) replace
+restore
+
+* -- FA0f: mean + IQR band by survey year --
+preserve
+	keep if $sample_marg & intensity_new != .
+	bysort cve_ent_mun_super year: keep if _n == 1
+	collapse (mean) mean_i = intensity_new  ///
+	         (p25)  p25_i  = intensity_new  ///
+	         (p75)  p75_i  = intensity_new, by(year)
+	twoway (rarea p25_i p75_i year,                                          ///
+	            fcolor(navy%25) lcolor(none))                                ///
+	       (connected mean_i year,                                           ///
+	            lcolor(navy) mcolor(navy) msymbol(O) lwidth(medthick)),      ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("Survey Year")                                                ///
+		ytitle("Mean PROGRESA Intensity")                                    ///
+		title("PROGRESA Intensity by Survey Year (ENIGH waves)")             ///
+		subtitle("Shaded band = IQR.  Highly marginalized municipalities.")  ///
+		xline(1997, lpattern(dash) lcolor(gs8))                              ///
+		legend(off)
+	graph export "$figures/FA0f_intensity_new_surveytrend.pdf", as(pdf) replace
+restore
+
+* -- FA0g: penetration rate (% municipalities with intensity > 0) --
+preserve
+	keep if $sample_marg
+	bysort cve_ent_mun_super year: keep if _n == 1
+	gen treated = (intensity_new > 0 & intensity_new != .)
+	collapse (mean) pct_treated = treated, by(year)
+	replace pct_treated = pct_treated * 100
+	twoway connected pct_treated year,                                       ///
+		lcolor(maroon) mcolor(maroon) msymbol(O) lwidth(medthick)           ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("Survey Year")                                                ///
+		ytitle("% Municipalities with Intensity > 0")                        ///
+		title("PROGRESA Penetration Rate by Survey Year")                    ///
+		subtitle("Highly marginalized municipalities")                       ///
+		xline(1997, lpattern(dash) lcolor(gs8))
+	graph export "$figures/FA0g_intensity_new_penetration.pdf", as(pdf) replace
+restore
+
+* -- TA0c: summary table for intensity_new by survey year (LaTeX) --
+preserve
+	keep if $sample_marg & intensity_new != .
+	bysort cve_ent_mun_super year: keep if _n == 1
+	cap file close sm
+	file open sm using "$output/TA0c_intensity_new_variation.tex", write replace
+	file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
+	file write sm "Year & N & \% $>$ 0 & Mean & SD & CV & p25 & p50 & p75 \\ \toprule"_n
+	foreach y in $years {
+		qui count if year == `y'
+		if r(N) > 0 {
+			local n_m = r(N)
+			qui count if year == `y' & intensity_new > 0 & intensity_new != .
+			local pct_pos : di %4.1f (100 * r(N) / `n_m')
+			qui sum intensity_new if year == `y', d
+			local mn  : di %6.3f r(mean)
+			local sd_ : di %6.3f r(sd)
+			local cv  : di %5.3f (r(sd) / max(r(mean), 0.0001))
+			local p25 : di %6.3f r(p25)
+			local p50 : di %6.3f r(p50)
+			local p75 : di %6.3f r(p75)
+			file write sm "`y' & `n_m' & `pct_pos'\% & `mn' & `sd_' & `cv' & `p25' & `p50' & `p75' \\"_n
+		}
+	}
+	file write sm "\bottomrule"_n
+	file write sm "\end{tabular}"
+	file close sm
+restore
+
+
+* ============================================================
+* 0D: intensity_new — full annual rollout (1991–2006)
+*
+* The ENIGH panel covers only 9 survey years.  The annual
+* mortality panel has one observation per municipality-year
+* for 1991–2006, making it possible to see exactly when
+* municipalities entered the program and whether the bulk of
+* rollout occurred in 1997, 1998, or 1999.
+*
+* This section temporarily loads mortality_muni.dta, produces
+* two annual-frequency figures, then restores the ENIGH data.
+*
+* FA0h — mean intensity + IQR band, 1991–2006 (annual)
+* FA0i — penetration rate (% municipalities), 1991–2006 (annual)
+* ============================================================
+
+di _newline(2) "========================================================"
+di "SECTION 0D: intensity_new — ANNUAL ROLLOUT (mortality panel)"
+di "========================================================"
+
+tempfile enigh_saved
+quietly save `enigh_saved'
+
+use "$data/mortality_muni.dta", clear
+keep if (gm_mun_1990 == 4 | gm_mun_1990 == 5) & year >= 1991 & year <= 2006
+
+* -- FA0h: mean + IQR band, annual --
+preserve
+	bysort cve_ent_mun_super year: keep if _n == 1
+	collapse (mean) mean_i = intensity_new  ///
+	         (p25)  p25_i  = intensity_new  ///
+	         (p75)  p75_i  = intensity_new, by(year)
+	twoway (rarea p25_i p75_i year,                                          ///
+	            fcolor(navy%25) lcolor(none))                                ///
+	       (connected mean_i year,                                           ///
+	            lcolor(navy) mcolor(navy) msymbol(O) lwidth(medthick)),      ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("Year")                                                       ///
+		ytitle("Mean PROGRESA Intensity")                                    ///
+		title("Annual PROGRESA Rollout: intensity{subscript:new}")           ///
+		subtitle("Shaded band = IQR.  Highly marginalized municipalities.")  ///
+		xline(1997, lpattern(dash) lcolor(gs8))                              ///
+		xline(1999, lpattern(shortdash) lcolor(gs10))                        ///
+		note("Dashed lines at 1997 and 1999.", size(small))                  ///
+		legend(off)
+	graph export "$figures/FA0h_intensity_new_annual_trend.pdf", as(pdf) replace
+restore
+
+* -- FA0i: penetration rate, annual --
+bysort cve_ent_mun_super year: keep if _n == 1
+gen treated = (intensity_new > 0 & intensity_new != .)
+collapse (mean) pct_treated = treated  ///
+         (count) n_mun = treated, by(year)
+replace pct_treated = pct_treated * 100
+
+di _newline "Annual rollout — % municipalities with intensity > 0:"
+list year n_mun pct_treated, noobs sep(0)
+
+twoway connected pct_treated year,                                         ///
+	lcolor(maroon) mcolor(maroon) msymbol(O) lwidth(medthick)             ///
+	graphregion(fcolor(white))                                             ///
+	xtitle("Year")                                                         ///
+	ytitle("% Municipalities with Intensity > 0")                          ///
+	title("Annual PROGRESA Penetration Rate")                              ///
+	subtitle("Highly marginalized municipalities")                         ///
+	xline(1997, lpattern(dash) lcolor(gs8))                                ///
+	xline(1999, lpattern(shortdash) lcolor(gs10))                          ///
+	note("Dashed lines at 1997 and 1999.", size(small))
+graph export "$figures/FA0i_intensity_new_annual_penetration.pdf", as(pdf) replace
+
+use `enigh_saved', clear
 
 
 * ============================================================
@@ -277,107 +646,6 @@ di _newline(2) "========================================================"
 di "END OF OUTLIER DIAGNOSTICS"
 di "========================================================"
 
-
-* ============================================================
-* SECTION 7: TREATMENT INTENSITY VARIATION IN THE ENIGH SAMPLE
-*
-* inten1997 is a municipality-level constant (fraction of
-* households enrolled in 1997).  For the event study to
-* identify causal effects, the ENIGH municipalities must
-* have sufficient CROSS-SECTIONAL variation in inten1997
-* and comparable intensity distributions across survey waves.
-*
-* Figures produced:
-*   FA1a — distribution of inten1997 across unique ENIGH
-*            municipalities (highly marginalized only)
-*   FA1b — box plot of inten1997 by survey wave (to check
-*            whether municipal composition shifts over time)
-*   FA1c — table: N municipalities, mean, SD, p25/p50/p75
-*            of inten1997 by survey wave
-* ============================================================
-
-* Auxiliary: post dummy and treatment intensity flag
-gen post = (year >= 1997) if year != .
-
-* --- Collapse to municipality × year (one obs per mun-wave) ---
-preserve
-
-	keep if $sample_marg & inten1997 != .
-	bysort cve_ent_mun_super year: keep if _n == 1
-
-	* --- FA1a: kernel density of inten1997 (unique municipalities pooled) ---
-	bysort cve_ent_mun_super: keep if _n == 1        // unique municipalities
-
-	twoway kdensity inten1997,                                               ///
-		lcolor(navy) lwidth(medthick)                                        ///
-		graphregion(fcolor(white))                                           ///
-		xtitle("PROGRESA Beneficiary Share (1997)")                          ///
-		ytitle("Density")                                                    ///
-		title("Treatment Intensity Distribution: ENIGH Municipalities")      ///
-		subtitle("Highly marginalized only (gm{subscript:1990} = 4 or 5)") ///
-		note("One observation per municipality." ///
-		     "Dashed line = sample mean.", size(small))                      ///
-		xline(`=r(mean)', lpattern(dash) lcolor(gray))
-	graph export "$figures/FA1a_inten1997_kdensity.pdf", as(pdf) replace
-
-restore
-
-* --- FA1b: box plot of inten1997 by survey wave ---
-preserve
-
-	keep if $sample_marg & inten1997 != .
-	bysort cve_ent_mun_super year: keep if _n == 1
-
-	graph box inten1997, over(year, label(angle(45) labsize(small)))         ///
-		graphregion(fcolor(white))                                           ///
-		ytitle("PROGRESA Beneficiary Share (1997)")                          ///
-		title("Intensity Distribution by Survey Wave")                       ///
-		subtitle("Highly marginalized municipalities")                       ///
-		note("Each box = distribution across ENIGH municipalities in that wave.", ///
-		     size(small))
-	graph export "$figures/FA1b_inten1997_bywave.pdf", as(pdf) replace
-
-restore
-
-* --- FA1c: LaTeX table of intensity distribution by wave ---
-preserve
-
-	keep if $sample_marg & inten1997 != .
-	bysort cve_ent_mun_super year: keep if _n == 1
-
-	cap file close sm
-	file open sm using "$output/TA0_intensity_variation.tex", write replace
-	file write sm "\begin{tabular}{lrrrrrrr} \hline \hline"_n
-	file write sm "Survey Wave & N Mun & Mean & SD & Min & p25 & p50 & p75-Max \\ \toprule"_n
-
-	foreach y in $years {
-		qui count if year == `y'
-		local n_mun = r(N)
-		if `n_mun' > 0 {
-			qui sum inten1997 if year == `y', d
-			local mn  : di %6.3f r(mean)
-			local sd  : di %6.3f r(sd)
-			local mn_ : di %6.3f r(min)
-			local p25 : di %6.3f r(p25)
-			local p50 : di %6.3f r(p50)
-			local p75 : di %6.3f r(p75)
-			local mx  : di %6.3f r(max)
-			file write sm "`y' & `n_mun' & `mn' & `sd' & `mn_' & `p25' & `p50' & `p75'--`mx' \\"_n
-		}
-	}
-
-	* Coefficient of variation row
-	qui sum inten1997, d
-	local cv_all : di %6.3f (r(sd) / r(mean))
-	file write sm " & & & & & & & \\ "_n
-	file write sm "\multicolumn{8}{l}{\textit{Pooled (all waves):} Mean = " ///
-		`"`: di %6.3f r(mean)'" SD = "`: di %6.3f r(sd)'"'               ///
-		" CV = `cv_all'} \\"_n
-	file write sm "\bottomrule"_n
-	file write sm "\end{tabular}"
-	file close sm
-
-restore
 
 
 * ============================================================
