@@ -432,6 +432,160 @@ use `enigh_saved', clear
 
 
 * ============================================================
+* SECTION 0E: SAMPLE OVERLAP — Mortality analysis vs. ENIGH
+*
+* The ENIGH is a national household survey with limited municipal
+* coverage.  Not all municipalities in the mortality analysis
+* appear in every ENIGH wave.  This section quantifies the overlap
+* and checks whether ENIGH municipalities are representative of
+* the full mortality sample in terms of treatment intensity.
+*
+* Three diagnostics:
+*   (1) Console table: unique municipalities per sample and wave
+*   (2) FA0j — grouped bar: N municipalities per year
+*              (mortality analysis vs. ENIGH sample)
+*   (3) FA0k — coverage rate: % of mortality municipalities
+*              represented in the ENIGH per survey wave
+*   (4) FA0l — intensity distribution comparison: inten1997
+*              for ENIGH municipalities vs. mortality-only
+*              municipalities (representativeness check)
+* ============================================================
+
+di _newline(2) "========================================================"
+di "SECTION 0E: SAMPLE OVERLAP — Mortality vs. ENIGH municipalities"
+di "========================================================"
+
+tempfile enigh_for_overlap
+quietly save `enigh_for_overlap'
+
+* --- Step 1: Get full mortality municipality universe (annual panel) ---
+use "$data/mortality_muni.dta", clear
+keep if (gm_mun_1990 == 4 | gm_mun_1990 == 5) & year >= 1991 & year <= 2006
+
+* Count mortality municipalities per year (for survey-year bars)
+bysort cve_ent_mun_super year: keep if _n == 1
+collapse (count) n_mort = cve_ent_mun_super, by(year)
+tempfile mort_by_year
+save `mort_by_year'
+
+* Reload to build unique municipality list with inten1997
+use "$data/mortality_muni.dta", clear
+keep if (gm_mun_1990 == 4 | gm_mun_1990 == 5) & year >= 1991 & year <= 2006
+bysort cve_ent_mun_super: keep if _n == 1
+local n_mort_total = r(N)
+keep cve_ent_mun_super inten1997
+gen in_mortality = 1
+tempfile mort_unique
+save `mort_unique'
+
+* --- Step 2: Count ENIGH municipalities per survey wave into a tempfile ---
+use `enigh_for_overlap', clear
+preserve
+	keep if $sample_marg
+	bysort cve_ent_mun_super year: keep if _n == 1
+	collapse (count) n_enigh = cve_ent_mun_super, by(year)
+	keep if inlist(year, 1992, 1994, 1996, 1998, 2000, 2002, 2004, 2005, 2006)
+	merge 1:1 year using `mort_by_year', keep(1 3) nogen
+	gen pct_covered = 100 * n_enigh / n_mort
+	tempfile overlap_byyear
+	save `overlap_byyear'
+restore
+
+* Total unique ENIGH municipalities across all waves
+preserve
+	keep if $sample_marg
+	bysort cve_ent_mun_super: keep if _n == 1
+	local n_enigh_total = r(N)
+restore
+local pct_overall : di %5.1f (100 * `n_enigh_total' / `n_mort_total')
+
+* --- Console summary ---
+di _newline "Unique municipalities (highly marginalized):"
+di "  Mortality analysis : `n_mort_total'"
+di "  ENIGH sample       : `n_enigh_total'  (coverage = `pct_overall'% of mortality sample)"
+di _newline "Coverage by ENIGH survey wave (from FA0k figure data):"
+preserve
+	use `overlap_byyear', clear
+	list year n_mort n_enigh pct_covered, noobs sep(0)
+restore
+
+* --- FA0j + FA0k: grouped bar and coverage rate by survey year ---
+preserve
+	use `overlap_byyear', clear
+
+	* FA0j: grouped bars
+	twoway (bar n_mort year, barwidth(1.2) fcolor(gs11) lcolor(gs8))         ///
+	       (bar n_enigh year, barwidth(1.2) fcolor(navy%80) lcolor(navy)),   ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("Survey Year")                                                ///
+		ytitle("Number of Municipalities")                                   ///
+		title("Municipality Coverage: Mortality Sample vs. ENIGH")          ///
+		subtitle("Highly marginalized municipalities (gm{subscript:1990} = 4–5)") ///
+		legend(order(1 "Mortality analysis" 2 "ENIGH sample")               ///
+		       pos(11) ring(0) cols(1) size(small))                         ///
+		note("Each pair of bars corresponds to one ENIGH survey wave.", size(small))
+	graph export "$figures/FA0j_overlap_byyear.pdf", as(pdf) replace
+
+	* FA0k: coverage rate line
+	twoway connected pct_covered year,                                       ///
+		lcolor(maroon) mcolor(maroon) msymbol(O) lwidth(medthick)           ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("Survey Year")                                                ///
+		ytitle("% of Mortality Municipalities in ENIGH")                     ///
+		title("ENIGH Coverage Rate by Survey Wave")                         ///
+		subtitle("Highly marginalized municipalities")                       ///
+		yscale(range(0 100)) ylabel(0(20)100)                               ///
+		xline(1997, lpattern(dash) lcolor(gs8))                              ///
+		note("Denominator = N municipalities in mortality panel that year.", size(small))
+	graph export "$figures/FA0k_overlap_coverage.pdf", as(pdf) replace
+
+	di _newline "Coverage table (survey years only):"
+	list year n_mort n_enigh pct_covered, noobs sep(0)
+restore
+
+* --- FA0l: Treatment intensity distribution — ENIGH vs. mortality-only ---
+preserve
+	keep if $sample_marg & inten1997 != .
+	bysort cve_ent_mun_super: keep if _n == 1
+	keep cve_ent_mun_super
+	gen in_enigh = 1
+
+	* Merge with full mortality municipality list
+	merge 1:1 cve_ent_mun_super using `mort_unique', nogen
+	replace in_enigh = 0 if in_enigh == .
+
+	qui sum inten1997 if in_enigh == 1, d
+	local mn_enigh : di %5.3f r(mean)
+	local sd_enigh : di %5.3f r(sd)
+	qui sum inten1997 if in_enigh == 0, d
+	local mn_mort  : di %5.3f r(mean)
+	local sd_mort  : di %5.3f r(sd)
+
+	di _newline "inten1997 distribution:"
+	di "  ENIGH municipalities :  mean = `mn_enigh'  SD = `sd_enigh'"
+	di "  Mortality-only muns  :  mean = `mn_mort'   SD = `sd_mort'"
+
+	twoway (kdensity inten1997 if in_enigh == 1,                             ///
+	            lcolor(navy) lwidth(medthick) lpattern(solid))               ///
+	       (kdensity inten1997 if in_enigh == 0,                             ///
+	            lcolor(maroon) lwidth(medthick) lpattern(dash)),             ///
+		graphregion(fcolor(white))                                           ///
+		xtitle("PROGRESA Beneficiary Share (1997)")                          ///
+		ytitle("Density")                                                    ///
+		title("Treatment Intensity: ENIGH vs. Mortality-Only Municipalities") ///
+		subtitle("Highly marginalized municipalities")                       ///
+		legend(order(1 "In ENIGH (mean=`mn_enigh')"                         ///
+		             2 "Mortality only (mean=`mn_mort')")                    ///
+		       pos(1) ring(0) cols(1) size(small))                          ///
+		note("One obs per municipality. Similarity supports external validity of ENIGH results.", ///
+		     size(small))
+	graph export "$figures/FA0l_overlap_intensity_dist.pdf", as(pdf) replace
+restore
+
+use `enigh_for_overlap', clear
+
+
+* ============================================================
 * DIAGNOSTIC 1: Flagging rate — % flagged per variable x year
 * Expected: ~1% per cell. Values well below 1% suggest ties
 * at p99 are absorbing many observations above the threshold.
