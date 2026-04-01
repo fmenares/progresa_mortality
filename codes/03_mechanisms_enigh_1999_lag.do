@@ -1684,9 +1684,9 @@ global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income
 foreach outcome in $individuals {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	`outcome'_out == 0 & $sample_br, ///
+	`outcome'_out == 0 & $sample_br & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
-	
+
 	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
 	local SE_w99_`i' : di %12.3f  _se[intensity_new]
 	
@@ -1729,7 +1729,7 @@ local i = 1
 foreach outcome in $individuals {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	`outcome'_out == 0 & $sample_br & female == 1, ///
+	`outcome'_out == 0 & $sample_br & female == 1 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_f99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -1774,7 +1774,7 @@ local i = 1
 foreach outcome in $individuals {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	`outcome'_out == 0 & $sample_br & female == 0, ///
+	`outcome'_out == 0 & $sample_br & female == 0 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_m99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -1866,7 +1866,7 @@ global hh= "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh sa
 foreach outcome in $hh {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -1912,7 +1912,7 @@ local i = 1
 foreach outcome in $hh {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 1, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 1 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_f99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -1958,7 +1958,7 @@ local i = 1
 foreach outcome in $hh {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 0, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 0 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_m99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2049,7 +2049,7 @@ global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol
 local i=1
 foreach outcome in $hh_food {
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
 	
@@ -2094,7 +2094,7 @@ foreach outcome in $hh_food {
 local i = 1
 foreach outcome in $hh_food {
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 1, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 1 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
 	
@@ -2139,7 +2139,7 @@ foreach outcome in $hh_food {
 local i = 1
 foreach outcome in $hh_food {
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 0, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 0 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
 	
@@ -2232,7 +2232,7 @@ foreach outcome in $hh_health{
 	
 	*weighted
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2279,7 +2279,7 @@ foreach outcome in $hh_health{
 	
 	*weighted
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 1, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 1 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_f99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2326,7 +2326,7 @@ foreach outcome in $hh_health{
 	
 	*weighted
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 0, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_br & hhh_female == 0 & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_m99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2427,9 +2427,9 @@ global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income
 foreach outcome in $individuals {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	`outcome'_out == 0 & $sample_marg, ///
+	`outcome'_out == 0 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
-	
+
 	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
 	local SE_w99_`i' : di %12.3f  _se[intensity_new]
 	
@@ -2472,7 +2472,7 @@ local i = 1
 foreach outcome in $individuals {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	`outcome'_out == 0 & female == 1 & $sample_marg, ///
+	`outcome'_out == 0 & female == 1 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_f99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2517,7 +2517,7 @@ local i = 1
 foreach outcome in $individuals {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	`outcome'_out == 0 & female == 0 & $sample_marg, ///
+	`outcome'_out == 0 & female == 0 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_m99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2609,7 +2609,7 @@ global hh= "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh sa
 foreach outcome in $hh {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0  & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0  & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2655,7 +2655,7 @@ local i = 1
 foreach outcome in $hh {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 1 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 1 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_f99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2701,7 +2701,7 @@ local i = 1
 foreach outcome in $hh {
 	
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 0 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 0 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_m99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -2792,14 +2792,14 @@ global hh_food = "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol
 local i=1
 foreach outcome in $hh_food {
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
-	
+
 	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
 	local SE_w99_`i' : di %12.3f  _se[intensity_new]
-	
-	
+
+
 	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
 	
 	if (`t_`i'' >= 2.576) {
@@ -2837,7 +2837,7 @@ foreach outcome in $hh_food {
 local i = 1
 foreach outcome in $hh_food {
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 1 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 1 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
 	
@@ -2882,7 +2882,7 @@ foreach outcome in $hh_food {
 local i = 1
 foreach outcome in $hh_food {
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 0 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 0 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
 	
@@ -2975,13 +2975,13 @@ foreach outcome in $hh_health{
 	
 	*weighted
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
-	
+
 	local OLS_w99_`i'_aux: di %12.3f  _b[intensity_new]
 	local SE_w99_`i' : di %12.3f  _se[intensity_new]
-	
-	
+
+
 	local t_`i' = abs(_b[intensity_new]/_se[intensity_new])
 	
 	if (`t_`i'' >= 2.576) {
@@ -3022,7 +3022,7 @@ foreach outcome in $hh_health{
 	
 	*weighted
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 1 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 1 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_f99_`i'_aux: di %12.3f  _b[intensity_new]
@@ -3069,7 +3069,7 @@ foreach outcome in $hh_health{
 	
 	*weighted
 	reghdfe `outcome' intensity_new [pweight=exp_factor] if ///
-	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 0 & $sample_marg, ///
+	hh_unique == 1 & `outcome'_out == 0 & hhh_female == 0 & $sample_marg & year != 1998, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 	
 	local OLS_m99_`i'_aux: di %12.3f  _b[intensity_new]
