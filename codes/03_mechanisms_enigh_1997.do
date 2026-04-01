@@ -1677,10 +1677,11 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 
 /*************************************
 3. Set of 4 Tables: This mimics BR, same treatment, period and sample but starting in 1997
-*3.1 Using current intensity continous from Barham and Rowberry 
+*3.1 Using current intensity continous from Barham and Rowberry
 *3.2 1992 to 2002
 *3.3 All (not just marginalized)
 *************************************/
+global sample_br = "(inten_start_year==1998 |inten_start_year==1999) & inrange(year, 1992, 2002)"
 {
 *individual income and labor outcomes
 local i = 1
