@@ -1,1 +1,0 @@
-El 30 de agosto de 2024, se reemplazó la información de esta tabla, debido a que se incorporaron las variables "Estrato de diseño muestral” (EST_DIS) y "Unidad Primaria de Muestreo” (UPM), para facilitar el cálculo de las precisiones estadísticas.
