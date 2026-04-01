@@ -1,0 +1,788 @@
+Encuesta Nacional de Ingresos y Gastos de los Hogares 2004
+Construcción de variables sociodemográficas
+Concepto
+
+Criterios
+
+Total de hogares
+
+Se deben incluir a todos los folios de HOGARES
+
+Total de viviendas
+
+Se deben incluir todos los folios con terminación 0 (cero) en
+HOGARES
+
+Población total
+
+Se deben incluir a todas las personas reportadas en POBLACIÓN
+
+Población objeto
+
+Se deben incluir a todas las personas reportadas en POBLACIÓN
+excluyendo los códigos 400, 420, 430, 440 y 700 de Parentesco
+
+Perceptores
+Perceptores de ingreso corriente monetario
+
+Incluir a todas las personas que reportaron ingresos en cualquiera
+de las claves P001 a P061 de INGRESOS
+
+Perceptores de ingreso de capital
+
+Incluir a todas las personas que reportaron ingresos en cualquiera
+de las claves P062 a P076 de INGRESOS
+
+PEA (Población económicamente activa)
+
+Incluir a todas las personas que reportaron por lo menos un
+empleo en No_trabajo o en Bus_trab tenga código 1 POBLACIÓN
+
+Ocupados
+
+Incluir a las personas que reportaron por lo menos un empleo en
+No_trabajo en POBLACIÓN
+
+Desocupados
+
+Incluir a las personas que en Bus_trab reportaron código 1 de
+POBLACIÓN
+
+PEI (Población económicamente inactiva)
+
+Incluir a las personas que en Bus_trab reportaron códigos del 2 al
+7 de POBLACIÓN
+
+Número de mayores y menores
+
+Los mayores son las personas de 12 años y más.
+Los menores son las personas de menos de 12 años.
+
+Construcción de Actividad económica (rama en POBLACIÓN)
+Descripción
+
+Código
+
+Agricultura, ganadería, aprovechamiento forestal,
+caza y pesca
+
+111, 112, 113, 114, 115
+
+Minería, Electricidad, agua, y suministro de gas por
+ducto al consumidor final
+
+211, 212, 213, 221, 222
+
+Industria manufacturera
+
+311, 312, 313, 314, 315, 316, 321, 322, 323, 324, 325, 326, 327,
+331, 332, 333, 334, 335, 336, 337, 338, 339
+
+Construcción
+
+236, 237, 238
+
+Comercio
+
+400, 431, 432, 433, 434, 435, 436, 437, 461, 462, 463, 464, 465,
+466, 467, 468, 469
+
+Transportes, correos y almacenamiento
+
+481, 482, 483, 484, 485, 486, 487, 488, 491, 492, 493
+
+Servicios
+
+511 a 519, 521 a 524, 531 a 533, 541, 551, 561, 562, 611 a 615,
+621 a 624, 711 a 713, 721, 722, 811 a 814, 931, 932, 980
+
+Servicios profesionales, científicos y técnicos
+
+541
+
+Servicios de apoyo a los negocios, manejo de
+desechos y servicios de remediación
+
+561, 562
+
+Servicios educativos
+
+611, 612, 613, 614, 615
+
+Servicios de salud y asistencia social
+
+621, 622, 623, 624, 625
+
+Servicios de alojamiento temporal y de preparación
+de alimentos y bebidas
+
+721, 722
+
+Otros servicios excepto actividades de gobierno
+
+511 a 519, 521 a 524, 531 a 533, 551, 711 a 713, 811 a 814,
+980
+
+Actividades de gobierno y de organismos
+internacionales
+
+931 y 932
+
+Construcción de variables de Ingreso
+Descripción
+
+Código
+
+Ingreso Total
+
+Σ de las claves P001-P076 Autoconsumo Código 1, Pago en
+Especie Código 2, Regalos Código 3, correspondientes a las
+claves (A001-A243, B001-B007, C001-C024, D001-D024, E001E033, F001-F015, G002-G010, G019-G029, H001-H119, I001I026, J001-J072, K001-K036, L001-L029, M001-M018, N001N016). Estimación del alquiler (G012, G014, G016-G018) y las
+percepciones Monetarias y No Monetarias identificadas con las
+claves Q001-Q016, G001, K037-K044.
+
+Ingreso Corriente Total
+
+Σ de las claves P001-P061 Autoconsumo Código 1, Pago en
+Especie Código 2, Regalos Código 3, correspondientes a las
+claves (A001-A243, B001-B007, C001-C024, D001-D024, E001E033, F001-F015, G002-G010, G019-G029, H001-H119, I001I026, J001-J072, K001-K036, L001-L029, M001-M018, N001N016). Estimación del alquiler G012, G014, G016, G018).
+
+Ingreso Corriente Monetario
+
+Σ de las claves P001-P061
+
+Remuneraciones al Trabajo
+
+Σ de las claves P001-P009, P019-P027, P029-P037
+
+Ingresos Netos de los Negocios Propios
+
+Σ de las claves P010-P016, P038
+
+Ingresos Netos por Cooperativas
+
+Σ de las claves P017, P018
+
+Ingresos netos por renta de la propiedad
+
+Σ de las claves P039-P047, P028
+
+Transferencias
+
+Σ de las claves P048-P060
+
+Otros ingresos
+
+Σ de las claves P061
+
+Ingreso Corriente No Monetario
+
+Σ de las claves con información en Autoconsumo Código 1, Pago
+en Especie Código 2, Regalos Código 3, Correspondientes a las
+claves (A001-A243, B001-B007, C001-C024, D001-D024, E001E033, F001-F015, G002-G010, G019-G029, H001-H119, I001I026, J001-J072, K001-K036, L001-L029, M001-M018, N001N016, Estimación del alquiler G012, G014, G016, G018).
+
+Autoconsumo
+
+Σ de las claves con información en Autoconsumo Código 1,
+Correspondiente a las claves (A001-A243, B001-B007, C001C024, D001-D024, E001-E033, F001-F015, G002-G010, G019G029, H001-H119, I001-I026, J001-J072, K001-K036, L001-L029,
+M001-M018, N001-N016).
+
+Pago en Especie
+
+Σ de las claves con información en Pago en especie Código 2,
+Correspondiente a las claves (A001-A243, B001-B007, C001C024, D001-D024, E001-E033, F001-F015, G002-G010, G019G029, H001-H119, I001-I026, J001-J072, K001-K036, L001-L029,
+M001-M018, N001-N016).
+
+Regalos
+
+Σ de las claves con información en Regalos Código 3,
+Correspondiente a las claves (A001-A243, B001-B007, C001C024, D001-D024, E001-E033, F001-F015, G002-G010, G019G029, H001-H119, I001-I026, J001-J072, K001-K036, L001-L029,
+M001-M018, N001-N016).
+
+Valor estimado del alquiler de la vivienda
+
+Σ de las claves G012, G014, G016 y G018
+
+Percepciones Financieras y de Capital Monetarias
+
+Σ de las claves P062-P076
+
+Percepciones Financieras No Monetarias
+
+Σ de las claves con información en Autoconsumo Código 1, Pago
+en Especie Código 2, Regalos Código 3, correspondientes a las
+claves Q001-Q016, G001, K037-K044.
+
+Construcción de variables de Gasto
+Descripción
+
+Código
+
+Gasto Total
+
+∑ de las claves con información de la A001–A243, B001–B007,
+C001–C024, D001–D024, E001–E034, F001–F015, G002–G010,
+G019-G029, H001–H119, I001–I026, J001–J072, K001–K036,
+L001–L029, M001–M018, N001–N016, Q001-Q016, T901–T914,
+más Autoconsumo Código 1, Pago en especie
+Código 2,
+Regalos Código 3, A001-A243, B001–B007, C001–C024, D001–
+D024, E001–E034, F001–F015, G002–G010, G019-G029, H001–
+H1119, I001–I026, J001–J072, K001–K036, L001–L029, M001–
+M018, N001–N016, Erogaciones Financieras y de Capital:
+Autoconsumo, Pago en Especie, Regalos, claves G001, K037K044, Q001-Q016.
+
+Gasto Corriente Total
+
+∑ de las claves con información de la A001–A243, B001–B007,
+C001–C024, D001–D024, E001–E034, F001–F015, G002–G010,
+G019-G029, H001–H119, I001–I026, J001–J072, K001–K036,
+L001–L029, M001–M018, N001–N016, T901–T914, más
+Autoconsumo Código 1, Pago en especie Código 2, Regalos
+Código 3, A001-A243, B001–B007, C001–C024, D001–D024,
+E001–E034, F001–F015, G002–G010, G019-G029, H001–H119,
+I001–I026, J001–J072, K001–K036, L001–L029, M001–M018,
+N001–N016, Estimación del alquiler claves (G012, G014, G016,
+G018).
+
+Gasto Corriente Monetario
+
+∑ de las claves con información de la A001-A243, B001-B007,
+C001-C024, D001-D024, E001-E033, F001-F015, G002-G010,
+G019-G029, H001-H119, I001-I026, J001-J072, K001-K036,
+L001-L029, M001-M018, N001-N016, T901-T914.
+
+Alimentos y Bebidas consumidas dentro y fuera
+del hogar y tabaco
+
+∑ de claves A001-A243
+
+Alimentos y Bebidas consumidas dentro y fuera
+del hogar
+
+∑ de claves A001-A239
+
+Alimentos y Bebidas consumidas dentro del hogar
+
+∑ de claves A001-A234
+
+Cereales
+
+∑ de claves A001-A022
+
+Carnes, pescados y mariscos
+
+∑ de claves A023-A071
+
+De Res y Ternera
+
+∑ de claves A023-A035
+
+De Puerco
+
+∑ de claves A036-A044
+
+De aves
+
+∑ de claves A055-A060
+
+Otras Carnes
+
+∑ de claves A061-A063
+
+Pescados y mariscos
+
+∑ de claves A064-A071
+
+Leche y sus derivados
+
+∑ de claves A072-A089
+
+Leche
+
+∑ de claves A072-A078
+
+Quesos
+
+∑ de claves A079-A085
+
+Otros derivados de leche
+
+∑ de claves A086-A089
+
+Huevos
+
+∑ de claves A090-A091
+
+Aceites y Grasas
+
+∑ de claves A092-A097
+
+Aceites
+
+∑ de claves A092-A093
+
+Grasas
+
+∑ de claves A094-A097
+
+Tubérculos y verduras, legumbres, leguminosas,
+semillas y frutas
+
+∑ de claves A097-A168
+
+Tubérculos
+
+∑ de claves A098-A103
+
+Verduras y Legumbres Leguminosas y semillas
+
+∑ de claves A104-A143
+
+Verduras y Legumbres Frescas y Procesadas
+
+∑ de claves A104-A138
+
+Verduras y Legumbres Frescas
+
+∑ de claves A104-A129
+
+Verduras y Legumbres Procesadas
+
+∑ de claves A130–A133
+
+Leguminosas
+
+∑ de claves A134–A138
+
+Leguminosas Procesadas
+
+∑ de claves A139-A140
+
+Semillas a Granel y Envasadas
+
+∑ de claves A141-A143
+
+Frutas Frescas y Procesadas
+
+∑ de claves A144-A169
+
+Frutas Frescas
+
+∑ de claves A144-A167
+
+Frutas Procesadas
+
+∑ de claves A168-A169
+
+Azúcares y mieles, café, té y chocolate, especias y
+aderezos, otros alimentos diversos y servicios de
+molino
+∑ de claves A170-A211
+Azúcar o Mieles
+
+∑ de claves A1709-A172
+
+Café, Té, Chocolate
+
+∑ de claves A173-A179
+
+Especies y Aderezos
+
+∑ de claves A180-A191
+
+Otros Alimentos Diversos y Servicio de Molino
+
+∑ de claves A192-A211
+
+Alimentos Preparados para Bebé
+
+∑ de claves A192-A194
+
+Alimentos preparados (para consumir en casa)
+
+∑ de claves A195-A199
+
+Alimentos diversos
+
+∑ de claves A200-A201
+
+Dulces y Postres
+
+∑ de claves A202-A206
+
+Gastos relacionados con la elaboración de
+alimentos
+
+∑ de claves A207-A208
+
+Alimentos en paquete
+
+∑ de claves A209,A243
+
+Alimentos Para Animales Domésticos
+
+∑ de claves A210-A211
+
+Bebidas
+
+∑ de claves A212-A234
+
+Bebidas no Alcohólicas
+
+∑ de claves A212-A218
+
+Bebidas Alcohólicas
+
+∑ de claves A219-A234
+
+Alimentos y Bebidas Consumidas Fuera del Hogar
+
+∑ de claves A235-A239
+
+Tabaco
+
+∑ de claves A240-A242
+
+Vestido y Calzado
+
+∑ de claves H001-H072, H075-H108
+
+Vestido
+
+∑ de claves H001-H072, H075
+
+Prendas de vestir para personas de 0 a 4 años
+
+∑ de claves H001-H016
+
+Prendas de vestir para personas de 5 a 17 años
+
+∑ de claves H017-H044
+
+Prendas de vestir para personas de 18 años y más
+
+∑ de claves H045-H072,H075
+
+Calzado y su reparación
+
+∑ de claves H076-H108
+
+Calzado para personas de 0 a 4 años
+
+∑ de claves H076-H081
+
+Calzado para personas de 5 a 17 años
+
+∑ de claves H082-H093
+
+Calzado para personas de 18 años y más
+
+∑ de claves H094-H105
+
+Mantenimiento, reparación y accesorios de
+calzado
+
+∑ de claves H106-H108
+
+Vivienda y Servicios de Conservación,
+Electricidad, Combustibles
+
+∑ de claves G002-G010, G019-G029
+
+Alquileres Brutos
+
+∑ de claves G002,G003, G005,G006
+
+Impuesto Predial y Cuotas por Servicios de
+Conservación
+
+∑ de claves G010, G019-G022
+
+Cuotas por pago por la vivienda en otra situación
+
+∑ de claves G004
+
+Agua
+
+∑ de claves G007
+
+Electricidad y Combustibles
+
+∑ de claves G008, G009, G023-G029
+
+Energía Eléctrica
+
+∑ de claves G008
+
+Gas
+
+∑ de claves G009
+
+Cuotas por servicio de conservación
+
+∑ de claves G019-G022
+
+Combustibles
+
+∑ de claves G023-G029
+
+Artículos y Servicios para la Limpieza, Cuidados
+de la Casa, Enseres Domésticos y Muebles,
+Cristalería, Utensilios Domésticos y Blancos
+
+∑ de claves C001-C024, I001-I026, K001-K036
+
+Artículos y Servicios para la Limpieza y Cuidados
+de la Casa
+
+∑ de claves C001-C024
+
+Artículos de Limpieza y Cuidados de la Casa
+
+∑ de claves C001-C019
+
+Servicios para el hogar
+
+∑ de claves C020-C024
+
+Cristalería, blancos y utensilios domésticos
+
+∑ de claves I001-I026
+
+Cristalería, vajillas y utensilios domésticos
+
+∑ de claves I001-I013
+
+Blancos, mantelería y artículos de mercería
+
+∑ de claves I014-I026
+
+Enseres domésticos
+
+∑ de claves K001-K036
+
+Cuidados de la Salud
+
+∑ de claves J001-J072
+
+Servicios médicos
+
+∑ de claves J016 - J019
+
+Medicamentos recetados
+
+∑ de claves J020-J035
+
+Atención hospitalaria (no incluye parto)
+
+∑ de claves J039-J043
+
+Servicios médicos y medicamentos durante el
+embarazo
+
+∑ de claves J007-J015
+
+Servicios médicos durante el parto
+
+∑ de claves J001-J006
+
+Medicamentos sin receta y material de curación
+
+∑ de claves J044-J061
+
+Medicina alternativa
+
+∑ de claves J036-J038, J062-J064
+
+Aparatos ortopédicos y terapéuticos
+
+∑ de claves J065-J069
+
+Seguro médico
+
+∑ de claves J070-J072
+
+Transporte, Adquisición, Mantenimiento y
+Accesorios para Vehículos, Comunicaciones y
+servicios para vehículos
+
+∑ de claves B001-B007, M001-M018, F001-F015
+
+Transporte, Adquisición, Mantenimiento y
+Accesorios para Vehículos
+
+∑ de claves B001-B007, M001-M018, F010-F015
+
+Transporte Público
+
+∑ de claves B001-B007
+
+Transporte
+
+∑ de claves M001-M018
+
+Servicios de Transporte
+
+∑ de claves M001-M006
+
+Adquisición de vehículos de uso particular
+
+∑ de claves M007-M011
+
+Refacciones, partes, accesorios y mantenimiento
+de vehículos
+
+∑ de claves M012-M018
+
+Comunicaciones y servicios para vehículos
+
+∑ de claves F001-F015
+
+Comunicaciones
+
+∑ de claves F001-F009
+
+Combustibles, mantenimiento y servicio para
+vehículos
+
+∑ de claves F010-F015
+
+Servicios y artículos de educación y
+esparcimiento, paquetes turísticos y para fiestas,
+hospedaje y alojamiento
+
+∑ de claves E001-E033, H073, H074, L001-L029, N003-N005
+
+Artículos y servicios de educación y servicios de
+esparcimiento
+
+∑ de claves E001-E033, H073, H074
+
+Servicios de educación
+
+∑ de claves E001-E012
+
+Transporte escolar
+
+∑ de claves E013
+
+Artículos educativos
+
+∑ de claves E014-E019, H073,H074
+
+Artículos de cultura y recreación
+
+∑ de claves E020-E024
+
+Servicios de recreación
+
+∑ de claves E025-E033
+
+Artículos de Esparcimiento
+
+∑ de claves L001-L029
+
+Artículos y equipo audiovisual
+
+∑ de claves L001-L016
+
+Equipo fotográfico y de video
+
+∑ de claves L017-L022
+
+Otros artículos de esparcimiento
+
+∑ de claves L023-L029
+
+Otros gastos de esparcimiento
+
+∑ de claves N003-N005
+
+Cuidados personales: Accesorios y efectos
+personales: otros gastos y transferencias
+
+∑ de claves D001-D024, H109-H119, N001,N002, N006-N016,
+T901-T914
+
+Cuidados personales
+
+∑ de claves D001-D024, H118
+
+Artículos para el cuidado personal
+
+∑ de claves D001-D019, H118
+
+Servicio para el cuidado personal
+
+∑ de claves D020-D024
+
+Accesorios y efectos personales
+
+∑ de claves H109-H117, H119
+
+Otros gastos diversos y transferencias
+
+∑ de claves N001, N002, N006-N016, T901-T914
+
+Gastos diversos
+
+∑ de claves N001, N002, N006-N010
+
+Transferencias
+
+∑ de claves N011-N016, T901-T914
+
+Gasto corriente no monetario
+
+∑ de claves con información en Autoconsumo, Pago en especie,
+Regalos, A001-A243, B001-B007, C001-C024, D001-D024, E001E033, F001-F015, G002-G010, G019-G029, H001-H119, I001I026, J001-J072, K001-K036, L001-L029, M001-M018, N001N016. Estimación del alquiler de la vivienda (G012, G014, G016,
+G018.
+
+Autoconsumo
+
+∑ de claves con información en A001-A243, B001-B007, C001C024, D001-D024, E001-E033, F001-F015, G002-G010, G019G029, H001-H119 I001-I026, J001-J072, K001-K036, L001L029,M001-M018, N001-N016 que tengan código 1.
+
+Pago en especie
+
+∑ de claves con información en A001-A243, B001-B007, C001C024, D001-D024, E001-E033, F001-F015, G002-G010, G019G029, H001-H119 I001-I026, J001-J072, K001-K036, L001L029,M001-M018, N001-N016 que tengan código 2.
+
+Regalos
+
+∑ de claves con información en A001-A243, B001-B007, C001C024, D001-D024, E001-E033, F001-F015, G002-G010, G019G029, H001-H119 I001-I026, J001-J072, K001-K036, L001L029,M001-M018, N001-N016 que tengan código 3.
+
+Valor estimado del alquiler
+
+∑ de claves G012, G014, G016, G018.
+
+Erogaciones financieras y de capital totales
+
+∑ de claves G001, K037-K044, Q001-Q016, T915, Autoconsumo,
+Pago en especie, Regalos
+
+Erogaciones financieras y de capital monetario
+
+∑ de claves G001, K037-K044, Q001-Q016, T915
+
+Erogaciones financieras y de capital no
+monetarias
+
+∑ de claves con información en Autoconsumo, Pago en especie,
+Regalos, Q001-Q016, K034-K037, G001.
+
+Autoconsumo
+
+∑ de claves con información en Q001-Q016, K037-K044 G001
+que tengan código 1.
+
+Pago en especie
+
+∑ de claves con información en Q001-Q016, K037-K044 G001
+que tengan código 2.
+
+Regalos
+
+∑ de claves con información en Q001-Q016, K037-K044 G001
+que tengan código 3.
+
+

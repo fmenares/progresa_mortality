@@ -1,0 +1,1986 @@
+Encuesta Nacional de Ingresos y Gastos de los Hogares
+1994 Descripción de la Base de Datos
+
+La Base de datos de ENIGH está conformada por seis tablas que contienen toda la información
+captada en el levantamiento. A continuación se detalla el nombre de estas tablas, el número de
+registros y su contenido:
+
+Número de
+registros
+
+Contenido
+
+HOGARES.DBF
+
+12 815
+
+Características de los hogares, de las viviendas que
+habitan y el factor de expansión.
+
+POBLACION.DBF
+
+60 353
+
+Características sociodemográficas y ocupacionales
+de los miembros de los hogares.
+
+INGRESOS.DBF
+
+34 374
+
+Ingresos y percepciones de capital de cada uno de
+los miembros de los hogares.
+
+GASTOS.DBF
+
+697 327
+
+Gastos y erogaciones de capital realizados por el
+hogar (Cuestionario y cuadernillo).
+
+EROGA.DBF
+
+7 470
+
+Erogaciones de capital realizados por el hogar.
+
+NOMON.DBF
+
+93 410
+
+Gastos o ingresos realizados por hogar y algunos
+por persona (Cuestionario y cuadernillo).
+
+Adicionalmente, se incluye un concentrado por hogar que contiene las principales variables de la
+encuesta. Este concentrado está en la tabla denominada CONCEN.DBF, que contiene los mismos
+12 815 registros de la de hogar.
+Para obtener cualquier tipo de información se requiere expandirla; esto es, multiplicar el valor de la
+variable en estudio por el factor de expansión, por lo que generalmente es necesario “pegar” el factor
+a cualquiera de las otras tablas.
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+Nombre de la tabla
+
+Descripción de la Base de Datos ENIGH 1994
+Estructura de la tabla: HOGARES.DBF
+
+Nombre del Campo
+
+1
+
+FOLIO
+
+Tipo
+
+Longitud
+
+Caracter
+
+11
+
+Dec.
+
+Descripción
+
+Identificador único del hogar
+4 posiciones para año
+2 posiciones para entidad
+1 posición para decena
+3 posiciones para el consecutivo
+Seleccionadas 001-799
+Omitidas
+
+801-899
+
+1 posición para Identificación del hogar
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+Principal
+Adicional
+2
+
+ESTRATO
+
+Caracter
+
+1
+
+Estrato
+
+3
+
+CLASE_HOG
+
+Caracter
+
+1
+
+Clase de Hogar
+
+0
+1a9
+
+(Ver clasificación)
+4
+
+TAM_HOG
+
+Numérico
+
+2
+
+Tamaño del Hogar
+
+5
+
+RES_HOG
+
+Numérico
+
+2
+
+Total de Residentes
+
+6
+
+TOT_HOM
+
+Numérico
+
+2
+
+Total de Hombres
+
+7
+
+TOT_MUJ
+
+Numérico
+
+2
+
+Total de Mujeres
+
+8
+
+HNC
+
+Caracter
+
+3
+
+Huéspedes en la vivienda
+
+9
+
+SNC
+
+Caracter
+
+3
+
+Servidores domésticos en la vivienda
+
+10
+
+TIPO_VIV
+
+Caracter
+
+1
+
+Tipo de vivienda
+(Ver clasificación)
+
+11
+
+TENENCIA
+
+Caracter
+
+1
+
+Tenencia de la vivienda
+(Ver clasificación)
+
+12
+
+NUM_CUA
+
+Numérico
+
+2
+
+¿Cuántos cuartos tiene vivienda?
+
+13
+
+CUA_DOR
+
+Numérico
+
+2
+
+¿Cuántos cuartos usan dormir?
+
+14
+
+CUA_HOGD
+
+Numérico
+
+2
+
+¿Cuántos cuartos usa este hogar para dormir?
+
+15
+
+CUA_COC
+
+Caracter
+
+1
+
+¿Tiene cuarto de cocina?
+(1Si, 2 No)
+
+16
+
+COC_DUER
+
+Caracter
+
+1
+
+¿En cocina también duermen?
+(1Si, 2 No)
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Nombre del Campo
+17
+
+BANO5
+
+Tipo
+
+Longitud
+
+Caracter
+
+1
+
+Dec.
+
+Descripción
+¿Tiene cuarto de baño?
+(1Si, 2 No)
+
+18
+
+BANO51
+
+Caracter
+
+1
+
+¿Tiene excusado agua corriente?
+(1Si, 2 No)
+
+19
+
+MUROS
+
+Caracter
+
+1
+
+Material predominante en muros
+(Ver clasificación)
+
+20
+
+TECHOS
+
+Caracter
+
+1
+
+Material predominante en techos
+(Ver clasificación)
+
+21
+
+PISOS
+
+Caracter
+
+1
+
+Material predominante en pisos
+(Ver clasificación)
+
+22
+
+AGUA
+
+Caracter
+
+1
+
+Disponibilidad de agua
+(Ver clasificación)
+
+23
+
+DRENAJE10
+
+Caracter
+
+1
+
+Disponibilidad de drenaje
+
+24
+
+DRENAJE101
+
+Caracter
+
+1
+
+¿El drenaje está conectado a:
+(Ver clasificación)
+
+25
+
+LUZ11
+
+Caracter
+
+1
+
+Disponibilidad de luz eléctrica
+(1Si, 2 No)
+
+26
+
+LUZ111
+
+Caracter
+
+1
+
+Fuente de la luz eléctrica:
+(Ver clasificación)
+
+27
+
+TELEFONO
+
+Caracter
+
+1
+
+Disponibilidad de teléfono
+(1Si, 2 No)
+
+28
+
+VEHICULOS
+
+Caracter
+
+6
+
+Vehículos propios del hogar:
+(Ver cuestionario, capítulo 2
+
+29
+
+APARATOS
+
+Caracter
+
+24
+
+Aparatos domésticos del hogar
+(Ver cuestionario, capítulo 2
+
+30
+
+FACTOR
+
+Numérico
+
+11
+
+2
+
+Factor de expansión
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+(1Si, 2 No)
+
+Estructura de la tabla: POBLACION.DBF
+Nombre del Campo
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+1
+
+FOLIO
+
+Caracter
+
+11
+
+Identificador único del hogar
+
+2
+
+NUM_REN
+
+Caracter
+
+2
+
+Número de renglón
+
+3
+
+PARENTESCO
+
+Caracter
+
+1
+
+Parentesco
+(Ver clasificación)
+
+4
+
+SEXO
+
+Caracter
+
+1
+
+Sexo
+(Ver clasificación)
+
+5
+
+EDAD
+
+Numérico
+
+2
+
+Edad
+
+6
+
+PER_ING
+
+Caracter
+
+1
+
+Percepción de ingresos durante
+últimos seis meses
+(1Si, 2 No)
+
+7
+
+LEER_ESC
+
+Caracter
+
+1
+
+Sabe leer y escribir
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+(1Si, 2 No)
+8
+
+ASIST_ESC_F
+
+Caracter
+
+1
+
+Asistencia a centro educativo
+(1Si, 2 No)
+
+9
+
+TIPO_ESC
+
+Caracter
+
+1
+
+Tipo de escuela a que asiste:
+(Ver clasificación)
+
+10
+
+ED_FORMAL
+
+Caracter
+
+1
+
+Educación Formal
+(Ver clasificación)
+
+11
+
+ED_TECNICA
+
+Caracter
+
+1
+
+Educación Informal
+(Ver clasificación)
+
+12
+
+TRABAJO
+
+Caracter
+
+3
+
+¿Trabajó?
+(1Si, 2 No)
+
+13
+
+NO_TRABAJO
+
+Caracter
+
+2
+
+Causa de no trabajo
+(Ver clasificación)
+
+14
+
+N_EMPLEOS
+
+Numérico
+
+1
+
+Número de empleos
+
+15
+
+OCUPACION
+
+Caracter
+
+4
+
+Ocupación
+
+16
+
+OC_DONDE
+
+Caracter
+
+1
+
+Donde realizó la Ocupación
+(Ver clasificación)
+
+17
+
+RAMA
+
+Caracter
+
+4
+
+Rama
+
+18
+
+RA_DONDE
+
+Caracter
+
+1
+
+Donde la Rama
+(Ver clasificación)
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Nombre del Campo
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+19
+
+NOM_EMPR
+
+Caracter
+
+1
+
+Tipo de empresa
+
+20
+
+POSICION
+
+Caracter
+
+1
+
+Posición en el empleo
+
+(Ver clasificación)
+(Ver clasificación)
+21
+
+HRS_SEM
+
+Caracter
+
+2
+
+Horas trabajadas
+
+22
+
+DIA_PAGO
+
+Caracter
+
+2
+
+Días de pago
+(Ver clasificación)
+
+PRESTACIO1
+
+Caracter
+
+6
+
+Prestaciones Sociales
+(1 posición para cada una)
+(Ver clasificación)
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+23
+
+Nombre del Campo
+24
+
+CONTRATO1
+
+Tipo
+
+Longitud
+
+Caracter
+
+1
+
+Dec.
+
+Descripción
+Condición de contratación
+(Ver clasificación)
+
+25
+
+SINDICATO1
+
+Caracter
+
+1
+
+Afiliación a un sindicato
+(1Si, 2 No)
+
+26
+
+OCUP_SEC
+
+Caracter
+
+4
+
+2° empleo Ocupación
+
+27
+
+OC_DONDE2
+
+Caracter
+
+1
+
+2° empleo Donde realizó la
+ocupación
+(Ver clasificación)
+
+28
+
+RAMA_SEC
+
+Caracter
+
+4
+
+2° empleo Rama
+
+29
+
+RA_DONDE2
+
+Caracter
+
+10
+
+2° empleo Donde la rama
+
+30
+
+NOM_EMPR2
+
+Caracter
+
+1
+
+2° empleo Tipo de empresa
+
+(Ver clasificación)
+(Ver clasificación)
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+31
+
+POSICI_SEC
+
+Caracter
+
+1
+
+2° empleo Posición
+(Ver clasificación)
+
+32
+
+HRS_SEC
+
+Caracter
+
+2
+
+2° empleo Horas trabajadas
+
+33
+
+DIA_PAGO2
+
+Caracter
+
+2
+
+2° empleo Días de pago
+(Ver clasificación)
+
+34
+
+PRESTACIO2
+
+Caracter
+
+6
+
+2° empleo Prestaciones Sociales
+(Ver clasificación)
+
+35
+
+CONTRATO2
+
+Caracter
+
+1
+
+2° empleo Condición contratación
+(Ver clasificación)
+
+36
+
+SINDICATO2
+
+Caracter
+
+1
+
+2° empleo Afiliación a sindicato
+(1Si, 2 No)
+
+37
+
+TOT_HRS
+
+Caracter
+
+3
+
+Total de Horas empleo principal
+y secundario
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Estructura de la tabla: GASTOS.DBF
+
+Nombre del Campo
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+1
+
+FOLIO
+
+Caracter
+
+11
+
+Identificador único del hogar
+
+2
+
+CLAVE
+
+Caracter
+
+4
+
+Clave del producto
+(Ver clasificación)
+
+3
+
+LUG_COM
+
+Caracter
+
+2
+
+Lugar de compra
+
+4
+
+DIA
+
+Caracter
+
+1
+
+Día de levantamiento
+
+5
+
+NUM_REN
+
+Caracter
+
+2
+
+Número de renglón
+
+6
+
+CANTIDAD
+
+Numérico
+
+8
+
+2
+
+Cantidad en Kg. o Lt.
+
+7
+
+PRECIO
+
+Numérico
+
+8
+
+2
+
+Precio en Kg. o Lt.
+
+10
+
+GASTO
+
+Numérico
+
+8
+
+2
+
+Gasto efectuado
+
+11
+
+PAGO_MP
+
+Numérico
+
+8
+
+2
+
+Gasto del mes pasado
+
+12
+
+GAS_TRI
+
+Numérico
+
+8
+
+2
+
+Gasto trimestral normalizado
+
+Notas:
+•
+
+En las claves que comienzan con H a N, los campos de Cantidad, Precio y Gasto
+traen información de Pago en enganche y abonos, Pago de contado y Gasto
+trimestral o semestral respectivamente.
+
+•
+
+En el campo Día en la mayoría de las claves trae en la primera posición un 0 (cero)
+que no significa nada y en la segunda el día de referencia. En algunas de las claves
+A205 a A208 el campo Día trae en la primera posición el día de referencia y en la
+segunda un código de donde es otorgado el servicio (2 trabajo, 3 escuela).
+
+•
+
+En las claves que comienzan con una J traen tres posibles lugares de compra los
+cuales vienen registrados en LUG_COM, DIA y NUM_REN.
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+(Ver clasificación)
+
+Estructura de la tabla: INGRESOS.DBF
+
+Nombre del Campo
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+1
+
+FOLIO
+
+Caracter
+
+11
+
+Identificador único del hogar
+
+2
+
+NUM_REN
+
+Caracter
+
+2
+
+Número de renglón del miembro
+del hogar
+
+3
+
+EMPLEO
+
+Caracter
+
+1
+
+Empleo que provienen ingresos
+0 Causas diferentes a trabajo
+1 Empleo principal
+2-4 Del 2° al 4° empleo
+
+4
+
+MESES
+
+Caracter
+
+12
+
+Meses de referencia
+(2 posiciones por mes)
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+5
+
+CLAVE
+
+Caracter
+
+4
+
+Clave de ingreso
+(Ver clasificación)
+
+6
+
+ING1
+
+Numérico
+
+9
+
+2
+
+Ingreso mes pasado
+
+7
+
+ING_TRI
+
+Numérico
+
+9
+
+2
+
+Ingreso trimestral normalizado
+
+8
+
+MES2
+
+Numérico
+
+9
+
+2
+
+Ingreso del 1er. Mes anterior al mes pasado
+
+9
+
+MES3
+
+Numérico
+
+9
+
+2
+
+Ingreso del 2°. Mes anterior al mes pasado
+
+10
+
+MES4
+
+Numérico
+
+9
+
+2
+
+Ingreso del 3er. Mes anterior al mes pasado
+
+11
+
+MES5
+
+Numérico
+
+9
+
+2
+
+Ingreso del 4°. Mes anterior al mes pasado
+
+12
+
+MES6
+
+Numérico
+
+9
+
+2
+
+Ingreso del 5°. Mes anterior al mes pasado
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Estructura de la tabla: NOMON.DBF
+
+Nombre del Campo
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+1
+
+FOLIO
+
+Caracter
+
+11
+
+Identificador único del hogar
+
+2
+
+TIPO_GAS
+
+Caracter
+
+1
+
+Tipo de Gasto
+0 Estimación alquiler vivienda
+1 Autoconsumo
+2 Pago en especie
+3 Regalos
+
+3
+
+NUM_REN
+
+Caracter
+
+2
+
+Número de renglón
+
+4
+
+DIA
+
+Caracter
+
+1
+
+Día de consumo
+
+5
+
+LUG_COM
+
+Caracter
+
+2
+
+Lugar de compra
+
+6
+
+CLAVE
+
+Caracter
+
+4
+
+Clave del producto
+(Ver clasificación)
+
+7
+
+CANTIDAD
+
+Numérico
+
+6
+
+2
+
+Cantidad
+
+8
+
+PRECIO
+
+Numérico
+
+6
+
+2
+
+Precio
+
+9
+
+GASTO
+
+Numérico
+
+8
+
+2
+
+Gasto estimado
+
+10
+
+GAS_TRI
+
+Numérico
+
+8
+
+2
+
+Gasto trimestral normalizado
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+(Ver clasificación)
+
+Estructura de la tabla: EROGA.DBF
+Nombre del Campo
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+1
+
+FOLIO
+
+Caracter
+
+11
+
+Identificador único del hogar
+
+2
+
+CLAVE
+
+Caracter
+
+4
+
+Clave del producto
+(Ver clasificación)
+
+3
+
+ERO_TRI
+
+Numérico
+
+9
+
+2
+
+Gasto trimestral normalizado
+(Erogación)
+
+Estructura de la tabla: CONCEN.DBF
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+Nombre de campo
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+1
+
+FOLIO
+
+Caracter
+
+11
+
+0
+
+Identificador del hogar
+
+2
+
+UBICA_GEO
+
+Caracter
+
+5
+
+0
+
+Ubicación geográfica
+2 posiciones para entidad
+3 posiciones para municipio
+
+3
+
+HOG
+
+Numérico
+
+11
+
+2
+
+Factor de expansión
+
+4
+
+ESTRATO
+
+Caracter
+
+1
+
+0
+
+Estrato (tamaño de localidad)
+
+5
+
+INGMON
+
+Numérico
+
+11
+
+2
+
+Ingreso corriente monetario
+
+6
+
+PERMON
+
+Numérico
+
+11
+
+2
+
+Percepciones financieras y de capital
+monetarias
+
+7
+
+GASNOM
+
+Numérico
+
+11
+
+2
+
+Ingreso corriente no monetario
+
+8
+
+ERONOM
+
+Numérico
+
+11
+
+2
+
+Percepciones financieras y de capital no
+monetarias.
+
+9
+
+INGCOR
+
+Numérico
+
+11
+
+2
+
+Ingreso corriente total
+
+10
+
+GASMON
+
+Numérico
+
+11
+
+2
+
+Gasto corriente monetario
+
+11
+
+GASCOR
+
+Numérico
+
+11
+
+2
+
+Gasto corriente total
+
+12
+
+TAM_HOG
+
+Numérico
+
+2
+
+0
+
+Población total
+
+13
+
+HOMBRES
+
+Numérico
+
+2
+
+0
+
+Población total hombres
+
+14
+
+MUJERES
+
+Numérico
+
+2
+
+0
+
+Población total mujeres
+
+15
+
+TOT_RESI
+
+Numérico
+
+2
+
+0
+
+Miembros del hogar
+
+16
+
+INGTOT
+
+Numérico
+
+11
+
+2
+
+Ingreso total
+
+17
+
+PERTOT
+
+Numérico
+
+11
+
+2
+
+Percepciones financieras y de capital totales
+
+18
+
+EROMON
+
+Numérico
+
+11
+
+2
+
+Erogaciones financieras y de capital
+monetarias
+
+19
+
+GASTOT
+
+Numérico
+
+11
+
+2
+
+Gasto total
+
+20
+
+EROTOT
+
+Numérico
+
+11
+
+2
+
+Erogaciones financieras y de capital totales
+
+21
+
+EDAD
+
+Numérico
+
+2
+
+0
+
+Edad del jefe del hogar
+
+22
+
+AUTO
+
+Numérico
+
+10
+
+2
+
+Autoconsumo
+
+23
+
+PAGO
+
+Numérico
+
+10
+
+2
+
+Pago en especie
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+Tipo
+
+Longitud
+
+Dec.
+
+Descripción
+
+24
+
+REGA
+
+Numérico
+
+10
+
+2
+
+Regalos
+
+25
+
+ESTI
+
+Numérico
+
+10
+
+2
+
+Estimación del alquiler de la vivienda
+
+26
+
+MAYORES
+
+Numérico
+
+2
+
+0
+
+Miembros del hogar mayores
+
+27
+
+MENORES
+
+Numérico
+
+2
+
+0
+
+Miembros del hogar menores
+
+28
+
+P12_64
+
+Numérico
+
+2
+
+0
+
+Miembros del hogar de 12 a 64 años
+
+29
+
+P65MAS
+
+Numérico
+
+2
+
+0
+
+Miembros del hogar de 65 años y más
+
+30
+
+N_OCUP
+
+Numérico
+
+2
+
+0
+
+Número de ocupados
+
+31
+
+PERING
+
+Numérico
+
+2
+
+0
+
+Perceptores de ingreso corriente monetario
+
+32
+
+PEROCU
+
+Numérico
+
+2
+
+0
+
+Perceptores de ingreso corriente monetario
+ocupados
+
+33
+
+ALIMENTOS
+
+Numérico
+
+10
+
+2
+
+Alimentos y bebidas consumidas dentro y
+fuera del hogar, y tabaco
+
+34
+
+VESTIDO
+
+Numérico
+
+10
+
+2
+
+Vestido y calzado
+
+35
+
+VIVIENDA
+
+Numérico
+
+10
+
+2
+
+Vivienda, servicios de conservación, energía
+eléctrica y combustibles
+
+36
+
+LIMPIEZA
+
+Numérico
+
+10
+
+2
+
+Artículos y servicios para la limpieza y
+cuidados de la casa, enseres domésticos,
+muebles, cristalería, utensilios domésticos y
+blancos
+
+37
+
+SALUD
+
+Numérico
+
+10
+
+2
+
+Cuidados médicos y conservación de la salud
+
+38
+
+TRANSPORTE
+
+Numérico
+
+10
+
+2
+
+Transporte, adquisición, mantenimiento y
+accesorios para vehículos y comunicaciones
+
+39
+
+EDUCACION
+
+Numérico
+
+10
+
+2
+
+Servicios y artículos de educación y
+esparcimiento; paquetes turísticos y para
+fiestas, hospedaje y alojamiento
+
+40
+
+PERSONAL
+
+Numérico
+
+10
+
+2
+
+Artículos y servicios para el cuidado personal,
+accesorios y efectos personales, otros gastos
+diversos y transferencias
+
+41
+
+TRABAJO
+
+Numérico
+
+10
+
+2
+
+Remuneraciones al trabajo asalariado
+
+42
+
+NEGOCIO
+
+Numérico
+
+10
+
+2
+
+Renta empresarial
+
+43
+
+RENTAS
+
+Numérico
+
+10
+
+2
+
+Renta de la propiedad
+
+44
+
+TRANSFER
+
+Numérico
+
+10
+
+2
+
+Transferencias
+
+45
+
+OTROS
+
+Numérico
+
+10
+
+2
+
+Otros ingresos
+
+46
+
+BEBIDAS
+
+Numérico
+
+10
+
+2
+
+Bebidas alcohólicas y no alcohólicas
+
+47
+
+SMG
+
+Numérico
+
+7
+
+2
+
+Salarios mínimos generales
+
+48
+
+EST_DIS
+
+Caracter
+
+3
+
+0
+
+Estrato de diseño muestral
+
+49
+
+UPM
+
+Caracter
+
+5
+
+0
+
+Unidad Primaria de Muestreo
+
+Fecha de última actualización: 30 de agosto de 2024.
+
+INEGI. Encuesta Nacional de Ingresos y Gastos de los Hogares 1994. Descripción de la base de datos. 2024.
+
+Nombre de campo
+
+

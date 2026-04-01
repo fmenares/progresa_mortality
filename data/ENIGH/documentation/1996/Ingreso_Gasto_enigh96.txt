@@ -1,0 +1,381 @@
+Construcción de rubros de Ingreso y Gasto ENIGH 1996
+Ingreso
+
+Claves que se incluyen en
+cada rubro
+
+Ingreso total
+
+Sumatoria del ingreso corriente
+total y las percepciones financieras
+y de capital total
+
+Ingreso corriente total
+
+Sumatoria del ingreso corriente
+monetario e ingreso corriente no
+monetario
+
+Ingreso corriente monetario
+Remuneraciones al trabajo
+Negocios propios
+Cooperativas de producción
+Renta de la propiedad
+Transferencias
+Otros ingresos
+Ingreso corriente no monetario
+
+Autoconsumo
+Pago en especie
+Regalos
+Valor estimado del alquiler de la vivienda
+Percepciones financieras y de capital total
+
+P001 a P005
+P006 a P013
+P014, P015
+P016 a P022
+P023 a P029
+P030 a P031
+Claves que comienzan con la letra
+A a N excepto G002, K031 a K034
+de no monetario
+1 en tipo de gasto
+2 en tipo de gasto
+3 en tipo de gasto
+0 en tipo de gasto
+Sumatoria de las percepciones
+financieras y de capital monetarias
+y no monetarias
+
+Percepciones financieras monetarias
+
+P032 a P043
+
+Percepciones financieras no monetarias
+a Q015 de no monetario
+
+Claves G002, K031 a K034, Q001
+
+Autoconsumo
+Pago en especie
+Regalos
+
+1 en tipo de gasto
+2 en tipo de gasto
+3 en tipo de gasto
+
+Gasto
+
+Claves que se incluyen en
+cada rubro
+
+Gasto total
+
+Sumatoria del gasto corriente total
+y erogaciones de capital total
+
+Gasto corriente total
+
+Sumatoria de gasto corriente
+monetario y gasto corriente no
+monetario
+
+Gasto corriente monetario
+Alimentos consumidos dentro del Hogar
+Cereales
+
+A001 a A021
+
+Carnes
+De res y ternera
+De puerco
+Aves
+Otras carnes
+Carnes procesadas
+
+A022 a A028
+A029 a A032
+A033 a A037
+A038 a A040
+A041 a A048
+
+Pescados y mariscos
+Pescados y mariscos frescos
+Pescados y mariscos procesados
+
+A049 a A055
+A056 a A059
+
+Leche y derivados
+Leche
+Quesos
+Otros derivados de la leche
+
+A060 a A066
+A067 a A074
+A075 a A077
+
+Huevos
+
+A078 y A079
+
+Aceites y grasas
+
+A080 a A084
+
+Tubérculos
+
+A085 a A088
+
+Verduras, legumbres, leguminosas y semillas
+Verduras y legumbres
+Verduras y legumbres frescas
+Verduras y legumbres procesadas
+
+A089 a A112
+A113 a A116
+
+Leguminosas
+Leguminosas secas
+Leguminosas procesadas
+
+A117 a A119
+A120 y A121
+
+Semillas
+Frutas
+Frutas frescas
+Frutas procesadas
+
+A122 a A123
+
+A124 a A143
+A144 a A146
+
+Azúcar o mieles
+
+A147 a A149
+
+Café, té o chocolate
+
+A150 a A156
+
+Especies y aderezos
+
+A157 a A167
+
+Otros alimentos
+Alimentos preparados para bebe
+Alimentos preparados (para comer en casa)
+Alimentos diversos (chapulines, gusanos, etc.)
+Dulces y postres
+Servicio de molino
+Alimentos para animales domésticos
+
+A168 y A170
+A171 a A176
+A177
+A178 a A184
+A185 y A186
+A187 y A188
+
+Bebidas
+Bebidas no alcohólicas
+Bebidas alcohólicas
+
+A189 a A194
+A195 a A204
+
+Alimentos y bebidas consumidas fuera del hogar
+
+A205 a A208
+
+Tabaco
+
+A209 a A211
+
+Vestido y calzado
+Vestido
+Para personas de 3 años y más
+
+Para menores de 3 años
+Calzado y su reparación
+Vivienda y servicios de conservación
+
+H001 a H033 Se excluye H029 y
+H030
+H034 a H045
+H046 a H055
+
+Vivienda
+Vivienda propia
+Vivienda alquilada
+Vivienda recibida como prestación
+Vivienda prestada
+Alquiler de terreno uso exclusivo de la vivienda
+Otra situación de la vivienda
+Hogares adicionales
+
+G003 a G004
+G005 a G006
+G008 a G009
+G011 a G012
+G013 a G014
+G016 a G018
+G019 a G021
+
+Servicios de conservación
+Cuotas por servicios de conservación
+Electricidad y combustibles
+
+G022 a G025
+G026 a G033
+
+Muebles, accesorios, enseres y cuidados de la casa
+Limpieza y cuidados de la casa
+Artículos de limpieza y cuidados de la casa
+Servicios para el hogar
+
+C001 a C019
+C020 a C024
+
+Cristalería, blancos y utensilios domésticos
+Cristalería, vajillas y utensilios domésticos
+Blancos, mantelería y otros accesorios
+
+I001 a I013
+I014 a I026
+
+Muebles, accesorios y enseres domésticos
+Enseres domésticos
+Muebles y accesorios
+Cuidados médicos y conservación de la salud
+Atención primaria o ambulatoria
+Atención hospitalaria (no parto)
+Servicios médicos y medicamentos en el embarazo
+Servicios médicos durante el parto
+Medicamentos sin receta
+Aparatos ortopédicos y terapéuticos
+Seguro médico
+
+K001 a K020
+K021 a K030
+
+J001 a J009
+J010 a J015
+J016 a J024
+J025 a J032
+J033 a J038
+J039 a J043
+J044 a J045
+Se excluyen J's con cero.
+
+Transporte y comunicaciones
+Transporte
+Transporte público
+Servicios de transporte
+Adquisición de vehículos de uso particular
+Accesorios y mantenimiento de vehículos
+Combustible, mantenimiento y servicios
+
+B001 a B007
+M001 a M006
+M007 a M011
+M012 a M018
+F006 a F010
+
+Comunicaciones
+
+F001 a F005
+
+Servicios de educación y esparcimiento
+Educación, cultura y recreación
+Servicios de educación
+Transporte escolar
+Artículos de cultura y recreación
+Artículos educativos
+Servicios de recreación
+
+E001 a E012, E035
+E013
+E014 a E020, H029, H030
+E021 a E025
+E026 a E034
+
+Artículos de esparcimiento
+Artículos y equipo audiovisual
+Equipo fotográfico y de video
+Otros artículos de esparcimiento
+
+L001 a L015
+L016 a L020
+L021 a L027
+
+Paquetes para fiesta
+
+N003
+
+Paquetes turísticos
+
+N004
+
+Hospedaje y alojamiento
+
+N005
+
+Cuidados personales
+Artículos para el cuidado personal
+Servicio para el cuidado personal
+Accesorios y efectos personales
+Gastos diversos
+Transferencias
+Otras transferencias
+Gasto corriente no monetario
+
+Autoconsumo
+
+D001 a D017, H064
+D018 a D022
+H056 a H065 (excepto H064)
+N001 a N010 (excepto N003 a N005)
+N011 a N016
+T101 a T103, T902 a T904, T906
+Claves que comienzan con la letra
+A a la N excepto G002,
+K031 a K034
+1 en tipo de gasto
+
+Pago en especie
+Regalos
+Valor estimado del alquiler de la vivienda
+
+2 en tipo de gasto
+3 en tipo de gasto
+0 en tipo de gasto
+
+Erogaciones financieras y de capital total
+
+Sumatoria de las erogaciones
+financieras y de capital monetarias
+y no monetarias
+
+Erogaciones financieras monetarias
+
+G002, K031 a K034, Q001 a Q015,
+T905
+
+Erogaciones financieras no monetarias
+
+Claves G002, K031 a K034, Q001
+a Q015 de no monetario
+
+Autoconsumo
+Pago en especie
+Regalos
+
+1 en tipo de gasto
+2 en tipo de gasto
+3 en tipo de gasto
+
+

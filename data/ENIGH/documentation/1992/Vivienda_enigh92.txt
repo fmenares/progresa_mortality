@@ -1,0 +1,252 @@
+Construcción de variables de Vivienda ENIGH 1992
+Concepto
+
+Criterios
+
+Total de viviendas
+
+Se deben incluir todos los folios con
+terminación cero de VIVIENDA
+
+Total de hogares
+
+Se deben incluir a todos los folios de VIVENDA
+
+Población objeto
+
+Se deben incluir a todas las personas
+reportadas en PERSONAS excluyendo a los
+códigos 2, 8 y 9 de PARENTESCO
+
+Viviendas por número de dormitorios
+
+Incluir las viviendas que en CU_US_DO sea
+igual al número de cuartos que desea
+codificar en VIVIENDA
+
+Características de la vivienda
+Total de viviendas por tipo
+
+Se deben incluir las viviendas según el
+rubro al que correspondan en CARAC_VIV
+según su código:
+1 Casa sola
+2 Departamento en edificio o casa en
+vecindad
+3 Cuarto de azotea
+4 Vivienda móvil
+
+Total de viviendas por tenencia
+
+Se deben incluir las viviendas que en
+TENENCIA cumpla con el concepto que
+desea codificar según su código:
+1 Propia y totalmente pagada en terreno
+propio
+2 Propia y totalmente pagada en terreno
+ejidal
+3 Propia y totalmente pagada en terreno
+de asentamiento irregular
+4 Propia y la está pagando
+5 Rentada o alquilada
+6 Recibida como prestación
+7 Prestada
+8 Otros
+
+Viviendas por número de cuartos
+
+Incluir las viviendas que en
+NUM_CUARTO sea igual al número de
+cuartos que desea codificar, utilizando dos
+posiciones para este campo.
+
+Viviendas por número de dormitorios
+
+Incluir las viviendas que en CU_US_DO
+sea igual al número de cuartos que se
+usan para dormir y que desea codificar en
+VIVIENDA
+
+Disponibilidad de cocina
+Viviendas con ó sin cuarto de cocina
+
+Incluir las viviendas que en CU_COCINA
+sea 1 si cuenta con cuarto de cocina y 2 si
+no dispone de ella
+
+Viviendas con cocina también duermen
+
+Incluir las viviendas que en CU_CO_DO
+sea código 1
+
+Viviendas con cocina, no duermen
+
+Incluir las viviendas que en CU_CO_DO
+sea código 2
+
+Disponibilidad de baño exclusivo
+
+Incluir las viviendas que en BANO_EX_HO
+código 1 si tiene baño exclusivo y 2 no
+exclusivo del hogar
+
+Excusado agua corriente
+
+Incluir las viviendas que en EXC_AG_CO
+tenga código 1 si el excusado tiene agua
+corriente ó 2 si no cuenta con ella.
+
+Total de viviendas con material en paredes o muros Incluir las viviendas por clasificación
+de MUROS según el código de
+paredes o muros al que corresponda:
+1 Lamina de cartón
+2 Carrizo, bambú o palma
+3 Embarro o bajareque
+4 Madera
+5 Lamina de: asbesto o metálica
+6 Adobe
+7 Tabique, ladrillo, block, piedra o
+cemento
+8 Otros materiales
+Total de viviendas con material en techos
+
+Incluir todas las viviendas que en
+TECHOS correspondan con la
+clasificación:
+1
+2
+3
+4
+5
+6
+
+Total de viviendas con material en pisos
+
+Lamina de cartón
+Palma, tejamanil o madera
+Lamina de asbesto o metálica
+Teja
+Losa de concreto, tabique o ladrillo
+Otros materiales
+
+Incluir todas las viviendas clasificando
+PISOS según el código del material al que
+corresponda:
+1 Tierra
+2 Cemento o firme
+3 Madera, mosaico u otros
+recubrimientos
+
+Disponibilidad de agua
+
+Se deben incluir todas las viviendas
+clasificando por AGUA según el código al
+que corresponda:
+1 Agua entubada dentro de la
+vivienda
+2 Agua entubada fuera de la
+vivienda pero sí en el edificio,
+vecindad o terreno
+3 Agua de pozo dentro del terreno
+4 Agua por acarreo
+5 Entrega de agua a domicilio (pipa)
+
+Disponibilidad de drenaje
+Drenaje conectado al de la calle
+1
+Drenaje conectado a fosa séptica
+2
+Drenaje con desagüe al suelo, río, lago
+3
+No dispone de drenaje
+4
+
+Incluir las viviendas que en DRENAJE sea
+Incluir las viviendas que en DRENAJE sea
+Incluir las viviendas que en DRENAJE sea
+Incluir las viviendas que en DRENAJE sea
+
+Disponibilidad de luz eléctrica
+
+Incluir las viviendas que en LUZ sea 1 si
+tiene luz eléctrica y 2 si no dispone de ella.
+
+Disponibilidad de teléfono
+
+Incluir las viviendas que en TELEFONO
+sea 1 si tiene teléfono y 2 si no cuenta con
+él.
+
+Equipamiento del hogar
+Vehículos propios del hogar
+
+Automóvil
+Camioneta
+Motocicleta o motoneta
+Bicicleta
+Vehículos de tracción animal
+Otros
+Aparatos domésticos de la vivienda
+
+Radio
+Grabadora
+Tocadiscos, consola o modular
+Televisor
+Videocasetera
+Juegos de video
+Computadora
+Antena parabólica
+Ventilador
+
+Incluir las viviendas que tengan
+información en VEHICULOS según la
+posición:
+posición 1 diferente de cero
+posición 2 diferente de cero
+posición 3 diferente de cero
+posición 4 diferente de cero
+posición 5 diferente de cero
+posición 6 diferente de cero
+Incluir las viviendas que tengan
+información (información distinta de cero)
+en APARATOS según las posiciones del
+campo:
+posición 1
+posición 2
+posición 3
+posición 4
+posición 5
+posición 6
+posición 7
+posición 8
+posición 9
+
+Maquina de cocer
+Estufa de gas
+Estufa de otro combustible
+Refrigerador
+Licuadora
+Bomba de agua
+Plancha
+Molino de mano
+Lavadora
+Aspiradora
+Calentador de gas
+Calentador de otro combustible
+Otros electrodomésticos
+
+posición 10
+posición 11
+posición 12
+posición 13
+posición 14
+posición 15
+posición 16
+posición 17
+posición 18
+posición 19
+posición 20
+posición 21
+posición 22
+
+
