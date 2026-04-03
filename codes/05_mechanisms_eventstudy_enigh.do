@@ -1,36 +1,40 @@
 *=============================================================================
-* 04_mechanisms_eventstudy_enigh.do
+* 05_mechanisms_eventstudy_enigh.do
 *
-* Event-study figures that parallel Tables 1–4 in 03_mechanisms_enigh.do.
+* Event-study figures mirroring Set 1 of 04_mechanisms_enigh_1999_lag.do.
 *
-* DESIGN
-* ------
-* Replaces the binary post indicator with year-specific interactions:
+* SPECIFICATION
+* -------------
+*   reghdfe outcome ib1996.year#c.inten1999 [pw=exp_factor]
+*          if [sample] & year != 1998, a(year mun) cl(mun)
 *
-*   outcome_imt = SUM_{t != 1996} beta_t * inten1999_m * 1(year == t)
-*               + alpha_m + gamma_t + eps_imt
-*
-* Estimated via:
-*   reghdfe outcome ib1996.year#c.inten1999 [pw=exp_factor], a(year mun) cl(mun)
-*
-* Only inten1999 is used (not inten2005); 1996 is the omitted reference year
-* (last pre-PROGRESA ENIGH wave). beta_1992 and beta_1994 are pre-trend tests;
-* beta_1998 through beta_2006 trace the post-program dynamic.
+*   - inten1999 only (enrollment intensity as of 1999)
+*   - 1998 ENIGH wave excluded throughout (pre-period ends 1996,
+*     post-period starts 2000)
+*   - 1996 = omitted reference year (beta = 0 by construction)
+*   - Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5)
 *
 * OUTPUT
 * ------
-*   F_ES_T1.pdf  — individual outcomes  (mirrors Table 1)
-*   F_ES_T2.pdf  — household outcomes   (mirrors Table 2)
-*   F_ES_T3.pdf  — food expenditure     (mirrors Table 3)
-*   F_ES_T4.pdf  — health expenditure   (mirrors Table 4)
+*   One combined figure per outcome group (T1–T4).
+*   Each sub-panel = one outcome variable with three overlaid series:
 *
-* Each figure has one panel per outcome variable (7–8 panels per figure).
-* Each panel shows 9 points: waves 1992, 1994, 1996(ref=0), 1998, 2000,
-* 2002, 2004, 2005, 2006 at equally-spaced x-positions.
-* Red dashed vertical line marks the PROGRESA rollout (between 1996 and 1998).
-* 95% CI bars; SE clustered at municipality.
-* Weighted by survey expansion factor.
-* Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5).
+*     Pooled  — navy,         solid line,          circle marker
+*     Female  — cranberry,    dashed line,          square marker
+*     Male    — forest_green, shortdash_dot line,   triangle marker
+*
+*   Series are cascaded on the x-axis (±0.18 offset) so that CI bars
+*   do not overlap.  Bars = 95% CI.  Red dashed xline at 3.5 marks
+*   PROGRESA rollout (after 1996 wave, before 2000 wave).
+*
+*   x-axis positions (8 waves):
+*     1=1992  2=1994  3=1996(ref)  4=2000  5=2002  6=2004  7=2005  8=2006
+*
+* FILES SAVED
+*   F_ES_T1_1999_lag.pdf/png  — individual outcomes  (mirrors Table 1)
+*   F_ES_T2_1999_lag.pdf/png  — household outcomes   (mirrors Table 2)
+*   F_ES_T3_1999_lag.pdf/png  — food expenditure     (mirrors Table 3)
+*   F_ES_T4_1999_lag.pdf/png  — health expenditure   (mirrors Table 4)
 *=============================================================================
 
 clear
@@ -38,36 +42,27 @@ set more off
 capture log close
 
 *-----------------------------------------------------------------------------
-* 0. PATHS  (mirror 03_mechanisms_enigh.do)
+* 0. PATHS
 *-----------------------------------------------------------------------------
 
 if c(username) == "felip" {
-	global deaths "C:\Users\felip\Dropbox\R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data   "C:\Users\felip\Dropbox\2024\70ymas\data/"
 	global output "C:/Users/felip/Dropbox/Aplicaciones/Overleaf/70yMas/"
-	global iter   "C:\Users\felip\Dropbox\R01_MHAS\Progresa_Locality_Mortality_Project\CensusData_ITER\"
-	global SP     "C:\Users\felip\Dropbox\R01_MHAS\SocialProgramBeneficiaries"
 }
 
 if c(username) == "fmenares" {
-	global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data   "/data/Dropbox0/fmenares/Dropbox/2024/70ymas/data/"
 	global output "/hdir/0/fmenares/Dropbox/Aplicaciones/Overleaf/70yMas/"
-	global iter   "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
-	global SP     "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 }
 
 if c(username) == "FELIPEME" {
-	global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data   "C:/Users/FELIPEME/OneDrive - Inter-American Development Bank Group/Documents/personal/progresa_mortality/data/"
 	global tables "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\tables"
 	global output "$tables"
-	global iter   "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
-	global SP     "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 }
 
 *-----------------------------------------------------------------------------
-* 1. DATA  (identical to 03_mechanisms_enigh.do)
+* 1. DATA
 *-----------------------------------------------------------------------------
 
 use "$data/enigh_panel", clear
@@ -87,7 +82,7 @@ merge m:1 cve_ent_mun_super year using "$data/mortality_muni.dta", keep(3)
 global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 
 *-----------------------------------------------------------------------------
-* 2. AUXILIARY VARIABLES  (identical to 03_mechanisms_enigh.do)
+* 2. AUXILIARY VARIABLES
 *-----------------------------------------------------------------------------
 
 g hrs_worked_pos = hrs_worked if hrs_worked != . & hrs_worked != 0
@@ -106,7 +101,6 @@ foreach outcome in $raw_outcomes {
 	}
 }
 
-* variables without own _out inherit from a related variable
 replace benef_gob_ind_out = ind_earnings_out
 g progresa_ind_out    = ind_earnings_out
 g hrs_worked_out      = 0
@@ -131,21 +125,17 @@ g ortho_out              = 0
 * 3. OUTCOME GROUPS AND LABELS
 *-----------------------------------------------------------------------------
 
-* --- outcome globals (same as 03_mechanisms_enigh.do) ---
 global T1 "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind"
 global T2 "hh_earnings hh_income_tot hh_expenditure progresa_hh benef_gob_hh savings debt n_hh"
 global T3 "food_exp vegg_fruit cereals meat_dairy sugar_fat_drink alcohol tobacco vice"
 global T4 "health_exp medical medical_inpatient medical_outpatient drugs drugs_prescribed drugs_overcounter ortho"
 
-* --- figure-level titles ---
 local title_T1 "Individual Outcomes"
 local title_T2 "Household Outcomes"
 local title_T3 "Food Expenditure"
 local title_T4 "Health Expenditure"
 
-* --- panel titles (indexed: lbl_Tk_j = label for j-th outcome in group k) ---
-
-* T1
+* T1 panel labels
 local lbl_T1_1 "Employment"
 local lbl_T1_2 "Hrs Worked"
 local lbl_T1_3 "Hrs Worked (>0)"
@@ -154,7 +144,7 @@ local lbl_T1_5 "Income"
 local lbl_T1_6 "PROGRESA Transfers"
 local lbl_T1_7 "Gov. Transfers"
 
-* T2
+* T2 panel labels
 local lbl_T2_1 "Earnings"
 local lbl_T2_2 "Income"
 local lbl_T2_3 "Expenditure"
@@ -164,7 +154,7 @@ local lbl_T2_6 "Savings"
 local lbl_T2_7 "Debt"
 local lbl_T2_8 "HH Size"
 
-* T3
+* T3 panel labels
 local lbl_T3_1 "Total Food"
 local lbl_T3_2 "Veggies & Fruit"
 local lbl_T3_3 "Cereals"
@@ -174,7 +164,7 @@ local lbl_T3_6 "Alcohol"
 local lbl_T3_7 "Tobacco"
 local lbl_T3_8 "Vice"
 
-* T4
+* T4 panel labels
 local lbl_T4_1 "Total Health"
 local lbl_T4_2 "Medical Visits"
 local lbl_T4_3 "Inpatient"
@@ -186,151 +176,185 @@ local lbl_T4_8 "Orthotics"
 
 *-----------------------------------------------------------------------------
 * 4. EVENT STUDY FIGURES
+*     - inten1999 × year dummies, 1996 reference, 1998 excluded
+*     - Three series per panel: Pooled / Female / Male
+*     - Cascade: ±0.18 x-offset to separate CI bars
+*
+* x-axis positions (8 waves, 1998 omitted):
+*   1=1992  2=1994  3=1996(ref)  4=2000  5=2002  6=2004  7=2005  8=2006
 *-----------------------------------------------------------------------------
-*
-* x-axis positions map to ENIGH waves at equal spacing:
-*   1=1992  2=1994  3=1996(ref)  4=1998  5=2000  6=2002  7=2004  8=2005  9=2006
-*
-* 1996 is set to b=0 / hi95=0 / lo95=0 (reference by construction).
-* Red dashed xline(3.5) marks the PROGRESA rollout (after 1996, before 1998).
-*
-* Outer loop: produces one set of 4 figures per intensity measure.
-*   inten1999 — enrollment intensity as of 1999 (early rollout)
-*   inten2005 — enrollment intensity as of 2005 (mature program)
-*
 
-foreach inten in inten1997 inten1999 inten2005 {
+local yr_order  "1992 1994 1996 2000 2002 2004 2005 2006"
+local yr_labels `"1 "1992" 2 "1994" 3 "1996" 4 "2000" 5 "2002" 6 "2004" 7 "2005" 8 "2006""'
 
-	* human-readable intensity label for figure titles and file names
-	if "`inten'" == "inten1997" local inten_lbl "Intensity 1997"
-	if "`inten'" == "inten1999" local inten_lbl "Intensity 1999"
-	if "`inten'" == "inten2005" local inten_lbl "Intensity 2005"
+foreach tbl in T1 T2 T3 T4 {
 
-	local fig_note "Each panel: DiD event-study estimate of `inten_lbl' effect by ENIGH wave." ///
-	    " 1996 = reference (omitted, 0 by construction). Red dashed line: PROGRESA rollout." ///
-	    " Bars = 95% CI. SE clustered by municipality. Weighted by expansion factor." ///
-	    " Sample: highly marginalized municipalities (GM 4-5)."
+	* Level of observation: individual (T1) vs household (T2–T4)
+	local hh_cond = cond("`tbl'" == "T1", "", "hh_unique == 1 & ")
 
-	foreach tbl in T1 T2 T3 T4 {
+	* Gender condition variable
+	local fem_var = cond("`tbl'" == "T1", "female", "hhh_female")
 
-		* T1 is individual-level; T2–T4 restrict to unique HH observations
-		local hh_cond = cond("`tbl'" == "T1", "", "hh_unique == 1 & ")
+	local k = 0
+	local gph_list ""
 
-		local k = 0
-		local gph_list ""
+	foreach outcome in ${`tbl'} {
 
-		foreach outcome in ${`tbl'} {
+		local ++k
+		local lb "`lbl_`tbl'_`k''"
 
-			local ++k
-			local lb = "`lbl_`tbl'_`k''"
+		*----------------------------------------------------------------------
+		* 4a. Run three regressions; store b and se as locals
+		*----------------------------------------------------------------------
 
-			*--------------------------------------------------------------
-			* 4a. Event study regression
-			*--------------------------------------------------------------
-			cap noisily reghdfe `outcome' ib1996.year#c.`inten' ///
+		foreach grp in w f m {
+
+			if "`grp'" == "w" local grp_cond ""
+			if "`grp'" == "f" local grp_cond "& `fem_var' == 1"
+			if "`grp'" == "m" local grp_cond "& `fem_var' == 0"
+
+			cap noisily reghdfe `outcome' ib1996.year#c.inten1999 ///
 				[pweight = exp_factor] ///
-				if `hh_cond'`outcome'_out == 0 & $sample_marg, ///
+				if `hh_cond'`outcome'_out == 0 & $sample_marg ///
+				& year != 1998 `grp_cond', ///
 				a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
-			if _rc != 0 {
-				di as error "  *** reghdfe failed for `outcome' (`inten') in `tbl' — skipping"
-				continue
+			local ok_`grp' = (_rc == 0)
+
+			if `ok_`grp'' {
+				foreach yr in 1992 1994 2000 2002 2004 2005 2006 {
+					local b_`grp'_`yr'  = _b[`yr'.year#c.inten1999]
+					local se_`grp'_`yr' = _se[`yr'.year#c.inten1999]
+				}
 			}
-
-			*--------------------------------------------------------------
-			* 4b. Extract estimates into a 9-row plotting dataset
-			*     Rows: 1992 1994 1996(ref=0) 1998 2000 2002 2004 2005 2006
-			*     _b[] / _se[] scalars survive the preserve/clear/restore
-			*--------------------------------------------------------------
-			preserve
-			clear
-			set obs 9
-
-			gen yr_pos = _n    // 1–9
-			gen yr_val = .     // calendar year (for reference)
-			gen b      = .
-			gen hi95   = .
-			gen lo95   = .
-
-			* pre-treatment years
-			local pos = 1
-			foreach yr in 1992 1994 {
-				replace yr_val = `yr'                                                       if yr_pos == `pos'
-				replace b      =  _b[`yr'.year#c.`inten']                                  if yr_pos == `pos'
-				replace hi95   =  _b[`yr'.year#c.`inten'] + 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
-				replace lo95   =  _b[`yr'.year#c.`inten'] - 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
-				local ++pos
-			}
-
-			* reference year 1996 — zero by construction
-			replace yr_val = 1996 if yr_pos == 3
-			replace b      = 0    if yr_pos == 3
-			replace hi95   = 0    if yr_pos == 3
-			replace lo95   = 0    if yr_pos == 3
-
-			* post-treatment years
-			local pos = 4
-			foreach yr in 1998 2000 2002 2004 2005 2006 {
-				replace yr_val = `yr'                                                       if yr_pos == `pos'
-				replace b      =  _b[`yr'.year#c.`inten']                                  if yr_pos == `pos'
-				replace hi95   =  _b[`yr'.year#c.`inten'] + 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
-				replace lo95   =  _b[`yr'.year#c.`inten'] - 1.96 * _se[`yr'.year#c.`inten'] if yr_pos == `pos'
-				local ++pos
-			}
-
-			*--------------------------------------------------------------
-			* 4c. Panel graph
-			*--------------------------------------------------------------
-			twoway ///
-				(rcap hi95 lo95 yr_pos, lcolor(gs9) lwidth(thin)) ///
-				(connected b yr_pos, ///
-					mcolor(navy) lcolor(navy%60) ///
-					msymbol(circle) msize(small) lwidth(thin)), ///
-				yline(0, lcolor(black) lpattern(solid) lwidth(vthin)) ///
-				xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-				xlabel(1 "1992" 2 "1994" 3 "1996" 4 "1998" 5 "2000" ///
-				       6 "2002" 7 "2004" 8 "2005" 9 "2006", ///
-				       labsize(tiny) angle(45) grid gmax) ///
-				xscale(range(0.5 9.5)) ///
-				xtitle("") ytitle("") ///
-				title("`lb'", size(small) color(black) margin(b=1)) ///
-				legend(off) ///
-				graphregion(color(white)) plotregion(margin(l=0 r=0)) ///
-				saving("$data/es_panel_`tbl'_`inten'_`k'.gph", replace)
-
-			restore
-
-			local gph_list `"`gph_list' "$data/es_panel_`tbl'_`inten'_`k'.gph""'
-
-		} // end foreach outcome
-
-		*------------------------------------------------------------------
-		* 4d. Combine panels into one figure per table group × intensity
-		*------------------------------------------------------------------
-		local n_panels = `k'
-		local n_cols   = min(`n_panels', 4)
-		local n_rows   = ceil(`n_panels' / `n_cols')
-
-		graph combine `gph_list', ///
-			rows(`n_rows') cols(`n_cols') ///
-			title("Event Study (`inten_lbl') — `title_`tbl''", ///
-			      size(medsmall) color(black)) ///
-			note(`fig_note', size(tiny)) ///
-			graphregion(color(white)) ///
-			saving("$output/F_ES_`tbl'_`inten'.gph", replace)
-
-		graph export "$output/F_ES_`tbl'_`inten'.pdf", replace
-		graph export "$output/F_ES_`tbl'_`inten'.png", replace width(2400)
-
-		di as result "  => Saved F_ES_`tbl'_`inten'.pdf / .png"
-
-		* clean up temporary panel gph files
-		forval k_del = 1/`n_panels' {
-			cap erase "$data/es_panel_`tbl'_`inten'_`k_del'.gph"
 		}
 
-	} // end foreach tbl
+		if !`ok_w' & !`ok_f' & !`ok_m' {
+			di as error "  *** All regressions failed for `outcome' in `tbl' — skipping panel"
+			continue
+		}
 
-} // end foreach inten
+		*----------------------------------------------------------------------
+		* 4b. Build wide plotting dataset (8 time points, 3 groups)
+		*     xpos_w = yr_pos      (pooled, centred)
+		*     xpos_f = yr_pos-0.18 (female, left)
+		*     xpos_m = yr_pos+0.18 (male, right)
+		*----------------------------------------------------------------------
 
-di as result _n "Done. Twelve event-study figures (4 tables x 3 intensities) saved to: $output"
+		preserve
+		clear
+		set obs 8
+
+		gen yr_pos = _n                  // 1–8
+		gen xpos_w = yr_pos
+		gen xpos_f = yr_pos - 0.18
+		gen xpos_m = yr_pos + 0.18
+
+		foreach grp in w f m {
+			gen b_`grp'  = .
+			gen hi_`grp' = .
+			gen lo_`grp' = .
+		}
+
+		local pos = 1
+		foreach yr in `yr_order' {
+
+			if `yr' == 1996 {
+				* reference year: zero by construction for all groups
+				foreach grp in w f m {
+					replace b_`grp'  = 0 if yr_pos == `pos'
+					replace hi_`grp' = 0 if yr_pos == `pos'
+					replace lo_`grp' = 0 if yr_pos == `pos'
+				}
+			}
+			else {
+				foreach grp in w f m {
+					if `ok_`grp'' {
+						replace b_`grp'  = `b_`grp'_`yr''                           ///
+							if yr_pos == `pos'
+						replace hi_`grp' = `b_`grp'_`yr'' + 1.96 * `se_`grp'_`yr'' ///
+							if yr_pos == `pos'
+						replace lo_`grp' = `b_`grp'_`yr'' - 1.96 * `se_`grp'_`yr'' ///
+							if yr_pos == `pos'
+					}
+				}
+			}
+
+			local ++pos
+		}
+
+		*----------------------------------------------------------------------
+		* 4c. Panel graph: cascade of three event-study series
+		*----------------------------------------------------------------------
+
+		twoway ///
+			(rcap hi_f lo_f xpos_f, ///
+				lcolor(cranberry%60) lwidth(vthin)) ///
+			(connected b_f xpos_f, ///
+				mcolor(cranberry) lcolor(cranberry) ///
+				msymbol(square) msize(vsmall) ///
+				lpattern(dash) lwidth(thin)) ///
+			(rcap hi_m lo_m xpos_m, ///
+				lcolor(forest_green%60) lwidth(vthin)) ///
+			(connected b_m xpos_m, ///
+				mcolor(forest_green) lcolor(forest_green) ///
+				msymbol(triangle) msize(vsmall) ///
+				lpattern(shortdash_dot) lwidth(thin)) ///
+			(rcap hi_w lo_w xpos_w, ///
+				lcolor(navy%60) lwidth(vthin)) ///
+			(connected b_w xpos_w, ///
+				mcolor(navy) lcolor(navy) ///
+				msymbol(circle) msize(vsmall) ///
+				lpattern(solid) lwidth(thin)), ///
+			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+			xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
+			xlabel(`yr_labels', ///
+				labsize(tiny) angle(45) grid gmax) ///
+			xscale(range(0.5 8.5)) ///
+			xtitle("") ytitle("Coeff.", size(tiny)) ///
+			title("`lb'", size(small) color(black) margin(b=1)) ///
+			legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+				cols(3) size(tiny) ///
+				region(lcolor(none)) ///
+				symxsize(5) keygap(1) rowgap(0)) ///
+			graphregion(color(white)) ///
+			plotregion(margin(l=1 r=1)) ///
+			saving("$data/es_`tbl'_1999_`k'.gph", replace)
+
+		restore
+
+		local gph_list `"`gph_list' "$data/es_`tbl'_1999_`k'.gph""'
+
+	} // end foreach outcome
+
+	*--------------------------------------------------------------------------
+	* 4d. Combine sub-panels into one figure per outcome group
+	*--------------------------------------------------------------------------
+
+	local n_panels = `k'
+	local n_cols   = min(`n_panels', 4)
+	local n_rows   = ceil(`n_panels' / `n_cols')
+
+	graph combine `gph_list', ///
+		rows(`n_rows') cols(`n_cols') ///
+		title("Event Study — `title_`tbl'' (Intensity 1999)", ///
+			size(medsmall) color(black)) ///
+		note("Spec: ib1996.year#c.inten1999 | Sample: highly marginalized (GM 4–5) | 1998 excluded." ///
+			" 1996 = reference (0). Red line: PROGRESA rollout. Bars = 95% CI (SE clustered by mun.)." ///
+			" Colors: navy=Pooled  cranberry=Female  forest_green=Male.", ///
+			size(tiny)) ///
+		graphregion(color(white)) ///
+		saving("$output/F_ES_`tbl'_1999_lag.gph", replace)
+
+	graph export "$output/F_ES_`tbl'_1999_lag.pdf", replace
+	graph export "$output/F_ES_`tbl'_1999_lag.png", replace width(2400)
+
+	di as result "  => Saved F_ES_`tbl'_1999_lag.pdf / .png"
+
+	forval j = 1/`n_panels' {
+		cap erase "$data/es_`tbl'_1999_`j'.gph"
+	}
+
+} // end foreach tbl
+
+di as result _n "Done. Four event-study figures (T1–T4, inten1999, 1998 excluded) saved to: $output"
