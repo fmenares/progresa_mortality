@@ -24,9 +24,9 @@ if c(username)=="fmenares" {
 }
 
 if c(username)=="FELIPEME" {
-    global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
-	global data "C:/Users/FELIPEME/OneDrive - Inter-American Development Bank Group/Documents/personal/progresa_mortality/data/"
-	global tables  "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\tables" 
+    *global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
+	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables" 
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
 	global SP "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 
@@ -68,7 +68,7 @@ stat(mean progresa_ind) stat(mean progresa_hh) stat(count id) stat(count cve_ent
 
 
 gen post=.
-	replace post=2 if year <1997 & year >1990 & year!=.
+	replace post=2 if year <1999 & year >1990 & year!=.
 	replace post=1 if year >=1997 & year <2007 & year!=.
 		lab def post 1"1997-2006" 2"1991-1996" 
 	lab val post post
@@ -153,9 +153,9 @@ g ln_hh_expenditure = log(hh_expenditure)
 *====================================================
 * Flag households that have at least one member aged 65+
 * with positive individual earnings (intensive margin at HH level).
-* NOTE: 'folio' is the ENIGH household identifier; adjust if variable name differs.
-gen elder65_pos_earn_ind = (age >= 65 & ind_earnings > 0 & ind_earnings != . & age != .)
-bysort folio year: egen hh_elder65_pos_earn = max(elder65_pos_earn_ind)
+* NOTE: 'folio' is the ENIGH household identifier; adjust if variable name differs. In our case is hh_id
+gen elder65_pos_earn_ind = (age >= 65 & ind_earnings > 0 & ind_earnings != . & age != .) 
+bysort hh_id year: egen hh_elder65_pos_earn = max(elder65_pos_earn_ind)
 drop elder65_pos_earn_ind
 
   
@@ -192,7 +192,7 @@ LAGGED 1999 INTENSITY: Excludes 1998 wave (inten1999 is a lead in 1998)
 *inten1999 is always lagged >= 1 year relative to outcome year in the post period
 *This sounds like our preferred.
 *************************************/
-
+{
 *individual income and labor outcomes
 local i = 1
 global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind "
@@ -332,28 +332,28 @@ foreach outcome in $individuals {
 {
 
 			cap file close sm
-		file open sm using "$tables/T1_ind_enigh_1999_lag.tex", write replace 
+		file open sm using "$tables/1999_lag/T1_ind_enigh_1999_lag.tex", write replace 
 		file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
 file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7'  \\  "_n
@@ -516,28 +516,28 @@ foreach outcome in $hh {
 {
 
 			cap file close sm
-		file open sm using "$tables/T2_hh_enigh_1999_lag.tex", write replace 
+		file open sm using "$tables/1999_lag/T2_hh_enigh_1999_lag.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
 file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7' & `mean_dep_w8'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' & `N_w8' \\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8')\\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7' & `mean_dep_f8'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' & `N_f8' \\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8')\\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7' & `mean_dep_m8'  \\  "_n
@@ -697,28 +697,28 @@ foreach outcome in $hh_food {
 {		
 		
 	cap file close sm
-		file open sm using "$tables/T3_food_enigh_1999_lag.tex", write replace 
+		file open sm using "$tables/1999_lag/T3_food_enigh_1999_lag.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 		file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8')\\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8')\\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -883,28 +883,28 @@ foreach outcome in $hh_health{
 
 	{
 	cap file close sm
-		file open sm using "$tables/T4_health_enigh_1999_lag.tex", write replace 
+		file open sm using "$tables/1999_lag/T4_health_enigh_1999_lag.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9} "_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8') \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8') \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2006} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8') \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -925,7 +925,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 		file close sm
 }
 
-
+}
 /*************************************
 2. Set of 4 Tables: using BR time period, short term effects
 2.1 Using 1999 intensity interacted with post
@@ -1073,28 +1073,28 @@ foreach outcome in $individuals {
 {
 
 			cap file close sm
-		file open sm using "$tables/T1_ind_enigh_1999_lag_2002.tex", write replace 
+		file open sm using "$tables/1999_lag/T1_ind_enigh_1999_lag_2002.tex", write replace 
 		file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7)  \\  \toprule"_n
 file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7'  \\  "_n
@@ -1257,28 +1257,28 @@ foreach outcome in $hh {
 {
 
 			cap file close sm
-		file open sm using "$tables/T2_hh_enigh_1999_lag_2002.tex", write replace 
+		file open sm using "$tables/1999_lag/T2_hh_enigh_1999_lag_2002.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)  \\  \toprule"_n
 file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5' & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7' & `mean_dep_w8'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' & `N_w8' \\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5' & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8')\\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7' & `mean_dep_f8'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' & `N_f8' \\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5' & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8')\\ "_n
 			file write sm "  & & &  & & & & & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7' & `mean_dep_m8'  \\  "_n
@@ -1438,28 +1438,28 @@ foreach outcome in $hh_food {
 {		
 		
 	cap file close sm
-		file open sm using "$tables/T3_food_enigh_1999_lag_2002.tex", write replace 
+		file open sm using "$tables/1999_lag/T3_food_enigh_1999_lag_2002.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 		file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8')\\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8')\\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8')\\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1624,7 +1624,7 @@ foreach outcome in $hh_health{
 
 	{
 	cap file close sm
-		file open sm using "$tables/T4_health_enigh_1999_lag_2002.tex", write replace
+		file open sm using "$tables/1999_lag/T4_health_enigh_1999_lag_2002.tex", write replace
 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
@@ -1632,21 +1632,21 @@ foreach outcome in $hh_health{
 		file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9} "_n
 		file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_w99_1'  & `OLS_w99_2' & `OLS_w99_3' & `OLS_w99_4' & `OLS_w99_5'  & `OLS_w99_6' & `OLS_w99_7' & `OLS_w99_8'\\  "_n
 		file write sm "& (`SE_w99_1')  & (`SE_w99_2') & (`SE_w99_3') & (`SE_w99_4') & (`SE_w99_5')  & (`SE_w99_6') & (`SE_w99_7') & (`SE_w99_8') \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_f99_1'  & `OLS_f99_2' & `OLS_f99_3' & `OLS_f99_4' & `OLS_f99_5'  & `OLS_f99_6' & `OLS_f99_7' & `OLS_f99_8'\\  "_n
 		file write sm "& (`SE_f99_1')  & (`SE_f99_2') & (`SE_f99_3') & (`SE_f99_4') & (`SE_f99_5')  & (`SE_f99_6') & (`SE_f99_7') & (`SE_f99_8') \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-		file write sm "\textit{Intensity 1999 x 1997-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
+		file write sm "\textit{Intensity 1999 x 2000-2002} & `OLS_m99_1'  & `OLS_m99_2' & `OLS_m99_3' & `OLS_m99_4' & `OLS_m99_5'  & `OLS_m99_6' & `OLS_m99_7' & `OLS_m99_8'\\  "_n
 		file write sm "& (`SE_m99_1')  & (`SE_m99_2') & (`SE_m99_3') & (`SE_m99_4') & (`SE_m99_5')  & (`SE_m99_6') & (`SE_m99_7') & (`SE_m99_8') \\ "_n
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1816,7 +1816,7 @@ foreach outcome in $individuals {
 {
 
 			cap file close sm
-		file open sm using "$tables/T1_ind_enigh_br_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T1_ind_enigh_br_1999.tex", write replace 
 		file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
@@ -2001,7 +2001,7 @@ foreach outcome in $hh {
 {
 
 			cap file close sm
-		file open sm using "$tables/T2_hh_enigh_br_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T2_hh_enigh_br_1999.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
@@ -2182,7 +2182,7 @@ foreach outcome in $hh_food {
 {		
 		
 	cap file close sm
-		file open sm using "$tables/T3_food_enigh_br_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T3_food_enigh_br_1999.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
@@ -2368,7 +2368,7 @@ foreach outcome in $hh_health{
 
 	{
 	cap file close sm
-		file open sm using "$tables/T4_health_enigh_br_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T4_health_enigh_br_1999.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
@@ -2559,7 +2559,7 @@ foreach outcome in $individuals {
 {
 
 			cap file close sm
-		file open sm using "$tables/T1_ind_enigh_c_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T1_ind_enigh_c_1999.tex", write replace 
 		file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
@@ -2744,7 +2744,7 @@ foreach outcome in $hh {
 {
 
 			cap file close sm
-		file open sm using "$tables/T2_hh_enigh_c_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T2_hh_enigh_c_1999.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
@@ -2925,7 +2925,7 @@ foreach outcome in $hh_food {
 {		
 		
 	cap file close sm
-		file open sm using "$tables/T3_food_enigh_c_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T3_food_enigh_c_1999.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
@@ -3111,7 +3111,7 @@ foreach outcome in $hh_health{
 
 	{
 	cap file close sm
-		file open sm using "$tables/T4_health_enigh_c_1999.tex", write replace 
+		file open sm using "$tables/1999_lag/T4_health_enigh_c_1999.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
