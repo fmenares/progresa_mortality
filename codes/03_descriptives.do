@@ -25,12 +25,13 @@ if c(username)=="fmenares" {
 	global figures "/hdir/0/fmenares/Dropbox/Aplicaciones/Overleaf/70yMas/figures/"
 }
 if c(username)=="FELIPEME" {
-	global data    "C:/Users/FELIPEME/OneDrive - Inter-American Development Bank Group/Documents/personal/progresa_mortality/data/"
-	global output  "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\tables"
-	global figures "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\figures"
+	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables" 
+	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures"
 }
 
 * --- Load data (identical to 03) ---
+{
 use "$data/enigh_panel", clear
 merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", keep(1 3) nogen
 destring cve_ent cve_mun, replace
@@ -62,7 +63,8 @@ foreach outcome in $raw_outcomes {
 	}
 }
 
-
+}
+*i might not ant to restrict on benef_gob_ind or benef_gob
 * ============================================================
 * SECTION 0: TREATMENT VARIATION ANALYSIS
 *
@@ -96,7 +98,7 @@ gen post = (year >= 1997) if year != .
 * ============================================================
 * 0A: inten1997 — cross-sectional variation
 * ============================================================
-
+{
 di _newline(2) "========================================================"
 di "SECTION 0A: inten1997 — CROSS-SECTIONAL VARIATION"
 di "========================================================"
@@ -147,7 +149,7 @@ preserve
 	keep if $sample_marg & inten1997 != .
 	bysort cve_ent_mun_super year: keep if _n == 1
 	cap file close sm
-	file open sm using "$output/TA0a_inten1997_variation.tex", write replace
+	file open sm using "$tables/TA0a_inten1997_variation.tex", write replace
 	file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
 	file write sm "Wave & N & Mean & SD & CV & p25 & p50 & p75 & Max \\ \toprule"_n
 	foreach y in $years {
@@ -175,12 +177,12 @@ preserve
 	file write sm "\end{tabular}"
 	file close sm
 restore
-
+}
 
 * ============================================================
 * 0B: inten1999 — cross-sectional variation
 * ============================================================
-
+{
 di _newline(2) "========================================================"
 di "SECTION 0B: inten1999 — CROSS-SECTIONAL VARIATION"
 di "========================================================"
@@ -231,7 +233,7 @@ preserve
 	keep if $sample_marg & inten1999 != .
 	bysort cve_ent_mun_super year: keep if _n == 1
 	cap file close sm
-	file open sm using "$output/TA0b_inten1999_variation.tex", write replace
+	file open sm using "$tables/TA0b_inten1999_variation.tex", write replace
 	file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
 	file write sm "Wave & N & Mean & SD & CV & p25 & p50 & p75 & Max \\ \toprule"_n
 	foreach y in $years {
@@ -260,7 +262,7 @@ preserve
 	file close sm
 restore
 
-
+}
 * ============================================================
 * 0C: intensity_new — cross-section by ENIGH survey year
 *
@@ -274,7 +276,7 @@ restore
 di _newline(2) "========================================================"
 di "SECTION 0C: intensity_new — VARIATION ACROSS ENIGH SURVEY YEARS"
 di "========================================================"
-
+{
 * -- FA0e: box plot by survey year --
 preserve
 	keep if $sample_marg & intensity_new != .
@@ -333,7 +335,7 @@ preserve
 	keep if $sample_marg & intensity_new != .
 	bysort cve_ent_mun_super year: keep if _n == 1
 	cap file close sm
-	file open sm using "$output/TA0c_intensity_new_variation.tex", write replace
+	file open sm using "$tables/TA0c_intensity_new_variation.tex", write replace
 	file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
 	file write sm "Year & N & \% $>$ 0 & Mean & SD & CV & p25 & p50 & p75 \\ \toprule"_n
 	foreach y in $years {
@@ -357,7 +359,7 @@ preserve
 	file close sm
 restore
 
-
+}
 * ============================================================
 * 0D: intensity_new — full annual rollout (1991–2006)
 *
@@ -377,7 +379,7 @@ restore
 di _newline(2) "========================================================"
 di "SECTION 0D: intensity_new — ANNUAL ROLLOUT (mortality panel)"
 di "========================================================"
-
+{
 tempfile enigh_saved
 quietly save `enigh_saved'
 
@@ -427,7 +429,7 @@ twoway connected pct_treated year,                                         ///
 	xline(1999, lpattern(shortdash) lcolor(gs10))                          ///
 	note("Dashed lines at 1997 and 1999.", size(small))
 graph export "$figures/FA0i_intensity_new_annual_penetration.pdf", as(pdf) replace
-
+}
 use `enigh_saved', clear
 
 
@@ -450,7 +452,7 @@ use `enigh_saved', clear
 *              for ENIGH municipalities vs. mortality-only
 *              municipalities (representativeness check)
 * ============================================================
-
+{
 di _newline(2) "========================================================"
 di "SECTION 0E: SAMPLE OVERLAP — Mortality vs. ENIGH municipalities"
 di "========================================================"
@@ -584,7 +586,7 @@ restore
 
 use `enigh_for_overlap', clear
 
-
+}
 * ============================================================
 * DIAGNOSTIC 1: Flagging rate — % flagged per variable x year
 * Expected: ~1% per cell. Values well below 1% suggest ties
@@ -595,7 +597,7 @@ di _newline(2) "========================================================"
 di "DIAGNOSTIC 1: FLAGGING RATE BY VARIABLE AND YEAR"
 di "Expected: ~1% per cell. Deviations indicate ties at p99."
 di "========================================================"
-
+ {
 * Save results to a matrix for tabulation
 tempname flagrate
 local nvars : word count $raw_outcomes
@@ -621,7 +623,11 @@ foreach outcome in $raw_outcomes {
 matrix rownames `flagrate' = $raw_outcomes
 matrix colnames `flagrate' = $years
 matrix list `flagrate', format(%5.2f)
+}
 
+*In benef_gob_ind I have 5% in 2000. Check with Claude the outcome table particularly for 2000, 
+*seems the p99 is smaller than other years. In fact, by using D2, it seems there are larger 
+*values on p99, which could be unrealistic. 
 
 * ============================================================
 * DIAGNOSTIC 2: P99 threshold stability across years
@@ -634,7 +640,7 @@ di _newline(2) "========================================================"
 di "DIAGNOSTIC 2: P99 THRESHOLDS BY VARIABLE AND YEAR"
 di "Check for implausible jumps across survey waves."
 di "========================================================"
-
+ {
 tempname thresholds
 matrix `thresholds' = J(`nvars', `nyears', .)
 
@@ -652,7 +658,7 @@ foreach outcome in $raw_outcomes {
 matrix rownames `thresholds' = $raw_outcomes
 matrix colnames `thresholds' = $years
 matrix list `thresholds', format(%12.1f)
-
+}
 
 * ============================================================
 * DIAGNOSTIC 3: Extremity — ratio of max to p99
@@ -666,7 +672,7 @@ di "DIAGNOSTIC 3: MAX / P99 RATIO BY VARIABLE AND YEAR"
 di "Ratio >> 1 means trimmed values are truly extreme."
 di "Ratio near 1 means trimming has little effect."
 di "========================================================"
-
+  {
 tempname extratio
 matrix `extratio' = J(`nvars', `nyears', .)
 
@@ -691,20 +697,19 @@ foreach outcome in $raw_outcomes {
 matrix rownames `extratio' = $raw_outcomes
 matrix colnames `extratio' = $years
 matrix list `extratio', format(%8.2f)
-
-
+}
+*it seems i am removing genuine extreme outliers in 2000, which is good.
 * ============================================================
 * DIAGNOSTIC 4: Impact on mean — % change in mean after trimming
 * Large % changes (>5%) mean the outliers were materially
 * distorting the mean used in regressions.
 * Near-zero changes → trimming has little effect on results.
 * ============================================================
-
 di _newline(2) "========================================================"
 di "DIAGNOSTIC 4: % CHANGE IN MEAN AFTER OUTLIER REMOVAL"
 di "Pooled across years within $sample_marg."
 di "========================================================"
-
+ {
 foreach outcome in $raw_outcomes {
 	qui sum `outcome' if $sample_marg
 	local mean_with = r(mean)
@@ -723,7 +728,8 @@ foreach outcome in $raw_outcomes {
 	}
 }
 
-
+}
+*I Would like to see this by year
 * ============================================================
 * DIAGNOSTIC 5: Borrowed-flag audit
 * For each variable that uses another variable's _out flag,
@@ -737,7 +743,7 @@ di "Compares N flagged by borrowed _out vs. own p99."
 di "A mismatch means the borrowed flag is not the same as"
 di "what the variable's own distribution would produce."
 di "========================================================"
-
+{
 * Pairs: borrowed_var donor_var
 local borrow_pairs "benef_gob_ind ind_earnings progresa_ind ind_earnings employed ind_earnings benef_gob_hh hh_earnings progresa_hh hh_earnings n_hh hh_earnings medical_inpatient medical medical_outpatient medical drugs_prescribed drugs drugs_overcounter drugs"
 
@@ -768,7 +774,11 @@ while `k' <= `np' {
 	}
 }
 
+}
 
+*check benef_gob_ind and progresa_ind and for 2000, and 00 and 02. hOWEVER,
+*this is in order to have same observations across the outcomes of interest. 
+*should I not restricted them? how should I do this.
 * ============================================================
 * DIAGNOSTIC 6: Variables with zero trimming (never flagged)
 * These are kept as-is — confirm this is intentional.
@@ -799,6 +809,10 @@ foreach outcome in hrs_worked hrs_worked_pos alcohol tobacco vice ortho {
 di _newline(2) "========================================================"
 di "END OF OUTLIER DIAGNOSTICS"
 di "========================================================"
+
+*Conclusion, I think I should ask for a proposition to take care of variables
+*where does not seem reasonable to winsorize, but thus, then, how do 
+*I keep the same number of obs across outcomes
 
 
 
@@ -831,7 +845,7 @@ global label_progresa_ind    = "PROGRESA transfer (indiv.)"
 global label_benef_gob_ind   = "Gov. benefits (indiv.)"
 
 cap file close sm
-file open sm using "$output/TA1_desc_individual.tex", write replace
+file open sm using "$tables/TA1_desc_individual.tex", write replace
 file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
 file write sm "& \multicolumn{3}{c}{\textit{Pre (1992--1996)}} & \multicolumn{3}{c}{\textit{Post (1997--2006)}} & \multicolumn{1}{c}{$\Delta$} \\ "_n
 file write sm "\cmidrule(lr){2-4}\cmidrule(lr){5-7}"_n
@@ -876,7 +890,7 @@ global label_medical         = "Medical visits (total)"
 global label_drugs           = "Drug spending (total)"
 
 cap file close sm
-file open sm using "$output/TA2_desc_household.tex", write replace
+file open sm using "$tables/TA2_desc_household.tex", write replace
 file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
 file write sm "& \multicolumn{3}{c}{\textit{Pre (1992--1996)}} & \multicolumn{3}{c}{\textit{Post (1997--2006)}} & \multicolumn{1}{c}{$\Delta$} \\ "_n
 file write sm "\cmidrule(lr){2-4}\cmidrule(lr){5-7}"_n
@@ -914,7 +928,7 @@ global label_rx_to_visit_ratio = "Rx per outpatient dollar"
 global label_otc_to_rx_ratio   = "OTC-to-Rx ratio"
 
 cap file close sm
-file open sm using "$output/TA3_desc_ratios.tex", write replace
+file open sm using "$tables/TA3_desc_ratios.tex", write replace
 file write sm "\begin{tabular}{lrrrrrrrr} \hline \hline"_n
 file write sm "& \multicolumn{3}{c}{\textit{Pre (1992--1996)}} & \multicolumn{3}{c}{\textit{Post (1997--2006)}} & \multicolumn{1}{c}{$\Delta$} \\ "_n
 file write sm "\cmidrule(lr){2-4}\cmidrule(lr){5-7}"_n
@@ -968,7 +982,7 @@ file close sm
 
 * -- TABLE A1b: Individual by year --
 cap file close sm
-file open sm using "$output/TA1b_byyear_individual.tex", write replace
+file open sm using "$tables/TA1b_byyear_individual.tex", write replace
 file write sm "\begin{tabular}{l" + "r" * 9 + "} \hline \hline"_n
 file write sm "Variable & 1992 & 1994 & 1996 & 1998 & 2000 & 2002 & 2004 & 2005 & 2006 \\ \toprule"_n
 
@@ -994,7 +1008,7 @@ file close sm
 
 * -- TABLE A2b: Household by year --
 cap file close sm
-file open sm using "$output/TA2b_byyear_household.tex", write replace
+file open sm using "$tables/TA2b_byyear_household.tex", write replace
 file write sm "\begin{tabular}{l" + "r" * 9 + "} \hline \hline"_n
 file write sm "Variable & 1992 & 1994 & 1996 & 1998 & 2000 & 2002 & 2004 & 2005 & 2006 \\ \toprule"_n
 
@@ -1020,7 +1034,7 @@ file close sm
 
 * -- TABLE A3b: Ratios by year --
 cap file close sm
-file open sm using "$output/TA3b_byyear_ratios.tex", write replace
+file open sm using "$tables/TA3b_byyear_ratios.tex", write replace
 file write sm "\begin{tabular}{l" + "r" * 9 + "} \hline \hline"_n
 file write sm "Variable & 1992 & 1994 & 1996 & 1998 & 2000 & 2002 & 2004 & 2005 & 2006 \\ \toprule"_n
 file write sm "\multicolumn{10}{l}{\textit{Panel A: Diet quality}} \\"_n
@@ -1083,7 +1097,7 @@ global desc_all = ///
 	"diversity_index net_fin_position debt_to_income health_share"
 
 cap file close sm
-file open sm using "$output/TA4_within_between.tex", write replace
+file open sm using "$tables/TA4_within_between.tex", write replace
 file write sm "\begin{tabular}{lrrrr} \hline \hline"_n
 file write sm "Variable & Overall SD & Between-mun SD & Within-mun SD & CV (Overall) \\ \toprule"_n
 file write sm "\multicolumn{5}{l}{\textit{Household-level outcomes}} \\"_n
@@ -1137,7 +1151,7 @@ di _newline(2) "========================================================"
 di "SECTIONS 7–10 COMPLETE. Files written:"
 di "  $figures/FA1a_inten1997_kdensity.pdf"
 di "  $figures/FA1b_inten1997_bywave.pdf"
-di "  $output/TA0_intensity_variation.tex"
+di "  $tables/TA0_intensity_variation.tex"
 di "  $output/TA1_desc_individual.tex   (pre/post, T1 vars)"
 di "  $output/TA2_desc_household.tex    (pre/post, T2-T4 vars)"
 di "  $output/TA3_desc_ratios.tex       (pre/post, T5-T6 vars)"

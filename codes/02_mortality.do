@@ -19,8 +19,9 @@ set more off
 
  if c(username)=="FELIPEME" {
     global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
-	global data "C:/Users/FELIPEME/OneDrive - Inter-American Development Bank Group/Documents/personal/progresa_mortality/data/"
-	global output  "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\"
+	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables"
+	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures"
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
 	global SP "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 
@@ -96,53 +97,9 @@ lab var year "year"
 	save "$data/mortality_muni", replace
 	restore
 	
-	
-		
-***** TABLE 2 (01/13/2026) ***** 	WE NEED TO PRESENT OR MENTION "Post x Progresa in 2005" in Table 2
-***	(1) Unweighted
-	mean emr65 emr65m emr65f if year==1996 & $sample_marg
-
-	areg emr65 c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) 
-		testparm c.inten1999#i.post 
-		testparm c.inten2005#i.post
-			*outreg2 using result.doc, replace alpha(0.001, 0.01, 0.05, 0.1) symbol(***, **, *, #) ctitle (all)
-			
-
-
-	
-	areg emr65m c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) 
-		testparm c.inten1999#i.post 
-		testparm c.inten2005#i.post
-			*outreg2 using result.doc, append alpha(0.001, 0.01, 0.05, 0.1) symbol(***, **, *, #) ctitle (male)
-	areg emr65f c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) 
-		testparm c.inten1999#i.post 
-		testparm c.inten2005#i.post
-			*outreg2 using result.doc, append alpha(0.001, 0.01, 0.05, 0.1) symbol(***, **, *, #) ctitle (female)
-					
-***	(2) Unweighted + Control Seguro Popular
-	areg emr65 c.inten1999#i.post c.inten2005#i.post i.year c.sp_intensity if $sample_marg, absorb(cve_ent_mun_super) 
-		testparm c.inten1999#i.post 
-		testparm c.inten2005#i.post
-			*outreg2 using result.doc, replace alpha(0.001, 0.01, 0.05, 0.1) symbol(***, **, *, #) ctitle (all)
-	areg emr65m c.inten1999#i.post c.inten2005#i.post i.year c.sp_intensity if $sample_marg, absorb(cve_ent_mun_super) 
-		testparm c.inten1999#i.post 
-		testparm c.inten2005#i.post
-			*outreg2 using result.doc, append alpha(0.001, 0.01, 0.05, 0.1) symbol(***, **, *, #) ctitle (male)
-	areg emr65f c.inten1999#i.post c.inten2005#i.post i.year c.sp_intensity if $sample_marg, absorb(cve_ent_mun_super) 
-		testparm c.inten1999#i.post 
-		testparm c.inten2005#i.post
-			*outreg2 using result.doc, append alpha(0.001, 0.01, 0.05, 0.1) symbol(***, **, *, #) ctitle (female)
-				
-
-*Felipe's replication
-
 *Table 2
 
 *UW
-*using areg with and without clustering
-areg emr65 c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) 
-areg emr65 c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	
 *pool results: using clustering
 reghdfe emr65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 *by sex
@@ -158,95 +115,11 @@ reghdfe emr65 c.inten1999#i.post c.inten2005#i.post [aw=popover65_] if $sample_m
 reghdfe emr65m c.inten1999#i.post c.inten2005#i.post [aw=popover65_m] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 reghdfe emr65f c.inten1999#i.post c.inten2005#i.post [aw=popover65_f] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
-*Fig 2 + SEs		
-areg emr65 c.inten1999##ib6.year_1995 c.sp_intensity if $sample_marg, absorb(cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Adult mortality +65") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-*Fig 2 + SEs		
+reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+reghdfe emr65m c.inten1999#i.post c.inten2005#i.post c.sp_intensity [aw=popover65_m] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+reghdfe emr65f c.inten1999#i.post c.inten2005#i.post c.sp_intensity [aw=popover65_f] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
-areg emr65 c.inten1999##ib6.year_1995 c.sp_intensity  if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Adult mortality +65") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 
-
-*Fig 2 consistent with Panel B in T2 but PLUS CLUSTER SE
-*a
-areg emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity ///
-if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-		graph export "$output/figures/Figure_2a_all.pdf", as(pdf) replace	
-*b
-		areg emr65m c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity ///
-		if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-		graph export "$output/figures/Figure_2b_male.pdf", as(pdf) replace	
-*c
-		areg emr65f c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity ///
-		 if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-		graph export "$output/figures/Figure_2c_female.pdf", as(pdf) replace	
-
-*Figure 3
-areg emr65 c.inten1999##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Adult mortality +65") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-*Fig 3 + SEs		
-
-	areg emr65 c.inten1999##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Adult mortality +65") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 
-		
-
-*Fig 3 consistent with Panel C in T2
-*a
-areg emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-		graph export "$output/figures/Figure_3a_all.pdf", as(pdf) replace	
-*b
-		areg emr65m c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-		graph export "$output/figures/Figure_3b_male.pdf", as(pdf) replace	
-*c
-		areg emr65f c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
-		graph export "$output/figures/Figure_3c_female.pdf", as(pdf) replace	
-
-*Appendix 
+*Appendix TAble
 *Barham and Rowberry (2013)
 *1992 - 2002
 global sample_br = "(inten_start_year==1998 |inten_start_year==1999)"
@@ -271,6 +144,108 @@ a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 reghdfe emr65 lag3_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
 a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
+*Table needs to be created here by having a similar structure as the Table 2.
+*However, here every columns should refer a specification:
+*(1) BR result, copy by hand; 2: BR Replication 3: Replication + W; 4: 
+*1 yr lag + w; 5: 3 year lag + w
+*In the rows there must be 3 different names that captures the coefficient of interest*
+*1. 2-year lagged Progresa Intensity
+*2. 1- year lagged progresa intensity
+*3. 3-year lagged progresa intensity
+
+
+/*** appendix tABLE
+bASED ON THE FOLLOWING regressions create a similar Tables as the others for mortality
+having the same structure on panels, pool, female and males, but having a first 
+column with the previous results having mortality in levels as the dependant variable
+second column having it as count of deaths and using a poisson regression with
+an offset, and a last one having it as a logs of mortality rate. 
+*felipe's poisson and log specifications*/
+
+	g lemr65 = log(emr65)
+	g lemr65m = log(emr65m)
+	g lemr65f = log(emr65f)
+	g lpopover65 = log(popover65_)
+
+areg lemr65 c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) 
+
+
+reghdfe emr65m c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super)  vce(cluster cve_ent_mun_super)
+reghdfe lemr65m c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+reghdfe emr65m c.inten1999#i.post c.inten2005#i.post if e(sample), a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+
+ppmlhdfe death65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ppmlhdfe death65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) offset(lpopover65) vce(cluster cve_ent_mun_super)		
+		
+
+/********************
+FIGURES
+***********************/
+
+
+*Figure 1: Can you create a 2 figures plotting the elderly 65+ mortality raw mortality trends,
+*that on the y axis has the mortality rate plotted and on the y2 axis has the
+*penetration for each year between 1990 and 2006, 1 figure should for all municipalities
+*and the other should be only for the highly marginalized. Each figure should include
+*separate mortality trends by pool (all), males and females
+
+*Fig 2 consistent with Panel B in T2 but PLUS CLUSTER SE (UNWEIGHTED)
+*a
+areg emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity ///
+if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
+		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
+		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
+		  ciopts(lwidth(1.15) lcolor(*.5)) ///
+		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
+		graph export "$figures/Figure_2a_all.pdf", as(pdf) replace	
+*b
+		areg emr65m c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity ///
+		if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
+		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
+		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
+		  ciopts(lwidth(1.15) lcolor(*.5)) ///
+		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
+		graph export "$figures/Figure_2b_male.pdf", as(pdf) replace	
+*c
+		areg emr65f c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity ///
+		 if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
+		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
+		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
+		  ciopts(lwidth(1.15) lcolor(*.5)) ///
+		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
+		graph export "$figures/Figure_2c_female.pdf", as(pdf) replace	
+
+*Fig 3 consistent with Panel C in T2 (WEIGHTED)
+*a
+areg emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
+		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
+		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
+		  ciopts(lwidth(1.15) lcolor(*.5)) ///
+		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
+		graph export "$figures/Figure_3a_all.pdf", as(pdf) replace	
+*b
+		areg emr65m c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
+		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
+		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
+		  ciopts(lwidth(1.15) lcolor(*.5)) ///
+		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
+		graph export "$figures/Figure_3b_male.pdf", as(pdf) replace	
+*c
+		areg emr65f c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 c.sp_intensity [aw=popover65_] if $sample_marg, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
+		coefplot, drop (*.year_1995 *.year_1995#c.inten2005 inten2005 _cons inten1999 sp_intensity) omitted base vertical    ///
+		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
+		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Mortality Rate") ///
+		  ciopts(lwidth(1.15) lcolor(*.5)) ///
+		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
+		graph export "$figures/Figure_3c_female.pdf", as(pdf) replace	
+
+
+		
 *what about the pre-trends of Barham and Roweberry?
 
 *There is no direct testing because the intesnity/treatment changes over time. 
@@ -279,14 +254,9 @@ a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 *in 1999 interacted with time dummies.
 
 *First we get the PostxIntensity 1999, getting a negative and significant of 3.9
-*Unweighted
-reghdfe emr65 c.inten1999#i.post if ///
-inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-*Weighted
-reghdfe emr65 c.inten1999#i.post [aw=popover65_] if ///
-inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  
-**Event Study (This would be similar to F2) 
+**Event Study (This would be similar to F2) *Unweighted
+*a
  reghdfe emr65 c.inten1999##ib6.year_1995 if inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  		coefplot, drop (*.year_1995 _cons inten1999 sp_intensity) omitted base vertical    ///
 		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
@@ -294,7 +264,7 @@ inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 		  ciopts(lwidth(1.15) lcolor(*.5)) ///
 		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
 
-**Event Study weighted 
+**b)  Event Study weighted 
  reghdfe emr65 c.inten1999##ib6.year_1995 [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
   		coefplot, drop (*.year_1995 _cons inten1999 sp_intensity) omitted base vertical    ///
 		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
@@ -302,7 +272,7 @@ inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 		  ciopts(lwidth(1.15) lcolor(*.5)) ///
 		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 
 		
-**Event Study weighted + cp_intensity
+**c) Event Study weighted + cp_intensity
  reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
   		coefplot, drop (*.year_1995 _cons inten1999 sp_intensity) omitted base vertical    ///
 		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
@@ -323,6 +293,10 @@ inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 * (2005), those that saw more intensity during the Zedillo administration (1997–9)
 * experienced larger gains in early beneficiary cohorts. Thus, the spatial 
 *component of our design focuses on an early-versus-late comparison, rather than everer versus-never.
+
+*Adapting BR to PV does not make much sense because the post period is already 2002. 
+*and it looks for short term effects only. if we care about pre-trends, previous
+*exercise should be enough
 
 *Including weights
 
@@ -352,6 +326,9 @@ inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 *********************************************
  *what if we instead we do BR in our sample
  *********************************************
+ *Maybe I can create a Table here: Ask claude for it. based on columns
+ *maybe a plot of the different coefficients. 
+ 
 *BR but now only for highly marginalized (significant)
 reghdfe emr65 lag2_intensity_new if ///
  inrange(year, 1992, 2002) & $sample_br & $sample_marg, a(year cve_ent_mun_super)  vce(cluster cve_ent_mun_super)
@@ -384,46 +361,5 @@ inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 *results are sensitive and smaller
  reghdfe emr65 c.inten1999##ib6.year_1995   [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  
- 
 
-
-
- *this is the post period for the Figure 2
- 
-reghdfe emr65 c.inten1999#i.post if $sample_marg, a(year cve_ent_mun_super) 
-*this is Figure 2 post period but with cluster errores
-reghdfe emr65 c.inten1999#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-*this is Fig 3 post period
-reghdfe emr65 c.inten1999#i.post [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) 
-*this is corrected SE for F3
-reghdfe emr65 c.inten1999#i.post [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-
-
-
- 
-
-
-
-
-
-table year, stat(mean inten1999) stat(mean inten2005) stat(mean intensity_new) stat(mean lag2_intensity_new) stat(mean lag3_intensity_new)
-
-
-*** appendix 
-*felipe's poisson and log specifications
-
-	g lemr65 = log(emr65)
-	g lemr65m = log(emr65m)
-	g lemr65f = log(emr65f)
-	g lpopover65 = log(popover65_)
-
-areg lemr65 c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) 
-
-
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super)  vce(cluster cve_ent_mun_super)
-reghdfe lemr65m c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post if e(sample), a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-
-ppmlhdfe death65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-ppmlhdfe death65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) offset(lpopover65) vce(cluster cve_ent_mun_super)
 
