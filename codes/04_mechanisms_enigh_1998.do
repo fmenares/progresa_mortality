@@ -1077,7 +1077,7 @@ foreach outcome in $individuals {
 {
 
 			cap file close sm
-		file open sm using "$tables/1998/T1_ind_enigh_1998_2000.tex", write replace 
+		file open sm using "$tables/1998/T1_ind_enigh_1992_1998.tex", write replace 
 		file write sm "\begin{tabular}{lccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}   \\ "_n
@@ -1261,7 +1261,7 @@ foreach outcome in $hh {
 {
 
 			cap file close sm
-		file open sm using "$tables/1998/T2_hh_enigh_1998_2000.tex", write replace 
+		file open sm using "$tables/1998/T2_hh_enigh_1992_1998.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
@@ -1442,7 +1442,7 @@ foreach outcome in $hh_food {
 {		
 		
 	cap file close sm
-		file open sm using "$tables/1998/T3_food_enigh_1998_2000.tex", write replace 
+		file open sm using "$tables/1998/T3_food_enigh_1992_1998.tex", write replace 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
 		file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
@@ -1628,7 +1628,7 @@ foreach outcome in $hh_health{
 
 	{
 	cap file close sm
-		file open sm using "$tables/1998/T4_health_enigh_1998_2000.tex", write replace
+		file open sm using "$tables/1998/T4_health_enigh_1992_1998.tex", write replace
 
 		file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 		*file write sm "& \multicolumn{4}{c}{Schock 2003-2008} & \multicolumn{4}{c}{Shock 2003-2013} \\ "_n
