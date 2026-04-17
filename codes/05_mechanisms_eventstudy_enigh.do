@@ -191,18 +191,31 @@ local lbl_T4_8 "Orthotics"
 
 local yr_labels_pre `"1 "1992" 2 "1994" 3 "1996""'
 
+foreach sample in marg all {
+
+	if "`sample'" == "marg" {
+		local sample_cond  "& (gm_mun_1990==4|gm_mun_1990==5)"
+		local sample_label "Highly marginalized (GM 4-5)"
+	}
+	if "`sample'" == "all" {
+		local sample_cond  ""
+		local sample_label "All municipalities"
+	}
+
+	cap mkdir "$output/pretrend/`sample'"
+
 foreach approach in 1998 2000 {
 
 	* Intensity variable and year exclusion for each approach
 	if `approach' == 1998 {
 		local inten_var "inten1998"
 		local yr_excl   ""
-		local spec_note "Intensity 1998 x post | Highly marginalized (GM 4-5)"
+		local spec_note "Intensity 1998 x post | `sample_label'"
 	}
 	if `approach' == 2000 {
 		local inten_var "inten2000"
 		local yr_excl   "& year != 1998"
-		local spec_note "Intensity 2000 x post | Highly marginalized (GM 4-5) | 1998 excl."
+		local spec_note "Intensity 2000 x post | `sample_label' | 1998 excl."
 	}
 
 	foreach tbl in T1 T2 T3 T4 {
@@ -233,7 +246,7 @@ foreach approach in 1998 2000 {
 
 				cap noisily reghdfe `outcome' ib1996.year#c.`inten_var' ///
 					[pweight = exp_factor] ///
-					if `hh_cond'`outcome'_out == 0 & $sample_marg ///
+					if `hh_cond'`outcome'_out == 0 `sample_cond' ///
 					`yr_excl' `grp_cond', ///
 					a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
 
@@ -345,10 +358,10 @@ foreach approach in 1998 2000 {
 				graphregion(color(white)) ///
 				plotregion(margin(l=1 r=1))
 
-			graph export "$output/pretrend/F_PT_`approach'_`outcome'.pdf", replace
-			graph export "$output/pretrend/F_PT_`approach'_`outcome'.png", replace width(2400)
+			graph export "$output/pretrend/`sample'/F_PT_`approach'_`outcome'.pdf", replace
+			graph export "$output/pretrend/`sample'/F_PT_`approach'_`outcome'.png", replace width(2400)
 
-			di as result "  => Saved F_PT_`approach'_`outcome'.pdf / .png"
+			di as result "  => Saved `sample'/F_PT_`approach'_`outcome'.pdf / .png"
 
 			restore
 
@@ -358,7 +371,9 @@ foreach approach in 1998 2000 {
 
 } // end foreach approach
 
+} // end foreach sample
+
 di as result _n "Done."
 di as result "Pre-trend figures (one per outcome) saved to: $output/pretrend/"
-di as result "  Approach 1998: F_PT_1998_*.pdf/png"
-di as result "  Approach 2000: F_PT_2000_*.pdf/png"
+di as result "  marg/: F_PT_1998_*.pdf/png  F_PT_2000_*.pdf/png"
+di as result "  all/:  F_PT_1998_*.pdf/png  F_PT_2000_*.pdf/png"
