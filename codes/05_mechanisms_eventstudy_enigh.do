@@ -6,13 +6,13 @@
 * SPECIFICATIONS
 * -------------
 *   Approach 1 (inten1998):
-*     reghdfe outcome ib1996.year#c.inten1998 [pw=exp_factor]
-*            if [sample], a(year mun) cl(mun)
+*     reghdfe outcome ib1996.year ib1996.year#c.inten1998 [pw=exp_factor]
+*            if [sample], a(mun) cl(mun)
 *     -> All years included; extracts pre-period coefficients only.
 *
 *   Approach 2 (inten2000):
-*     reghdfe outcome ib1996.year#c.inten2000 [pw=exp_factor]
-*            if [sample] & year != 1998, a(year mun) cl(mun)
+*     reghdfe outcome ib1996.year ib1996.year#c.inten2000 [pw=exp_factor]
+*            if [sample] & year != 1998, a(mun) cl(mun)
 *     -> 1998 excluded (mirrors DiD spec for 2000 treatment).
 *     -> Extracts pre-period coefficients only.
 *
