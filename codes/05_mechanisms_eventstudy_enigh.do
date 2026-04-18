@@ -246,11 +246,11 @@ foreach approach in 1998 2000 {
 				if "`grp'" == "f" local grp_cond "& `fem_var' == 1"
 				if "`grp'" == "m" local grp_cond "& `fem_var' == 0"
 
-				cap noisily reghdfe `outcome' ib1996.year#c.`inten_var' ///
+				cap noisily reghdfe `outcome' ib1996.year ib1996.year#c.`inten_var' ///
 					[pweight = exp_factor] ///
 					if `hh_cond'`outcome'_out == 0 `sample_cond' ///
 					`yr_excl' `grp_cond', ///
-					a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+					a(cve_ent_mun_super) cluster(cve_ent_mun_super)
 
 				local ok_`grp' = (_rc == 0)
 
