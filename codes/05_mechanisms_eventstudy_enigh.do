@@ -5,17 +5,19 @@
 *
 * SPECIFICATIONS
 * -------------
+*   Sample capped at year <= 2000: ENIGH 2002+ changed questionnaire structure
+*   and SEDESOL oversampled beneficiaries, breaking comparability with 1992-2000.
+*
 *   Approach 1 (inten1998):
 *     reghdfe outcome ib1996.year ib1996.year#c.inten1998 [pw=exp_factor]
-*            if [sample], a(mun) cl(mun)
-*     -> All ENIGH waves (1992–2006) included.
-*     -> Plots 9 points: 1992 1994 | 1996(ref) | 1998 2000 2002 2004 2005 2006
+*            if [sample] & year <= 2000, a(mun) cl(mun)
+*     -> Plots 5 points: 1992 1994 | 1996(ref) | 1998 2000
 *
 *   Approach 2 (inten2000):
 *     reghdfe outcome ib1996.year ib1996.year#c.inten2000 [pw=exp_factor]
-*            if [sample] & year != 1998, a(mun) cl(mun)
+*            if [sample] & year != 1998 & year <= 2000, a(mun) cl(mun)
 *     -> 1998 excluded (mirrors DiD spec for 2000 treatment).
-*     -> Plots 8 points: 1992 1994 | 1996(ref) | 2000 2002 2004 2005 2006
+*     -> Plots 4 points: 1992 1994 | 1996(ref) | 2000
 *
 *   Both approaches:
 *     - Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5)
@@ -208,39 +210,32 @@ foreach sample in marg all {
 foreach approach in 1998 2000 {
 
 	* Intensity variable, year exclusion, and axis settings for each approach
-	* ENIGH waves: 1992 1994 1996 1998 2000 2002 2004 2005 2006
+	* Pre-trend sample capped at 2000 (1992-2000 share the same ENIGH design;
+	* 2002+ introduced major questionnaire changes and SEDESOL oversampling)
 	if `approach' == 1998 {
 		local inten_var  "inten1998"
-		local yr_excl    ""
+		local yr_excl    "& year <= 2000"
 		local spec_note  "Intensity 1998 x post | `sample_label'"
-		local all_yrs    "1992 1994 1998 2000 2002 2004 2005 2006"
-		local n_pts      9
+		local all_yrs    "1992 1994 1998 2000"
+		local n_pts      5
 		local pos_1992   1
 		local pos_1994   2
 		local pos_1998   4
 		local pos_2000   5
-		local pos_2002   6
-		local pos_2004   7
-		local pos_2005   8
-		local pos_2006   9
-		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "1998" 5 "2000" 6 "2002" 7 "2004" 8 "2005" 9 "2006""'
-		local xscale_max 9.5
+		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "1998" 5 "2000""'
+		local xscale_max 5.5
 	}
 	if `approach' == 2000 {
 		local inten_var  "inten2000"
-		local yr_excl    "& year != 1998"
+		local yr_excl    "& year != 1998 & year <= 2000"
 		local spec_note  "Intensity 2000 x post | `sample_label' | 1998 excl."
-		local all_yrs    "1992 1994 2000 2002 2004 2005 2006"
-		local n_pts      8
+		local all_yrs    "1992 1994 2000"
+		local n_pts      4
 		local pos_1992   1
 		local pos_1994   2
 		local pos_2000   4
-		local pos_2002   5
-		local pos_2004   6
-		local pos_2005   7
-		local pos_2006   8
-		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "2000" 5 "2002" 6 "2004" 7 "2005" 8 "2006""'
-		local xscale_max 8.5
+		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "2000""'
+		local xscale_max 4.5
 	}
 
 	foreach tbl in T1 T2 T3 T4 {
