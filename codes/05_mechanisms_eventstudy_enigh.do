@@ -191,8 +191,6 @@ local lbl_T4_8 "Orthotics"
 *   Red dashed xline at 3.5 marks end of pre-period.
 *-----------------------------------------------------------------------------
 
-local yr_labels_pre `"1 "1992" 2 "1994" 3 "1996""'
-
 foreach sample in marg all {
 
 	if "`sample'" == "marg" {
@@ -208,16 +206,31 @@ foreach sample in marg all {
 
 foreach approach in 1998 2000 {
 
-	* Intensity variable and year exclusion for each approach
+	* Intensity variable, year exclusion, and axis settings for each approach
 	if `approach' == 1998 {
-		local inten_var "inten1998"
-		local yr_excl   ""
-		local spec_note "Intensity 1998 x post | `sample_label'"
+		local inten_var  "inten1998"
+		local yr_excl    ""
+		local spec_note  "Intensity 1998 x post | `sample_label'"
+		local all_yrs    "1992 1994 1998 2000"
+		local n_pts      5
+		local pos_1992   1
+		local pos_1994   2
+		local pos_1998   4
+		local pos_2000   5
+		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "1998" 5 "2000""'
+		local xscale_max 5.5
 	}
 	if `approach' == 2000 {
-		local inten_var "inten2000"
-		local yr_excl   "& year != 1998"
-		local spec_note "Intensity 2000 x post | `sample_label' | 1998 excl."
+		local inten_var  "inten2000"
+		local yr_excl    "& year != 1998"
+		local spec_note  "Intensity 2000 x post | `sample_label' | 1998 excl."
+		local all_yrs    "1992 1994 2000"
+		local n_pts      4
+		local pos_1992   1
+		local pos_1994   2
+		local pos_2000   4
+		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "2000""'
+		local xscale_max 4.5
 	}
 
 	foreach tbl in T1 T2 T3 T4 {
@@ -237,7 +250,7 @@ foreach approach in 1998 2000 {
 
 			*------------------------------------------------------------------
 			* 4a. Run three regressions (pooled, female, male)
-			*     Full-sample regression; extract pre-period coefficients only
+			*     Full regression; extracts pre- and post-period coefficients
 			*------------------------------------------------------------------
 
 			foreach grp in w f m {
@@ -255,13 +268,13 @@ foreach approach in 1998 2000 {
 				local ok_`grp' = (_rc == 0)
 
 				if `ok_`grp'' {
-					foreach yr in 1992 1994 {
+					foreach yr in `all_yrs' {
 						local b_`grp'_`yr'  = _b[`yr'.year#c.`inten_var']
 						local se_`grp'_`yr' = _se[`yr'.year#c.`inten_var']
 					}
 				}
 				else {
-					foreach yr in 1992 1994 {
+					foreach yr in `all_yrs' {
 						local b_`grp'_`yr'  = .
 						local se_`grp'_`yr' = .
 					}
@@ -274,14 +287,14 @@ foreach approach in 1998 2000 {
 			}
 
 			*------------------------------------------------------------------
-			* 4b. Build plotting dataset (3 time points: 1992, 1994, 1996)
+			* 4b. Build plotting dataset (all time points; 1996 = ref = 0)
 			*------------------------------------------------------------------
 
 			preserve
 			clear
-			set obs 3
+			set obs `n_pts'
 
-			* yr_pos: 1=1992, 2=1994, 3=1996(ref)
+			* yr_pos: 1=1992, 2=1994, 3=1996(ref), 4+=post years
 			gen yr_pos = _n
 			gen xpos_w = yr_pos
 			gen xpos_f = yr_pos - 0.18
@@ -293,25 +306,18 @@ foreach approach in 1998 2000 {
 				gen lo_`grp' = .
 			}
 
-			* 1992 (position 1)
-			foreach grp in w f m {
-				if `ok_`grp'' {
-					replace b_`grp'  = `b_`grp'_1992'                           if yr_pos == 1
-					replace hi_`grp' = `b_`grp'_1992' + 1.96 * `se_`grp'_1992' if yr_pos == 1
-					replace lo_`grp' = `b_`grp'_1992' - 1.96 * `se_`grp'_1992' if yr_pos == 1
+			* Non-reference years
+			foreach yr in `all_yrs' {
+				foreach grp in w f m {
+					if `ok_`grp'' {
+						replace b_`grp'  = `b_`grp'_`yr''                           if yr_pos == `pos_`yr''
+						replace hi_`grp' = `b_`grp'_`yr'' + 1.96*`se_`grp'_`yr''   if yr_pos == `pos_`yr''
+						replace lo_`grp' = `b_`grp'_`yr'' - 1.96*`se_`grp'_`yr''   if yr_pos == `pos_`yr''
+					}
 				}
 			}
 
-			* 1994 (position 2)
-			foreach grp in w f m {
-				if `ok_`grp'' {
-					replace b_`grp'  = `b_`grp'_1994'                           if yr_pos == 2
-					replace hi_`grp' = `b_`grp'_1994' + 1.96 * `se_`grp'_1994' if yr_pos == 2
-					replace lo_`grp' = `b_`grp'_1994' - 1.96 * `se_`grp'_1994' if yr_pos == 2
-				}
-			}
-
-			* 1996 (position 3) — reference year, all zeros
+			* 1996 (position 3) — reference year, zero by construction
 			foreach grp in w f m {
 				replace b_`grp'  = 0 if yr_pos == 3
 				replace hi_`grp' = 0 if yr_pos == 3
@@ -343,9 +349,9 @@ foreach approach in 1998 2000 {
 					lpattern(solid) lwidth(thin)), ///
 				yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 				xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-				xlabel(`yr_labels_pre', ///
+				xlabel(`yr_labels', ///
 					labsize(tiny) angle(45) grid gmax) ///
-				xscale(range(0.5 4)) ///
+				xscale(range(0.5 `xscale_max')) ///
 				xtitle("") ytitle("Coeff.", size(tiny)) ///
 				title("`lb'", size(small) color(black) margin(b=1)) ///
 				subtitle("`title_`tbl''", size(tiny) color(gs6) margin(b=1)) ///
