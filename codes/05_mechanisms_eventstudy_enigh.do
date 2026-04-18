@@ -349,18 +349,13 @@ foreach approach in 1998 2000 {
 					lpattern(solid) lwidth(thin)), ///
 				yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 				xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-				xlabel(`yr_labels', ///
-					labsize(tiny) angle(45) grid gmax) ///
+				xlabel(`yr_labels', labsize(small) angle(45) grid gmax) ///
+				xlabel(3.5 "1997", labsize(small) labcolor(red) ///
+					tlength(0) nogrid angle(45) add) ///
 				xscale(range(0.5 `xscale_max')) ///
-				xtitle("") ytitle("Coeff.", size(tiny)) ///
-				title("`lb'", size(small) color(black) margin(b=1)) ///
-				subtitle("`title_`tbl''", size(tiny) color(gs6) margin(b=1)) ///
-				note("`spec_note'." ///
-					" 1996 = reference (0). Red line: end of pre-period." ///
-					" Bars = 95% CI (SE clustered by mun.).", ///
-					size(tiny)) ///
+				xtitle("") ytitle("`lb'", size(small)) ///
 				legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
-					cols(3) size(tiny) ///
+					cols(3) size(small) position(6) ring(1) ///
 					region(lcolor(none)) ///
 					symxsize(5) keygap(1) rowgap(0)) ///
 				graphregion(color(white)) ///
