@@ -58,7 +58,7 @@ if c(username) == "fmenares" {
 
 if c(username) == "FELIPEME" {
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global tables "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\tables"
+	global tables "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_cct\tables"
 	global figures  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures" 
 	global output "$tables"
 	global output "$figures"
