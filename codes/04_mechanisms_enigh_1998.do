@@ -26,7 +26,7 @@ if c(username)=="fmenares" {
 if c(username)=="FELIPEME" {
     global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables" 
+	global tables  "C:\Users\FELIPEME\Documents\projects\progresa_mortality_tex\tables" 
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
 	global SP "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 
