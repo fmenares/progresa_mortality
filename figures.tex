@@ -1,0 +1,319 @@
+%=======================================================================
+% figures.tex — Pre-Trend Event Study Figures (Mechanisms, ENIGH)
+% Script: 05_mechanisms_eventstudy_enigh.do
+% Layout: 2 columns x 4 rows per panel (max 8 subfigures)
+% Paths:  pretrend/{marg,all}/F_PT_{1998,2000}_{outcome}
+% Requires in main preamble: \usepackage{graphicx,subfigure}
+%=======================================================================
+
+% Compact subfigure helper: \ptsfig{filepath}{subcaption}
+\newcommand{\ptsfig}[2]{%
+  \subfigure[#2]{\includegraphics[width=0.47\linewidth]{#1}}}
+
+\clearpage
+\section{Pre-Trend Figures: Mechanisms Event Study}
+\label{app:pretrend_figs}
+
+Each panel plots pre-period interaction coefficients from
+\texttt{reghdfe outcome ib1996.year\#c.inten[\textit{yr}]}
+with year and municipality fixed effects, survey-expansion weights
+(\texttt{exp\_factor}), and standard errors clustered by municipality.
+Reference year: 1996 ($\hat\beta=0$ by construction).
+Bars are 95\% confidence intervals.
+Observations above the 99th percentile of each outcome--year cell are excluded.
+Three series per panel: Pooled (navy, circle), Female (cranberry, square),
+Male (forest green, triangle).
+
+%=======================================================================
+\subsection{Approach 1998}
+\label{app:pretrend_1998}
+
+\textit{Treatment variable:} \texttt{inten1998} (PROGRESA intensity as of
+1998); all ENIGH waves included.
+
+%-----------------------------------------------------------------------
+\subsubsection{Marginalized Municipalities (GM~4--5)}
+\label{app:pretrend_1998_marg}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_1998_employed}{Employment}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_hrs_worked}{Hrs Worked}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_hrs_worked_pos}{Hrs Worked ($>$0)}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_ind_earnings}{Earnings}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_ind_income_tot}{Income}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_progresa_ind}{PROGRESA Transfers}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_benef_gob_ind}{Gov.\ Transfers}
+\caption{Pre-Trend: Individual Outcomes --- Approach 1998, Marginalized (GM~4--5).}
+\label{fig:pt_1998_marg_t1}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_1998_hh_earnings}{Earnings}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_hh_income_tot}{Income}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_hh_expenditure}{Expenditure}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_progresa_hh}{PROGRESA}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_benef_gob_hh}{Gov.\ Transfers}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_savings}{Savings}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_debt}{Debt}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_n_hh}{HH Size}
+\caption{Pre-Trend: Household Outcomes --- Approach 1998, Marginalized (GM~4--5).}
+\label{fig:pt_1998_marg_t2}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_1998_food_exp}{Total Food}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_vegg_fruit}{Veggies \& Fruit}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_cereals}{Cereals}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_meat_dairy}{Meat \& Dairy}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_sugar_fat_drink}{Sugar \& Fat}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_alcohol}{Alcohol}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_tobacco}{Tobacco}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_vice}{Vice}
+\caption{Pre-Trend: Food Expenditure --- Approach 1998, Marginalized (GM~4--5).}
+\label{fig:pt_1998_marg_t3}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_1998_health_exp}{Total Health}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_medical}{Medical Visits}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_medical_inpatient}{Inpatient}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_medical_outpatient}{Outpatient}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_drugs}{Drugs}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_drugs_prescribed}{Drugs (Rx)}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_1998_drugs_overcounter}{OTC Drugs}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_1998_ortho}{Orthotics}
+\caption{Pre-Trend: Health Expenditure --- Approach 1998, Marginalized (GM~4--5).}
+\label{fig:pt_1998_marg_t4}
+\end{figure}
+
+%-----------------------------------------------------------------------
+\subsubsection{All Municipalities}
+\label{app:pretrend_1998_all}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_employed}{Employment}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_hrs_worked}{Hrs Worked}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_hrs_worked_pos}{Hrs Worked ($>$0)}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_ind_earnings}{Earnings}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_ind_income_tot}{Income}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_progresa_ind}{PROGRESA Transfers}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_benef_gob_ind}{Gov.\ Transfers}
+\caption{Pre-Trend: Individual Outcomes --- Approach 1998, All Municipalities.}
+\label{fig:pt_1998_all_t1}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_hh_earnings}{Earnings}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_hh_income_tot}{Income}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_hh_expenditure}{Expenditure}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_progresa_hh}{PROGRESA}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_benef_gob_hh}{Gov.\ Transfers}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_savings}{Savings}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_debt}{Debt}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_n_hh}{HH Size}
+\caption{Pre-Trend: Household Outcomes --- Approach 1998, All Municipalities.}
+\label{fig:pt_1998_all_t2}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_food_exp}{Total Food}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_vegg_fruit}{Veggies \& Fruit}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_cereals}{Cereals}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_meat_dairy}{Meat \& Dairy}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_sugar_fat_drink}{Sugar \& Fat}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_alcohol}{Alcohol}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_tobacco}{Tobacco}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_vice}{Vice}
+\caption{Pre-Trend: Food Expenditure --- Approach 1998, All Municipalities.}
+\label{fig:pt_1998_all_t3}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_health_exp}{Total Health}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_medical}{Medical Visits}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_medical_inpatient}{Inpatient}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_medical_outpatient}{Outpatient}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_drugs}{Drugs}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_drugs_prescribed}{Drugs (Rx)}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_drugs_overcounter}{OTC Drugs}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_ortho}{Orthotics}
+\caption{Pre-Trend: Health Expenditure --- Approach 1998, All Municipalities.}
+\label{fig:pt_1998_all_t4}
+\end{figure}
+
+%=======================================================================
+\subsection{Approach 2000}
+\label{app:pretrend_2000}
+
+\textit{Treatment variable:} \texttt{inten2000} (PROGRESA intensity as of
+2000); the 1998 ENIGH wave is excluded (mirrors the DiD specification for
+the 2000 treatment cohort).
+
+%-----------------------------------------------------------------------
+\subsubsection{Marginalized Municipalities (GM~4--5)}
+\label{app:pretrend_2000_marg}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_2000_employed}{Employment}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_hrs_worked}{Hrs Worked}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_hrs_worked_pos}{Hrs Worked ($>$0)}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_ind_earnings}{Earnings}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_ind_income_tot}{Income}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_progresa_ind}{PROGRESA Transfers}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_benef_gob_ind}{Gov.\ Transfers}
+\caption{Pre-Trend: Individual Outcomes --- Approach 2000, Marginalized (GM~4--5).}
+\label{fig:pt_2000_marg_t1}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_2000_hh_earnings}{Earnings}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_hh_income_tot}{Income}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_hh_expenditure}{Expenditure}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_progresa_hh}{PROGRESA}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_benef_gob_hh}{Gov.\ Transfers}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_savings}{Savings}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_debt}{Debt}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_n_hh}{HH Size}
+\caption{Pre-Trend: Household Outcomes --- Approach 2000, Marginalized (GM~4--5).}
+\label{fig:pt_2000_marg_t2}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_2000_food_exp}{Total Food}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_vegg_fruit}{Veggies \& Fruit}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_cereals}{Cereals}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_meat_dairy}{Meat \& Dairy}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_sugar_fat_drink}{Sugar \& Fat}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_alcohol}{Alcohol}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_tobacco}{Tobacco}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_vice}{Vice}
+\caption{Pre-Trend: Food Expenditure --- Approach 2000, Marginalized (GM~4--5).}
+\label{fig:pt_2000_marg_t3}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/marg/F_PT_2000_health_exp}{Total Health}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_medical}{Medical Visits}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_medical_inpatient}{Inpatient}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_medical_outpatient}{Outpatient}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_drugs}{Drugs}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_drugs_prescribed}{Drugs (Rx)}\\[1ex]
+\ptsfig{figures/pretrend/marg/F_PT_2000_drugs_overcounter}{OTC Drugs}\hfill
+\ptsfig{figures/pretrend/marg/F_PT_2000_ortho}{Orthotics}
+\caption{Pre-Trend: Health Expenditure --- Approach 2000, Marginalized (GM~4--5).}
+\label{fig:pt_2000_marg_t4}
+\end{figure}
+
+%-----------------------------------------------------------------------
+\subsubsection{All Municipalities}
+\label{app:pretrend_2000_all}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_2000_employed}{Employment}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_hrs_worked}{Hrs Worked}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_hrs_worked_pos}{Hrs Worked ($>$0)}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_ind_earnings}{Earnings}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_ind_income_tot}{Income}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_progresa_ind}{PROGRESA Transfers}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_benef_gob_ind}{Gov.\ Transfers}
+\caption{Pre-Trend: Individual Outcomes --- Approach 2000, All Municipalities.}
+\label{fig:pt_2000_all_t1}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_2000_hh_earnings}{Earnings}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_hh_income_tot}{Income}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_hh_expenditure}{Expenditure}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_progresa_hh}{PROGRESA}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_benef_gob_hh}{Gov.\ Transfers}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_savings}{Savings}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_debt}{Debt}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_n_hh}{HH Size}
+\caption{Pre-Trend: Household Outcomes --- Approach 2000, All Municipalities.}
+\label{fig:pt_2000_all_t2}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_2000_food_exp}{Total Food}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_vegg_fruit}{Veggies \& Fruit}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_cereals}{Cereals}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_meat_dairy}{Meat \& Dairy}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_sugar_fat_drink}{Sugar \& Fat}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_alcohol}{Alcohol}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_tobacco}{Tobacco}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_vice}{Vice}
+\caption{Pre-Trend: Food Expenditure --- Approach 2000, All Municipalities.}
+\label{fig:pt_2000_all_t3}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_2000_health_exp}{Total Health}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_medical}{Medical Visits}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_medical_inpatient}{Inpatient}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_medical_outpatient}{Outpatient}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_drugs}{Drugs}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_drugs_prescribed}{Drugs (Rx)}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_2000_drugs_overcounter}{OTC Drugs}\hfill
+\ptsfig{figures/pretrend/all/F_PT_2000_ortho}{Orthotics}
+\caption{Pre-Trend: Health Expenditure --- Approach 2000, All Municipalities.}
+\label{fig:pt_2000_all_t4}
+\end{figure}
+
+\begin{figure}[H]
+    \caption[]{The effects of interaction terms between Progresa in 1999 and years on elderly mortality +65 overall and by sex in marginalized municipalities, Mexico, 1991-2006. }
+    \label{f:es_dd_sex_no_weight}
+
+  \subfigure[All]
+{\includegraphics[width=0.69\textwidth]{figures/Figure_2a_all.pdf}}
+    
+    \subfigure[Males]
+     {\includegraphics[width=0.49\textwidth]{figures/Figure_2b_male.pdf}}
+    \subfigure[Females]
+     {\includegraphics[width=0.49\textwidth]{figures/Figure_2c_female.pdf}}
+     
+         \floatfoot{Notes: The data analysis is restricted to only marginalized municipalities, 1991-2006. The plots present the interaction terms between Progresa intensity in 1999 and years. Year and municipality fixed effects are included. Standard errors are clustered at the municipality level. 1996 is a reference year and the regression models are not weighted.
+Source: Authors’ calculations using data on deaths and population from the Instituto Nacional de Estadistica y Geografia and Mexican Census data.
+}
+\end{figure}
+
+\begin{figure}[H]
+    \caption[]{The effects of interaction terms between Progresa in 1999 and years on elderly mortality +65 overall and by sex in marginalized municipalities, Mexico, 1991-2006. }
+    \label{f:es_dd_sex_no_weight}
+
+  \subfigure[All]
+{\includegraphics[width=0.69\textwidth]{figures/Figure_3a_all.pdf}}
+    
+    \subfigure[Males]
+     {\includegraphics[width=0.49\textwidth]{figures/Figure_3b_male.pdf}}
+    \subfigure[Females]
+     {\includegraphics[width=0.49\textwidth]{figures/Figure_3c_female.pdf}}
+     
+         \floatfoot{Notes: The data analysis is restricted to only marginalized municipalities, 1991-2006. The plots present the interaction terms between Progresa intensity in 1999 and years. Year and municipality fixed effects are included. Standard errors are clustered at the municipality level. 1996 is a reference year and the regression models are not weighted.
+Source: Authors’ calculations using data on deaths and population from the Instituto Nacional de Estadistica y Geografia and Mexican Census data.
+}
+\end{figure}
+
+
+
+\begin{figure}[H]
+    \caption[]{Share of progresa penetration}
+    \label{f:es_dd_sex_no_weight}
+
+    \subfigure[1997 - All]
+     {\includegraphics[width=0.49\textwidth]{figures/FA0a_inten1997_kdensity.pdf}}
+    \subfigure[1997 - by wave]
+     {\includegraphics[width=0.49\textwidth]{figures/FA0b_inten1997_bywave.pdf}}
+    
+
+    \subfigure[1999 - All]
+     {\includegraphics[width=0.49\textwidth]{figures/FA0c_inten1999_kdensity.pdf}}
+    \subfigure[1999 - by wave]
+     {\includegraphics[width=0.49\textwidth]{figures/FA0d_inten1999_bywave.pdf}}
+
+    \subfigure[Continous - by Wave ENIGH Sample]
+     {\includegraphics[width=0.49\textwidth]{figures/FA0f_intensity_new_surveytrend}}
+    \subfigure[Continious - Mortality Sample]
+     {\includegraphics[width=0.49\textwidth]{figures/FA0h_intensity_new_annual_trend}}
+     
+         \floatfoot{Notes: }
+\end{figure}
