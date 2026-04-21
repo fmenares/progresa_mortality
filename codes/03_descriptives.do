@@ -26,8 +26,8 @@ if c(username)=="fmenares" {
 }
 if c(username)=="FELIPEME" {
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables" 
-	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables" 
+	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
 }
 
 * --- Load data (identical to 03) ---

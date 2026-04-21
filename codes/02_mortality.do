@@ -88,11 +88,18 @@ lab var year "year"
 	g aux = intensity_new if year == 1997
 	bys cve_ent_mun_super: egen inten1997 = min(aux)
 	drop aux
+	g aux = intensity_new if year == 1998
+	bys cve_ent_mun_super: egen inten1998 = min(aux)
+	drop aux
+	g aux = intensity_new if year == 2000
+	bys cve_ent_mun_super: egen inten2000 = min(aux)
+	drop aux
 	preserve
+
 	*Restriction (marginalized areas)
 	*keep if gm_mun_1990==4|gm_mun_1990==5
 	keep year cve_ent_mun_super im_mun inten15 inten10 inten5 inten1999 ///
-	inten2005 lag2_intensity_new intensity_new inten1997 inten_start_year gm_mun_1990
+	inten2005 lag2_intensity_new intensity_new inten1997 inten1998 inten2000 inten_start_year gm_mun_1990
 	
 	save "$data/mortality_muni", replace
 	restore

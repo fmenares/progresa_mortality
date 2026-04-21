@@ -5,16 +5,19 @@
 *
 * SPECIFICATIONS
 * -------------
+*   Sample capped at year <= 2000: ENIGH 2002+ changed questionnaire structure
+*   and SEDESOL oversampled beneficiaries, breaking comparability with 1992-2000.
+*
 *   Approach 1 (inten1998):
-*     reghdfe outcome ib1996.year#c.inten1998 [pw=exp_factor]
-*            if [sample], a(year mun) cl(mun)
-*     -> All years included; extracts pre-period coefficients only.
+*     reghdfe outcome ib1996.year ib1996.year#c.inten1998 [pw=exp_factor]
+*            if [sample] & year <= 2000, a(mun) cl(mun)
+*     -> Plots 5 points: 1992 1994 | 1996(ref) | 1998 2000
 *
 *   Approach 2 (inten2000):
-*     reghdfe outcome ib1996.year#c.inten2000 [pw=exp_factor]
-*            if [sample] & year != 1998, a(year mun) cl(mun)
+*     reghdfe outcome ib1996.year ib1996.year#c.inten2000 [pw=exp_factor]
+*            if [sample] & year != 1998 & year <= 2000, a(mun) cl(mun)
 *     -> 1998 excluded (mirrors DiD spec for 2000 treatment).
-*     -> Extracts pre-period coefficients only.
+*     -> Plots 4 points: 1992 1994 | 1996(ref) | 2000
 *
 *   Both approaches:
 *     - Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5)
@@ -54,9 +57,11 @@ if c(username) == "fmenares" {
 }
 
 if c(username) == "FELIPEME" {
-	global data   "C:/Users/FELIPEME/OneDrive - Inter-American Development Bank Group/Documents/personal/progresa_mortality/data/"
-	global tables "C:\Users\FELIPEME\OneDrive - Inter-American Development Bank Group\Documents\personal\progresa_mortality\tables"
+	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
+	global tables "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
+	global figures  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures" 
 	global output "$tables"
+	global output "$figures"
 }
 
 cap mkdir "$output/pretrend"
@@ -189,20 +194,48 @@ local lbl_T4_8 "Orthotics"
 *   Red dashed xline at 3.5 marks end of pre-period.
 *-----------------------------------------------------------------------------
 
-local yr_labels_pre `"1 "1992" 2 "1994" 3 "1996""'
+foreach sample in marg all {
+
+	if "`sample'" == "marg" {
+		local sample_cond  "& (gm_mun_1990==4|gm_mun_1990==5)"
+		local sample_label "Highly marginalized (GM 4-5)"
+	}
+	if "`sample'" == "all" {
+		local sample_cond  ""
+		local sample_label "All municipalities"
+	}
+
+	cap mkdir "$output/pretrend/`sample'"
 
 foreach approach in 1998 2000 {
 
-	* Intensity variable and year exclusion for each approach
+	* Intensity variable, year exclusion, and axis settings for each approach
+	* Pre-trend sample capped at 2000 (1992-2000 share the same ENIGH design;
+	* 2002+ introduced major questionnaire changes and SEDESOL oversampling)
 	if `approach' == 1998 {
-		local inten_var "inten1998"
-		local yr_excl   ""
-		local spec_note "Intensity 1998 x post | Highly marginalized (GM 4-5)"
+		local inten_var  "inten1998"
+		local yr_excl    "& year <= 2000"
+		local spec_note  "Intensity 1998 x post | `sample_label'"
+		local all_yrs    "1992 1994 1998 2000"
+		local n_pts      5
+		local pos_1992   1
+		local pos_1994   2
+		local pos_1998   4
+		local pos_2000   5
+		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "1998" 5 "2000""'
+		local xscale_max 5.5
 	}
 	if `approach' == 2000 {
-		local inten_var "inten2000"
-		local yr_excl   "& year != 1998"
-		local spec_note "Intensity 2000 x post | Highly marginalized (GM 4-5) | 1998 excl."
+		local inten_var  "inten2000"
+		local yr_excl    "& year != 1998 & year <= 2000"
+		local spec_note  "Intensity 2000 x post | `sample_label' | 1998 excl."
+		local all_yrs    "1992 1994 2000"
+		local n_pts      4
+		local pos_1992   1
+		local pos_1994   2
+		local pos_2000   4
+		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "2000""'
+		local xscale_max 4.5
 	}
 
 	foreach tbl in T1 T2 T3 T4 {
@@ -222,7 +255,7 @@ foreach approach in 1998 2000 {
 
 			*------------------------------------------------------------------
 			* 4a. Run three regressions (pooled, female, male)
-			*     Full-sample regression; extract pre-period coefficients only
+			*     Full regression; extracts pre- and post-period coefficients
 			*------------------------------------------------------------------
 
 			foreach grp in w f m {
@@ -231,22 +264,22 @@ foreach approach in 1998 2000 {
 				if "`grp'" == "f" local grp_cond "& `fem_var' == 1"
 				if "`grp'" == "m" local grp_cond "& `fem_var' == 0"
 
-				cap noisily reghdfe `outcome' ib1996.year#c.`inten_var' ///
+				cap noisily reghdfe `outcome' ib1996.year ib1996.year#c.`inten_var' ///
 					[pweight = exp_factor] ///
-					if `hh_cond'`outcome'_out == 0 & $sample_marg ///
+					if `hh_cond'`outcome'_out == 0 `sample_cond' ///
 					`yr_excl' `grp_cond', ///
-					a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
+					a(cve_ent_mun_super) cluster(cve_ent_mun_super)
 
 				local ok_`grp' = (_rc == 0)
 
 				if `ok_`grp'' {
-					foreach yr in 1992 1994 {
+					foreach yr in `all_yrs' {
 						local b_`grp'_`yr'  = _b[`yr'.year#c.`inten_var']
 						local se_`grp'_`yr' = _se[`yr'.year#c.`inten_var']
 					}
 				}
 				else {
-					foreach yr in 1992 1994 {
+					foreach yr in `all_yrs' {
 						local b_`grp'_`yr'  = .
 						local se_`grp'_`yr' = .
 					}
@@ -259,14 +292,14 @@ foreach approach in 1998 2000 {
 			}
 
 			*------------------------------------------------------------------
-			* 4b. Build plotting dataset (3 time points: 1992, 1994, 1996)
+			* 4b. Build plotting dataset (all time points; 1996 = ref = 0)
 			*------------------------------------------------------------------
 
 			preserve
 			clear
-			set obs 3
+			set obs `n_pts'
 
-			* yr_pos: 1=1992, 2=1994, 3=1996(ref)
+			* yr_pos: 1=1992, 2=1994, 3=1996(ref), 4+=post years
 			gen yr_pos = _n
 			gen xpos_w = yr_pos
 			gen xpos_f = yr_pos - 0.18
@@ -278,25 +311,18 @@ foreach approach in 1998 2000 {
 				gen lo_`grp' = .
 			}
 
-			* 1992 (position 1)
-			foreach grp in w f m {
-				if `ok_`grp'' {
-					replace b_`grp'  = `b_`grp'_1992'                           if yr_pos == 1
-					replace hi_`grp' = `b_`grp'_1992' + 1.96 * `se_`grp'_1992' if yr_pos == 1
-					replace lo_`grp' = `b_`grp'_1992' - 1.96 * `se_`grp'_1992' if yr_pos == 1
+			* Non-reference years
+			foreach yr in `all_yrs' {
+				foreach grp in w f m {
+					if `ok_`grp'' {
+						replace b_`grp'  = `b_`grp'_`yr''                           if yr_pos == `pos_`yr''
+						replace hi_`grp' = `b_`grp'_`yr'' + 1.96*`se_`grp'_`yr''   if yr_pos == `pos_`yr''
+						replace lo_`grp' = `b_`grp'_`yr'' - 1.96*`se_`grp'_`yr''   if yr_pos == `pos_`yr''
+					}
 				}
 			}
 
-			* 1994 (position 2)
-			foreach grp in w f m {
-				if `ok_`grp'' {
-					replace b_`grp'  = `b_`grp'_1994'                           if yr_pos == 2
-					replace hi_`grp' = `b_`grp'_1994' + 1.96 * `se_`grp'_1994' if yr_pos == 2
-					replace lo_`grp' = `b_`grp'_1994' - 1.96 * `se_`grp'_1994' if yr_pos == 2
-				}
-			}
-
-			* 1996 (position 3) — reference year, all zeros
+			* 1996 (position 3) — reference year, zero by construction
 			foreach grp in w f m {
 				replace b_`grp'  = 0 if yr_pos == 3
 				replace hi_`grp' = 0 if yr_pos == 3
@@ -328,27 +354,22 @@ foreach approach in 1998 2000 {
 					lpattern(solid) lwidth(thin)), ///
 				yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 				xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-				xlabel(`yr_labels_pre', ///
-					labsize(tiny) angle(45) grid gmax) ///
-				xscale(range(0.5 4)) ///
-				xtitle("") ytitle("Coeff.", size(tiny)) ///
-				title("`lb'", size(small) color(black) margin(b=1)) ///
-				subtitle("`title_`tbl''", size(tiny) color(gs6) margin(b=1)) ///
-				note("`spec_note'." ///
-					" 1996 = reference (0). Red line: end of pre-period." ///
-					" Bars = 95% CI (SE clustered by mun.).", ///
-					size(tiny)) ///
+				xlabel(`yr_labels', labsize(small) angle(45) grid gmax) ///
+				xlabel(3.5 "1997", labsize(small) labcolor(red) ///
+					tlength(0) nogrid angle(45) add) ///
+				xscale(range(0.5 `xscale_max')) ///
+				xtitle("") ytitle("`lb'", size(small)) ///
 				legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
-					cols(3) size(tiny) ///
+					cols(3) size(small) position(6) ring(1) ///
 					region(lcolor(none)) ///
 					symxsize(5) keygap(1) rowgap(0)) ///
 				graphregion(color(white)) ///
 				plotregion(margin(l=1 r=1))
 
-			graph export "$output/pretrend/F_PT_`approach'_`outcome'.pdf", replace
-			graph export "$output/pretrend/F_PT_`approach'_`outcome'.png", replace width(2400)
+			graph export "$output/pretrend/`sample'/F_PT_`approach'_`outcome'.pdf", replace
+			graph export "$output/pretrend/`sample'/F_PT_`approach'_`outcome'.png", replace width(2400)
 
-			di as result "  => Saved F_PT_`approach'_`outcome'.pdf / .png"
+			di as result "  => Saved `sample'/F_PT_`approach'_`outcome'.pdf / .png"
 
 			restore
 
@@ -358,7 +379,9 @@ foreach approach in 1998 2000 {
 
 } // end foreach approach
 
+} // end foreach sample
+
 di as result _n "Done."
 di as result "Pre-trend figures (one per outcome) saved to: $output/pretrend/"
-di as result "  Approach 1998: F_PT_1998_*.pdf/png"
-di as result "  Approach 2000: F_PT_2000_*.pdf/png"
+di as result "  marg/: F_PT_1998_*.pdf/png  F_PT_2000_*.pdf/png"
+di as result "  all/:  F_PT_1998_*.pdf/png  F_PT_2000_*.pdf/png"
