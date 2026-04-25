@@ -116,6 +116,27 @@ g ln_hh_income_tot = log(hh_income_tot)
 g ln_hh_expenditure = log(hh_expenditure)
 
 
+/*************************************
+PREPROCESSING FOR STANDARDIZATION
+Calculate intensity statistics and create z-scored versions
+*************************************/
+* Calculate mean and SD of intensity variables (pre-period 1992-1996)
+sum inten1998 if inrange(year, 1992, 1996)
+local inten1998_mean = r(mean)
+local inten1998_sd = r(sd)
+
+sum inten2000 if inrange(year, 1992, 1996)
+local inten2000_mean = r(mean)
+local inten2000_sd = r(sd)
+
+* Create z-scored intensity variables
+gen inten1998_z = (inten1998 - `inten1998_mean') / `inten1998_sd'
+gen inten2000_z = (inten2000 - `inten2000_mean') / `inten2000_sd'
+
+* Store intensity stats as string macros for use in coefficient transformations
+local inten1998_mean_str : di %12.4f `inten1998_mean'
+local inten2000_mean_str : di %12.4f `inten2000_mean'
+
 
 /*************************************
 1. Set of 4 Tables: short-run effects (1998) - All Municipalities
@@ -129,135 +150,258 @@ local i = 1
 global individuals = "employed hrs_worked hrs_worked_pos ind_earnings ind_income_tot progresa_ind benef_gob_ind "
 
 foreach outcome in $individuals {
-	
+
 	reghdfe `outcome' c.inten1998#i.post [pweight=exp_factor] if ///
 	`outcome'_out == 0 & inrange(year, 1992, 1998), ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
-	
-	local OLS_w98_`i'_aux: di %12.3f  _b[1.post#c.inten1998]
-	local SE_w98_`i' : di %12.3f  _se[1.post#c.inten1998]
-	
-	
-	local t_`i' = abs(_b[1.post#c.inten1998]/_se[1.post#c.inten1998])
-	
+
+	* Store raw coefficient and SE
+	local coef_raw = _b[1.post#c.inten1998]
+	local se_raw = _se[1.post#c.inten1998]
+	local mean_outcome = .
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_outcome = r(mean)
+
+	* Calculate different standardization versions
+	local coef_zscore = `coef_raw' * `inten1998_sd'
+	local coef_pct = (`coef_raw' * `inten1998_mean' / `mean_outcome') * 100
+	local coef_marg = `coef_raw' * `inten1998_mean'
+
+	* Format raw coefficient with significance
+	local OLS_w98_`i'_aux: di %12.3f  `coef_raw'
+	local SE_w98_`i' : di %12.3f  `se_raw'
+
+	local t_`i' = abs(`coef_raw'/`se_raw')
+
 	if (`t_`i'' >= 2.576) {
-		local OLS_w98_`i' = "`OLS_w98_`i'_aux'***"	
-	} 
+		local OLS_w98_`i' = "`OLS_w98_`i'_aux'***"
+	}
 
 	if inrange(`t_`i'', 1.96, 2.575) {
-		local OLS_w98_`i' = "`OLS_w98_`i'_aux'**"	
-	} 
+		local OLS_w98_`i' = "`OLS_w98_`i'_aux'**"
+	}
 
 
 	if inrange(`t_`i'', 1.645, 1.96) {
-		local OLS_w98_`i' = "`OLS_w98_`i'_aux'*"	
-	} 
+		local OLS_w98_`i' = "`OLS_w98_`i'_aux'*"
+	}
 
 	if (`t_`i'' < 1.645) {
-		local OLS_w98_`i' = "`OLS_w98_`i'_aux'"	
-	} 
-	
-	
+		local OLS_w98_`i' = "`OLS_w98_`i'_aux'"
+	}
+
+	* Format standardized versions
+	local OLS_w98_z_`i'_aux: di %12.3f  `coef_zscore'
+	local OLS_w98_pct_`i'_aux: di %12.3f  `coef_pct'
+	local OLS_w98_marg_`i'_aux: di %12.3f  `coef_marg'
+
+	* Apply significance stars to standardized versions (using same t-stat)
+	if (`t_`i'' >= 2.576) {
+		local OLS_w98_z_`i' = "`OLS_w98_z_`i'_aux'***"
+		local OLS_w98_pct_`i' = "`OLS_w98_pct_`i'_aux'***"
+		local OLS_w98_marg_`i' = "`OLS_w98_marg_`i'_aux'***"
+	}
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_w98_z_`i' = "`OLS_w98_z_`i'_aux'**"
+		local OLS_w98_pct_`i' = "`OLS_w98_pct_`i'_aux'**"
+		local OLS_w98_marg_`i' = "`OLS_w98_marg_`i'_aux'**"
+	}
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_w98_z_`i' = "`OLS_w98_z_`i'_aux'*"
+		local OLS_w98_pct_`i' = "`OLS_w98_pct_`i'_aux'*"
+		local OLS_w98_marg_`i' = "`OLS_w98_marg_`i'_aux'*"
+	}
+
+	if (`t_`i'' < 1.645) {
+		local OLS_w98_z_`i' = "`OLS_w98_z_`i'_aux'"
+		local OLS_w98_pct_`i' = "`OLS_w98_pct_`i'_aux'"
+		local OLS_w98_marg_`i' = "`OLS_w98_marg_`i'_aux'"
+	}
+
 	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
 	local mean_dep_w`i' : di %12.2fc `r(mean)'
-	
+
 	local N_w`i' : di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
-	local n_mun`i' : di %12.0fc `r(ndistinct)' 
-	
-	*increment on i 
+	local n_mun`i' : di %12.0fc `r(ndistinct)'
+
+	*increment on i
     local ++i
-	
+
 }
 
 
 * --- Female ---
 local i = 1
 foreach outcome in $individuals {
-	
+
 	reghdfe `outcome' c.inten1998#i.post [pweight=exp_factor] if ///
 	`outcome'_out == 0 & inrange(year, 1992, 1998) & female == 1, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
-	
-	local OLS_f98_`i'_aux: di %12.3f  _b[1.post#c.inten1998]
-	local SE_f98_`i' : di %12.3f  _se[1.post#c.inten1998]
-	
-	
-	local t_`i' = abs(_b[1.post#c.inten1998]/_se[1.post#c.inten1998])
-	
+
+	* Store raw coefficient and SE
+	local coef_raw = _b[1.post#c.inten1998]
+	local se_raw = _se[1.post#c.inten1998]
+	local mean_outcome = .
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_outcome = r(mean)
+
+	* Calculate standardization versions
+	local coef_zscore = `coef_raw' * `inten1998_sd'
+	local coef_pct = (`coef_raw' * `inten1998_mean' / `mean_outcome') * 100
+	local coef_marg = `coef_raw' * `inten1998_mean'
+
+	* Format raw coefficient with significance
+	local OLS_f98_`i'_aux: di %12.3f  `coef_raw'
+	local SE_f98_`i' : di %12.3f  `se_raw'
+
+	local t_`i' = abs(`coef_raw'/`se_raw')
+
 	if (`t_`i'' >= 2.576) {
-		local OLS_f98_`i' = "`OLS_f98_`i'_aux'***"	
-	} 
+		local OLS_f98_`i' = "`OLS_f98_`i'_aux'***"
+	}
 
 	if inrange(`t_`i'', 1.96, 2.575) {
-		local OLS_f98_`i' = "`OLS_f98_`i'_aux'**"	
-	} 
+		local OLS_f98_`i' = "`OLS_f98_`i'_aux'**"
+	}
 
 
 	if inrange(`t_`i'', 1.645, 1.96) {
-		local OLS_f98_`i' = "`OLS_f98_`i'_aux'*"	
-	} 
+		local OLS_f98_`i' = "`OLS_f98_`i'_aux'*"
+	}
 
 	if (`t_`i'' < 1.645) {
-		local OLS_f98_`i' = "`OLS_f98_`i'_aux'"	
-	} 
-	
-	
+		local OLS_f98_`i' = "`OLS_f98_`i'_aux'"
+	}
+
+	* Format standardized versions
+	local OLS_f98_z_`i'_aux: di %12.3f  `coef_zscore'
+	local OLS_f98_pct_`i'_aux: di %12.3f  `coef_pct'
+	local OLS_f98_marg_`i'_aux: di %12.3f  `coef_marg'
+
+	* Apply significance stars
+	if (`t_`i'' >= 2.576) {
+		local OLS_f98_z_`i' = "`OLS_f98_z_`i'_aux'***"
+		local OLS_f98_pct_`i' = "`OLS_f98_pct_`i'_aux'***"
+		local OLS_f98_marg_`i' = "`OLS_f98_marg_`i'_aux'***"
+	}
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_f98_z_`i' = "`OLS_f98_z_`i'_aux'**"
+		local OLS_f98_pct_`i' = "`OLS_f98_pct_`i'_aux'**"
+		local OLS_f98_marg_`i' = "`OLS_f98_marg_`i'_aux'**"
+	}
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_f98_z_`i' = "`OLS_f98_z_`i'_aux'*"
+		local OLS_f98_pct_`i' = "`OLS_f98_pct_`i'_aux'*"
+		local OLS_f98_marg_`i' = "`OLS_f98_marg_`i'_aux'*"
+	}
+
+	if (`t_`i'' < 1.645) {
+		local OLS_f98_z_`i' = "`OLS_f98_z_`i'_aux'"
+		local OLS_f98_pct_`i' = "`OLS_f98_pct_`i'_aux'"
+		local OLS_f98_marg_`i' = "`OLS_f98_marg_`i'_aux'"
+	}
+
 	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
 	local mean_dep_f`i' : di %12.2fc `r(mean)'
-	
+
 	local N_f`i' : di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
-	local n_mun`i' : di %12.0fc `r(ndistinct)' 
-	
-	*increment on i 
+	local n_mun`i' : di %12.0fc `r(ndistinct)'
+
+	*increment on i
     local ++i
-	
+
 }
 
 
 * --- Male ---
 local i = 1
 foreach outcome in $individuals {
-	
+
 	reghdfe `outcome' c.inten1998#i.post [pweight=exp_factor] if ///
 	`outcome'_out == 0 & inrange(year, 1992, 1998) & female == 0, ///
 	a(year cve_ent_mun_super) cluster(cve_ent_mun_super)
-	
-	local OLS_m98_`i'_aux: di %12.3f  _b[1.post#c.inten1998]
-	local SE_m98_`i' : di %12.3f  _se[1.post#c.inten1998]
-	
-	
-	local t_`i' = abs(_b[1.post#c.inten1998]/_se[1.post#c.inten1998])
-	
+
+	* Store raw coefficient and SE
+	local coef_raw = _b[1.post#c.inten1998]
+	local se_raw = _se[1.post#c.inten1998]
+	local mean_outcome = .
+	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
+	local mean_outcome = r(mean)
+
+	* Calculate standardization versions
+	local coef_zscore = `coef_raw' * `inten1998_sd'
+	local coef_pct = (`coef_raw' * `inten1998_mean' / `mean_outcome') * 100
+	local coef_marg = `coef_raw' * `inten1998_mean'
+
+	* Format raw coefficient with significance
+	local OLS_m98_`i'_aux: di %12.3f  `coef_raw'
+	local SE_m98_`i' : di %12.3f  `se_raw'
+
+	local t_`i' = abs(`coef_raw'/`se_raw')
+
 	if (`t_`i'' >= 2.576) {
-		local OLS_m98_`i' = "`OLS_m98_`i'_aux'***"	
-	} 
+		local OLS_m98_`i' = "`OLS_m98_`i'_aux'***"
+	}
 
 	if inrange(`t_`i'', 1.96, 2.575) {
-		local OLS_m98_`i' = "`OLS_m98_`i'_aux'**"	
-	} 
+		local OLS_m98_`i' = "`OLS_m98_`i'_aux'**"
+	}
 
 
 	if inrange(`t_`i'', 1.645, 1.96) {
-		local OLS_m98_`i' = "`OLS_m98_`i'_aux'*"	
-	} 
+		local OLS_m98_`i' = "`OLS_m98_`i'_aux'*"
+	}
 
 	if (`t_`i'' < 1.645) {
-		local OLS_m98_`i' = "`OLS_m98_`i'_aux'"	
-	} 
-	
-	
+		local OLS_m98_`i' = "`OLS_m98_`i'_aux'"
+	}
+
+	* Format standardized versions
+	local OLS_m98_z_`i'_aux: di %12.3f  `coef_zscore'
+	local OLS_m98_pct_`i'_aux: di %12.3f  `coef_pct'
+	local OLS_m98_marg_`i'_aux: di %12.3f  `coef_marg'
+
+	* Apply significance stars
+	if (`t_`i'' >= 2.576) {
+		local OLS_m98_z_`i' = "`OLS_m98_z_`i'_aux'***"
+		local OLS_m98_pct_`i' = "`OLS_m98_pct_`i'_aux'***"
+		local OLS_m98_marg_`i' = "`OLS_m98_marg_`i'_aux'***"
+	}
+
+	if inrange(`t_`i'', 1.96, 2.575) {
+		local OLS_m98_z_`i' = "`OLS_m98_z_`i'_aux'**"
+		local OLS_m98_pct_`i' = "`OLS_m98_pct_`i'_aux'**"
+		local OLS_m98_marg_`i' = "`OLS_m98_marg_`i'_aux'**"
+	}
+
+	if inrange(`t_`i'', 1.645, 1.96) {
+		local OLS_m98_z_`i' = "`OLS_m98_z_`i'_aux'*"
+		local OLS_m98_pct_`i' = "`OLS_m98_pct_`i'_aux'*"
+		local OLS_m98_marg_`i' = "`OLS_m98_marg_`i'_aux'*"
+	}
+
+	if (`t_`i'' < 1.645) {
+		local OLS_m98_z_`i' = "`OLS_m98_z_`i'_aux'"
+		local OLS_m98_pct_`i' = "`OLS_m98_pct_`i'_aux'"
+		local OLS_m98_marg_`i' = "`OLS_m98_marg_`i'_aux'"
+	}
+
 	sum `outcome' [fweight = exp_factor] if e(sample) & post == 2
 	local mean_dep_m`i' : di %12.2fc `r(mean)'
-	
+
 	local N_m`i' : di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
-	local n_mun`i' : di %12.0fc `r(ndistinct)' 
-	
-	*increment on i 
+	local n_mun`i' : di %12.0fc `r(ndistinct)'
+
+	*increment on i
     local ++i
-	
+
 }
 
 {
@@ -274,6 +418,7 @@ file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 		file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7'  \\  "_n
+		file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str'  \\  "_n
 		file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
@@ -281,6 +426,7 @@ file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
 		file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7'  \\  "_n
+		file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str'  \\  "_n
 		file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
@@ -288,6 +434,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 		file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7')\\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7'  \\  "_n
+		file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str'  \\  "_n
 		file write sm "Obs & `N_m1'  & `N_m2' & `N_m3' & `N_m4' & `N_m5' & `N_m6' & `N_m7' \\ "_n
 		file write sm "  & & &  & & & &  \\ "_n
 		file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
