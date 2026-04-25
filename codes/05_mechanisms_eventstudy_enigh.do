@@ -237,7 +237,7 @@ foreach approach in 1998 2000 {
 		local yr_labels  `"1 "1992" 2 "1994" 3 "1996" 4 "2000""'
 		local xscale_max 4.5
 	}
-
+fvset base 1996 year
 	foreach tbl in T1 T2 T3 T4 {
 
 		* Unit of observation: individual (T1) vs household (T2-T4)
@@ -264,7 +264,7 @@ foreach approach in 1998 2000 {
 				if "`grp'" == "f" local grp_cond "& `fem_var' == 1"
 				if "`grp'" == "m" local grp_cond "& `fem_var' == 0"
 
-				cap noisily reghdfe `outcome' ib1996.year ib1996.year#c.`inten_var' ///
+				cap noisily reghdfe `outcome' ib1996.year##c.`inten_var' ///
 					[pweight = exp_factor] ///
 					if `hh_cond'`outcome'_out == 0 `sample_cond' ///
 					`yr_excl' `grp_cond', ///
@@ -354,20 +354,20 @@ foreach approach in 1998 2000 {
 					lpattern(solid) lwidth(thin)), ///
 				yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 				xline(3.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-				xlabel(`yr_labels', labsize(small) angle(45) grid gmax) ///
-				xlabel(3.5 "1997", labsize(small) labcolor(red) ///
+				xlabel(`yr_labels', labsize(medsmall) angle(45) grid gmax labcolor(black)) ///
+				xlabel(3.5 "1997", labsize(medsmall) labcolor(black) ///
 					tlength(0) nogrid angle(45) add) ///
 				xscale(range(0.5 `xscale_max')) ///
-				xtitle("") ytitle("`lb'", size(small)) ///
+				xtitle("") ytitle("`lb'", size(medsmall)) ///
 				legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
-					cols(3) size(small) position(6) ring(1) ///
+					cols(3) size(medsmall) position(6) ring(1) ///
 					region(lcolor(none)) ///
 					symxsize(5) keygap(1) rowgap(0)) ///
 				graphregion(color(white)) ///
 				plotregion(margin(l=1 r=1))
 
 			graph export "$output/pretrend/`sample'/F_PT_`approach'_`outcome'.pdf", replace
-			graph export "$output/pretrend/`sample'/F_PT_`approach'_`outcome'.png", replace width(2400)
+			*graph export "$output/pretrend/`sample'/F_PT_`approach'_`outcome'.png", replace width(2400)
 
 			di as result "  => Saved `sample'/F_PT_`approach'_`outcome'.pdf / .png"
 
