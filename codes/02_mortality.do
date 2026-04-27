@@ -533,7 +533,7 @@ foreach pnl in p m f {
 	file write sm " & (`seFF05_p_1') & (`seFF05_p_2') & (`seFF05_p_3') & (`seFF05_p_4') & (`seFF05_p_5') & (`seFF05_p_6') \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Mean (1991-1996) & `meanFF_p_1' & `meanFF_p_2' & `meanFF_p_3' & `meanFF_p_4' & `meanFF_p_5' & `meanFF_p_6' \\ " _n
-	file write sm "Obs & `NFF_p_1' & `NFF_p_2' & `NFF_p_3' & `NFF_p_4' & `NFF_p_5' & `NFF_p_6' \\ " _n
+	
 	file write sm "  & & & & & & \\ " _n
 	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_m_1' & `bFF99_m_2' & `bFF99_m_3' & `bFF99_m_4' & `bFF99_m_5' & `bFF99_m_6' \\ " _n
@@ -543,7 +543,7 @@ foreach pnl in p m f {
 	file write sm " & (`seFF05_m_1') & (`seFF05_m_2') & (`seFF05_m_3') & (`seFF05_m_4') & (`seFF05_m_5') & (`seFF05_m_6') \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Mean (1991-1996) & `meanFF_m_1' & `meanFF_m_2' & `meanFF_m_3' & `meanFF_m_4' & `meanFF_m_5' & `meanFF_m_6' \\ " _n
-	file write sm "Obs & `NFF_m_1' & `NFF_m_2' & `NFF_m_3' & `NFF_m_4' & `NFF_m_5' & `NFF_m_6' \\ " _n
+	
 	file write sm "  & & & & & & \\ " _n
 	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_f_1' & `bFF99_f_2' & `bFF99_f_3' & `bFF99_f_4' & `bFF99_f_5' & `bFF99_f_6' \\ " _n
@@ -553,8 +553,8 @@ foreach pnl in p m f {
 	file write sm " & (`seFF05_f_1') & (`seFF05_f_2') & (`seFF05_f_3') & (`seFF05_f_4') & (`seFF05_f_5') & (`seFF05_f_6') \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Mean (1991-1996) & `meanFF_f_1' & `meanFF_f_2' & `meanFF_f_3' & `meanFF_f_4' & `meanFF_f_5' & `meanFF_f_6' \\ " _n
-	file write sm "Obs & `NFF_f_1' & `NFF_f_2' & `NFF_f_3' & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' \\ " _n
 	file write sm "  & & & & & & \\ " _n
+	file write sm "Obs & `NFF_f_1' & `NFF_f_2' & `NFF_f_3' & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' \\ " _n
 	file write sm "No. Mun & `NmunFF_p_1' & `NmunFF_p_2' & `NmunFF_p_3' & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y \\ " _n
