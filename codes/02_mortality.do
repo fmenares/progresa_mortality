@@ -254,70 +254,81 @@ foreach pnl in p m f {
 
 global sample_br = "(inten_start_year==1998 |inten_start_year==1999)"
 
-* Col 1 (BR original): placeholder — fill by hand from published table
-* Col 2: lag2, 1992-2002, unweighted
-reghdfe emr65 lag2_intensity_new if inrange(year, 1992, 2002) & $sample_br, ///
-	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-local aux: di %12.3f _b[lag2_intensity_new]
-local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
-if      `t' >= 2.576 local bBR2_2 = "`aux'***"
-else if `t' >= 1.96  local bBR2_2 = "`aux'**"
-else if `t' >= 1.645 local bBR2_2 = "`aux'*"
-else                  local bBR2_2 = "`aux'"
-local seBR2_2: di %12.3f _se[lag2_intensity_new]
-sum emr65 if e(sample) & post == 2
-local meanBR_2: di %12.2fc `r(mean)'
-local NBR_2: di %12.0fc `e(N)'
-distinct cve_ent_mun_super if e(sample)
-local NmunBR_2: di %12.0fc `r(ndistinct)'
-
-* Col 3: lag2, 1992-2002, weighted
-reghdfe emr65 lag2_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
-	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-local aux: di %12.3f _b[lag2_intensity_new]
-local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
-if      `t' >= 2.576 local bBR2_3 = "`aux'***"
-else if `t' >= 1.96  local bBR2_3 = "`aux'**"
-else if `t' >= 1.645 local bBR2_3 = "`aux'*"
-else                  local bBR2_3 = "`aux'"
-local seBR2_3: di %12.3f _se[lag2_intensity_new]
-sum emr65 if e(sample) & post == 2
-local meanBR_3: di %12.2fc `r(mean)'
-local NBR_3: di %12.0fc `e(N)'
-distinct cve_ent_mun_super if e(sample)
-local NmunBR_3: di %12.0fc `r(ndistinct)'
-
-* Col 4: lag1, 1992-2002, weighted
-reghdfe emr65 lag_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
-	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-local aux: di %12.3f _b[lag_intensity_new]
-local t = abs(_b[lag_intensity_new] / _se[lag_intensity_new])
-if      `t' >= 2.576 local bBR1_4 = "`aux'***"
-else if `t' >= 1.96  local bBR1_4 = "`aux'**"
-else if `t' >= 1.645 local bBR1_4 = "`aux'*"
-else                  local bBR1_4 = "`aux'"
-local seBR1_4: di %12.3f _se[lag_intensity_new]
-sum emr65 if e(sample) & post == 2
-local meanBR_4: di %12.2fc `r(mean)'
-local NBR_4: di %12.0fc `e(N)'
-distinct cve_ent_mun_super if e(sample)
-local NmunBR_4: di %12.0fc `r(ndistinct)'
-
-* Col 5: lag3, 1992-2002, weighted
-reghdfe emr65 lag3_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
-	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-local aux: di %12.3f _b[lag3_intensity_new]
-local t = abs(_b[lag3_intensity_new] / _se[lag3_intensity_new])
-if      `t' >= 2.576 local bBR3_5 = "`aux'***"
-else if `t' >= 1.96  local bBR3_5 = "`aux'**"
-else if `t' >= 1.645 local bBR3_5 = "`aux'*"
-else                  local bBR3_5 = "`aux'"
-local seBR3_5: di %12.3f _se[lag3_intensity_new]
-sum emr65 if e(sample) & post == 2
-local meanBR_5: di %12.2fc `r(mean)'
-local NBR_5: di %12.0fc `e(N)'
-distinct cve_ent_mun_super if e(sample)
-local NmunBR_5: di %12.0fc `r(ndistinct)'
+* Run all 4 specs for each sex; capture mean/N/Nmun per sex per column
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local outcome emr65
+		local wvar   popover65_
+	}
+	else if "`pnl'" == "m" {
+		local outcome emr65m
+		local wvar   popover65_m
+	}
+	else {
+		local outcome emr65f
+		local wvar   popover65_f
+	}
+	* Col 2: lag2, UW
+	reghdfe `outcome' lag2_intensity_new if inrange(year, 1992, 2002) & $sample_br, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[lag2_intensity_new]
+	local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+	if      `t' >= 2.576 local bBR2_2_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bBR2_2_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bBR2_2_`pnl' = "`aux'*"
+	else                  local bBR2_2_`pnl' = "`aux'"
+	local seBR2_2_`pnl': di %12.3f _se[lag2_intensity_new]
+	sum `outcome' if e(sample) & post == 2
+	local meanBR_2_`pnl': di %12.2fc `r(mean)'
+	local NBR_2_`pnl': di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunBR_2_`pnl': di %12.0fc `r(ndistinct)'
+	* Col 3: lag2, W
+	reghdfe `outcome' lag2_intensity_new [aw=`wvar'] if inrange(year, 1992, 2002) & $sample_br, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[lag2_intensity_new]
+	local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+	if      `t' >= 2.576 local bBR2_3_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bBR2_3_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bBR2_3_`pnl' = "`aux'*"
+	else                  local bBR2_3_`pnl' = "`aux'"
+	local seBR2_3_`pnl': di %12.3f _se[lag2_intensity_new]
+	sum `outcome' if e(sample) & post == 2
+	local meanBR_3_`pnl': di %12.2fc `r(mean)'
+	local NBR_3_`pnl': di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunBR_3_`pnl': di %12.0fc `r(ndistinct)'
+	* Col 4: lag1, W
+	reghdfe `outcome' lag_intensity_new [aw=`wvar'] if inrange(year, 1992, 2002) & $sample_br, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[lag_intensity_new]
+	local t = abs(_b[lag_intensity_new] / _se[lag_intensity_new])
+	if      `t' >= 2.576 local bBR1_4_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bBR1_4_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bBR1_4_`pnl' = "`aux'*"
+	else                  local bBR1_4_`pnl' = "`aux'"
+	local seBR1_4_`pnl': di %12.3f _se[lag_intensity_new]
+	sum `outcome' if e(sample) & post == 2
+	local meanBR_4_`pnl': di %12.2fc `r(mean)'
+	local NBR_4_`pnl': di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunBR_4_`pnl': di %12.0fc `r(ndistinct)'
+	* Col 5: lag3, W
+	reghdfe `outcome' lag3_intensity_new [aw=`wvar'] if inrange(year, 1992, 2002) & $sample_br, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[lag3_intensity_new]
+	local t = abs(_b[lag3_intensity_new] / _se[lag3_intensity_new])
+	if      `t' >= 2.576 local bBR3_5_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bBR3_5_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bBR3_5_`pnl' = "`aux'*"
+	else                  local bBR3_5_`pnl' = "`aux'"
+	local seBR3_5_`pnl': di %12.3f _se[lag3_intensity_new]
+	sum `outcome' if e(sample) & post == 2
+	local meanBR_5_`pnl': di %12.2fc `r(mean)'
+	local NBR_5_`pnl': di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunBR_5_`pnl': di %12.0fc `r(ndistinct)'
+}
 
 {
 	cap file close sm
@@ -326,18 +337,46 @@ local NmunBR_5: di %12.0fc `r(ndistinct)'
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}" _n
 	file write sm "& BR (2013) & Replication & Replic.+W & 1yr lag+W & 3yr lag+W \\ \toprule" _n
-	file write sm "2-yr lagged Intensity & -6.37*** & `bBR2_2' & `bBR2_3' & & \\ " _n
-	file write sm " & & (`seBR2_2') & (`seBR2_3') & & \\ " _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_p' & `bBR2_3_p' & & \\ " _n
+	file write sm " & & (`seBR2_2_p') & (`seBR2_3_p') & & \\ " _n
 	file write sm "  & & & & & \\ " _n
-	file write sm "1-yr lagged Intensity & & & & `bBR1_4' & \\ " _n
-	file write sm " & & & & (`seBR1_4') & \\ " _n
+	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_p' & \\ " _n
+	file write sm " & & & & (`seBR1_4_p') & \\ " _n
 	file write sm "  & & & & & \\ " _n
-	file write sm "3-yr lagged Intensity & & & & & `bBR3_5' \\ " _n
-	file write sm " & & & & & (`seBR3_5') \\ " _n
+	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_p' \\ " _n
+	file write sm " & & & & & (`seBR3_5_p') \\ " _n
 	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & 47.5 & `meanBR_2' & `meanBR_3' & `meanBR_4' & `meanBR_5' \\ " _n
-	file write sm "Obs &  21,571 & `NBR_2' & `NBR_3' & `NBR_4' & `NBR_5' \\ " _n
-	file write sm "No. Mun & 1,961 & `NmunBR_2' & `NmunBR_3' & `NmunBR_4' & `NmunBR_5' \\ " _n
+	file write sm "Mean (1991-1996) & -- & `meanBR_2_p' & `meanBR_3_p' & `meanBR_4_p' & `meanBR_5_p' \\ " _n
+	file write sm "Obs & -- & `NBR_2_p' & `NBR_3_p' & `NBR_4_p' & `NBR_5_p' \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_m' & `bBR2_3_m' & & \\ " _n
+	file write sm " & & (`seBR2_2_m') & (`seBR2_3_m') & & \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_m' & \\ " _n
+	file write sm " & & & & (`seBR1_4_m') & \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_m' \\ " _n
+	file write sm " & & & & & (`seBR3_5_m') \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & -- & `meanBR_2_m' & `meanBR_3_m' & `meanBR_4_m' & `meanBR_5_m' \\ " _n
+	file write sm "Obs & -- & `NBR_2_m' & `NBR_3_m' & `NBR_4_m' & `NBR_5_m' \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_f' & `bBR2_3_f' & & \\ " _n
+	file write sm " & & (`seBR2_2_f') & (`seBR2_3_f') & & \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_f' & \\ " _n
+	file write sm " & & & & (`seBR1_4_f') & \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_f' \\ " _n
+	file write sm " & & & & & (`seBR3_5_f') \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & -- & `meanBR_2_f' & `meanBR_3_f' & `meanBR_4_f' & `meanBR_5_f' \\ " _n
+	file write sm "Obs & -- & `NBR_2_f' & `NBR_3_f' & `NBR_4_f' & `NBR_5_f' \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "No. Mun & -- & `NmunBR_2_p' & `NmunBR_3_p' & `NmunBR_4_p' & `NmunBR_5_p' \\ " _n
 	file write sm "  & & & & & \\ " _n
 	file write sm "Year FE & Y & Y & Y & Y & Y \\ " _n
 	file write sm "Mun FE & Y & Y & Y & Y & Y \\ " _n
