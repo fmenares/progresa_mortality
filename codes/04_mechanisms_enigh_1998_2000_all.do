@@ -455,13 +455,13 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 
 {
 	cap file close sm
-	file open sm using "$tables/1998/T1_ind_enigh_1992_1998_all_zscore.tex", write replace
+	file open sm using "$tables/1998/T1_ind_enigh_1992_1998_all_z.tex", write replace
 	file write sm "\begin{tabular}{lccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5' & `OLS_w98_z_6' & `OLS_w98_z_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5' & `OLS_w98_z_6' & `OLS_w98_z_7'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7'  \\  "_n
@@ -469,7 +469,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5' & `OLS_f98_z_6' & `OLS_f98_z_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5' & `OLS_f98_z_6' & `OLS_f98_z_7'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7'  \\  "_n
@@ -477,7 +477,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5' & `OLS_m98_z_6' & `OLS_m98_z_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5' & `OLS_m98_z_6' & `OLS_m98_z_7'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7'  \\  "_n
@@ -503,7 +503,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5' & `OLS_w98_pct_6' & `OLS_w98_pct_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5' & `OLS_w98_pct_6' & `OLS_w98_pct_7'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7'  \\  "_n
@@ -511,7 +511,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5' & `OLS_f98_pct_6' & `OLS_f98_pct_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5' & `OLS_f98_pct_6' & `OLS_f98_pct_7'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7'  \\  "_n
@@ -519,7 +519,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5' & `OLS_m98_pct_6' & `OLS_m98_pct_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5' & `OLS_m98_pct_6' & `OLS_m98_pct_7'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7'  \\  "_n
@@ -545,7 +545,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5' & `OLS_w98_marg_6' & `OLS_w98_marg_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5' & `OLS_w98_marg_6' & `OLS_w98_marg_7'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7'  \\  "_n
@@ -553,7 +553,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5' & `OLS_f98_marg_6' & `OLS_f98_marg_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5' & `OLS_f98_marg_6' & `OLS_f98_marg_7'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7'  \\  "_n
@@ -561,7 +561,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5' & `OLS_m98_marg_6' & `OLS_m98_marg_7'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5' & `OLS_m98_marg_6' & `OLS_m98_marg_7'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7')\\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7'  \\  "_n
@@ -890,13 +890,13 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 		
 {
 	cap file close sm
-	file open sm using "$tables/1998/T2_hh_enigh_1992_1998_all_zscore.tex", write replace
+	file open sm using "$tables/1998/T2_hh_enigh_1992_1998_all_z", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5' & `OLS_w98_z_6' & `OLS_w98_z_7' & `OLS_w98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5' & `OLS_w98_z_6' & `OLS_w98_z_7' & `OLS_w98_z_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7' & `mean_dep_w8'  \\  "_n
@@ -904,7 +904,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5' & `OLS_f98_z_6' & `OLS_f98_z_7' & `OLS_f98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5' & `OLS_f98_z_6' & `OLS_f98_z_7' & `OLS_f98_z_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7' & `mean_dep_f8'  \\  "_n
@@ -912,7 +912,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5' & `OLS_m98_z_6' & `OLS_m98_z_7' & `OLS_m98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5' & `OLS_m98_z_6' & `OLS_m98_z_7' & `OLS_m98_z_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7' & `mean_dep_m8'  \\  "_n
@@ -938,7 +938,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5' & `OLS_w98_pct_6' & `OLS_w98_pct_7' & `OLS_w98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5' & `OLS_w98_pct_6' & `OLS_w98_pct_7' & `OLS_w98_pct_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7' & `mean_dep_w8'  \\  "_n
@@ -946,7 +946,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5' & `OLS_f98_pct_6' & `OLS_f98_pct_7' & `OLS_f98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5' & `OLS_f98_pct_6' & `OLS_f98_pct_7' & `OLS_f98_pct_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7' & `mean_dep_f8'  \\  "_n
@@ -954,7 +954,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5' & `OLS_m98_pct_6' & `OLS_m98_pct_7' & `OLS_m98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5' & `OLS_m98_pct_6' & `OLS_m98_pct_7' & `OLS_m98_pct_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7' & `mean_dep_m8'  \\  "_n
@@ -980,7 +980,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5' & `OLS_w98_marg_6' & `OLS_w98_marg_7' & `OLS_w98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5' & `OLS_w98_marg_6' & `OLS_w98_marg_7' & `OLS_w98_marg_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6'& `mean_dep_w7' & `mean_dep_w8'  \\  "_n
@@ -988,7 +988,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5' & `OLS_f98_marg_6' & `OLS_f98_marg_7' & `OLS_f98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5' & `OLS_f98_marg_6' & `OLS_f98_marg_7' & `OLS_f98_marg_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6'& `mean_dep_f7' & `mean_dep_f8'  \\  "_n
@@ -996,7 +996,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5' & `OLS_m98_marg_6' & `OLS_m98_marg_7' & `OLS_m98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5' & `OLS_m98_marg_6' & `OLS_m98_marg_7' & `OLS_m98_marg_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6'& `mean_dep_m7' & `mean_dep_m8'  \\  "_n
@@ -1240,13 +1240,13 @@ foreach outcome in $hh_food {
 
 {
 	cap file close sm
-	file open sm using "$tables/1998/T3_food_enigh_1992_1998_all_zscore.tex", write replace
+	file open sm using "$tables/1998/T3_food_enigh_1992_1998_all_z", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5'  & `OLS_w98_z_6' & `OLS_w98_z_7' & `OLS_w98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5'  & `OLS_w98_z_6' & `OLS_w98_z_7' & `OLS_w98_z_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
@@ -1254,7 +1254,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5'  & `OLS_f98_z_6' & `OLS_f98_z_7' & `OLS_f98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5'  & `OLS_f98_z_6' & `OLS_f98_z_7' & `OLS_f98_z_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
@@ -1262,7 +1262,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5'  & `OLS_m98_z_6' & `OLS_m98_z_7' & `OLS_m98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5'  & `OLS_m98_z_6' & `OLS_m98_z_7' & `OLS_m98_z_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1288,7 +1288,7 @@ foreach outcome in $hh_food {
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5'  & `OLS_w98_pct_6' & `OLS_w98_pct_7' & `OLS_w98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5'  & `OLS_w98_pct_6' & `OLS_w98_pct_7' & `OLS_w98_pct_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
@@ -1296,7 +1296,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5'  & `OLS_f98_pct_6' & `OLS_f98_pct_7' & `OLS_f98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5'  & `OLS_f98_pct_6' & `OLS_f98_pct_7' & `OLS_f98_pct_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
@@ -1304,7 +1304,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5'  & `OLS_m98_pct_6' & `OLS_m98_pct_7' & `OLS_m98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5'  & `OLS_m98_pct_6' & `OLS_m98_pct_7' & `OLS_m98_pct_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1330,7 +1330,7 @@ foreach outcome in $hh_food {
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5'  & `OLS_w98_marg_6' & `OLS_w98_marg_7' & `OLS_w98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5'  & `OLS_w98_marg_6' & `OLS_w98_marg_7' & `OLS_w98_marg_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
@@ -1338,7 +1338,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5'  & `OLS_f98_marg_6' & `OLS_f98_marg_7' & `OLS_f98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5'  & `OLS_f98_marg_6' & `OLS_f98_marg_7' & `OLS_f98_marg_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
@@ -1346,7 +1346,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5'  & `OLS_m98_marg_6' & `OLS_m98_marg_7' & `OLS_m98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5'  & `OLS_m98_marg_6' & `OLS_m98_marg_7' & `OLS_m98_marg_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1595,13 +1595,13 @@ foreach outcome in $hh_health{
 
 {
 	cap file close sm
-	file open sm using "$tables/1998/T4_health_enigh_1992_1998_all_zscore.tex", write replace
+	file open sm using "$tables/1998/T4_health_enigh_1992_1998_all_z", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}   \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5'  & `OLS_w98_z_6' & `OLS_w98_z_7' & `OLS_w98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_z_1'  & `OLS_w98_z_2' & `OLS_w98_z_3' & `OLS_w98_z_4' & `OLS_w98_z_5'  & `OLS_w98_z_6' & `OLS_w98_z_7' & `OLS_w98_z_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
@@ -1609,7 +1609,7 @@ foreach outcome in $hh_health{
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5'  & `OLS_f98_z_6' & `OLS_f98_z_7' & `OLS_f98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_z_1'  & `OLS_f98_z_2' & `OLS_f98_z_3' & `OLS_f98_z_4' & `OLS_f98_z_5'  & `OLS_f98_z_6' & `OLS_f98_z_7' & `OLS_f98_z_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
@@ -1617,7 +1617,7 @@ foreach outcome in $hh_health{
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Z-score)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5'  & `OLS_m98_z_6' & `OLS_m98_z_7' & `OLS_m98_z_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_z_1'  & `OLS_m98_z_2' & `OLS_m98_z_3' & `OLS_m98_z_4' & `OLS_m98_z_5'  & `OLS_m98_z_6' & `OLS_m98_z_7' & `OLS_m98_z_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1643,7 +1643,7 @@ foreach outcome in $hh_health{
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5'  & `OLS_w98_pct_6' & `OLS_w98_pct_7' & `OLS_w98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_pct_1'  & `OLS_w98_pct_2' & `OLS_w98_pct_3' & `OLS_w98_pct_4' & `OLS_w98_pct_5'  & `OLS_w98_pct_6' & `OLS_w98_pct_7' & `OLS_w98_pct_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
@@ -1651,7 +1651,7 @@ foreach outcome in $hh_health{
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5'  & `OLS_f98_pct_6' & `OLS_f98_pct_7' & `OLS_f98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_pct_1'  & `OLS_f98_pct_2' & `OLS_f98_pct_3' & `OLS_f98_pct_4' & `OLS_f98_pct_5'  & `OLS_f98_pct_6' & `OLS_f98_pct_7' & `OLS_f98_pct_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
@@ -1659,7 +1659,7 @@ foreach outcome in $hh_health{
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (\% effect)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5'  & `OLS_m98_pct_6' & `OLS_m98_pct_7' & `OLS_m98_pct_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_pct_1'  & `OLS_m98_pct_2' & `OLS_m98_pct_3' & `OLS_m98_pct_4' & `OLS_m98_pct_5'  & `OLS_m98_pct_6' & `OLS_m98_pct_7' & `OLS_m98_pct_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1685,7 +1685,7 @@ foreach outcome in $hh_health{
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4} \cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8} \cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5'  & `OLS_w98_marg_6' & `OLS_w98_marg_7' & `OLS_w98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_w98_marg_1'  & `OLS_w98_marg_2' & `OLS_w98_marg_3' & `OLS_w98_marg_4' & `OLS_w98_marg_5'  & `OLS_w98_marg_6' & `OLS_w98_marg_7' & `OLS_w98_marg_8'\\  "_n
 	file write sm "& (`SE_w98_1')  & (`SE_w98_2') & (`SE_w98_3') & (`SE_w98_4') & (`SE_w98_5')  & (`SE_w98_6') & (`SE_w98_7') & (`SE_w98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'  & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'  & `mean_dep_w6' & `mean_dep_w7'  & `mean_dep_w8'  \\  "_n
@@ -1693,7 +1693,7 @@ foreach outcome in $hh_health{
 	file write sm "Obs & `N_w1'  & `N_w2' & `N_w3' & `N_w4' & `N_w5'  & `N_w6' & `N_w7'  & `N_w8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5'  & `OLS_f98_marg_6' & `OLS_f98_marg_7' & `OLS_f98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_f98_marg_1'  & `OLS_f98_marg_2' & `OLS_f98_marg_3' & `OLS_f98_marg_4' & `OLS_f98_marg_5'  & `OLS_f98_marg_6' & `OLS_f98_marg_7' & `OLS_f98_marg_8'\\  "_n
 	file write sm "& (`SE_f98_1')  & (`SE_f98_2') & (`SE_f98_3') & (`SE_f98_4') & (`SE_f98_5')  & (`SE_f98_6') & (`SE_f98_7') & (`SE_f98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'  & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'  & `mean_dep_f6' & `mean_dep_f7'  & `mean_dep_f8'  \\  "_n
@@ -1701,7 +1701,7 @@ foreach outcome in $hh_health{
 	file write sm "Obs & `N_f1'  & `N_f2' & `N_f3' & `N_f4' & `N_f5'  & `N_f6' & `N_f7'  & `N_f8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
-	file write sm "\textit{Intensity 1998 x post (Marginal)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5'  & `OLS_m98_marg_6' & `OLS_m98_marg_7' & `OLS_m98_marg_8'\\  "_n
+	file write sm "\textit{Intensity 1998 x post (1998)} & `OLS_m98_marg_1'  & `OLS_m98_marg_2' & `OLS_m98_marg_3' & `OLS_m98_marg_4' & `OLS_m98_marg_5'  & `OLS_m98_marg_6' & `OLS_m98_marg_7' & `OLS_m98_marg_8'\\  "_n
 	file write sm "& (`SE_m98_1')  & (`SE_m98_2') & (`SE_m98_3') & (`SE_m98_4') & (`SE_m98_5')  & (`SE_m98_6') & (`SE_m98_7') & (`SE_m98_8')\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'  & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'  & `mean_dep_m6' & `mean_dep_m7'  & `mean_dep_m8'  \\  "_n
@@ -1969,7 +1969,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_w00_z_1' & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1' & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1' & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6' & `mean_dep_w7'  \\\\  "_n
@@ -1977,7 +1977,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1' & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_f00_z_1' & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_z_1' & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1' & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6' & `mean_dep_f7'  \\\\  "_n
@@ -1985,7 +1985,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1' & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_m00_z_1' & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_z_1' & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1' & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6' & `mean_dep_m7'  \\\\  "_n
@@ -2012,7 +2012,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_w00_pct_1' & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1' & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1' & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6' & `mean_dep_w7'  \\\\  "_n
@@ -2020,7 +2020,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1' & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_f00_pct_1' & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_pct_1' & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1' & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6' & `mean_dep_f7'  \\\\  "_n
@@ -2028,7 +2028,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1' & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_m00_pct_1' & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_pct_1' & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1' & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6' & `mean_dep_m7'  \\\\  "_n
@@ -2055,7 +2055,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_w00_marg_1' & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1' & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1' & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5' & `mean_dep_w6' & `mean_dep_w7'  \\\\  "_n
@@ -2063,7 +2063,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1' & `N_w2' & `N_w3' & `N_w4' & `N_w5' & `N_w6' & `N_w7' \\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_f00_marg_1' & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_marg_1' & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1' & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5' & `mean_dep_f6' & `mean_dep_f7'  \\\\  "_n
@@ -2071,7 +2071,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1' & `N_f2' & `N_f3' & `N_f4' & `N_f5' & `N_f6' & `N_f7' \\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_m00_marg_1' & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_marg_1' & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7')\\\\ "_n
 	file write sm " &  & &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1' & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6' & `mean_dep_m7'  \\\\  "_n
@@ -2389,7 +2389,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -2397,7 +2397,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_f00_z_1'   & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7' & `OLS_f00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_z_1'   & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7' & `OLS_f00_z_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -2405,7 +2405,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_m00_z_1'   & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7' & `OLS_m00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_z_1'   & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7' & `OLS_m00_z_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -2432,7 +2432,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -2440,7 +2440,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_f00_pct_1'   & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7' & `OLS_f00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_pct_1'   & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7' & `OLS_f00_pct_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -2448,7 +2448,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_m00_pct_1'   & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7' & `OLS_m00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_pct_1'   & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7' & `OLS_m00_pct_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -2475,7 +2475,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -2483,7 +2483,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_f00_marg_1'   & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7' & `OLS_f00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_marg_1'   & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7' & `OLS_f00_marg_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -2491,7 +2491,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_m00_marg_1'   & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7' & `OLS_m00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_marg_1'   & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7' & `OLS_m00_marg_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -2806,7 +2806,7 @@ foreach outcome in $hh_food {
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -2814,7 +2814,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_f00_z_1'   & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7' & `OLS_f00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_z_1'   & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7' & `OLS_f00_z_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -2822,7 +2822,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_m00_z_1'   & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7' & `OLS_m00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_z_1'   & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7' & `OLS_m00_z_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -2849,7 +2849,7 @@ foreach outcome in $hh_food {
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -2857,7 +2857,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_f00_pct_1'   & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7' & `OLS_f00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_pct_1'   & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7' & `OLS_f00_pct_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -2865,7 +2865,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_m00_pct_1'   & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7' & `OLS_m00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_pct_1'   & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7' & `OLS_m00_pct_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -2892,7 +2892,7 @@ foreach outcome in $hh_food {
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -2900,7 +2900,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_f00_marg_1'   & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7' & `OLS_f00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_marg_1'   & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7' & `OLS_f00_marg_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -2908,7 +2908,7 @@ foreach outcome in $hh_food {
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_m00_marg_1'   & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7' & `OLS_m00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_marg_1'   & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7' & `OLS_m00_marg_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -3225,7 +3225,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -3233,7 +3233,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_f00_z_1'   & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7' & `OLS_f00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_z_1'   & `OLS_f00_z_2' & `OLS_f00_z_3' & `OLS_f00_z_4' & `OLS_f00_z_5' & `OLS_f00_z_6' & `OLS_f00_z_7' & `OLS_f00_z_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -3241,7 +3241,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Z-score)} & `OLS_m00_z_1'   & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7' & `OLS_m00_z_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_z_1'   & `OLS_m00_z_2' & `OLS_m00_z_3' & `OLS_m00_z_4' & `OLS_m00_z_5' & `OLS_m00_z_6' & `OLS_m00_z_7' & `OLS_m00_z_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -3268,7 +3268,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -3276,7 +3276,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_f00_pct_1'   & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7' & `OLS_f00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_pct_1'   & `OLS_f00_pct_2' & `OLS_f00_pct_3' & `OLS_f00_pct_4' & `OLS_f00_pct_5' & `OLS_f00_pct_6' & `OLS_f00_pct_7' & `OLS_f00_pct_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -3284,7 +3284,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (\\% effect)} & `OLS_m00_pct_1'   & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7' & `OLS_m00_pct_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_pct_1'   & `OLS_m00_pct_2' & `OLS_m00_pct_3' & `OLS_m00_pct_4' & `OLS_m00_pct_5' & `OLS_m00_pct_6' & `OLS_m00_pct_7' & `OLS_m00_pct_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
@@ -3311,7 +3311,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_w1'   & `mean_dep_w2' & `mean_dep_w3' & `mean_dep_w4' & `mean_dep_w5'   & `mean_dep_w6' & `mean_dep_w7'   & `mean_dep_w8'  \\\\  "_n
@@ -3319,7 +3319,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_w1'   & `N_w2' & `N_w3' & `N_w4' & `N_w5'   & `N_w6' & `N_w7'   & `N_w8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel B: Females}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_f00_marg_1'   & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7' & `OLS_f00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_f00_marg_1'   & `OLS_f00_marg_2' & `OLS_f00_marg_3' & `OLS_f00_marg_4' & `OLS_f00_marg_5' & `OLS_f00_marg_6' & `OLS_f00_marg_7' & `OLS_f00_marg_8'\\\\  "_n
 	file write sm "& (`SE_f00_1') & (`SE_f00_2') & (`SE_f00_3') & (`SE_f00_4') & (`SE_f00_5') & (`SE_f00_6') & (`SE_f00_7') & (`SE_f00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_f1'   & `mean_dep_f2' & `mean_dep_f3' & `mean_dep_f4' & `mean_dep_f5'   & `mean_dep_f6' & `mean_dep_f7'   & `mean_dep_f8'  \\\\  "_n
@@ -3327,7 +3327,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Obs & `N_f1'   & `N_f2' & `N_f3' & `N_f4' & `N_f5'   & `N_f6' & `N_f7'   & `N_f8' \\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "\underline{\textit{Panel C: Males}}  \\\\  "_n
-	file write sm "\textit{Intensity 2000 x post (Marginal)} & `OLS_m00_marg_1'   & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7' & `OLS_m00_marg_8'\\\\  "_n
+	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_m00_marg_1'   & `OLS_m00_marg_2' & `OLS_m00_marg_3' & `OLS_m00_marg_4' & `OLS_m00_marg_5' & `OLS_m00_marg_6' & `OLS_m00_marg_7' & `OLS_m00_marg_8'\\\\  "_n
 	file write sm "& (`SE_m00_1') & (`SE_m00_2') & (`SE_m00_3') & (`SE_m00_4') & (`SE_m00_5') & (`SE_m00_6') & (`SE_m00_7') & (`SE_m00_8')\\\\ "_n
 	file write sm " &  & &  &  &  &  &  & \\\\ "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\\\  "_n
