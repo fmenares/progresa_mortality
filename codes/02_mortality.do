@@ -20,8 +20,8 @@ set more off
  if c(username)=="FELIPEME" {
     global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables"
-	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
+	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
 	global SP "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 
@@ -115,10 +115,11 @@ twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
        (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
        (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
        (line intensity_new year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
-	ytitle("Excess Mortality Rate (65+)", axis(1)) ///
-	ytitle("PROGRESA Penetration", axis(2)) ///
+	ytitle("Mortality Rate (65+)", axis(1)) ///
+	ytitle("PROGRESA Intensity", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)")) ///
+	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
+	cols(3) size(medsmall) position(6) ring(1)) ///
 	graphregion(fcolor(white))
 graph export "$figures/Figure_1a_all.pdf", as(pdf) replace
 restore
@@ -131,10 +132,11 @@ twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
        (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
        (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
        (line intensity_new year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
-	ytitle("Excess Mortality Rate (65+)", axis(1)) ///
+	ytitle("Mortality Rate (65+)", axis(1)) ///
 	ytitle("PROGRESA Penetration", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)")) ///
+	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
+	cols(3) size(medsmall) position(6) ring(1)) ///	
 	graphregion(fcolor(white))
 graph export "$figures/Figure_1b_marg.pdf", as(pdf) replace
 restore
@@ -324,7 +326,7 @@ local NmunBR_5: di %12.0fc `r(ndistinct)'
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}" _n
 	file write sm "& BR (2013) & Replication & Replic.+W & 1yr lag+W & 3yr lag+W \\ \toprule" _n
-	file write sm "2-yr lagged Intensity & -- & `bBR2_2' & `bBR2_3' & & \\ " _n
+	file write sm "2-yr lagged Intensity & -6.37*** & `bBR2_2' & `bBR2_3' & & \\ " _n
 	file write sm " & & (`seBR2_2') & (`seBR2_3') & & \\ " _n
 	file write sm "  & & & & & \\ " _n
 	file write sm "1-yr lagged Intensity & & & & `bBR1_4' & \\ " _n
@@ -333,9 +335,9 @@ local NmunBR_5: di %12.0fc `r(ndistinct)'
 	file write sm "3-yr lagged Intensity & & & & & `bBR3_5' \\ " _n
 	file write sm " & & & & & (`seBR3_5') \\ " _n
 	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & -- & `meanBR_2' & `meanBR_3' & `meanBR_4' & `meanBR_5' \\ " _n
-	file write sm "Obs & -- & `NBR_2' & `NBR_3' & `NBR_4' & `NBR_5' \\ " _n
-	file write sm "No. Mun & -- & `NmunBR_2' & `NmunBR_3' & `NmunBR_4' & `NmunBR_5' \\ " _n
+	file write sm "Mean (1991-1996) & 47.5 & `meanBR_2' & `meanBR_3' & `meanBR_4' & `meanBR_5' \\ " _n
+	file write sm "Obs &  21,571 & `NBR_2' & `NBR_3' & `NBR_4' & `NBR_5' \\ " _n
+	file write sm "No. Mun & 1,961 & `NmunBR_2' & `NmunBR_3' & `NmunBR_4' & `NmunBR_5' \\ " _n
 	file write sm "  & & & & & \\ " _n
 	file write sm "Year FE & Y & Y & Y & Y & Y \\ " _n
 	file write sm "Mun FE & Y & Y & Y & Y & Y \\ " _n
@@ -448,7 +450,7 @@ foreach pnl in p m f {
 	local NmunFF_`pnl'_3: di %12.0fc `r(ndistinct)'
 	* col 4: levels, weighted
 	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
-		[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 	if      `t' >= 2.576 local bFF99_`pnl'_4 = "`aux'***"
@@ -470,7 +472,7 @@ foreach pnl in p m f {
 	local NmunFF_`pnl'_4: di %12.0fc `r(ndistinct)'
 	* col 5: log EMR, weighted
 	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
-		[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 	if      `t' >= 2.576 local bFF99_`pnl'_5 = "`aux'***"
@@ -492,7 +494,7 @@ foreach pnl in p m f {
 	local NmunFF_`pnl'_5: di %12.0fc `r(ndistinct)'
 	* col 6: Poisson, weighted
 	ppmlhdfe `doutcome' c.inten1999#i.post c.inten2005#i.post ///
-		[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 	if      `t' >= 2.576 local bFF99_`pnl'_6 = "`aux'***"
