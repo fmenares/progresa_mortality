@@ -33,6 +33,7 @@ if c(username)=="FELIPEME" {
 
 }
 
+*checking
 
 use "$data/enigh_panel", clear
 
