@@ -26,8 +26,8 @@ if c(username)=="fmenares" {
 }
 if c(username)=="FELIPEME" {
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables" 
-	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables" 
+	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
 }
 
 * --- Load data (identical to 03) ---
@@ -128,7 +128,7 @@ preserve
 		subtitle("Highly marginalized municipalities (gm{subscript:1990} = 4–5)") ///
 		xline(`mn97_d', lpattern(dash) lcolor(gs8))                          ///
 		note("One obs per municipality.  Mean = `mn97_d'  CV = `cv97'  % zero = `pct0_97'%", size(small))
-	graph export "$figures/FA0a_inten1997_kdensity.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0a_inten1997_kdensity.pdf", as(pdf) replace
 restore
 
 * -- FA0b: box plot by ENIGH survey wave --
@@ -141,7 +141,7 @@ preserve
 		title("inten1997 by Survey Wave")                                    ///
 		subtitle("Highly marginalized municipalities")                       ///
 		note("One obs per municipality × wave.", size(small))
-	graph export "$figures/FA0b_inten1997_bywave.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0b_inten1997_bywave.pdf", as(pdf) replace
 restore
 
 * -- TA0a: summary statistics table (LaTeX) --
@@ -212,7 +212,7 @@ preserve
 		subtitle("Highly marginalized municipalities (gm{subscript:1990} = 4–5)") ///
 		xline(`mn99_d', lpattern(dash) lcolor(gs8))                          ///
 		note("One obs per municipality.  Mean = `mn99_d'  CV = `cv99'  % zero = `pct0_99'%", size(small))
-	graph export "$figures/FA0c_inten1999_kdensity.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0c_inten1999_kdensity.pdf", as(pdf) replace
 restore
 
 * -- FA0d: box plot by survey wave --
@@ -225,7 +225,7 @@ preserve
 		title("inten1999 by Survey Wave")                                    ///
 		subtitle("Highly marginalized municipalities")                       ///
 		note("One obs per municipality × wave.", size(small))
-	graph export "$figures/FA0d_inten1999_bywave.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0d_inten1999_bywave.pdf", as(pdf) replace
 restore
 
 * -- TA0b: summary statistics table (LaTeX) --
@@ -288,7 +288,7 @@ preserve
 		title("intensity{subscript:new} by Survey Year")                     ///
 		subtitle("Highly marginalized municipalities")                       ///
 		note("One obs per municipality × year.", size(small))
-	graph export "$figures/FA0e_intensity_new_bywave.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0e_intensity_new_bywave.pdf", as(pdf) replace
 restore
 
 * -- FA0f: mean + IQR band by survey year --
@@ -309,7 +309,7 @@ preserve
 		subtitle("Shaded band = IQR.  Highly marginalized municipalities.")  ///
 		xline(1997, lpattern(dash) lcolor(gs8))                              ///
 		legend(off)
-	graph export "$figures/FA0f_intensity_new_surveytrend.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0f_intensity_new_surveytrend.pdf", as(pdf) replace
 restore
 
 * -- FA0g: penetration rate (% municipalities with intensity > 0) --
@@ -327,7 +327,7 @@ preserve
 		title("PROGRESA Penetration Rate by Survey Year")                    ///
 		subtitle("Highly marginalized municipalities")                       ///
 		xline(1997, lpattern(dash) lcolor(gs8))
-	graph export "$figures/FA0g_intensity_new_penetration.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0g_intensity_new_penetration.pdf", as(pdf) replace
 restore
 
 * -- TA0c: summary table for intensity_new by survey year (LaTeX) --
@@ -405,7 +405,7 @@ preserve
 		xline(1999, lpattern(shortdash) lcolor(gs10))                        ///
 		note("Dashed lines at 1997 and 1999.", size(small))                  ///
 		legend(off)
-	graph export "$figures/FA0h_intensity_new_annual_trend.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0h_intensity_new_annual_trend.pdf", as(pdf) replace
 restore
 
 * -- FA0i: penetration rate, annual --
@@ -428,7 +428,7 @@ twoway connected pct_treated year,                                         ///
 	xline(1997, lpattern(dash) lcolor(gs8))                                ///
 	xline(1999, lpattern(shortdash) lcolor(gs10))                          ///
 	note("Dashed lines at 1997 and 1999.", size(small))
-graph export "$figures/FA0i_intensity_new_annual_penetration.pdf", as(pdf) replace
+graph export "$figures/appendix/FA0i_intensity_new_annual_penetration.pdf", as(pdf) replace
 }
 use `enigh_saved', clear
 
@@ -526,7 +526,7 @@ preserve
 		legend(order(1 "Mortality analysis" 2 "ENIGH sample")               ///
 		       pos(11) ring(0) cols(1) size(small))                         ///
 		note("Each pair of bars corresponds to one ENIGH survey wave.", size(small))
-	graph export "$figures/FA0j_overlap_byyear.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0j_overlap_byyear.pdf", as(pdf) replace
 
 	* FA0k: coverage rate line
 	twoway connected pct_covered year,                                       ///
@@ -539,7 +539,7 @@ preserve
 		yscale(range(0 100)) ylabel(0(20)100)                               ///
 		xline(1997, lpattern(dash) lcolor(gs8))                              ///
 		note("Denominator = N municipalities in mortality panel that year.", size(small))
-	graph export "$figures/FA0k_overlap_coverage.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0k_overlap_coverage.pdf", as(pdf) replace
 
 	di _newline "Coverage table (survey years only):"
 	list year n_mort n_enigh pct_covered, noobs sep(0)
@@ -581,7 +581,7 @@ preserve
 		       pos(1) ring(0) cols(1) size(small))                          ///
 		note("One obs per municipality. Similarity supports external validity of ENIGH results.", ///
 		     size(small))
-	graph export "$figures/FA0l_overlap_intensity_dist.pdf", as(pdf) replace
+	graph export "$figures/appendix/FA0l_overlap_intensity_dist.pdf", as(pdf) replace
 restore
 
 use `enigh_for_overlap', clear

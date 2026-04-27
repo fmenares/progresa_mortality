@@ -1,0 +1,122 @@
+%=======================================================================
+% figures.tex — Pre-Trend Event Study Figures (Mechanisms, ENIGH)
+% Script: 05_mechanisms_eventstudy_enigh.do
+% Layout: 2 columns x 4 rows per panel (max 8 subfigures)
+% Paths:  pretrend/{marg,all}/F_PT_{1998,2000}_{outcome}
+% Requires in main preamble: \usepackage{graphicx,subfigure}
+%=======================================================================
+
+% Compact subfigure helper: \ptsfig{filepath}{subcaption}
+\newcommand{\ptsfig}[2]{%
+  \subfigure[#2]{\includegraphics[width=0.47\linewidth]{#1}}}
+
+
+%-----------------------------------------------------------------------
+
+
+\begin{figure}[H]
+    \caption[]{The effects of interaction terms between Progresa in 1999 and years on elderly mortality +65 overall and by sex in marginalized municipalities, Mexico, 1991-2006. }
+    \label{f:es_dd_sex_no_weight}
+
+  \subfigure[All]
+{\includegraphics[width=0.69\textwidth]{figures/main/Figure_2a_all.pdf}}
+    
+    \subfigure[Males]
+     {\includegraphics[width=0.49\textwidth]{figures/main/Figure_2b_male.pdf}}
+    \subfigure[Females]
+     {\includegraphics[width=0.49\textwidth]{figures/main/Figure_2c_female.pdf}}
+     
+         \floatfoot{Notes: The data analysis is restricted to only marginalized municipalities, 1991-2006. The plots present the interaction terms between Progresa intensity in 1999 and years. Year and municipality fixed effects are included. Standard errors are clustered at the municipality level. 1996 is a reference year and the regression models are not weighted.
+Source: Authors’ calculations using data on deaths and population from the Instituto Nacional de Estadistica y Geografia and Mexican Census data.
+}
+\end{figure}
+
+\begin{figure}[H]
+    \caption[]{The effects of interaction terms between Progresa in 1999 and years on elderly mortality +65 overall and by sex in marginalized municipalities, Mexico, 1991-2006. }
+    \label{f:es_dd_sex_no_weight}
+
+  \subfigure[All]
+{\includegraphics[width=0.69\textwidth]{figures/main/Figure_3a_all.pdf}}
+    
+    \subfigure[Males]
+     {\includegraphics[width=0.49\textwidth]{figures/main/Figure_3b_male.pdf}}
+    \subfigure[Females]
+     {\includegraphics[width=0.49\textwidth]{figures/main/Figure_3c_female.pdf}}
+     
+         \floatfoot{Notes: The data analysis is restricted to only marginalized municipalities, 1991-2006. The plots present the interaction terms between Progresa intensity in 1999 and years. Year and municipality fixed effects are included. Standard errors are clustered at the municipality level. 1996 is a reference year and the regression models are not weighted.
+Source: Authors’ calculations using data on deaths and population from the Instituto Nacional de Estadistica y Geografia and Mexican Census data.
+}
+\end{figure}
+
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_employed}{Employment}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_hrs_worked}{Hrs Worked}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_hrs_worked_pos}{Hrs Worked ($>$0)}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_ind_earnings}{Earnings}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_ind_income_tot}{Income}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_progresa_ind}{PROGRESA Transfers}
+\caption{Even Study: Individual Labor Outcomes - Intensity 1998, All Municipalities}
+\label{fig:pt_1998_all_t1}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_hh_earnings}{Earnings}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_hh_income_tot}{Income}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_hh_expenditure}{Expenditure}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_progresa_hh}{PROGRESA}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_savings}{Savings}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_debt}{Debt}
+\caption{Even Study: Household Labor Outcomes - Intensity 1998, All Municipalities}
+\label{fig:pt_1998_all_t2}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_food_exp}{Total Food}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_vegg_fruit}{Veggies \& Fruit}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_cereals}{Cereals}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_meat_dairy}{Meat \& Dairy}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_sugar_fat_drink}{Sugar \& Fat}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_vice}{Alcohol and Tobacco}
+\caption{Event Study: Household Food Outcomes - Intensity 1998, All Municipalities}
+\label{fig:pt_1998_all_t3}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\ptsfig{figures/pretrend/all/F_PT_1998_health_exp}{Total Health}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_medical}{Medical Visits}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_medical_inpatient}{Inpatient}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_medical_outpatient}{Outpatient}\\[1ex]
+\ptsfig{figures/pretrend/all/F_PT_1998_drugs}{Drugs (Rx and OTC)}\hfill
+\ptsfig{figures/pretrend/all/F_PT_1998_ortho}{Orthotics}
+\caption{Event Study: Household Health Outcomes - Intensity 1998, All Municipalities.}
+\label{fig:pt_1998_all_t4}
+\end{figure}
+
+
+
+
+
+
+\begin{figure}[H]
+    \caption[]{Share of progresa penetration}
+    \label{f:es_dd_sex_no_weight}
+
+    \subfigure[1997 - All]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/FA0a_inten1997_kdensity.pdf}}
+    \subfigure[1997 - by wave]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/FA0b_inten1997_bywave.pdf}}
+    
+
+    \subfigure[1999 - All]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/FA0c_inten1999_kdensity.pdf}}
+    \subfigure[1999 - by wave]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/FA0d_inten1999_bywave.pdf}}
+
+    \subfigure[Continous - by Wave ENIGH Sample]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/FA0f_intensity_new_surveytrend}}
+    \subfigure[Continious - Mortality Sample]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/FA0h_intensity_new_annual_trend}}
+     
+         \floatfoot{Notes: }
+\end{figure}

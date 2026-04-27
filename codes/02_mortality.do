@@ -20,8 +20,8 @@ set more off
  if c(username)=="FELIPEME" {
     global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables"
-	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
+	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
 	global SP "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 
@@ -115,10 +115,11 @@ twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
        (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
        (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
        (line intensity_new year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
-	ytitle("Excess Mortality Rate (65+)", axis(1)) ///
-	ytitle("PROGRESA Penetration", axis(2)) ///
+	ytitle("Mortality Rate (65+)", axis(1)) ///
+	ytitle("PROGRESA Intensity", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)")) ///
+	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
+	cols(3) size(medsmall) position(6) ring(1)) ///
 	graphregion(fcolor(white))
 graph export "$figures/Figure_1a_all.pdf", as(pdf) replace
 restore
@@ -131,10 +132,11 @@ twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
        (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
        (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
        (line intensity_new year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
-	ytitle("Excess Mortality Rate (65+)", axis(1)) ///
+	ytitle("Mortality Rate (65+)", axis(1)) ///
 	ytitle("PROGRESA Penetration", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)")) ///
+	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
+	cols(3) size(medsmall) position(6) ring(1)) ///	
 	graphregion(fcolor(white))
 graph export "$figures/Figure_1b_marg.pdf", as(pdf) replace
 restore
@@ -487,7 +489,7 @@ foreach pnl in p m f {
 	local NmunFF_`pnl'_3: di %12.0fc `r(ndistinct)'
 	* col 4: levels, weighted
 	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
-		[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 	if      `t' >= 2.576 local bFF99_`pnl'_4 = "`aux'***"
@@ -509,7 +511,7 @@ foreach pnl in p m f {
 	local NmunFF_`pnl'_4: di %12.0fc `r(ndistinct)'
 	* col 5: log EMR, weighted
 	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
-		[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 	if      `t' >= 2.576 local bFF99_`pnl'_5 = "`aux'***"
@@ -531,7 +533,7 @@ foreach pnl in p m f {
 	local NmunFF_`pnl'_5: di %12.0fc `r(ndistinct)'
 	* col 6: Poisson, weighted
 	ppmlhdfe `doutcome' c.inten1999#i.post c.inten2005#i.post ///
-		[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 	if      `t' >= 2.576 local bFF99_`pnl'_6 = "`aux'***"
@@ -570,7 +572,7 @@ foreach pnl in p m f {
 	file write sm " & (`seFF05_p_1') & (`seFF05_p_2') & (`seFF05_p_3') & (`seFF05_p_4') & (`seFF05_p_5') & (`seFF05_p_6') \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Mean (1991-1996) & `meanFF_p_1' & `meanFF_p_2' & `meanFF_p_3' & `meanFF_p_4' & `meanFF_p_5' & `meanFF_p_6' \\ " _n
-	file write sm "Obs & `NFF_p_1' & `NFF_p_2' & `NFF_p_3' & `NFF_p_4' & `NFF_p_5' & `NFF_p_6' \\ " _n
+	
 	file write sm "  & & & & & & \\ " _n
 	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_m_1' & `bFF99_m_2' & `bFF99_m_3' & `bFF99_m_4' & `bFF99_m_5' & `bFF99_m_6' \\ " _n
@@ -580,7 +582,7 @@ foreach pnl in p m f {
 	file write sm " & (`seFF05_m_1') & (`seFF05_m_2') & (`seFF05_m_3') & (`seFF05_m_4') & (`seFF05_m_5') & (`seFF05_m_6') \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Mean (1991-1996) & `meanFF_m_1' & `meanFF_m_2' & `meanFF_m_3' & `meanFF_m_4' & `meanFF_m_5' & `meanFF_m_6' \\ " _n
-	file write sm "Obs & `NFF_m_1' & `NFF_m_2' & `NFF_m_3' & `NFF_m_4' & `NFF_m_5' & `NFF_m_6' \\ " _n
+	
 	file write sm "  & & & & & & \\ " _n
 	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_f_1' & `bFF99_f_2' & `bFF99_f_3' & `bFF99_f_4' & `bFF99_f_5' & `bFF99_f_6' \\ " _n
@@ -590,8 +592,8 @@ foreach pnl in p m f {
 	file write sm " & (`seFF05_f_1') & (`seFF05_f_2') & (`seFF05_f_3') & (`seFF05_f_4') & (`seFF05_f_5') & (`seFF05_f_6') \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Mean (1991-1996) & `meanFF_f_1' & `meanFF_f_2' & `meanFF_f_3' & `meanFF_f_4' & `meanFF_f_5' & `meanFF_f_6' \\ " _n
-	file write sm "Obs & `NFF_f_1' & `NFF_f_2' & `NFF_f_3' & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' \\ " _n
 	file write sm "  & & & & & & \\ " _n
+	file write sm "Obs & `NFF_f_1' & `NFF_f_2' & `NFF_f_3' & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' \\ " _n
 	file write sm "No. Mun & `NmunFF_p_1' & `NmunFF_p_2' & `NmunFF_p_3' & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' \\ " _n
 	file write sm "  & & & & & & \\ " _n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y \\ " _n
