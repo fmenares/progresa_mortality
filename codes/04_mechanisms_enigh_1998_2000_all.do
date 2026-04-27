@@ -489,7 +489,6 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Note: Coefficients show effect per 1 SD increase in intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -531,7 +530,6 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Note: Coefficients show percentage effect at mean intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -573,7 +571,6 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Note: Coefficients show effect at mean intensity (0 to mean) \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -924,7 +921,6 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "Note: Coefficients show effect per 1 SD increase in intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -966,7 +962,6 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "Note: Coefficients show percentage effect at mean intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1008,7 +1003,6 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "Note: Coefficients show effect at mean intensity (0 to mean) \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1274,7 +1268,6 @@ foreach outcome in $hh_food {
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "Note: Coefficients show effect per 1 SD increase in intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1316,7 +1309,6 @@ foreach outcome in $hh_food {
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "Note: Coefficients show percentage effect at mean intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1358,7 +1350,6 @@ foreach outcome in $hh_food {
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "Note: Coefficients show effect at mean intensity (0 to mean) \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1629,7 +1620,6 @@ foreach outcome in $hh_health{
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Note: Coefficients show effect per 1 SD increase in intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1671,7 +1661,6 @@ foreach outcome in $hh_health{
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Note: Coefficients show percentage effect at mean intensity \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1713,7 +1702,6 @@ foreach outcome in $hh_health{
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "Note: Coefficients show effect at mean intensity (0 to mean) \\ "_n
 	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1965,7 +1953,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T1_ind_enigh_1992_2000_all_z.tex", write replace
 	file write sm "\begin{tabular}{lccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2008,7 +1996,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T1_ind_enigh_1992_2000_all_pct.tex", write replace
 	file write sm "\begin{tabular}{lccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2051,7 +2039,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T1_ind_enigh_1992_2000_all_marg.tex", write replace
 	file write sm "\begin{tabular}{lccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2385,7 +2373,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T2_hh_enigh_1992_2000_all_z.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2428,7 +2416,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T2_hh_enigh_1992_2000_all_pct.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2471,7 +2459,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T2_hh_enigh_1992_2000_all_marg.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2802,7 +2790,7 @@ foreach outcome in $hh_food {
 	cap file close sm
 	file open sm using "$tables/2000/T3_food_enigh_1992_2000_all_z.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2845,7 +2833,7 @@ foreach outcome in $hh_food {
 	cap file close sm
 	file open sm using "$tables/2000/T3_food_enigh_1992_2000_all_pct.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -2888,7 +2876,7 @@ foreach outcome in $hh_food {
 	cap file close sm
 	file open sm using "$tables/2000/T3_food_enigh_1992_2000_all_marg.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -3221,7 +3209,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T4_health_enigh_1992_2000_all_z.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -3264,7 +3252,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T4_health_enigh_1992_2000_all_pct.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
@@ -3307,7 +3295,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	cap file close sm
 	file open sm using "$tables/2000/T4_health_enigh_1992_2000_all_marg.tex", write replace
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
-	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\\\ "_n
+	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
 	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\\\  \\toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\\\  "_n
