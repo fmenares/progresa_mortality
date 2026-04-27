@@ -20,8 +20,8 @@ set more off
  if c(username)=="FELIPEME" {
     global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\tables"
-	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_mortality\figures"
+	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
+	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
 	global SP "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 
@@ -104,85 +104,467 @@ lab var year "year"
 	save "$data/mortality_muni", replace
 	restore
 	
-*Table 2
+*============================================================
+* FIGURE 1: Mortality trends and PROGRESA penetration
+*============================================================
 
-*UW
-*pool results: using clustering
-reghdfe emr65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-*by sex
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65f c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-*UW + SP
-reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity  if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post c.sp_intensity if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65f c.inten1999#i.post c.inten2005#i.post c.sp_intensity if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+* Figure 1a: All municipalities
+preserve
+collapse (mean) emr65 emr65m emr65f intensity_new [aw=popover65_], by(year)
+twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
+       (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
+       (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
+       (line intensity_new year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
+	ytitle("Mortality Rate (65+)", axis(1)) ///
+	ytitle("PROGRESA Intensity", axis(2)) ///
+	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
+	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
+	cols(3) size(medsmall) position(6) ring(1)) ///
+	graphregion(fcolor(white))
+graph export "$figures/Figure_1a_all.pdf", as(pdf) replace
+restore
 
-*Weighted results
-reghdfe emr65 c.inten1999#i.post c.inten2005#i.post [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post [aw=popover65_m] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65f c.inten1999#i.post c.inten2005#i.post [aw=popover65_f] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+* Figure 1b: Highly marginalized municipalities
+preserve
+keep if $sample_marg
+collapse (mean) emr65 emr65m emr65f intensity_new [aw=popover65_], by(year)
+twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
+       (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
+       (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
+       (line intensity_new year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
+	ytitle("Mortality Rate (65+)", axis(1)) ///
+	ytitle("PROGRESA Penetration", axis(2)) ///
+	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
+	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
+	cols(3) size(medsmall) position(6) ring(1)) ///	
+	graphregion(fcolor(white))
+graph export "$figures/Figure_1b_marg.pdf", as(pdf) replace
+restore
 
-reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post c.sp_intensity [aw=popover65_m] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65f c.inten1999#i.post c.inten2005#i.post c.sp_intensity [aw=popover65_f] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
-*Appendix TAble
-*Barham and Rowberry (2013)
-*1992 - 2002
+*============================================================
+* TABLE 2: Main DiD Mortality Results
+*============================================================
+
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local outcome emr65
+		local wvar   popover65_
+	}
+	else if "`pnl'" == "m" {
+		local outcome emr65m
+		local wvar   popover65_m
+	}
+	else {
+		local outcome emr65f
+		local wvar   popover65_f
+	}
+	forval col = 1/4 {
+		if `col' == 1 {
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+				if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 2 {
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 3 {
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+				[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local b99_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b99_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b99_`pnl'_`col' = "`aux'*"
+		else                  local b99_`pnl'_`col' = "`aux'"
+		local se99_`pnl'_`col': di %12.3f _se[1.post#c.inten1999]
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local b05_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b05_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b05_`pnl'_`col' = "`aux'*"
+		else                  local b05_`pnl'_`col' = "`aux'"
+		local se05_`pnl'_`col': di %12.3f _se[1.post#c.inten2005]
+		sum `outcome' if e(sample) & post == 2
+		local mean_`pnl'_`col': di %12.2fc `r(mean)'
+		local N_`pnl'_`col':    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local Nmun_`pnl'_`col': di %12.0fc `r(ndistinct)'
+	}
+}
+
+{
+	cap file close sm
+	file open sm using "$tables/T2_mortality.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
+	file write sm "& UW & UW+SP & W & W+SP \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_p_1' & `b99_p_2' & `b99_p_3' & `b99_p_4' \\ " _n
+	file write sm " & (`se99_p_1') & (`se99_p_2') & (`se99_p_3') & (`se99_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_p_1' & `b05_p_2' & `b05_p_3' & `b05_p_4' \\ " _n
+	file write sm " & (`se05_p_1') & (`se05_p_2') & (`se05_p_3') & (`se05_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_p_1' & `mean_p_2' & `mean_p_3' & `mean_p_4' \\ " _n
+	file write sm "Obs & `N_p_1' & `N_p_2' & `N_p_3' & `N_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_m_1' & `b99_m_2' & `b99_m_3' & `b99_m_4' \\ " _n
+	file write sm " & (`se99_m_1') & (`se99_m_2') & (`se99_m_3') & (`se99_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_m_1' & `b05_m_2' & `b05_m_3' & `b05_m_4' \\ " _n
+	file write sm " & (`se05_m_1') & (`se05_m_2') & (`se05_m_3') & (`se05_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_m_1' & `mean_m_2' & `mean_m_3' & `mean_m_4' \\ " _n
+	file write sm "Obs & `N_m_1' & `N_m_2' & `N_m_3' & `N_m_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_f_1' & `b99_f_2' & `b99_f_3' & `b99_f_4' \\ " _n
+	file write sm " & (`se99_f_1') & (`se99_f_2') & (`se99_f_3') & (`se99_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_f_1' & `b05_f_2' & `b05_f_3' & `b05_f_4' \\ " _n
+	file write sm " & (`se05_f_1') & (`se05_f_2') & (`se05_f_3') & (`se05_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_f_1' & `mean_f_2' & `mean_f_3' & `mean_f_4' \\ " _n
+	file write sm "Obs & `N_f_1' & `N_f_2' & `N_f_3' & `N_f_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "No. Mun & `Nmun_p_1' & `Nmun_p_2' & `Nmun_p_3' & `Nmun_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y & Y \\ " _n
+	file write sm "Mun FE & Y & Y & Y & Y \\ " _n
+	file write sm "Seguro Popular & N & Y & N & Y \\ " _n
+	file write sm "Weights & N & N & Y & Y \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+
+*============================================================
+* APPENDIX TABLE 1: Barham & Rowberry (2013) Replication
+*============================================================
+
 global sample_br = "(inten_start_year==1998 |inten_start_year==1999)"
-areg  emr65 lag2_intensity_new i.year if inrange(year, 1992, 2002) & $sample_br, ///
-a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
-*AT1b: BR
+* Col 1 (BR original): placeholder — fill by hand from published table
+* Col 2: lag2, 1992-2002, unweighted
 reghdfe emr65 lag2_intensity_new if inrange(year, 1992, 2002) & $sample_br, ///
-a(year cve_ent_mun_super)  vce(cluster cve_ent_mun_super)
-*AT1c: BR + weights
+	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[lag2_intensity_new]
+local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+if      `t' >= 2.576 local bBR2_2 = "`aux'***"
+else if `t' >= 1.96  local bBR2_2 = "`aux'**"
+else if `t' >= 1.645 local bBR2_2 = "`aux'*"
+else                  local bBR2_2 = "`aux'"
+local seBR2_2: di %12.3f _se[lag2_intensity_new]
+sum emr65 if e(sample) & post == 2
+local meanBR_2: di %12.2fc `r(mean)'
+local NBR_2: di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local NmunBR_2: di %12.0fc `r(ndistinct)'
+
+* Col 3: lag2, 1992-2002, weighted
 reghdfe emr65 lag2_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
-a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[lag2_intensity_new]
+local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+if      `t' >= 2.576 local bBR2_3 = "`aux'***"
+else if `t' >= 1.96  local bBR2_3 = "`aux'**"
+else if `t' >= 1.645 local bBR2_3 = "`aux'*"
+else                  local bBR2_3 = "`aux'"
+local seBR2_3: di %12.3f _se[lag2_intensity_new]
+sum emr65 if e(sample) & post == 2
+local meanBR_3: di %12.2fc `r(mean)'
+local NBR_3: di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local NmunBR_3: di %12.0fc `r(ndistinct)'
 
-*AT1d: not quite sure why the time period changes, is just for sensitivity?
-reghdfe emr65 lag_intensity_new [aw=popover65_] if inrange(year, 1991, 2001) & $sample_br, ///
-a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+* Col 4: lag1, 1992-2002, weighted
 reghdfe emr65 lag_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
-a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-*AT1e: not quite sure why the time period changes, is just for sensitivity?
-reghdfe emr65 lag3_intensity_new [aw=popover65_] if inrange(year, 1993, 2003) & $sample_br, ///
-a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[lag_intensity_new]
+local t = abs(_b[lag_intensity_new] / _se[lag_intensity_new])
+if      `t' >= 2.576 local bBR1_4 = "`aux'***"
+else if `t' >= 1.96  local bBR1_4 = "`aux'**"
+else if `t' >= 1.645 local bBR1_4 = "`aux'*"
+else                  local bBR1_4 = "`aux'"
+local seBR1_4: di %12.3f _se[lag_intensity_new]
+sum emr65 if e(sample) & post == 2
+local meanBR_4: di %12.2fc `r(mean)'
+local NBR_4: di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local NmunBR_4: di %12.0fc `r(ndistinct)'
+
+* Col 5: lag3, 1992-2002, weighted
 reghdfe emr65 lag3_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
-a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[lag3_intensity_new]
+local t = abs(_b[lag3_intensity_new] / _se[lag3_intensity_new])
+if      `t' >= 2.576 local bBR3_5 = "`aux'***"
+else if `t' >= 1.96  local bBR3_5 = "`aux'**"
+else if `t' >= 1.645 local bBR3_5 = "`aux'*"
+else                  local bBR3_5 = "`aux'"
+local seBR3_5: di %12.3f _se[lag3_intensity_new]
+sum emr65 if e(sample) & post == 2
+local meanBR_5: di %12.2fc `r(mean)'
+local NBR_5: di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local NmunBR_5: di %12.0fc `r(ndistinct)'
 
-*Table needs to be created here by having a similar structure as the Table 2.
-*However, here every columns should refer a specification:
-*(1) BR result, copy by hand; 2: BR Replication 3: Replication + W; 4: 
-*1 yr lag + w; 5: 3 year lag + w
-*In the rows there must be 3 different names that captures the coefficient of interest*
-*1. 2-year lagged Progresa Intensity
-*2. 1- year lagged progresa intensity
-*3. 3-year lagged progresa intensity
+{
+	cap file close sm
+	file open sm using "$tables/AT1_BR_replication.tex", write replace
+	file write sm "\begin{tabular}{lccccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}" _n
+	file write sm "& BR (2013) & Replication & Replic.+W & 1yr lag+W & 3yr lag+W \\ \toprule" _n
+	file write sm "2-yr lagged Intensity & -6.37*** & `bBR2_2' & `bBR2_3' & & \\ " _n
+	file write sm " & & (`seBR2_2') & (`seBR2_3') & & \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "1-yr lagged Intensity & & & & `bBR1_4' & \\ " _n
+	file write sm " & & & & (`seBR1_4') & \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "3-yr lagged Intensity & & & & & `bBR3_5' \\ " _n
+	file write sm " & & & & & (`seBR3_5') \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & 47.5 & `meanBR_2' & `meanBR_3' & `meanBR_4' & `meanBR_5' \\ " _n
+	file write sm "Obs &  21,571 & `NBR_2' & `NBR_3' & `NBR_4' & `NBR_5' \\ " _n
+	file write sm "No. Mun & 1,961 & `NmunBR_2' & `NmunBR_3' & `NmunBR_4' & `NmunBR_5' \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Mun FE & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Weights & -- & N & Y & Y & Y \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
 
 
-/*** appendix tABLE
-bASED ON THE FOLLOWING regressions create a similar Tables as the others for mortality
-having the same structure on panels, pool, female and males, but having a first 
-column with the previous results having mortality in levels as the dependant variable
-second column having it as count of deaths and using a poisson regression with
-an offset, and a last one having it as a logs of mortality rate. 
-*felipe's poisson and log specifications*/
+*============================================================
+* APPENDIX TABLE 2: Functional Form Robustness
+*============================================================
 
-	g lemr65 = log(emr65)
-	g lemr65m = log(emr65m)
-	g lemr65f = log(emr65f)
-	g lpopover65 = log(popover65_)
+g lemr65       = log(emr65)
+g lemr65m      = log(emr65m)
+g lemr65f      = log(emr65f)
+g lpopover65   = log(popover65_)
+g lpopover65_m = log(popover65_m)
+g lpopover65_f = log(popover65_f)
 
-areg lemr65 c.inten1999#i.post c.inten2005#i.post i.year if $sample_marg, absorb(cve_ent_mun_super) 
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local outcome  emr65
+		local loutcome lemr65
+		local doutcome death65
+		local offset   lpopover65
+		local wvar     popover65_
+	}
+	else if "`pnl'" == "m" {
+		local outcome  emr65m
+		local loutcome lemr65m
+		local doutcome death65m
+		local offset   lpopover65_m
+		local wvar     popover65_m
+	}
+	else {
+		local outcome  emr65f
+		local loutcome lemr65f
+		local doutcome death65f
+		local offset   lpopover65_f
+		local wvar     popover65_f
+	}
+	* col 1: levels, UW
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bFF99_`pnl'_1 = "`aux'***"
+	else if `t' >= 1.96  local bFF99_`pnl'_1 = "`aux'**"
+	else if `t' >= 1.645 local bFF99_`pnl'_1 = "`aux'*"
+	else                  local bFF99_`pnl'_1 = "`aux'"
+	local seFF99_`pnl'_1: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bFF05_`pnl'_1 = "`aux'***"
+	else if `t' >= 1.96  local bFF05_`pnl'_1 = "`aux'**"
+	else if `t' >= 1.645 local bFF05_`pnl'_1 = "`aux'*"
+	else                  local bFF05_`pnl'_1 = "`aux'"
+	local seFF05_`pnl'_1: di %12.3f _se[1.post#c.inten2005]
+	sum `outcome' if e(sample) & post == 2
+	local meanFF_`pnl'_1: di %12.2fc `r(mean)'
+	local NFF_`pnl'_1:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunFF_`pnl'_1: di %12.0fc `r(ndistinct)'
+	* col 2: log EMR, UW
+	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bFF99_`pnl'_2 = "`aux'***"
+	else if `t' >= 1.96  local bFF99_`pnl'_2 = "`aux'**"
+	else if `t' >= 1.645 local bFF99_`pnl'_2 = "`aux'*"
+	else                  local bFF99_`pnl'_2 = "`aux'"
+	local seFF99_`pnl'_2: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bFF05_`pnl'_2 = "`aux'***"
+	else if `t' >= 1.96  local bFF05_`pnl'_2 = "`aux'**"
+	else if `t' >= 1.645 local bFF05_`pnl'_2 = "`aux'*"
+	else                  local bFF05_`pnl'_2 = "`aux'"
+	local seFF05_`pnl'_2: di %12.3f _se[1.post#c.inten2005]
+	sum `loutcome' if e(sample) & post == 2
+	local meanFF_`pnl'_2: di %12.2fc `r(mean)'
+	local NFF_`pnl'_2:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunFF_`pnl'_2: di %12.0fc `r(ndistinct)'
+	* col 3: Poisson, UW
+	ppmlhdfe `doutcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bFF99_`pnl'_3 = "`aux'***"
+	else if `t' >= 1.96  local bFF99_`pnl'_3 = "`aux'**"
+	else if `t' >= 1.645 local bFF99_`pnl'_3 = "`aux'*"
+	else                  local bFF99_`pnl'_3 = "`aux'"
+	local seFF99_`pnl'_3: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bFF05_`pnl'_3 = "`aux'***"
+	else if `t' >= 1.96  local bFF05_`pnl'_3 = "`aux'**"
+	else if `t' >= 1.645 local bFF05_`pnl'_3 = "`aux'*"
+	else                  local bFF05_`pnl'_3 = "`aux'"
+	local seFF05_`pnl'_3: di %12.3f _se[1.post#c.inten2005]
+	sum `doutcome' if e(sample) & post == 2
+	local meanFF_`pnl'_3: di %12.2fc `r(mean)'
+	local NFF_`pnl'_3:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunFF_`pnl'_3: di %12.0fc `r(ndistinct)'
+	* col 4: levels, weighted
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bFF99_`pnl'_4 = "`aux'***"
+	else if `t' >= 1.96  local bFF99_`pnl'_4 = "`aux'**"
+	else if `t' >= 1.645 local bFF99_`pnl'_4 = "`aux'*"
+	else                  local bFF99_`pnl'_4 = "`aux'"
+	local seFF99_`pnl'_4: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bFF05_`pnl'_4 = "`aux'***"
+	else if `t' >= 1.96  local bFF05_`pnl'_4 = "`aux'**"
+	else if `t' >= 1.645 local bFF05_`pnl'_4 = "`aux'*"
+	else                  local bFF05_`pnl'_4 = "`aux'"
+	local seFF05_`pnl'_4: di %12.3f _se[1.post#c.inten2005]
+	sum `outcome' if e(sample) & post == 2
+	local meanFF_`pnl'_4: di %12.2fc `r(mean)'
+	local NFF_`pnl'_4:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunFF_`pnl'_4: di %12.0fc `r(ndistinct)'
+	* col 5: log EMR, weighted
+	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bFF99_`pnl'_5 = "`aux'***"
+	else if `t' >= 1.96  local bFF99_`pnl'_5 = "`aux'**"
+	else if `t' >= 1.645 local bFF99_`pnl'_5 = "`aux'*"
+	else                  local bFF99_`pnl'_5 = "`aux'"
+	local seFF99_`pnl'_5: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bFF05_`pnl'_5 = "`aux'***"
+	else if `t' >= 1.96  local bFF05_`pnl'_5 = "`aux'**"
+	else if `t' >= 1.645 local bFF05_`pnl'_5 = "`aux'*"
+	else                  local bFF05_`pnl'_5 = "`aux'"
+	local seFF05_`pnl'_5: di %12.3f _se[1.post#c.inten2005]
+	sum `loutcome' if e(sample) & post == 2
+	local meanFF_`pnl'_5: di %12.2fc `r(mean)'
+	local NFF_`pnl'_5:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunFF_`pnl'_5: di %12.0fc `r(ndistinct)'
+	* col 6: Poisson, weighted
+	ppmlhdfe `doutcome' c.inten1999#i.post c.inten2005#i.post ///
+		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bFF99_`pnl'_6 = "`aux'***"
+	else if `t' >= 1.96  local bFF99_`pnl'_6 = "`aux'**"
+	else if `t' >= 1.645 local bFF99_`pnl'_6 = "`aux'*"
+	else                  local bFF99_`pnl'_6 = "`aux'"
+	local seFF99_`pnl'_6: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bFF05_`pnl'_6 = "`aux'***"
+	else if `t' >= 1.96  local bFF05_`pnl'_6 = "`aux'**"
+	else if `t' >= 1.645 local bFF05_`pnl'_6 = "`aux'*"
+	else                  local bFF05_`pnl'_6 = "`aux'"
+	local seFF05_`pnl'_6: di %12.3f _se[1.post#c.inten2005]
+	sum `doutcome' if e(sample) & post == 2
+	local meanFF_`pnl'_6: di %12.2fc `r(mean)'
+	local NFF_`pnl'_6:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunFF_`pnl'_6: di %12.0fc `r(ndistinct)'
+}
 
-
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super)  vce(cluster cve_ent_mun_super)
-reghdfe lemr65m c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-reghdfe emr65m c.inten1999#i.post c.inten2005#i.post if e(sample), a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-
-ppmlhdfe death65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-ppmlhdfe death65 c.inten1999#i.post c.inten2005#i.post if $sample_marg, a(year cve_ent_mun_super) offset(lpopover65) vce(cluster cve_ent_mun_super)		
+{
+	cap file close sm
+	file open sm using "$tables/AT2_functional_forms.tex", write replace
+	file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
+	file write sm "& \multicolumn{3}{c}{Unweighted} & \multicolumn{3}{c}{Weighted} \\ " _n
+	file write sm "\cmidrule(lr){2-4}\cmidrule(lr){5-7}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
+	file write sm "& Levels & Log & Poisson & Levels & Log & Poisson \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_p_1' & `bFF99_p_2' & `bFF99_p_3' & `bFF99_p_4' & `bFF99_p_5' & `bFF99_p_6' \\ " _n
+	file write sm " & (`seFF99_p_1') & (`seFF99_p_2') & (`seFF99_p_3') & (`seFF99_p_4') & (`seFF99_p_5') & (`seFF99_p_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bFF05_p_1' & `bFF05_p_2' & `bFF05_p_3' & `bFF05_p_4' & `bFF05_p_5' & `bFF05_p_6' \\ " _n
+	file write sm " & (`seFF05_p_1') & (`seFF05_p_2') & (`seFF05_p_3') & (`seFF05_p_4') & (`seFF05_p_5') & (`seFF05_p_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanFF_p_1' & `meanFF_p_2' & `meanFF_p_3' & `meanFF_p_4' & `meanFF_p_5' & `meanFF_p_6' \\ " _n
+	
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_m_1' & `bFF99_m_2' & `bFF99_m_3' & `bFF99_m_4' & `bFF99_m_5' & `bFF99_m_6' \\ " _n
+	file write sm " & (`seFF99_m_1') & (`seFF99_m_2') & (`seFF99_m_3') & (`seFF99_m_4') & (`seFF99_m_5') & (`seFF99_m_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bFF05_m_1' & `bFF05_m_2' & `bFF05_m_3' & `bFF05_m_4' & `bFF05_m_5' & `bFF05_m_6' \\ " _n
+	file write sm " & (`seFF05_m_1') & (`seFF05_m_2') & (`seFF05_m_3') & (`seFF05_m_4') & (`seFF05_m_5') & (`seFF05_m_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanFF_m_1' & `meanFF_m_2' & `meanFF_m_3' & `meanFF_m_4' & `meanFF_m_5' & `meanFF_m_6' \\ " _n
+	
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_f_1' & `bFF99_f_2' & `bFF99_f_3' & `bFF99_f_4' & `bFF99_f_5' & `bFF99_f_6' \\ " _n
+	file write sm " & (`seFF99_f_1') & (`seFF99_f_2') & (`seFF99_f_3') & (`seFF99_f_4') & (`seFF99_f_5') & (`seFF99_f_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bFF05_f_1' & `bFF05_f_2' & `bFF05_f_3' & `bFF05_f_4' & `bFF05_f_5' & `bFF05_f_6' \\ " _n
+	file write sm " & (`seFF05_f_1') & (`seFF05_f_2') & (`seFF05_f_3') & (`seFF05_f_4') & (`seFF05_f_5') & (`seFF05_f_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanFF_f_1' & `meanFF_f_2' & `meanFF_f_3' & `meanFF_f_4' & `meanFF_f_5' & `meanFF_f_6' \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Obs & `NFF_f_1' & `NFF_f_2' & `NFF_f_3' & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' \\ " _n
+	file write sm "No. Mun & `NmunFF_p_1' & `NmunFF_p_2' & `NmunFF_p_3' & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Weights & N & N & N & Y & Y & Y \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
 		
 
 /********************
