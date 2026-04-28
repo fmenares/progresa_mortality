@@ -146,7 +146,7 @@ restore
 * FIGURE 2: Mexican municipality maps — PROGRESA intensity variation
 *============================================================
 * Requires: spmap (ssc install spmap)
-*
+
 * Setup (run once):
 *   spshape2dta "<path/to/mexico_mun_shapefile>", saving("${shp}") replace
 *   This creates ${shp}.dta (attribute file with _ID) and ${shp}_shp.dta (coordinates).
@@ -155,19 +155,49 @@ restore
 *   If cve_ent_mun_super is numeric, convert: tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
 *   then merge on CVEGEO.
 *
+global shp = "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\mgm\"
+/*
+use $shp\Municipios_1995.dta, clear
+g cve_ent = lower(CVE_ENT)
+g cve_mun = lower(CVE_MUN)
+merge 1:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", keep(1 3) nogen
+destring cve_ent cve_mun, replace
+format cve_ent %02.0f
+format cve_mun %03.0f
+gen cve_mun2 = string(cve_ent,"%02.0f") + string(cve_mun,"%03.0f")
+replace cve_mun2 = cve_ent_mun_super if cve_ent_mun_super != ""
+drop cve_ent_mun_super
+rename cve_mun2 cve_ent_mun_super
+sort cve_ent_mun_super
+save $shp\Municipios_1995.dta, replace
+
+use "$shp\Municipios_2000.dta", clear
+
+g cve_ent = substr(CVEMUNI,1,2)
+g cve_mun = substr(CVEMUNI, 3, 5)
+duplicates drop CVEMUNI, force 
+merge 1:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", keep(1 3) nogen
+destring cve_ent cve_mun, replace
+format cve_ent %02.0f
+format cve_mun %03.0f
+gen cve_mun2 = string(cve_ent,"%02.0f") + string(cve_mun,"%03.0f")
+replace cve_mun2 = cve_ent_mun_super if cve_ent_mun_super != ""
+drop cve_ent_mun_super
+rename cve_mun2 cve_ent_mun_super
+sort cve_ent_mun_super
+duplicates drop cve_ent_mun_super, force
+save "$shp\Municipios_2000.dta", replace
+*/
 * ENIGH municipality list (build once from 01_enigh_data.do output):
 *   "$data/enigh_mun_list.dta" must contain cve_ent_mun_super (numeric),
 *   in_enigh1998 (=1 if municipality observed in 1998 ENIGH wave),
 *   in_enigh2000 (=1 if municipality observed in 2000 ENIGH wave).
 
-global shp "$data/shapefiles/mex_mun"   // update path to match local shapefile location
 
-preserve
-keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
-duplicates drop cve_ent_mun_super, force
+
 
 * Flag municipalities observable in ENIGH 1998 and 2000 waves
-merge 1:1 cve_ent_mun_super using "$data/enigh_mun_list.dta", ///
+merge 1:1 cve_ent_mun_super year using "$data/enigh_mun_list.dta", ///
 	keepusing(in_enigh1998 in_enigh2000) nogen
 recode in_enigh1998 in_enigh2000 (. = 0)
 
@@ -181,11 +211,12 @@ gen inten1997_enigh = inten1997 if in_enigh1998 == 1
 * Common case (INEGI shapefile with CVEGEO string variable):
 *   tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
 *   merge 1:1 CVEGEO using "${shp}.dta", keepusing(_ID) nogen
-merge 1:1 cve_ent_mun_super using "${shp}.dta", keepusing(_ID) nogen
+*merge m:1 cve_ent_mun_super using "$shp\Municipios_2000.dta", keepusing(_ID) nogen
+merge m:1 cve_ent_mun_super using "$shp\Municipios_2000.dta", keepusing(_ID) keep(3)
 sort _ID
 
 * ---- Map 1: Mortality sample — intensity 1999 ----
-spmap inten1999 using "${shp}_shp.dta", id(_ID) ///
+spmap inten1999 using "$shp\Municipios_2000_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
@@ -194,7 +225,7 @@ spmap inten1999 using "${shp}_shp.dta", id(_ID) ///
 graph export "$figures/Figure_2a_inten1999.pdf", as(pdf) replace
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
-spmap inten2005 using "${shp}_shp.dta", id(_ID) ///
+spmap inten2005 using "$shp\Municipios_2000_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
@@ -203,7 +234,7 @@ spmap inten2005 using "${shp}_shp.dta", id(_ID) ///
 graph export "$figures/Figure_2b_inten2005.pdf", as(pdf) replace
 
 * ---- Map 3: ENIGH municipalities — intensity 1998 ----
-spmap inten1998_enigh using "${shp}_shp.dta", id(_ID) ///
+spmap inten1998_enigh using "$shp\Municipios_2000_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
@@ -212,7 +243,7 @@ spmap inten1998_enigh using "${shp}_shp.dta", id(_ID) ///
 graph export "$figures/Figure_2c_enigh_inten1998.pdf", as(pdf) replace
 
 * ---- Map 4: ENIGH municipalities — intensity 2000 ----
-spmap inten2000_enigh using "${shp}_shp.dta", id(_ID) ///
+spmap inten2000_enigh using "$shp\Municipios_2000_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
@@ -221,7 +252,7 @@ spmap inten2000_enigh using "${shp}_shp.dta", id(_ID) ///
 graph export "$figures/Figure_2d_enigh_inten2000.pdf", as(pdf) replace
 
 * ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
-spmap inten1997 using "${shp}_shp.dta", id(_ID) ///
+spmap inten1997 using "$shp\Municipios_2000_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
@@ -230,7 +261,7 @@ spmap inten1997 using "${shp}_shp.dta", id(_ID) ///
 graph export "$figures/Figure_2e_inten1997_mort.pdf", as(pdf) replace
 
 * ---- Map 6: Initial rollout 1997 — ENIGH-1998-observable municipalities only ----
-spmap inten1997_enigh using "${shp}_shp.dta", id(_ID) ///
+spmap inten1997_enigh using "$shp\Municipios_2000_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///

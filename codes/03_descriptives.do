@@ -54,6 +54,17 @@ global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 global years       = "1992 1994 1996 1998 2000 2002 2004 2005 2006"
 global raw_outcomes = "ind_earnings ind_income_tot hh_income_tot hh_earnings benef_gob_ind benef_gob_hh hh_expenditure food_exp cereals meat_dairy sugar_fat_drink vegg_fruit health_exp health_med medical drugs savings debt currency loans"
 
+
+preserve
+*keep cve_ent_mun_super inten1998 inten2000
+keep cve_ent_mun_super year
+keep if inrange(year, 1998,2000)
+duplicates drop
+g in_enigh1998 = (year == 1998)
+g in_enigh2000 = (year == 2000)
+save "$data/enigh_mun_list.dta", replace
+restore
+
 * --- Recreate _out flags (identical to 03) ---
 foreach outcome in $raw_outcomes {
 	g `outcome'_out = .
