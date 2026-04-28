@@ -481,6 +481,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm " &  & &  &  &  &  &  \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
@@ -520,6 +521,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
@@ -559,6 +561,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm " &  & &  &  &  &    & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
@@ -905,6 +908,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
@@ -944,6 +948,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
@@ -983,6 +988,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
@@ -1244,6 +1250,7 @@ foreach outcome in $hh_food {
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'  & `n_mun6' & `n_mun7'  & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
@@ -1283,6 +1290,7 @@ foreach outcome in $hh_food {
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'  & `n_mun6' & `n_mun7'  & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
@@ -1322,6 +1330,7 @@ foreach outcome in $hh_food {
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'  & `n_mun6' & `n_mun7'  & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
@@ -1549,6 +1558,7 @@ foreach outcome in $hh_health{
 		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 		file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'  & `n_mun6' & `n_mun7'  & `n_mun8' \\  "_n
+		file write sm " &  & &  &  &  &  &  & \\ "_n
 		file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 		file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 		file write sm "Mun Controls & N  & N & N & N & N  & N & N & N     \\  "_n
@@ -1588,6 +1598,7 @@ foreach outcome in $hh_health{
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'  & `n_mun6' & `n_mun7'  & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N     \\  "_n
@@ -1627,6 +1638,7 @@ foreach outcome in $hh_health{
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'  & `n_mun6' & `n_mun7'  & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N     \\  "_n
@@ -1666,6 +1678,7 @@ foreach outcome in $hh_health{
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten1998_mean_str'  & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str' & `inten1998_mean_str'& `inten1998_mean_str' & `inten1998_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'  & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'  & `n_mun6' & `n_mun7'  & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N     \\  "_n
@@ -1921,7 +1934,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1' & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7')\\ "_n
@@ -1943,14 +1956,14 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1' & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5' & `mean_dep_m6' & `mean_dep_m7'  \\  "_n
 	file write sm "Obs & `N_m1' & `N_m2' & `N_m3' & `N_m4' & `N_m5' & `N_m6' & `N_m7' \\ "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm " &  & &  &  &  &  &  \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -1962,7 +1975,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1' & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7')\\ "_n
@@ -1986,6 +1999,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
@@ -2002,7 +2016,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Employment} & \multicolumn{1}{c}{Hrs Worked} & \multicolumn{1}{c}{Hrs Worked +} & \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1' & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7')\\ "_n
@@ -2026,11 +2040,12 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1' & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5' & `n_mun6' & `n_mun7' \\  "_n
+	file write sm " &  & &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N     \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y  \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -2332,7 +2347,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -2354,14 +2369,14 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\  "_n
 	file write sm "Obs & `N_m1'   & `N_m2' & `N_m3' & `N_m4' & `N_m5'   & `N_m6' & `N_m7'   & `N_m8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -2373,7 +2388,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -2395,14 +2410,14 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\  "_n
 	file write sm "Obs & `N_m1'   & `N_m2' & `N_m3' & `N_m4' & `N_m5'   & `N_m6' & `N_m7'   & `N_m8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -2414,7 +2429,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Earnings} & \multicolumn{1}{c}{Income} & \multicolumn{1}{c}{Expenditure} & \multicolumn{1}{c}{Progresa} & \multicolumn{1}{c}{Transfers} & \multicolumn{1}{c}{Savings} & \multicolumn{1}{c}{Debt} & \multicolumn{1}{c}{Household Size}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -2436,14 +2451,14 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\  "_n
 	file write sm "Obs & `N_m1'   & `N_m2' & `N_m3' & `N_m4' & `N_m5'   & `N_m6' & `N_m7'   & `N_m8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -2742,7 +2757,7 @@ foreach outcome in $hh_food {
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -2764,14 +2779,14 @@ foreach outcome in $hh_food {
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\  "_n
 	file write sm "Obs & `N_m1'   & `N_m2' & `N_m3' & `N_m4' & `N_m5'   & `N_m6' & `N_m7'   & `N_m8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -2783,7 +2798,7 @@ foreach outcome in $hh_food {
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -2805,15 +2820,14 @@ foreach outcome in $hh_food {
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\  "_n
 	file write sm "Obs & `N_m1'   & `N_m2' & `N_m3' & `N_m4' & `N_m5'   & `N_m6' & `N_m7'   & `N_m8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
-	
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -2825,7 +2839,7 @@ foreach outcome in $hh_food {
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Food} & \multicolumn{1}{c}{Veggies} & \multicolumn{1}{c}{Cereals} & \multicolumn{1}{c}{Meat and D} & \multicolumn{1}{c}{Sugar} & \multicolumn{1}{c}{Alcohol} & \multicolumn{1}{c}{Tobacco} & \multicolumn{1}{c}{Vice}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -2847,14 +2861,14 @@ foreach outcome in $hh_food {
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\  "_n
 	file write sm "Obs & `N_m1'   & `N_m2' & `N_m3' & `N_m4' & `N_m5'   & `N_m6' & `N_m7'   & `N_m8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -3155,7 +3169,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_z_1'   & `OLS_w00_z_2' & `OLS_w00_z_3' & `OLS_w00_z_4' & `OLS_w00_z_5' & `OLS_w00_z_6' & `OLS_w00_z_7' & `OLS_w00_z_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -3177,14 +3191,14 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "Mean (1992-1996) & `mean_dep_m1'   & `mean_dep_m2' & `mean_dep_m3' & `mean_dep_m4' & `mean_dep_m5'   & `mean_dep_m6' & `mean_dep_m7'   & `mean_dep_m8'  \\  "_n
 	file write sm "Obs & `N_m1'   & `N_m2' & `N_m3' & `N_m4' & `N_m5'   & `N_m6' & `N_m7'   & `N_m8' \\ "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
-	
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -3196,7 +3210,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_pct_1'   & `OLS_w00_pct_2' & `OLS_w00_pct_3' & `OLS_w00_pct_4' & `OLS_w00_pct_5' & `OLS_w00_pct_6' & `OLS_w00_pct_7' & `OLS_w00_pct_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -3221,11 +3235,12 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -3237,7 +3252,7 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 	file write sm "\begin{tabular}{lcccccccc} \hline \hline"_n
 	file write sm "& \multicolumn{1}{c}{Health} & \multicolumn{1}{c}{Medical Visits} & \multicolumn{1}{c}{Inpatient} & \multicolumn{1}{c}{Outpatient} & \multicolumn{1}{c}{Drugs} & \multicolumn{1}{c}{Drugs Prescribed} & \multicolumn{1}{c}{Drugs OC} & \multicolumn{1}{c}{Orthotics}  \\ "_n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}"_n
-	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \\toprule"_n
+	file write sm "& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\  \toprule"_n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\  "_n
 	file write sm "\textit{Intensity 2000 x post (2000)} & `OLS_w00_marg_1'   & `OLS_w00_marg_2' & `OLS_w00_marg_3' & `OLS_w00_marg_4' & `OLS_w00_marg_5' & `OLS_w00_marg_6' & `OLS_w00_marg_7' & `OLS_w00_marg_8'\\  "_n
 	file write sm "& (`SE_w00_1') & (`SE_w00_2') & (`SE_w00_3') & (`SE_w00_4') & (`SE_w00_5') & (`SE_w00_6') & (`SE_w00_7') & (`SE_w00_8')\\ "_n
@@ -3262,11 +3277,12 @@ file write sm "\underline{\textit{Panel C: Males}}  \\  "_n
 file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Avg Intensity & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  & `inten2000_mean_str'  \\  "_n
 	file write sm "No. Mun & `n_mun1'   & `n_mun2' & `n_mun3' & `n_mun4' & `n_mun5'   & `n_mun6' & `n_mun7'   & `n_mun8' \\  "_n
+	file write sm " &  & &  &  &  &  &  & \\ "_n
 	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y  \\ "_n
 	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
 	file write sm "Mun Controls & N  & N & N & N & N  & N & N & N    \\  "_n
 	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y \\ "_n
-	file write sm "\\bottomrule"_n
+	file write sm "\bottomrule"_n
 	file write sm "\end{tabular}"
 	file close sm
 }
