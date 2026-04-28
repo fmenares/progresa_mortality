@@ -143,6 +143,105 @@ restore
 
 
 *============================================================
+* FIGURE 2: Mexican municipality maps — PROGRESA intensity variation
+*============================================================
+* Requires: spmap (ssc install spmap)
+*
+* Setup (run once):
+*   spshape2dta "<path/to/mexico_mun_shapefile>", saving("${shp}") replace
+*   This creates ${shp}.dta (attribute file with _ID) and ${shp}_shp.dta (coordinates).
+*   The attribute file must contain a variable matching cve_ent_mun_super.
+*   For INEGI shapefiles the variable is typically CVEGEO (5-char string, e.g. "01001").
+*   If cve_ent_mun_super is numeric, convert: tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
+*   then merge on CVEGEO.
+*
+* ENIGH municipality list (build once from 01_enigh_data.do output):
+*   "$data/enigh_mun_list.dta" must contain cve_ent_mun_super (numeric),
+*   in_enigh1998 (=1 if municipality observed in 1998 ENIGH wave),
+*   in_enigh2000 (=1 if municipality observed in 2000 ENIGH wave).
+
+global shp "$data/shapefiles/mex_mun"   // update path to match local shapefile location
+
+preserve
+keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
+duplicates drop cve_ent_mun_super, force
+
+* Flag municipalities observable in ENIGH 1998 and 2000 waves
+merge 1:1 cve_ent_mun_super using "$data/enigh_mun_list.dta", ///
+	keepusing(in_enigh1998 in_enigh2000) nogen
+recode in_enigh1998 in_enigh2000 (. = 0)
+
+* Intensity visible only for ENIGH-observable municipalities (white = not in ENIGH sample)
+gen inten1998_enigh = inten1998 if in_enigh1998 == 1
+gen inten2000_enigh = inten2000 if in_enigh2000 == 1
+gen inten1997_enigh = inten1997 if in_enigh1998 == 1
+
+* Merge with shapefile attribute file to obtain _ID for spmap
+* Adjust the merge key below if your shapefile uses a different variable name.
+* Common case (INEGI shapefile with CVEGEO string variable):
+*   tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
+*   merge 1:1 CVEGEO using "${shp}.dta", keepusing(_ID) nogen
+merge 1:1 cve_ent_mun_super using "${shp}.dta", keepusing(_ID) nogen
+sort _ID
+
+* ---- Map 1: Mortality sample — intensity 1999 ----
+spmap inten1999 using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("PROGRESA Intensity, 1999", size(small)) ///
+	graphregion(fcolor(white))
+graph export "$figures/Figure_2a_inten1999.pdf", as(pdf) replace
+
+* ---- Map 2: Mortality sample — intensity 2005 ----
+spmap inten2005 using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("PROGRESA Intensity, 2005", size(small)) ///
+	graphregion(fcolor(white))
+graph export "$figures/Figure_2b_inten2005.pdf", as(pdf) replace
+
+* ---- Map 3: ENIGH municipalities — intensity 1998 ----
+spmap inten1998_enigh using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("ENIGH Municipalities: Intensity 1998", size(small)) ///
+	graphregion(fcolor(white))
+graph export "$figures/Figure_2c_enigh_inten1998.pdf", as(pdf) replace
+
+* ---- Map 4: ENIGH municipalities — intensity 2000 ----
+spmap inten2000_enigh using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("ENIGH Municipalities: Intensity 2000", size(small)) ///
+	graphregion(fcolor(white))
+graph export "$figures/Figure_2d_enigh_inten2000.pdf", as(pdf) replace
+
+* ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
+spmap inten1997 using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("Initial Rollout 1997 (Mortality Data)", size(small)) ///
+	graphregion(fcolor(white))
+graph export "$figures/Figure_2e_inten1997_mort.pdf", as(pdf) replace
+
+* ---- Map 6: Initial rollout 1997 — ENIGH-1998-observable municipalities only ----
+spmap inten1997_enigh using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("Initial Rollout 1997 (ENIGH Municipalities)", size(small)) ///
+	graphregion(fcolor(white))
+graph export "$figures/Figure_2f_inten1997_enigh.pdf", as(pdf) replace
+
+restore
+
+
+*============================================================
 * TABLE 2: Main DiD Mortality Results
 *============================================================
 
@@ -333,55 +432,55 @@ foreach pnl in p m f {
 {
 	cap file close sm
 	file open sm using "$tables/AT1_BR_replication.tex", write replace
-	file write sm "\begin{tabular}{lccccc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}" _n
-	file write sm "& BR (2013) & Replication & Replic.+W & 1yr lag+W & 3yr lag+W \\ \toprule" _n
-	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_p' & `bBR2_3_p' & & \\ " _n
-	file write sm " & & (`seBR2_2_p') & (`seBR2_3_p') & & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_p' & \\ " _n
-	file write sm " & & & & (`seBR1_4_p') & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_p' \\ " _n
-	file write sm " & & & & & (`seBR3_5_p') \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & -- & `meanBR_2_p' & `meanBR_3_p' & `meanBR_4_p' & `meanBR_5_p' \\ " _n
-	file write sm "Obs & -- & `NBR_2_p' & `NBR_3_p' & `NBR_4_p' & `NBR_5_p' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_m' & `bBR2_3_m' & & \\ " _n
-	file write sm " & & (`seBR2_2_m') & (`seBR2_3_m') & & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_m' & \\ " _n
-	file write sm " & & & & (`seBR1_4_m') & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_m' \\ " _n
-	file write sm " & & & & & (`seBR3_5_m') \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & -- & `meanBR_2_m' & `meanBR_3_m' & `meanBR_4_m' & `meanBR_5_m' \\ " _n
-	file write sm "Obs & -- & `NBR_2_m' & `NBR_3_m' & `NBR_4_m' & `NBR_5_m' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_f' & `bBR2_3_f' & & \\ " _n
-	file write sm " & & (`seBR2_2_f') & (`seBR2_3_f') & & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_f' & \\ " _n
-	file write sm " & & & & (`seBR1_4_f') & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_f' \\ " _n
-	file write sm " & & & & & (`seBR3_5_f') \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & -- & `meanBR_2_f' & `meanBR_3_f' & `meanBR_4_f' & `meanBR_5_f' \\ " _n
-	file write sm "Obs & -- & `NBR_2_f' & `NBR_3_f' & `NBR_4_f' & `NBR_5_f' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "No. Mun & -- & `NmunBR_2_p' & `NmunBR_3_p' & `NmunBR_4_p' & `NmunBR_5_p' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Mun FE & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Weights & -- & N & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y \\ " _n
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1) Pooled} & \multicolumn{1}{c}{(2) Males} & \multicolumn{1}{c}{(3) Females} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	* Panel A: hardcoded BR (2013) original results
+	file write sm "\underline{\textit{Panel A: BR (2013) Original}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & -6.37*** & -6.42*** & -6.46*** \\ " _n
+	file write sm " & (1.04) & (1.42) & (1.31) \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & 47.5 & 49.3 & 46.0 \\ " _n
+	file write sm "Obs & -- & -- & -- \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel B: lag2, UW
+	file write sm "\underline{\textit{Panel B: Replication (Unweighted)}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_2_p' & `bBR2_2_m' & `bBR2_2_f' \\ " _n
+	file write sm " & (`seBR2_2_p') & (`seBR2_2_m') & (`seBR2_2_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_2_p' & `meanBR_2_m' & `meanBR_2_f' \\ " _n
+	file write sm "Obs & `NBR_2_p' & `NBR_2_m' & `NBR_2_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel C: lag2, W
+	file write sm "\underline{\textit{Panel C: Replication (Weighted)}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_3_p' & `bBR2_3_m' & `bBR2_3_f' \\ " _n
+	file write sm " & (`seBR2_3_p') & (`seBR2_3_m') & (`seBR2_3_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_3_p' & `meanBR_3_m' & `meanBR_3_f' \\ " _n
+	file write sm "Obs & `NBR_3_p' & `NBR_3_m' & `NBR_3_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel D: lag1, W
+	file write sm "\underline{\textit{Panel D: 1-yr Lag (Weighted)}}  \\ " _n
+	file write sm "\textit{1-yr lagged Intensity} & `bBR1_4_p' & `bBR1_4_m' & `bBR1_4_f' \\ " _n
+	file write sm " & (`seBR1_4_p') & (`seBR1_4_m') & (`seBR1_4_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_4_p' & `meanBR_4_m' & `meanBR_4_f' \\ " _n
+	file write sm "Obs & `NBR_4_p' & `NBR_4_m' & `NBR_4_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel E: lag3, W
+	file write sm "\underline{\textit{Panel E: 3-yr Lag (Weighted)}}  \\ " _n
+	file write sm "\textit{3-yr lagged Intensity} & `bBR3_5_p' & `bBR3_5_m' & `bBR3_5_f' \\ " _n
+	file write sm " & (`seBR3_5_p') & (`seBR3_5_m') & (`seBR3_5_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_5_p' & `meanBR_5_m' & `meanBR_5_f' \\ " _n
+	file write sm "Obs & `NBR_5_p' & `NBR_5_m' & `NBR_5_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "No. Mun & \multicolumn{3}{c}{`NmunBR_2_p'} \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y \\ " _n
+	file write sm "Mun FE & Y & Y & Y \\ " _n
+	file write sm "Weights & \multicolumn{3}{c}{N: Panels A--B; Y: Panels C--E} \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
