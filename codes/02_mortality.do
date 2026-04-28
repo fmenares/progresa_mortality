@@ -143,6 +143,116 @@ restore
 
 
 *============================================================
+* FIGURE 2: Mexican municipality maps — PROGRESA intensity variation
+*============================================================
+* Requires: spmap (ssc install spmap)
+*
+* Setup (run once):
+*   spshape2dta "<path/to/mexico_mun_shapefile>", saving("${shp}") replace
+*   This creates ${shp}.dta (attribute file with _ID) and ${shp}_shp.dta (coordinates).
+*   The attribute file must contain a variable matching cve_ent_mun_super.
+*   For INEGI shapefiles the variable is typically CVEGEO (5-char string, e.g. "01001").
+*   If cve_ent_mun_super is numeric, convert: tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
+*   then merge on CVEGEO.
+*
+* ENIGH municipality list (build once from 01_enigh_data.do output):
+*   "$data/enigh_mun_list.dta" must contain cve_ent_mun_super (numeric),
+*   in_enigh1998 (=1 if municipality observed in 1998 ENIGH wave),
+*   in_enigh2000 (=1 if municipality observed in 2000 ENIGH wave).
+
+global shp "$data/shapefiles/mex_mun"   // update path to match local shapefile location
+
+preserve
+keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
+duplicates drop cve_ent_mun_super, force
+
+* Flag municipalities observable in ENIGH 1998 and 2000 waves
+merge 1:1 cve_ent_mun_super using "$data/enigh_mun_list.dta", ///
+	keepusing(in_enigh1998 in_enigh2000) nogen
+recode in_enigh1998 in_enigh2000 (. = 0)
+
+* Intensity visible only for ENIGH-observable municipalities (white = not in ENIGH sample)
+gen inten1998_enigh = inten1998 if in_enigh1998 == 1
+gen inten2000_enigh = inten2000 if in_enigh2000 == 1
+gen inten1997_enigh = inten1997 if in_enigh1998 == 1
+
+* Merge with shapefile attribute file to obtain _ID for spmap
+* Adjust the merge key below if your shapefile uses a different variable name.
+* Common case (INEGI shapefile with CVEGEO string variable):
+*   tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
+*   merge 1:1 CVEGEO using "${shp}.dta", keepusing(_ID) nogen
+merge 1:1 cve_ent_mun_super using "${shp}.dta", keepusing(_ID) nogen
+sort _ID
+
+* ---- Map 1: Mortality sample — intensity 1999 ----
+spmap inten1999 using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("(1) PROGRESA Intensity, 1999", size(small)) ///
+	graphregion(fcolor(white))
+graph save "$figures/map1_inten1999.gph", replace
+
+* ---- Map 2: Mortality sample — intensity 2005 ----
+spmap inten2005 using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("(2) PROGRESA Intensity, 2005", size(small)) ///
+	graphregion(fcolor(white))
+graph save "$figures/map2_inten2005.gph", replace
+
+* ---- Map 3: ENIGH municipalities — intensity 1998 ----
+spmap inten1998_enigh using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("(3) ENIGH Municipalities: Intensity 1998", size(small)) ///
+	graphregion(fcolor(white))
+graph save "$figures/map3_enigh_inten1998.gph", replace
+
+* ---- Map 4: ENIGH municipalities — intensity 2000 ----
+spmap inten2000_enigh using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("(4) ENIGH Municipalities: Intensity 2000", size(small)) ///
+	graphregion(fcolor(white))
+graph save "$figures/map4_enigh_inten2000.gph", replace
+
+* ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
+spmap inten1997 using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("(5) Initial Rollout 1997 (Mortality Data)", size(small)) ///
+	graphregion(fcolor(white))
+graph save "$figures/map5_inten1997_mort.gph", replace
+
+* ---- Map 6: Initial rollout 1997 — ENIGH-1998-observable municipalities only ----
+spmap inten1997_enigh using "${shp}_shp.dta", id(_ID) ///
+	clmethod(quantile) clnumber(5) ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(vsmall) position(7)) ///
+	title("(6) Initial Rollout 1997 (ENIGH Municipalities)", size(small)) ///
+	graphregion(fcolor(white))
+graph save "$figures/map6_inten1997_enigh.gph", replace
+
+* ---- Combine all 6 maps ----
+graph combine ///
+	"$figures/map1_inten1999.gph"       "$figures/map2_inten2005.gph" ///
+	"$figures/map3_enigh_inten1998.gph" "$figures/map4_enigh_inten2000.gph" ///
+	"$figures/map5_inten1997_mort.gph"  "$figures/map6_inten1997_enigh.gph", ///
+	cols(2) ///
+	note("Quintile class breaks. Darker shades = higher PROGRESA intensity." ///
+		 " White = no data or out of sample.", size(vsmall)) ///
+	graphregion(fcolor(white)) xsize(10) ysize(14)
+graph export "$figures/Figure_2_maps.pdf", as(pdf) replace
+
+restore
+
+
+*============================================================
 * TABLE 2: Main DiD Mortality Results
 *============================================================
 
