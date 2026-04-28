@@ -189,65 +189,54 @@ spmap inten1999 using "${shp}_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
-	title("(1) PROGRESA Intensity, 1999", size(small)) ///
+	title("PROGRESA Intensity, 1999", size(small)) ///
 	graphregion(fcolor(white))
-graph save "$figures/map1_inten1999.gph", replace
+graph export "$figures/Figure_2a_inten1999.pdf", as(pdf) replace
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
-	title("(2) PROGRESA Intensity, 2005", size(small)) ///
+	title("PROGRESA Intensity, 2005", size(small)) ///
 	graphregion(fcolor(white))
-graph save "$figures/map2_inten2005.gph", replace
+graph export "$figures/Figure_2b_inten2005.pdf", as(pdf) replace
 
 * ---- Map 3: ENIGH municipalities — intensity 1998 ----
 spmap inten1998_enigh using "${shp}_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
-	title("(3) ENIGH Municipalities: Intensity 1998", size(small)) ///
+	title("ENIGH Municipalities: Intensity 1998", size(small)) ///
 	graphregion(fcolor(white))
-graph save "$figures/map3_enigh_inten1998.gph", replace
+graph export "$figures/Figure_2c_enigh_inten1998.pdf", as(pdf) replace
 
 * ---- Map 4: ENIGH municipalities — intensity 2000 ----
 spmap inten2000_enigh using "${shp}_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
-	title("(4) ENIGH Municipalities: Intensity 2000", size(small)) ///
+	title("ENIGH Municipalities: Intensity 2000", size(small)) ///
 	graphregion(fcolor(white))
-graph save "$figures/map4_enigh_inten2000.gph", replace
+graph export "$figures/Figure_2d_enigh_inten2000.pdf", as(pdf) replace
 
 * ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
 spmap inten1997 using "${shp}_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
-	title("(5) Initial Rollout 1997 (Mortality Data)", size(small)) ///
+	title("Initial Rollout 1997 (Mortality Data)", size(small)) ///
 	graphregion(fcolor(white))
-graph save "$figures/map5_inten1997_mort.gph", replace
+graph export "$figures/Figure_2e_inten1997_mort.pdf", as(pdf) replace
 
 * ---- Map 6: Initial rollout 1997 — ENIGH-1998-observable municipalities only ----
 spmap inten1997_enigh using "${shp}_shp.dta", id(_ID) ///
 	clmethod(quantile) clnumber(5) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(vsmall) position(7)) ///
-	title("(6) Initial Rollout 1997 (ENIGH Municipalities)", size(small)) ///
+	title("Initial Rollout 1997 (ENIGH Municipalities)", size(small)) ///
 	graphregion(fcolor(white))
-graph save "$figures/map6_inten1997_enigh.gph", replace
-
-* ---- Combine all 6 maps ----
-graph combine ///
-	"$figures/map1_inten1999.gph"       "$figures/map2_inten2005.gph" ///
-	"$figures/map3_enigh_inten1998.gph" "$figures/map4_enigh_inten2000.gph" ///
-	"$figures/map5_inten1997_mort.gph"  "$figures/map6_inten1997_enigh.gph", ///
-	cols(2) ///
-	note("Quintile class breaks. Darker shades = higher PROGRESA intensity." ///
-		 " White = no data or out of sample.", size(vsmall)) ///
-	graphregion(fcolor(white)) xsize(10) ysize(14)
-graph export "$figures/Figure_2_maps.pdf", as(pdf) replace
+graph export "$figures/Figure_2f_inten1997_enigh.pdf", as(pdf) replace
 
 restore
 
