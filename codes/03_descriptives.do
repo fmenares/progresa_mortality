@@ -64,6 +64,19 @@ foreach outcome in $raw_outcomes {
 }
 
 }
+
+* ---- Save ENIGH municipality list with wave-specific indicators ----
+* Consumed by 02_mortality.do to restrict ENIGH maps to observable municipalities.
+* Run 03_descriptives.do before 02_mortality.do (or run this block separately).
+preserve
+	keep if $sample_marg
+	keep cve_ent_mun_super year
+	gen byte in_enigh1998 = (year == 1998)
+	gen byte in_enigh2000 = (year == 2000)
+	collapse (max) in_enigh1998 in_enigh2000, by(cve_ent_mun_super)
+	save "$data/enigh_mun_list.dta", replace
+restore
+
 *i might not ant to restrict on benef_gob_ind or benef_gob
 * ============================================================
 * SECTION 0: TREATMENT VARIATION ANALYSIS

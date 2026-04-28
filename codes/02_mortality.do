@@ -162,26 +162,42 @@ restore
 
 global shp "$data/shapefiles/mex_mun"   // update path to match local shapefile location
 
+* ---- Step 1: Save intensity values to tempfile ----
+* Preserving and restoring here just to extract municipality-level values cleanly.
 preserve
 keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
 duplicates drop cve_ent_mun_super, force
 
 * Flag municipalities observable in ENIGH 1998 and 2000 waves
+* (enigh_mun_list.dta is built by 03_descriptives.do — run that first)
 merge 1:1 cve_ent_mun_super using "$data/enigh_mun_list.dta", ///
 	keepusing(in_enigh1998 in_enigh2000) nogen
 recode in_enigh1998 in_enigh2000 (. = 0)
-
-* Intensity visible only for ENIGH-observable municipalities (white = not in ENIGH sample)
 gen inten1998_enigh = inten1998 if in_enigh1998 == 1
 gen inten2000_enigh = inten2000 if in_enigh2000 == 1
 gen inten1997_enigh = inten1997 if in_enigh1998 == 1
 
-* Merge with shapefile attribute file to obtain _ID for spmap
-* Adjust the merge key below if your shapefile uses a different variable name.
-* Common case (INEGI shapefile with CVEGEO string variable):
-*   tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
-*   merge 1:1 CVEGEO using "${shp}.dta", keepusing(_ID) nogen
-merge 1:1 cve_ent_mun_super using "${shp}.dta", keepusing(_ID) nogen
+tempfile inten_data
+save `inten_data'
+restore
+
+* ---- Step 2: Build map base from shapefile — keeps _ID unique ----
+* Strategy: start from the shapefile (one row per original INEGI polygon, unique _ID),
+* add cve_ent_mun_super via the same crosswalk used in 03_descriptives.do,
+* then merge intensity m:1 so every polygon in a super-municipality shares its intensity.
+* This avoids the "_ID not unique" error that arises when merging the other direction.
+*
+* The attribute file (${shp}.dta) from spshape2dta typically has CVE_ENT (2-char string)
+* and CVE_MUN (3-char string) from the INEGI shapefile — adjust names below if yours differ.
+preserve
+use "${shp}.dta", clear
+rename CVE_ENT cve_ent
+rename CVE_MUN cve_mun
+merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
+	keepusing(cve_ent_mun_super) nogen
+* Polygons with no crosswalk entry (no boundary change): build code from raw fields
+replace cve_ent_mun_super = cve_ent + cve_mun if cve_ent_mun_super == ""
+merge m:1 cve_ent_mun_super using `inten_data', nogen
 sort _ID
 
 * ---- Map 1: Mortality sample — intensity 1999 ----
