@@ -170,7 +170,7 @@ drop cve_ent_mun_super
 rename cve_mun2 cve_ent_mun_super
 sort cve_ent_mun_super
 save $shp\Municipios_1995.dta, replace
-
+*/
 use "$shp\Municipios_2000.dta", clear
 
 g cve_ent = substr(CVEMUNI,1,2)
@@ -186,8 +186,8 @@ drop cve_ent_mun_super
 rename cve_mun2 cve_ent_mun_super
 sort cve_ent_mun_super
 duplicates drop cve_ent_mun_super, force
-save "$shp\Municipios_2000.dta", replace
-*/
+save "$shp\Municipios_2000_super.dta", replace
+
 * ENIGH municipality list (build once from 01_enigh_data.do output):
 *   "$data/enigh_mun_list.dta" must contain cve_ent_mun_super (numeric),
 *   in_enigh1998 (=1 if municipality observed in 1998 ENIGH wave),
@@ -212,7 +212,7 @@ gen inten1997_enigh = inten1997 if in_enigh1998 == 1
 *   tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
 *   merge 1:1 CVEGEO using "${shp}.dta", keepusing(_ID) nogen
 *merge m:1 cve_ent_mun_super using "$shp\Municipios_2000.dta", keepusing(_ID) nogen
-merge m:1 cve_ent_mun_super using "$shp\Municipios_2000.dta", keepusing(_ID) keep(3)
+merge m:1 cve_ent_mun_super using "$shp\Municipios_2000_super.dta", keepusing(_ID) keep(3)
 sort _ID
 
 * ---- Map 1: Mortality sample — intensity 1999 ----
