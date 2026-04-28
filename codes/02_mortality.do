@@ -333,55 +333,55 @@ foreach pnl in p m f {
 {
 	cap file close sm
 	file open sm using "$tables/AT1_BR_replication.tex", write replace
-	file write sm "\begin{tabular}{lccccc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}" _n
-	file write sm "& BR (2013) & Replication & Replic.+W & 1yr lag+W & 3yr lag+W \\ \toprule" _n
-	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_p' & `bBR2_3_p' & & \\ " _n
-	file write sm " & & (`seBR2_2_p') & (`seBR2_3_p') & & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_p' & \\ " _n
-	file write sm " & & & & (`seBR1_4_p') & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_p' \\ " _n
-	file write sm " & & & & & (`seBR3_5_p') \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & -- & `meanBR_2_p' & `meanBR_3_p' & `meanBR_4_p' & `meanBR_5_p' \\ " _n
-	file write sm "Obs & -- & `NBR_2_p' & `NBR_3_p' & `NBR_4_p' & `NBR_5_p' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_m' & `bBR2_3_m' & & \\ " _n
-	file write sm " & & (`seBR2_2_m') & (`seBR2_3_m') & & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_m' & \\ " _n
-	file write sm " & & & & (`seBR1_4_m') & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_m' \\ " _n
-	file write sm " & & & & & (`seBR3_5_m') \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & -- & `meanBR_2_m' & `meanBR_3_m' & `meanBR_4_m' & `meanBR_5_m' \\ " _n
-	file write sm "Obs & -- & `NBR_2_m' & `NBR_3_m' & `NBR_4_m' & `NBR_5_m' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & -- & `bBR2_2_f' & `bBR2_3_f' & & \\ " _n
-	file write sm " & & (`seBR2_2_f') & (`seBR2_3_f') & & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & & & & `bBR1_4_f' & \\ " _n
-	file write sm " & & & & (`seBR1_4_f') & \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "\textit{3-yr lagged Intensity} & & & & & `bBR3_5_f' \\ " _n
-	file write sm " & & & & & (`seBR3_5_f') \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & -- & `meanBR_2_f' & `meanBR_3_f' & `meanBR_4_f' & `meanBR_5_f' \\ " _n
-	file write sm "Obs & -- & `NBR_2_f' & `NBR_3_f' & `NBR_4_f' & `NBR_5_f' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "No. Mun & -- & `NmunBR_2_p' & `NmunBR_3_p' & `NmunBR_4_p' & `NmunBR_5_p' \\ " _n
-	file write sm "  & & & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Mun FE & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Weights & -- & N & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y \\ " _n
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1) Pooled} & \multicolumn{1}{c}{(2) Males} & \multicolumn{1}{c}{(3) Females} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	* Panel A: hardcoded BR (2013) original results
+	file write sm "\underline{\textit{Panel A: BR (2013) Original}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & -6.37*** & -6.42*** & -6.46*** \\ " _n
+	file write sm " & (1.04) & (1.42) & (1.31) \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & 47.5 & 49.3 & 46.0 \\ " _n
+	file write sm "Obs & -- & -- & -- \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel B: lag2, UW
+	file write sm "\underline{\textit{Panel B: Replication (Unweighted)}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_2_p' & `bBR2_2_m' & `bBR2_2_f' \\ " _n
+	file write sm " & (`seBR2_2_p') & (`seBR2_2_m') & (`seBR2_2_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_2_p' & `meanBR_2_m' & `meanBR_2_f' \\ " _n
+	file write sm "Obs & `NBR_2_p' & `NBR_2_m' & `NBR_2_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel C: lag2, W
+	file write sm "\underline{\textit{Panel C: Replication (Weighted)}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_3_p' & `bBR2_3_m' & `bBR2_3_f' \\ " _n
+	file write sm " & (`seBR2_3_p') & (`seBR2_3_m') & (`seBR2_3_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_3_p' & `meanBR_3_m' & `meanBR_3_f' \\ " _n
+	file write sm "Obs & `NBR_3_p' & `NBR_3_m' & `NBR_3_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel D: lag1, W
+	file write sm "\underline{\textit{Panel D: 1-yr Lag (Weighted)}}  \\ " _n
+	file write sm "\textit{1-yr lagged Intensity} & `bBR1_4_p' & `bBR1_4_m' & `bBR1_4_f' \\ " _n
+	file write sm " & (`seBR1_4_p') & (`seBR1_4_m') & (`seBR1_4_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_4_p' & `meanBR_4_m' & `meanBR_4_f' \\ " _n
+	file write sm "Obs & `NBR_4_p' & `NBR_4_m' & `NBR_4_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel E: lag3, W
+	file write sm "\underline{\textit{Panel E: 3-yr Lag (Weighted)}}  \\ " _n
+	file write sm "\textit{3-yr lagged Intensity} & `bBR3_5_p' & `bBR3_5_m' & `bBR3_5_f' \\ " _n
+	file write sm " & (`seBR3_5_p') & (`seBR3_5_m') & (`seBR3_5_f') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanBR_5_p' & `meanBR_5_m' & `meanBR_5_f' \\ " _n
+	file write sm "Obs & `NBR_5_p' & `NBR_5_m' & `NBR_5_f' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "No. Mun & \multicolumn{3}{c}{`NmunBR_2_p'} \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y \\ " _n
+	file write sm "Mun FE & Y & Y & Y \\ " _n
+	file write sm "Weights & \multicolumn{3}{c}{N: Panels A--B; Y: Panels C--E} \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
