@@ -257,8 +257,8 @@ preserve
 clear
 set obs 16
 gen yr_pos = _n
-gen xpos_w = yr_pos
-gen xpos_f = yr_pos - 0.18
+gen xpos_w = yr_pos - 0.18
+gen xpos_f = yr_pos
 gen xpos_m = yr_pos + 0.18
 foreach grp in w f m {
 	gen b_`grp'  = .
@@ -273,31 +273,29 @@ forval pos = 1/16 {
 	}
 }
 twoway ///
-	(rcap hi_f lo_f xpos_f, ///
-		lcolor(cranberry%60) lwidth(vthin)) ///
-	(connected b_f xpos_f, ///
-		mcolor(cranberry) lcolor(cranberry) ///
-		msymbol(square) msize(vsmall) ///
-		lpattern(dash) lwidth(thin)) ///
-	(rcap hi_m lo_m xpos_m, ///
-		lcolor(blue%60) lwidth(vthin)) ///
-	(connected b_m xpos_m, ///
-		mcolor(blue) lcolor(blue) ///
-		msymbol(triangle) msize(vsmall) ///
-		lpattern(shortdash_dot) lwidth(thin)) ///
 	(rcap hi_w lo_w xpos_w, ///
 		lcolor(black%60) lwidth(vthin)) ///
 	(connected b_w xpos_w, ///
 		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall) ///
-		lpattern(solid) lwidth(thin)), ///
+		msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+	(rcap hi_f lo_f xpos_f, ///
+		lcolor(red%60) lwidth(vthin)) ///
+	(connected b_f xpos_f, ///
+		mcolor(red) lcolor(red) ///
+		msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
+	(rcap hi_m lo_m xpos_m, ///
+		lcolor(blue%60) lwidth(vthin)) ///
+	(connected b_m xpos_m, ///
+		mcolor(blue%80) lcolor(blue%80) ///
+		msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(0.5 16.5)) ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -555,8 +553,8 @@ preserve
 clear
 set obs 16
 gen yr_pos = _n
-gen xpos_w = yr_pos
-gen xpos_f = yr_pos - 0.18
+gen xpos_w = yr_pos - 0.18
+gen xpos_f = yr_pos
 gen xpos_m = yr_pos + 0.18
 foreach grp in w f m {
 	gen b_`grp'  = .
@@ -573,26 +571,27 @@ forval pos = 1/16 {
 twoway ///
 	(rcap hi_w lo_w xpos_w, ///
 		lcolor(black%60) lwidth(vthin)) ///
-	(scatter b_w xpos_w, ///
+	(connected b_w xpos_w, ///
 		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall)) ///
+		msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
 	(rcap hi_f lo_f xpos_f, ///
-		lcolor(cranberry%60) lwidth(vthin)) ///
-	(scatter b_f xpos_f, ///
-		mcolor(cranberry) lcolor(cranberry) ///
-		msymbol(square) msize(vsmall)) ///
+		lcolor(red%60) lwidth(vthin)) ///
+	(connected b_f xpos_f, ///
+		mcolor(red) lcolor(red) ///
+		msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
 	(rcap hi_m lo_m xpos_m, ///
-		lcolor(ltblue%60) lwidth(vthin)) ///
-	(scatter b_m xpos_m, ///
-		mcolor(ltblue) lcolor(ltblue) ///
-		msymbol(triangle) msize(vsmall)), ///
+		lcolor(blue%60) lwidth(vthin)) ///
+	(connected b_m xpos_m, ///
+		mcolor(blue%80) lcolor(blue%80) ///
+		msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(0.5 16.5)) ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -668,8 +667,8 @@ forval col = 1/4 {
 	set obs 16
 
 	gen yr_pos = _n
-	gen xpos_w = yr_pos
-	gen xpos_f = yr_pos - 0.18
+	gen xpos_w = yr_pos - 0.18
+	gen xpos_f = yr_pos
 	gen xpos_m = yr_pos + 0.18
 
 	foreach grp in w f m {
@@ -681,25 +680,26 @@ forval col = 1/4 {
 twoway ///
 	(rcap hi_w lo_w xpos_w, ///
 		lcolor(black%60) lwidth(vthin)) ///
-	(scatter b_w xpos_w, ///
+	(connected b_w xpos_w, ///
 		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall)) ///
+		msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
 	(rcap hi_f lo_f xpos_f, ///
-		lcolor(cranberry%60) lwidth(vthin)) ///
-	(scatter b_f xpos_f, ///
-		mcolor(cranberry) lcolor(cranberry) ///
-		msymbol(square) msize(vsmall)) ///
+		lcolor(red%60) lwidth(vthin)) ///
+	(connected b_f xpos_f, ///
+		mcolor(red) lcolor(red) ///
+		msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
 	(rcap hi_m lo_m xpos_m, ///
-		lcolor(ltblue%60) lwidth(vthin)) ///
-	(scatter b_m xpos_m, ///
-		mcolor(ltblue) lcolor(ltblue) ///
-		msymbol(triangle) msize(vsmall)), ///
+		lcolor(blue%60) lwidth(vthin)) ///
+	(connected b_m xpos_m, ///
+		mcolor(blue%80) lcolor(blue%80) ///
+		msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(0.5 16.5)) ///
 	xtitle("") ///
 	ytitle("Excess Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
 	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
@@ -717,31 +717,29 @@ restore
 	}
 
 	twoway ///
-		(rcap hi_f lo_f xpos_f, ///
-			lcolor(cranberry%60) lwidth(vthin)) ///
-		(connected b_f xpos_f, ///
-			mcolor(cranberry) lcolor(cranberry) ///
-			msymbol(square) msize(vsmall) ///
-			lpattern(dash) lwidth(thin)) ///
-		(rcap hi_m lo_m xpos_m, ///
-			lcolor(blue%60) lwidth(vthin)) ///
-		(connected b_m xpos_m, ///
-			mcolor(blue) lcolor(blue) ///
-			msymbol(triangle) msize(vsmall) ///
-			lpattern(shortdash_dot) lwidth(thin)) ///
 		(rcap hi_w lo_w xpos_w, ///
 			lcolor(black%60) lwidth(vthin)) ///
 		(connected b_w xpos_w, ///
 			mcolor(black) lcolor(black) ///
-			msymbol(circle) msize(vsmall) ///
-			lpattern(solid) lwidth(thin)), ///
+			msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+		(rcap hi_f lo_f xpos_f, ///
+			lcolor(red%60) lwidth(vthin)) ///
+		(connected b_f xpos_f, ///
+			mcolor(red) lcolor(red) ///
+			msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
+		(rcap hi_m lo_m xpos_m, ///
+			lcolor(blue%60) lwidth(vthin)) ///
+		(connected b_m xpos_m, ///
+			mcolor(blue%80) lcolor(blue%80) ///
+			msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-		xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-		xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("AAMR 65+ (per 1,000)", size(medsmall)) ///
-			legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+		yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
+			legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
 			cols(3) size(medsmall) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
@@ -800,17 +798,18 @@ forval pos = 2/12 {
 }
 twoway ///
 	(rcap hi_uw lo_uw xpos_uw, lcolor(black%60) lwidth(vthin)) ///
-	(scatter b_uw xpos_uw, mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(rcap hi_w lo_w xpos_w, lcolor(ltblue%60) lwidth(vthin)) ///
-	(scatter b_w xpos_w, mcolor(ltblue) msymbol(triangle) msize(vsmall)) ///
-	(rcap hi_wsp lo_wsp xpos_wsp, lcolor(cranberry%60) lwidth(vthin)) ///
-	(scatter b_wsp xpos_wsp, mcolor(cranberry) msymbol(square) msize(vsmall)), ///
+	(connected b_uw xpos_uw, mcolor(black) lcolor(black) msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+	(rcap hi_w lo_w xpos_w, lcolor(blue%60) lwidth(vthin)) ///
+	(connected b_w xpos_w, mcolor(blue%80) lcolor(blue%80) msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)) ///
+	(rcap hi_wsp lo_wsp xpos_wsp, lcolor(red%60) lwidth(vthin)) ///
+	(connected b_wsp xpos_wsp, mcolor(red) lcolor(red) msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels_br', labsize(small) angle(45) grid gmax labcolor(black)) ///
+	xlabel(`yr_labels_br', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(1.5 12.5)) ///
 	xtitle("") ///
 	ytitle("Excess Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
 	legend(order(2 "Unweighted" 4 "Weighted" 6 "Weighted + SP") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
@@ -1459,25 +1458,26 @@ inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super)  vce(cluster c
 	twoway ///
 		(rcap hi_w lo_w xpos_w, ///
 			lcolor(black%60) lwidth(vthin)) ///
-		(scatter b_w xpos_w, ///
+		(connected b_w xpos_w, ///
 			mcolor(black) lcolor(black) ///
-			msymbol(circle) msize(vsmall)) ///
+			msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
 		(rcap hi_f lo_f xpos_f, ///
-			lcolor(cranberry%60) lwidth(vthin)) ///
-		(scatter b_f xpos_f, ///
-			mcolor(cranberry) lcolor(cranberry) ///
-			msymbol(square) msize(vsmall)) ///
+			lcolor(red%60) lwidth(vthin)) ///
+		(connected b_f xpos_f, ///
+			mcolor(red) lcolor(red) ///
+			msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
 		(rcap hi_m lo_m xpos_m, ///
-			lcolor(ltblue%60) lwidth(vthin)) ///
-		(scatter b_m xpos_m, ///
-			mcolor(ltblue) lcolor(ltblue) ///
-			msymbol(triangle) msize(vsmall)), ///
+			lcolor(blue%60) lwidth(vthin)) ///
+		(connected b_m xpos_m, ///
+			mcolor(blue%80) lcolor(blue%80) ///
+			msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-		xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("AAMR 65+ (per 1,000)", size(medsmall)) ///
+		yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
 			legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
 			cols(3) size(medsmall) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
@@ -1582,15 +1582,17 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	twoway ///
 		(rcap hi_cod lo_cod xpos_cod, ///
 			lcolor(black%60) lwidth(vthin)) ///
-		(scatter b_cod xpos_cod, ///
+		(connected b_cod xpos_cod, ///
 			mcolor(black) lcolor(black) ///
-			msymbol(circle) msize(vsmall)), ///
+			msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-		xlabel(`yr_labels_cod', labsize(small) angle(45) grid gmax labcolor(black)) ///
+		xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
+		yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
+		legend(off) ///
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/FA_es_cod_`cod'.pdf", as(pdf) replace
