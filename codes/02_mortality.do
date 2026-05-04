@@ -426,7 +426,7 @@ foreach pnl in p m f {
 *============================================================
 
 {
-g intensity_new_per = intensity_new * 100
+
 
 preserve
 collapse (mean) emr65 emr65m emr65f intensity_new_per [aw=popover65_], by(year)
@@ -600,7 +600,7 @@ graph export "$figures/appendix/Figure_2_uw.pdf", as(pdf) replace
 restore
 }
 *============================================================
-* FIGURE 3: Event Study — AAMR65 (1995 standard population)
+* APPENDIX FIGURE 3: Event Study — AAMR65 (1995 standard population)
 *============================================================
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 
