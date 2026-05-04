@@ -103,28 +103,18 @@ lab var year "year"
 	
 	save "$data/mortality_muni", replace
 	restore
-	
-*============================================================
-* FIGURE 1: Mortality trends and PROGRESA penetration
-*============================================================
-g intensity_new_per = intensity_new * 100
-* Figure 1a: All municipalities
-preserve
-collapse (mean) emr65 emr65m emr65f intensity_new_per [aw=popover65_], by(year)
-twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
-       (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
-       (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
-       (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
-	ytitle("Mortality Rate (65+ per 1000)", axis(1)) ///
-	ytitle("Progresa Intensity (%)", axis(2)) ///
-	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
-	cols(4) size(medsmall) position(6) ring(1)) ///
-	graphregion(fcolor(white))
-graph export "$figures/Figure_1a_all.pdf", as(pdf) replace
-restore
 
-* Figure 1b: Highly marginalized municipalities
+*============================================================
+* FIGURES:
+*============================================================
+
+*============================================================
+* FIGURE 1a: Mortality trends and PROGRESA penetration Highly marginalized municipalities
+*============================================================
+
+
+{
+g intensity_new_per = intensity_new * 100
 preserve
 keep if $sample_marg
 collapse (mean) emr65 emr65m emr65f intensity_new_per [aw=popover65_], by(year)
@@ -138,15 +128,14 @@ twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
 	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
 	cols(4) size(medsmall) position(6) ring(1)) ///	
 	graphregion(fcolor(white))
-graph export "$figures/Figure_1b_marg.pdf", as(pdf) replace
+graph export "$figures/Figure_1a_marg.pdf", as(pdf) replace
 restore
-
-
+}
 *============================================================
-* FIGURE 2: Mexican municipality maps — PROGRESA intensity variation
+* FIGURE 1 b and c: Mexican municipality maps — PROGRESA intensity variation
 *============================================================
 * Requires: spmap (ssc install spmap)
-*
+{
 * Setup (run once):
 *   spshape2dta "<path/to/mexico_mun_shapefile>", saving("${shp}") replace
 *   This creates ${shp}.dta (attribute file with _ID) and ${shp}_shp.dta (coordinates).
@@ -155,10 +144,6 @@ restore
 *   If cve_ent_mun_super is numeric, convert: tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
 *   then merge on CVEGEO.
 *
-* ENIGH municipality list (build once from 01_enigh_data.do output):
-*   "$data/enigh_mun_list.dta" must contain cve_ent_mun_super (numeric),
-*   in_enigh1998 (=1 if municipality observed in 1998 ENIGH wave),
-*   in_enigh2000 (=1 if municipality observed in 2000 ENIGH wave).
 
 global shp "$data/mgm"   // update path to match local shapefile location
 
@@ -177,7 +162,7 @@ global shp "$data/mgm"   // update path to match local shapefile location
 
 *Highly Marginalized Municipalities
 
-{
+
 preserve
 keep if $sample_marg
 keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
@@ -209,7 +194,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/maps/Figure_2a_inten1999.pdf", as(pdf) replace width(5)
+graph export "$figures/Figure_1b_inten1999.pdf", as(pdf) replace width(5)
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -217,7 +202,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/maps/Figure_2b_inten2005.pdf", as(pdf) replace width(1)
+graph export "$figures/Figure_1c_inten2005.pdf", as(pdf) replace width(2)
 
  *---- Map 5: Initial rollout 1997 — mortality sample ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -225,59 +210,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/maps/Figure_2e_inten1997_mort.pdf", as(pdf) replace width(20)
-
-
-restore
-
-}
-
-*All Municipalities
-{
-preserve
-keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
-duplicates drop cve_ent_mun_super, force
-
-tempfile inten_data_all
-save `inten_data_all'
-restore
-
-
-preserve
-use "${shp}\municipios_2000.dta", clear
-*rename CVE_ENT cve_ent
-*rename CVE_MUN cve_mun
-merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
-	keepusing(cve_ent_mun_super) nogen
-* Polygons with no crosswalk entry (no boundary change): build code from raw fields
-replace cve_ent_mun_super = cve_ent + cve_mun if cve_ent_mun_super == ""
-merge m:1 cve_ent_mun_super using `inten_data_all', nogen
-sort _ID
-
-* ---- Map 1: Mortality sample — intensity 1999 ----
-spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
-	clmethod(custom) clbreaks(`breaks1999') ///
-	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
-	legend(size(medium) position(7)) ///
-	graphregion(fcolor(white))
-graph export "$figures/maps/Figure_2a_inten1999_all.pdf", as(pdf) replace width(0.7)
-
-* ---- Map 2: Mortality sample — intensity 2005 ----
-spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
-	clmethod(custom) clbreaks(`breaks1999') ///
-	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
-	legend(size(medium) position(7)) ///
-	graphregion(fcolor(white))
-graph export "$figures/maps/Figure_2b_inten2005_all.pdf", as(pdf) replace width(0.5)
-
-* ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
-spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) /// 
-	clmethod(custom) clbreaks(`breaks1999') ///
-	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
-	legend(size(medium) position(7)) ///
-	graphregion(fcolor(white))
-graph export "$figures/maps/Figure_2e_inten1997_mort_all.pdf", as(pdf) replace width(1)
-
+graph export "$figures/appendix/Figure_1d_inten1997_mort.pdf", as(pdf) replace width(20)
 
 
 restore
@@ -285,6 +218,98 @@ restore
 }
 
 
+*============================================================
+*Figure 2: Weighted + Seguro Popular — manual event study (pooled / female / male)
+*============================================================
+
+{ 
+foreach grp in w f m {
+	if "`grp'" == "w" {
+		local outcome emr65
+		local wvar   popover65_
+	}
+	else if "`grp'" == "f" {
+		local outcome emr65f
+		local wvar   popover65_f
+	}
+	else {
+		local outcome emr65m
+		local wvar   popover65_m
+	}
+
+	reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
+		vce(cluster cve_ent_mun_super)
+
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local b_`grp'_6  = 0
+			local se_`grp'_6 = 0
+		}
+		else {
+			local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
+	}
+}
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_w = yr_pos
+gen xpos_f = yr_pos - 0.18
+gen xpos_m = yr_pos + 0.18
+foreach grp in w f m {
+	gen b_`grp'  = .
+	gen hi_`grp' = .
+	gen lo_`grp' = .
+}
+forval pos = 1/16 {
+	foreach grp in w f m {
+		replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+		replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+		replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+	}
+}
+twoway ///
+	(rcap hi_f lo_f xpos_f, ///
+		lcolor(cranberry%60) lwidth(vthin)) ///
+	(connected b_f xpos_f, ///
+		mcolor(cranberry) lcolor(cranberry) ///
+		msymbol(square) msize(vsmall) ///
+		lpattern(dash) lwidth(thin)) ///
+	(rcap hi_m lo_m xpos_m, ///
+		lcolor(blue%60) lwidth(vthin)) ///
+	(connected b_m xpos_m, ///
+		mcolor(blue) lcolor(blue) ///
+		msymbol(triangle) msize(vsmall) ///
+		lpattern(shortdash_dot) lwidth(thin)) ///
+	(rcap hi_w lo_w xpos_w, ///
+		lcolor(black%60) lwidth(vthin)) ///
+	(connected b_w xpos_w, ///
+		mcolor(black) lcolor(black) ///
+		msymbol(circle) msize(vsmall) ///
+		lpattern(solid) lwidth(thin)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+		cols(3) size(medsmall) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/Figure_2_w.pdf", as(pdf) replace
+restore
+
+}
+
+*============================================================
+* TABLE 1: Descriptives
+*============================================================
 
 
 *============================================================
@@ -394,6 +419,316 @@ foreach pnl in p m f {
 
 
 *============================================================
+* APPENDIX FIGURES: 
+*============================================================
+
+
+*============================================================
+* FIGURE 1a: Mortality trends and PROGRESA penetration All municipalities
+*============================================================
+
+{
+g intensity_new_per = intensity_new * 100
+
+preserve
+collapse (mean) emr65 emr65m emr65f intensity_new_per [aw=popover65_], by(year)
+twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
+       (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
+       (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
+       (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
+	ytitle("Mortality Rate (65+ per 1000)", axis(1)) ///
+	ytitle("Progresa Intensity (%)", axis(2)) ///
+	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
+	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
+	cols(4) size(medsmall) position(6) ring(1)) ///
+	graphregion(fcolor(white))
+graph export "$figures/appendix/Figure_1a_all.pdf", as(pdf) replace
+restore
+}
+*============================================================
+* FIGURE 1 b c: Mexican municipality maps — PROGRESA intensity variation *All Municipalities
+*============================================================
+* Requires: spmap (ssc install spmap)
+{
+* Setup (run once):
+*   spshape2dta "<path/to/mexico_mun_shapefile>", saving("${shp}") replace
+*   This creates ${shp}.dta (attribute file with _ID) and ${shp}_shp.dta (coordinates).
+*   The attribute file must contain a variable matching cve_ent_mun_super.
+*   For INEGI shapefiles the variable is typically CVEGEO (5-char string, e.g. "01001").
+*   If cve_ent_mun_super is numeric, convert: tostring cve_ent_mun_super, gen(CVEGEO) format(%05.0f)
+*   then merge on CVEGEO.
+*
+
+global shp "$data/mgm"   // update path to match local shapefile location
+
+* ---- Step 1: Save intensity values to tempfile ----
+* Preserving and restoring here just to extract municipality-level values cleanly.
+* ---- Step 2: Build map base from shapefile — keeps _ID unique ----
+* Strategy: start from the shapefile (one row per original INEGI polygon, unique _ID),
+* add cve_ent_mun_super via the same crosswalk used in 03_descriptives.do,
+* then merge intensity m:1 so every polygon in a super-municipality shares its intensity.
+* This avoids the "_ID not unique" error that arises when merging the other direction.
+*
+* The attribute file (${shp}.dta) from spshape2dta typically has CVE_ENT (2-char string)
+* and CVE_MUN (3-char string) from the INEGI shapefile — adjust names below if yours differ.
+
+
+preserve
+keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
+duplicates drop cve_ent_mun_super, force
+
+tempfile inten_data_all
+save `inten_data_all'
+restore
+
+
+preserve
+use "${shp}\municipios_2000.dta", clear
+*rename CVE_ENT cve_ent
+*rename CVE_MUN cve_mun
+merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
+	keepusing(cve_ent_mun_super) nogen
+* Polygons with no crosswalk entry (no boundary change): build code from raw fields
+replace cve_ent_mun_super = cve_ent + cve_mun if cve_ent_mun_super == ""
+merge m:1 cve_ent_mun_super using `inten_data_all', nogen
+sort _ID
+
+local breaks1999 0 0.12 0.25 0.40 0.63 1
+* ---- Map 1: Mortality sample — intensity 1999 ----
+spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
+	clmethod(custom) clbreaks(`breaks1999') ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(medium) position(7)) ///
+	graphregion(fcolor(white))
+graph export "$figures/appendix/Figure_1b_inten1999_all.pdf", as(pdf) replace width(0.7)
+
+* ---- Map 2: Mortality sample — intensity 2005 ----
+spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
+	clmethod(custom) clbreaks(`breaks1999') ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(medium) position(7)) ///
+	graphregion(fcolor(white))
+graph export "$figures/appendix/Figure_1c_inten2005_all.pdf", as(pdf) replace width(0.5)
+
+* ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
+spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) /// 
+	clmethod(custom) clbreaks(`breaks1999') ///
+	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
+	legend(size(medium) position(7)) ///
+	graphregion(fcolor(white))
+graph export "$figures/appendix/Figure_1e_inten1997_mort_all.pdf", as(pdf) replace width(1)
+
+
+
+restore
+
+}
+
+
+*============================================================
+*Fig 2: Unweighted + Seguro Popular — manual event study (pooled / female / male)
+*============================================================
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+{
+foreach grp in w f m {
+	if "`grp'" == "w" local outcome emr65
+	if "`grp'" == "f" local outcome emr65f
+	if "`grp'" == "m" local outcome emr65m
+
+	reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity if $sample_marg, a(cve_ent_mun_super) ///
+		vce(cluster cve_ent_mun_super)
+
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local b_`grp'_6  = 0
+			local se_`grp'_6 = 0
+		}
+		else {
+			local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
+	}
+}
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_w = yr_pos
+gen xpos_f = yr_pos - 0.18
+gen xpos_m = yr_pos + 0.18
+foreach grp in w f m {
+	gen b_`grp'  = .
+	gen hi_`grp' = .
+	gen lo_`grp' = .
+}
+forval pos = 1/16 {
+	foreach grp in w f m {
+		replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+		replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+		replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+	}
+}
+twoway ///
+	(rcap hi_f lo_f xpos_f, ///
+		lcolor(cranberry%60) lwidth(vthin)) ///
+	(connected b_f xpos_f, ///
+		mcolor(cranberry) lcolor(cranberry) ///
+		msymbol(square) msize(vsmall) ///
+		lpattern(dash) lwidth(thin)) ///
+	(rcap hi_m lo_m xpos_m, ///
+		lcolor(blue%60) lwidth(vthin)) ///
+	(connected b_m xpos_m, ///
+		mcolor(blue) lcolor(blue) ///
+		msymbol(triangle) msize(vsmall) ///
+		lpattern(shortdash_dot) lwidth(thin)) ///
+	(rcap hi_w lo_w xpos_w, ///
+		lcolor(black%60) lwidth(vthin)) ///
+	(connected b_w xpos_w, ///
+		mcolor(black) lcolor(black) ///
+		msymbol(circle) msize(vsmall) ///
+		lpattern(solid) lwidth(thin)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+		cols(3) size(medsmall) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/Figure_2_uw.pdf", as(pdf) replace
+restore
+}
+*============================================================
+* FIGURE 3: Event Study — AAMR65 (1995 standard population)
+*============================================================
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+forval col = 1/4 {
+
+	if `col' == 1 local col_note "Unweighted"
+	if `col' == 2 local col_note "Unweighted + Seguro Popular"
+	if `col' == 3 local col_note "Weighted"
+	if `col' == 4 local col_note "Weighted + Seguro Popular"
+
+	*--- Run three regressions (pooled, female, male) and store coefficients ---
+	foreach grp in w f m {
+
+		if "`grp'" == "w" {
+			local outcome aamr65
+			local wvar   popover65_
+		}
+		else if "`grp'" == "f" {
+			local outcome aamr65f
+			local wvar   popover65_f
+		}
+		else {
+			local outcome aamr65m
+			local wvar   popover65_m
+		}
+
+		if `col' == 1 {
+			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				if $sample_marg, a(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 2 {
+			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				c.sp_intensity if $sample_marg, a(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 3 {
+			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				[aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super)
+		}
+		else {
+			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super)
+		}
+
+		*--- Extract year x inten1999 coefficients; reference year (pos 6 = 1996) set to 0 ---
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local b_`grp'_6  = 0
+				local se_`grp'_6 = 0
+			}
+			else {
+				local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+				local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+			}
+		}
+	}
+
+	*--- Build plotting dataset and export figure ---
+	preserve
+	clear
+	set obs 16
+
+	gen yr_pos = _n
+	gen xpos_w = yr_pos
+	gen xpos_f = yr_pos - 0.18
+	gen xpos_m = yr_pos + 0.18
+
+	foreach grp in w f m {
+		gen b_`grp'  = .
+		gen hi_`grp' = .
+		gen lo_`grp' = .
+	}
+
+	forval pos = 1/16 {
+		foreach grp in w f m {
+			replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+			replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+			replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+		}
+	}
+
+	twoway ///
+		(rcap hi_f lo_f xpos_f, ///
+			lcolor(cranberry%60) lwidth(vthin)) ///
+		(connected b_f xpos_f, ///
+			mcolor(cranberry) lcolor(cranberry) ///
+			msymbol(square) msize(vsmall) ///
+			lpattern(dash) lwidth(thin)) ///
+		(rcap hi_m lo_m xpos_m, ///
+			lcolor(blue%60) lwidth(vthin)) ///
+		(connected b_m xpos_m, ///
+			mcolor(blue) lcolor(blue) ///
+			msymbol(triangle) msize(vsmall) ///
+			lpattern(shortdash_dot) lwidth(thin)) ///
+		(rcap hi_w lo_w xpos_w, ///
+			lcolor(black%60) lwidth(vthin)) ///
+		(connected b_w xpos_w, ///
+			mcolor(black) lcolor(black) ///
+			msymbol(circle) msize(vsmall) ///
+			lpattern(solid) lwidth(thin)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+		xscale(range(0.5 16.5)) ///
+		xtitle("") ///
+		ytitle("AAMR 65+ (per 1,000)", size(medsmall)) ///
+			legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+			cols(3) size(medsmall) position(6) ring(1) ///
+			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+
+	graph export "$figures/appendix/Figure_3_aamr_es_col`col'.pdf", as(pdf) replace
+
+	restore
+
+} // end forval col
+
+
+
+*============================================================
 * APPENDIX TABLE 1: Barham & Rowberry (2013) Replication
 *============================================================
 
@@ -477,7 +812,7 @@ foreach pnl in p m f {
 
 {
 	cap file close sm
-	file open sm using "$tables/AT1_BR_replication.tex", write replace
+	file open sm using "$tables/appendix/AT1_BR_replication.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Males} & \multicolumn{1}{c}{Females} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}  " _n
@@ -631,7 +966,7 @@ foreach pnl in p m f {
 
 {
 	cap file close sm
-	file open sm using "$tables/AT2_functional_forms.tex", write replace
+	file open sm using "$tables/appendix/AT2_functional_forms.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& Levels & Log & Poisson \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
@@ -676,178 +1011,114 @@ foreach pnl in p m f {
 	file write sm "\end{tabular}"
 	file close sm
 }
-		
+	
+*============================================================
+* APPENDIX TABLE 3: Main DiD Results — AAMR65 (1995 standard population)
+*============================================================
 
-/********************
-FIGURES
-***********************/
-
-
-*Figure 1: Can you create a 2 figures plotting the elderly 65+ mortality raw mortality trends,
-*that on the y axis has the mortality rate plotted and on the y2 axis has the
-*penetration for each year between 1990 and 2006, 1 figure should for all municipalities
-*and the other should be only for the highly marginalized. Each figure should include
-*separate mortality trends by pool (all), males and females
-
-*Fig 2: Unweighted + Seguro Popular — manual event study (pooled / female / male)
-local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-
-foreach grp in w f m {
-	if "`grp'" == "w" local outcome emr65
-	if "`grp'" == "f" local outcome emr65f
-	if "`grp'" == "m" local outcome emr65m
-
-	reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-		c.sp_intensity if $sample_marg, a(cve_ent_mun_super) ///
-		vce(cluster cve_ent_mun_super)
-
-	forval pos = 1/16 {
-		if `pos' == 6 {
-			local b_`grp'_6  = 0
-			local se_`grp'_6 = 0
-		}
-		else {
-			local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
-		}
-	}
-}
-
-preserve
-clear
-set obs 16
-gen yr_pos = _n
-gen xpos_w = yr_pos
-gen xpos_f = yr_pos - 0.18
-gen xpos_m = yr_pos + 0.18
-foreach grp in w f m {
-	gen b_`grp'  = .
-	gen hi_`grp' = .
-	gen lo_`grp' = .
-}
-forval pos = 1/16 {
-	foreach grp in w f m {
-		replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-		replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-		replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-	}
-}
-twoway ///
-	(rcap hi_f lo_f xpos_f, ///
-		lcolor(cranberry%60) lwidth(vthin)) ///
-	(connected b_f xpos_f, ///
-		mcolor(cranberry) lcolor(cranberry) ///
-		msymbol(square) msize(vsmall) ///
-		lpattern(dash) lwidth(thin)) ///
-	(rcap hi_m lo_m xpos_m, ///
-		lcolor(blue%60) lwidth(vthin)) ///
-	(connected b_m xpos_m, ///
-		mcolor(blue) lcolor(blue) ///
-		msymbol(triangle) msize(vsmall) ///
-		lpattern(shortdash_dot) lwidth(thin)) ///
-	(rcap hi_w lo_w xpos_w, ///
-		lcolor(black%60) lwidth(vthin)) ///
-	(connected b_w xpos_w, ///
-		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall) ///
-		lpattern(solid) lwidth(thin)), ///
-	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
-	xscale(range(0.5 16.5)) ///
-	xtitle("") ///
-	ytitle("Excess Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
-		cols(3) size(medsmall) position(6) ring(1) ///
-		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-	graphregion(color(white)) ///
-	plotregion(margin(l=1 r=1))
-graph export "$figures/Figure_2.pdf", as(pdf) replace
-restore
-
-*Fig 3: Weighted + Seguro Popular — manual event study (pooled / female / male)
-foreach grp in w f m {
-	if "`grp'" == "w" {
-		local outcome emr65
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local outcome aamr65
 		local wvar   popover65_
 	}
-	else if "`grp'" == "f" {
-		local outcome emr65f
-		local wvar   popover65_f
-	}
-	else {
-		local outcome emr65m
+	else if "`pnl'" == "m" {
+		local outcome aamr65m
 		local wvar   popover65_m
 	}
-
-	reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-		c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
-		vce(cluster cve_ent_mun_super)
-
-	forval pos = 1/16 {
-		if `pos' == 6 {
-			local b_`grp'_6  = 0
-			local se_`grp'_6 = 0
+	else {
+		local outcome aamr65f
+		local wvar   popover65_f
+	}
+	forval col = 1/4 {
+		if `col' == 1 {
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+				if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 2 {
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 3 {
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+				[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		}
 		else {
-			local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		}
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local b99_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b99_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b99_`pnl'_`col' = "`aux'*"
+		else                  local b99_`pnl'_`col' = "`aux'"
+		local se99_`pnl'_`col': di %12.3f _se[1.post#c.inten1999]
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local b05_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b05_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b05_`pnl'_`col' = "`aux'*"
+		else                  local b05_`pnl'_`col' = "`aux'"
+		local se05_`pnl'_`col': di %12.3f _se[1.post#c.inten2005]
+		sum `outcome' if e(sample) & post == 2
+		local mean_`pnl'_`col': di %12.2fc `r(mean)'
+		local N_`pnl'_`col':    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local Nmun_`pnl'_`col': di %12.0fc `r(ndistinct)'
 	}
 }
 
-preserve
-clear
-set obs 16
-gen yr_pos = _n
-gen xpos_w = yr_pos
-gen xpos_f = yr_pos - 0.18
-gen xpos_m = yr_pos + 0.18
-foreach grp in w f m {
-	gen b_`grp'  = .
-	gen hi_`grp' = .
-	gen lo_`grp' = .
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT3_aamr_mortality.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_p_1' & `b99_p_2' & `b99_p_3' & `b99_p_4' \\ " _n
+	file write sm " & (`se99_p_1') & (`se99_p_2') & (`se99_p_3') & (`se99_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_p_1' & `b05_p_2' & `b05_p_3' & `b05_p_4' \\ " _n
+	file write sm " & (`se05_p_1') & (`se05_p_2') & (`se05_p_3') & (`se05_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_p_1' & `mean_p_2' & `mean_p_3' & `mean_p_4' \\ " _n
+	file write sm "Obs & `N_p_1' & `N_p_2' & `N_p_3' & `N_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_m_1' & `b99_m_2' & `b99_m_3' & `b99_m_4' \\ " _n
+	file write sm " & (`se99_m_1') & (`se99_m_2') & (`se99_m_3') & (`se99_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_m_1' & `b05_m_2' & `b05_m_3' & `b05_m_4' \\ " _n
+	file write sm " & (`se05_m_1') & (`se05_m_2') & (`se05_m_3') & (`se05_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_m_1' & `mean_m_2' & `mean_m_3' & `mean_m_4' \\ " _n
+	file write sm "Obs & `N_m_1' & `N_m_2' & `N_m_3' & `N_m_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_f_1' & `b99_f_2' & `b99_f_3' & `b99_f_4' \\ " _n
+	file write sm " & (`se99_f_1') & (`se99_f_2') & (`se99_f_3') & (`se99_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_f_1' & `b05_f_2' & `b05_f_3' & `b05_f_4' \\ " _n
+	file write sm " & (`se05_f_1') & (`se05_f_2') & (`se05_f_3') & (`se05_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_f_1' & `mean_f_2' & `mean_f_3' & `mean_f_4' \\ " _n
+	file write sm "Obs & `N_f_1' & `N_f_2' & `N_f_3' & `N_f_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "No. Mun & `Nmun_p_1' & `Nmun_p_2' & `Nmun_p_3' & `Nmun_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y & Y \\ " _n
+	file write sm "Mun FE & Y & Y & Y & Y \\ " _n
+	file write sm "Seguro Popular & N & Y & N & Y \\ " _n
+	file write sm "Weights & N & N & Y & Y \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
 }
-forval pos = 1/16 {
-	foreach grp in w f m {
-		replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-		replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-		replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-	}
-}
-twoway ///
-	(rcap hi_f lo_f xpos_f, ///
-		lcolor(cranberry%60) lwidth(vthin)) ///
-	(connected b_f xpos_f, ///
-		mcolor(cranberry) lcolor(cranberry) ///
-		msymbol(square) msize(vsmall) ///
-		lpattern(dash) lwidth(thin)) ///
-	(rcap hi_m lo_m xpos_m, ///
-		lcolor(blue%60) lwidth(vthin)) ///
-	(connected b_m xpos_m, ///
-		mcolor(blue) lcolor(blue) ///
-		msymbol(triangle) msize(vsmall) ///
-		lpattern(shortdash_dot) lwidth(thin)) ///
-	(rcap hi_w lo_w xpos_w, ///
-		lcolor(black%60) lwidth(vthin)) ///
-	(connected b_w xpos_w, ///
-		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall) ///
-		lpattern(solid) lwidth(thin)), ///
-	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
-	xscale(range(0.5 16.5)) ///
-	xtitle("") ///
-	ytitle("Excess Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
-		cols(3) size(medsmall) position(6) ring(1) ///
-		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-	graphregion(color(white)) ///
-	plotregion(margin(l=1 r=1))
-graph export "$figures/Figure_3.pdf", as(pdf) replace
-restore
 
+
+******************************************
+*ADDITIONAL APPENDIX NEEDS TO EXPLORE MORE
+******************************************
 
 *what about the pre-trends of Barham and Roweberry?
 
@@ -963,238 +1234,3 @@ inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 
 *results are sensitive and smaller
  reghdfe emr65 c.inten1999##ib6.year_1995   [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-
-
-*============================================================
-* APPENDIX TABLE 3: Main DiD Results — AAMR65 (1995 standard population)
-*============================================================
-
-foreach pnl in p m f {
-	if "`pnl'" == "p" {
-		local outcome aamr65
-		local wvar   popover65_
-	}
-	else if "`pnl'" == "m" {
-		local outcome aamr65m
-		local wvar   popover65_m
-	}
-	else {
-		local outcome aamr65f
-		local wvar   popover65_f
-	}
-	forval col = 1/4 {
-		if `col' == 1 {
-			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
-				if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		else if `col' == 2 {
-			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-				if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		else if `col' == 3 {
-			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
-				[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		else {
-			reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-				[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		local aux: di %12.3f _b[1.post#c.inten1999]
-		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-		if      `t' >= 2.576 local b99_`pnl'_`col' = "`aux'***"
-		else if `t' >= 1.96  local b99_`pnl'_`col' = "`aux'**"
-		else if `t' >= 1.645 local b99_`pnl'_`col' = "`aux'*"
-		else                  local b99_`pnl'_`col' = "`aux'"
-		local se99_`pnl'_`col': di %12.3f _se[1.post#c.inten1999]
-		local aux: di %12.3f _b[1.post#c.inten2005]
-		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
-		if      `t' >= 2.576 local b05_`pnl'_`col' = "`aux'***"
-		else if `t' >= 1.96  local b05_`pnl'_`col' = "`aux'**"
-		else if `t' >= 1.645 local b05_`pnl'_`col' = "`aux'*"
-		else                  local b05_`pnl'_`col' = "`aux'"
-		local se05_`pnl'_`col': di %12.3f _se[1.post#c.inten2005]
-		sum `outcome' if e(sample) & post == 2
-		local mean_`pnl'_`col': di %12.2fc `r(mean)'
-		local N_`pnl'_`col':    di %12.0fc `e(N)'
-		distinct cve_ent_mun_super if e(sample)
-		local Nmun_`pnl'_`col': di %12.0fc `r(ndistinct)'
-	}
-}
-
-{
-	cap file close sm
-	file open sm using "$tables/AT3_aamr_mortality.tex", write replace
-	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
-	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_p_1' & `b99_p_2' & `b99_p_3' & `b99_p_4' \\ " _n
-	file write sm " & (`se99_p_1') & (`se99_p_2') & (`se99_p_3') & (`se99_p_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_p_1' & `b05_p_2' & `b05_p_3' & `b05_p_4' \\ " _n
-	file write sm " & (`se05_p_1') & (`se05_p_2') & (`se05_p_3') & (`se05_p_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `mean_p_1' & `mean_p_2' & `mean_p_3' & `mean_p_4' \\ " _n
-	file write sm "Obs & `N_p_1' & `N_p_2' & `N_p_3' & `N_p_4' \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_m_1' & `b99_m_2' & `b99_m_3' & `b99_m_4' \\ " _n
-	file write sm " & (`se99_m_1') & (`se99_m_2') & (`se99_m_3') & (`se99_m_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_m_1' & `b05_m_2' & `b05_m_3' & `b05_m_4' \\ " _n
-	file write sm " & (`se05_m_1') & (`se05_m_2') & (`se05_m_3') & (`se05_m_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `mean_m_1' & `mean_m_2' & `mean_m_3' & `mean_m_4' \\ " _n
-	file write sm "Obs & `N_m_1' & `N_m_2' & `N_m_3' & `N_m_4' \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_f_1' & `b99_f_2' & `b99_f_3' & `b99_f_4' \\ " _n
-	file write sm " & (`se99_f_1') & (`se99_f_2') & (`se99_f_3') & (`se99_f_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_f_1' & `b05_f_2' & `b05_f_3' & `b05_f_4' \\ " _n
-	file write sm " & (`se05_f_1') & (`se05_f_2') & (`se05_f_3') & (`se05_f_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `mean_f_1' & `mean_f_2' & `mean_f_3' & `mean_f_4' \\ " _n
-	file write sm "Obs & `N_f_1' & `N_f_2' & `N_f_3' & `N_f_4' \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "No. Mun & `Nmun_p_1' & `Nmun_p_2' & `Nmun_p_3' & `Nmun_p_4' \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y & Y \\ " _n
-	file write sm "Mun FE & Y & Y & Y & Y \\ " _n
-	file write sm "Seguro Popular & N & Y & N & Y \\ " _n
-	file write sm "Weights & N & N & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y \\ " _n
-	file write sm "\bottomrule" _n
-	file write sm "\end{tabular}"
-	file close sm
-}
-
-
-*============================================================
-* APPENDIX FIGURES: Event Study — AAMR65 (1995 standard population)
-* FA_aamr_es_col1.pdf  Unweighted
-* FA_aamr_es_col2.pdf  Unweighted + Seguro Popular
-* FA_aamr_es_col3.pdf  Weighted
-* FA_aamr_es_col4.pdf  Weighted + Seguro Popular
-* Three series per figure: Pooled (black) / Female (cranberry) / Male (blue)
-* No coefplot: manual coefficient extraction -> preserve/clear/set obs -> twoway
-*============================================================
-
-local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-
-forval col = 1/4 {
-
-	if `col' == 1 local col_note "Unweighted"
-	if `col' == 2 local col_note "Unweighted + Seguro Popular"
-	if `col' == 3 local col_note "Weighted"
-	if `col' == 4 local col_note "Weighted + Seguro Popular"
-
-	*--- Run three regressions (pooled, female, male) and store coefficients ---
-	foreach grp in w f m {
-
-		if "`grp'" == "w" {
-			local outcome aamr65
-			local wvar   popover65_
-		}
-		else if "`grp'" == "f" {
-			local outcome aamr65f
-			local wvar   popover65_f
-		}
-		else {
-			local outcome aamr65m
-			local wvar   popover65_m
-		}
-
-		if `col' == 1 {
-			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-				if $sample_marg, a(cve_ent_mun_super) ///
-				vce(cluster cve_ent_mun_super)
-		}
-		else if `col' == 2 {
-			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-				c.sp_intensity if $sample_marg, a(cve_ent_mun_super) ///
-				vce(cluster cve_ent_mun_super)
-		}
-		else if `col' == 3 {
-			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-				[aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
-				vce(cluster cve_ent_mun_super)
-		}
-		else {
-			reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-				c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
-				vce(cluster cve_ent_mun_super)
-		}
-
-		*--- Extract year x inten1999 coefficients; reference year (pos 6 = 1996) set to 0 ---
-		forval pos = 1/16 {
-			if `pos' == 6 {
-				local b_`grp'_6  = 0
-				local se_`grp'_6 = 0
-			}
-			else {
-				local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-				local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
-			}
-		}
-	}
-
-	*--- Build plotting dataset and export figure ---
-	preserve
-	clear
-	set obs 16
-
-	gen yr_pos = _n
-	gen xpos_w = yr_pos
-	gen xpos_f = yr_pos - 0.18
-	gen xpos_m = yr_pos + 0.18
-
-	foreach grp in w f m {
-		gen b_`grp'  = .
-		gen hi_`grp' = .
-		gen lo_`grp' = .
-	}
-
-	forval pos = 1/16 {
-		foreach grp in w f m {
-			replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-			replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-			replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-		}
-	}
-
-	twoway ///
-		(rcap hi_f lo_f xpos_f, ///
-			lcolor(cranberry%60) lwidth(vthin)) ///
-		(connected b_f xpos_f, ///
-			mcolor(cranberry) lcolor(cranberry) ///
-			msymbol(square) msize(vsmall) ///
-			lpattern(dash) lwidth(thin)) ///
-		(rcap hi_m lo_m xpos_m, ///
-			lcolor(blue%60) lwidth(vthin)) ///
-		(connected b_m xpos_m, ///
-			mcolor(blue) lcolor(blue) ///
-			msymbol(triangle) msize(vsmall) ///
-			lpattern(shortdash_dot) lwidth(thin)) ///
-		(rcap hi_w lo_w xpos_w, ///
-			lcolor(black%60) lwidth(vthin)) ///
-		(connected b_w xpos_w, ///
-			mcolor(black) lcolor(black) ///
-			msymbol(circle) msize(vsmall) ///
-			lpattern(solid) lwidth(thin)), ///
-		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-		xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
-		xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
-		xscale(range(0.5 16.5)) ///
-		xtitle("") ///
-		ytitle("AAMR 65+ (per 1,000)", size(medsmall)) ///
-			legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
-			cols(3) size(medsmall) position(6) ring(1) ///
-			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-		graphregion(color(white)) ///
-		plotregion(margin(l=1 r=1))
-
-	graph export "$figures/FA_aamr_es_col`col'.pdf", as(pdf) replace
-
-	restore
-
-} // end forval col
