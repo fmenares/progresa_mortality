@@ -445,17 +445,40 @@ set more off
 		gen pop`j'`d'_f19`k'=age_`j'_female + age_`a'_female +age_`b'_female +age_`c'_female +age_`d'_female
 		}
 		
-* 	Missing of pop +65 are considered as 0		
+* 	Missing of pop +65 are considered as 0
 		egen popover65_19`k'=rowtotal(age_65_69_both age_70_74_both age_75_79_both age_80_84_both ///
 			age_85_89_both age_90_94_both age_95_99_both age_100m_both)
 		egen popover65_m19`k'=rowtotal(age_65_69_male age_70_74_male age_75_79_male age_80_84_male ///
 			age_85_89_male age_90_94_male age_95_99_male age_100m_male)
 		egen popover65_f19`k'=rowtotal(age_65_69_female age_70_74_female age_75_79_female age_80_84_female ///
 			age_85_89_female age_90_94_female age_95_99_female age_100m_female)
-			
+
+*	Sub-groups within 65+ for AAMR65 construction
+		gen pop6569_19`k'   = age_65_69_both
+		gen pop6569_m19`k'  = age_65_69_male
+		gen pop6569_f19`k'  = age_65_69_female
+		egen popover70_19`k'  = rowtotal(age_70_74_both   age_75_79_both   age_80_84_both   ///
+			age_85_89_both   age_90_94_both   age_95_99_both   age_100m_both)
+		egen popover70_m19`k' = rowtotal(age_70_74_male   age_75_79_male   age_80_84_male   ///
+			age_85_89_male   age_90_94_male   age_95_99_male   age_100m_male)
+		egen popover70_f19`k' = rowtotal(age_70_74_female age_75_79_female age_80_84_female ///
+			age_85_89_female age_90_94_female age_95_99_female age_100m_female)
+
 		keep cve_ent_mun_super pop*
 	save "$data/Temp_data/pop_age_19`k'_mun.dta", replace
 	}
+
+*** Compute 1995 national standard weights for AAMR65 (scalars persist across clear)
+	use "$data/Temp_data/pop_age_1995_mun.dta", clear
+	collapse (sum) pop6569_1995 popover70_1995 popover65_1995 ///
+	               pop6569_m1995 popover70_m1995 popover65_m1995 ///
+	               pop6569_f1995 popover70_f1995 popover65_f1995
+	scalar w6569_1995    = pop6569_1995[1]    / popover65_1995[1]
+	scalar wover70_1995  = popover70_1995[1]  / popover65_1995[1]
+	scalar w6569_m1995   = pop6569_m1995[1]   / popover65_m1995[1]
+	scalar wover70_m1995 = popover70_m1995[1] / popover65_m1995[1]
+	scalar w6569_f1995   = pop6569_f1995[1]   / popover65_f1995[1]
+	scalar wover70_f1995 = popover70_f1995[1] / popover65_f1995[1]
 	
 	foreach k in 00 05 {
 	use "$data/pop/Population_municipality_level_20`k'.dta", clear
@@ -487,6 +510,15 @@ set more off
 		egen popover65_20`k'=rowtotal(age_65_69_both age_70_74_both age_75_100_both age_100m_both)
 		egen popover65_m20`k'=rowtotal(age_65_69_male age_70_74_male age_75_100_male age_100m_male)
 		egen popover65_f20`k'=rowtotal(age_65_69_female age_70_74_female age_75_100_female age_100m_female)
+
+*	Sub-groups within 65+ for AAMR65 construction
+		gen pop6569_20`k'   = age_65_69_both
+		gen pop6569_m20`k'  = age_65_69_male
+		gen pop6569_f20`k'  = age_65_69_female
+		gen popover70_20`k'   = age_70_74_both   + age_75_100_both  + age_100m_both
+		gen popover70_m20`k'  = age_70_74_male   + age_75_100_male  + age_100m_male
+		gen popover70_f20`k'  = age_70_74_female + age_75_100_female + age_100m_female
+
 		keep cve_ent_mun_super pop*
 	save "$data/Temp_data/pop_age_20`k'_mun.dta", replace
 	}
@@ -502,7 +534,7 @@ set more off
 	
 	
 *** Generate multiplyer and linearize population
-	foreach k in 5054 5559 6064 over65 {
+	foreach k in 5054 5559 6064 over65 6569 over70 {
 	gen m1pop`k'=(pop`k'_1995/pop`k'_1990)^(1/5)
 	gen m1pop`k'm=(pop`k'_m1995/pop`k'_m1990)^(1/5)
 	gen m1pop`k'f=(pop`k'_f1995/pop`k'_f1990)^(1/5)
@@ -517,21 +549,21 @@ set more off
 	drop pop`k'_2005 pop`k'_m2005 pop`k'_f2005
 	}
 	forvalues k=1991(1)1994 {
-		foreach i in 5054 5559 6064 over65 {
+		foreach i in 5054 5559 6064 over65 6569 over70 {
 		gen pop`i'_`k'=pop`i'_1990*(m1pop`i')^(`k'-1990)
 		gen pop`i'_m`k'=pop`i'_m1990*(m1pop`i'm)^(`k'-1990)
 		gen pop`i'_f`k'=pop`i'_f1990*(m1pop`i'f)^(`k'-1990)
 		}
 	}
 	forvalues k=1996(1)1999 {
-		foreach i in 5054 5559 6064 over65 {
+		foreach i in 5054 5559 6064 over65 6569 over70 {
 		gen pop`i'_`k'=pop`i'_1995*(m2pop`i')^(`k'-1995)
 		gen pop`i'_m`k'=pop`i'_m1995*(m2pop`i'm)^(`k'-1995)
 		gen pop`i'_f`k'=pop`i'_f1995*(m2pop`i'f)^(`k'-1995)
 		}
 	}
 	forvalues k=2001(1)2018 {
-		foreach i in 5054 5559 6064 over65 {
+		foreach i in 5054 5559 6064 over65 6569 over70 {
 		gen pop`i'_`k'=pop`i'_2000*(m3pop`i')^(`k'-2000)
 		gen pop`i'_m`k'=pop`i'_m2000*(m3pop`i'm)^(`k'-2000)
 		gen pop`i'_f`k'=pop`i'_f2000*(m3pop`i'f)^(`k'-2000)
@@ -541,9 +573,9 @@ set more off
 	drop m1* m2* m3* 
 	
 *** Reshape wide to long
-	reshape long pop5054_ pop5559_ pop6064_ popover65_   ///
-	pop5054_m pop5559_m pop6064_m popover65_m ///
-	pop5054_f pop5559_f pop6064_f popover65_f  , i(cve_ent_mun_super) j(year)
+	reshape long pop5054_ pop5559_ pop6064_ popover65_ pop6569_ popover70_  ///
+	pop5054_m pop5559_m pop6064_m popover65_m pop6569_m popover70_m ///
+	pop5054_f pop5559_f pop6064_f popover65_f pop6569_f popover70_f  , i(cve_ent_mun_super) j(year)
 	sort cve_ent_mun_super year 
 
 	drop if pop5054_f ==.| pop5054_m==.|pop5559_m==.
@@ -552,7 +584,7 @@ set more off
 	egen pop_over50_m = rowtotal (pop5054_m pop5559_m pop6064_m popover65_m)
 	
 *** Labeling
-	foreach i in 5054 5559 6064 over65 _over50 {
+	foreach i in 5054 5559 6064 over65 6569 over70 _over50 {
 	lab var pop`i'_ "Population age group `i'"
 	lab var pop`i'_m "Population age group `i', male"
 	lab var pop`i'_f "Population age group `i', female"
@@ -676,29 +708,31 @@ set more off
 		}		
 			
 			
-*** 2) AAMR: Age-adjusted Mortality Rate by 8 age groups (considering age structure in 2010)
-/*** (1)Create age-specific rate (rate per 100,000)
-	foreach i in 5054 5559 6064 over65 {
-	gen asr`i' = death`i'*100000/pop`i'_
-	gen asr`i'm = death`i'm*100000/pop`i'_m
-	gen asr`i'f = death`i'f*100000/pop`i'_f
-	lab var death`i' "Total number of deaths for age group:`i'"
-	lab var death`i'm "Total number of deaths for age group:`i', male"
-	lab var death`i'f "Total number of deaths for age group:`i', female"
-	lab var pop`i'_ "Total population for age group:`i'"
-	lab var pop`i'_m "Total population for age group:`i', male"
-	lab var pop`i'_f "Total population for age group:`i', female"
-	lab var asr`i' "Age-specific death rate for age group:`i'"
-	lab var asr`i'm "Age-specific death rate for age group:`i', male"
-	lab var asr`i'f "Age-specific death rate for age group:`i', female"
-			foreach k in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-		gen asr`k'`i'm = `k'`i'm*100000/pop`i'_m
-		gen asr`k'`i'f = `k'`i'f*100000/pop`i'_f
-		lab var asr`k'`i'm "Age-specific death rate for `k' `i', male"
-		lab var asr`k'`i'f "Age-specific death rate for `k' `i', female"
-		}
-	}
-*/
+*** 2) AAMR65: Age-adjusted Mortality Rate 65+ (1995 standard population)
+*   Two age groups: 65-69 and 70+; standard weights from 1995 national census.
+*   Assumes death6569, death6569m, death6569f, deathover70, deathover70m, deathover70f
+*   exist in the death data file (consistent with cause-specific age sub-groups already present).
+	gen asr6569   = death6569  * 1000 / pop6569_   if pop6569_   > 0
+	gen asr6569m  = death6569m * 1000 / pop6569_m  if pop6569_m  > 0
+	gen asr6569f  = death6569f * 1000 / pop6569_f  if pop6569_f  > 0
+	gen asrover70  = deathover70  * 1000 / popover70_   if popover70_   > 0
+	gen asrover70m = deathover70m * 1000 / popover70_m  if popover70_m  > 0
+	gen asrover70f = deathover70f * 1000 / popover70_f  if popover70_f  > 0
+
+	gen aamr65  = asr6569  * w6569_1995  + asrover70  * wover70_1995
+	gen aamr65m = asr6569m * w6569_m1995 + asrover70m * wover70_m1995
+	gen aamr65f = asr6569f * w6569_f1995 + asrover70f * wover70_f1995
+
+	lab var asr6569    "Age-specific death rate 65-69 per 1,000"
+	lab var asr6569m   "Age-specific death rate 65-69 per 1,000, male"
+	lab var asr6569f   "Age-specific death rate 65-69 per 1,000, female"
+	lab var asrover70  "Age-specific death rate 70+ per 1,000"
+	lab var asrover70m "Age-specific death rate 70+ per 1,000, male"
+	lab var asrover70f "Age-specific death rate 70+ per 1,000, female"
+	lab var aamr65  "AAMR 65+ per 1,000 (1995 standard)"
+	lab var aamr65m "AAMR 65+ per 1,000, male (1995 standard)"
+	lab var aamr65f "AAMR 65+ per 1,000, female (1995 standard)"
+
 
 ***	Drop year==2018 as we use lead intensity and value for 2018 is missing
 	drop if year==2018 
