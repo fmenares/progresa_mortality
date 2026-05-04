@@ -720,7 +720,7 @@ forval col = 1/4 {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 
-	graph export "$figures/appendix/Figure_3_aamr_es_col`col'.pdf", as(pdf) replace
+	graph export "$figures/appendix/Figure_3_aamr_col`col'.pdf", as(pdf) replace
 
 	restore
 
@@ -1171,31 +1171,6 @@ foreach pnl in p m f {
 *Adapting BR to PV does not make much sense because the post period is already 2002. 
 *and it looks for short term effects only. if we care about pre-trends, previous
 *exercise should be enough
-
-*Including weights
-
-reghdfe emr65 c.inten1999#i.post c.inten2002#i.post if ///
- inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-*now including weights
-reghdfe emr65 c.inten1999#i.post c.inten2002#i.post [aw=popover65_] if ///
-inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
- 
- **Event Study
- areg emr65 c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 ///
- if inrange(year, 1992, 2002) & $sample_br, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2002 inten2002 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Adult mortality +65") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
- **Event Study weighted
- areg emr65 c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 [aw=popover65_] ///
- if inrange(year, 1992, 2002) & $sample_br, absorb(cve_ent_mun_super) vce(cluster cve_ent_mun_super) baselevels
-		coefplot, drop (*.year_1995 *.year_1995#c.inten2002 inten2002 _cons inten1999 sp_intensity) omitted base vertical    ///
-		coeflabels(, interaction("") wrap(6)) yline(0, lpattern(dash)) xline(6) graphregion (fcolor(white))  ///
-		xtitle("Coefficients=Years x Progresa intensity in 1999") ytitle("Adult mortality +65") ///
-		  ciopts(lwidth(1.15) lcolor(*.5)) ///
-		yscale(range(-10, 20)) ylabel(-10(10)20,labsize(small)) xlabel(,labsize(small)) 	
  
 *********************************************
  *what if we instead we do BR in our sample
