@@ -964,3 +964,135 @@ foreach pnl in p m f {
 	file write sm "\end{tabular}"
 	file close sm
 }
+
+
+*============================================================
+* APPENDIX FIGURES: Event Study — AAMR65 (1995 standard population)
+* FA_aamr_es_col1.pdf  Unweighted
+* FA_aamr_es_col2.pdf  Unweighted + Seguro Popular
+* FA_aamr_es_col3.pdf  Weighted
+* FA_aamr_es_col4.pdf  Weighted + Seguro Popular
+* Three series per figure: Pooled (navy) / Female (cranberry) / Male (forest_green)
+* No coefplot: manual coefficient extraction -> preserve/clear/set obs -> twoway
+*============================================================
+
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+forval col = 1/4 {
+
+	if `col' == 1 local col_note "Unweighted"
+	if `col' == 2 local col_note "Unweighted + Seguro Popular"
+	if `col' == 3 local col_note "Weighted"
+	if `col' == 4 local col_note "Weighted + Seguro Popular"
+
+	*--- Run three regressions (pooled, female, male) and store coefficients ---
+	foreach grp in w f m {
+
+		if "`grp'" == "w" {
+			local outcome aamr65
+			local wvar   popover65_
+		}
+		else if "`grp'" == "f" {
+			local outcome aamr65f
+			local wvar   popover65_f
+		}
+		else {
+			local outcome aamr65m
+			local wvar   popover65_m
+		}
+
+		if `col' == 1 {
+			areg `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				if $sample_marg, absorb(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super) baselevels
+		}
+		else if `col' == 2 {
+			areg `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				c.sp_intensity if $sample_marg, absorb(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super) baselevels
+		}
+		else if `col' == 3 {
+			areg `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				[aw=`wvar'] if $sample_marg, absorb(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super) baselevels
+		}
+		else {
+			areg `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				c.sp_intensity [aw=`wvar'] if $sample_marg, absorb(cve_ent_mun_super) ///
+				vce(cluster cve_ent_mun_super) baselevels
+		}
+
+		*--- Extract year x inten1999 coefficients; reference year (pos 6 = 1996) set to 0 ---
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local b_`grp'_6  = 0
+				local se_`grp'_6 = 0
+			}
+			else {
+				local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+				local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+			}
+		}
+	}
+
+	*--- Build plotting dataset and export figure ---
+	preserve
+	clear
+	set obs 16
+
+	gen yr_pos = _n
+	gen xpos_w = yr_pos
+	gen xpos_f = yr_pos - 0.18
+	gen xpos_m = yr_pos + 0.18
+
+	foreach grp in w f m {
+		gen b_`grp'  = .
+		gen hi_`grp' = .
+		gen lo_`grp' = .
+	}
+
+	forval pos = 1/16 {
+		foreach grp in w f m {
+			replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+			replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+			replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+		}
+	}
+
+	twoway ///
+		(rcap hi_f lo_f xpos_f, ///
+			lcolor(cranberry%60) lwidth(vthin)) ///
+		(connected b_f xpos_f, ///
+			mcolor(cranberry) lcolor(cranberry) ///
+			msymbol(square) msize(vsmall) ///
+			lpattern(dash) lwidth(thin)) ///
+		(rcap hi_m lo_m xpos_m, ///
+			lcolor(forest_green%60) lwidth(vthin)) ///
+		(connected b_m xpos_m, ///
+			mcolor(forest_green) lcolor(forest_green) ///
+			msymbol(triangle) msize(vsmall) ///
+			lpattern(shortdash_dot) lwidth(thin)) ///
+		(rcap hi_w lo_w xpos_w, ///
+			lcolor(navy%60) lwidth(vthin)) ///
+		(connected b_w xpos_w, ///
+			mcolor(navy) lcolor(navy) ///
+			msymbol(circle) msize(vsmall) ///
+			lpattern(solid) lwidth(thin)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(6.5, lcolor(red) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels', labsize(small) angle(45) grid gmax labcolor(black)) ///
+		xscale(range(0.5 16.5)) ///
+		xtitle("") ///
+		ytitle("AAMR 65+ (per 1,000)", size(medsmall)) ///
+		subtitle("`col_note'", size(medsmall) position(11)) ///
+		legend(order(6 "Pooled" 2 "Female" 4 "Male") ///
+			cols(3) size(medsmall) position(6) ring(1) ///
+			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+
+	graph export "$figures/FA_aamr_es_col`col'.pdf", as(pdf) replace
+
+	restore
+
+} // end forval col
