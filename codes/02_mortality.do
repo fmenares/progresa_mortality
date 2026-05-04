@@ -676,37 +676,6 @@ forval col = 1/4 {
 		gen hi_`grp' = .
 		gen lo_`grp' = .
 	}
-}
-twoway ///
-	(rcap hi_w lo_w xpos_w, ///
-		lcolor(black%60) lwidth(vthin)) ///
-	(connected b_w xpos_w, ///
-		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
-	(rcap hi_f lo_f xpos_f, ///
-		lcolor(red%60) lwidth(vthin)) ///
-	(connected b_f xpos_f, ///
-		mcolor(red) lcolor(red) ///
-		msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
-	(rcap hi_m lo_m xpos_m, ///
-		lcolor(blue%60) lwidth(vthin)) ///
-	(connected b_m xpos_m, ///
-		mcolor(blue%80) lcolor(blue%80) ///
-		msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
-	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-	xscale(range(0.5 16.5)) ///
-	xtitle("") ///
-	ytitle("Excess Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
-		cols(3) size(medsmall) position(6) ring(1) ///
-		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-	graphregion(color(white)) ///
-	plotregion(margin(l=1 r=1))
-graph export "$figures/Figure_3.pdf", as(pdf) replace
-restore
 
 	forval pos = 1/16 {
 		foreach grp in w f m {
@@ -746,6 +715,8 @@ restore
 		plotregion(margin(l=1 r=1))
 
 	graph export "$figures/appendix/Figure_3_aamr_col`col'.pdf", as(pdf) replace
+	restore
+} // end forval col = 1/4
 
 *First we get the PostxIntensity 1999, getting a negative and significant of 3.9
  
