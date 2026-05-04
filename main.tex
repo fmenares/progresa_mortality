@@ -335,17 +335,7 @@ Emma Aguila, William H. Dow, Felipe Menares, Susan Parker, Jorge Peniche, and So
 \addtocontents{toc}{\setcounter{tocdepth}{1}}
 \renewcommand{\thesubsection}{\Alph{subsection}}
 
-% \begin{figure}[H]
-%     \caption{\textit{70 y Más} Effect on Mortality Rates}
-%     \label{f:mortality}
-%        \subfigure[Mortality Rate]
-%      {\includegraphics[width=0.67\textwidth]{figures/raw_data/death_rates_nc_2007_second_60_79.pdf}}
-     
-%    \subfigure[Event Study]
-%      {\includegraphics[width=0.67\textwidth]{figures/event_study/10yr/Figure_2a_2007.pdf}}
-
-%          \floatfoot{Notes: Panel (a) presents age-adjusted mortality rates above and below 70 years old for the 2007 eligible localities for \textit{70 y Más} expansion and the preferred comparison group of localities sizes 30,000-100,000. Panel (b): shows the results obtained from estimating the dynamic difference-in-difference-in-differences using the count of deaths as the dependent variable in a Poisson regression including the logarithm of population as an offset, and controlling for locality, age, and year fixed effects, as well as locality-age eligibility, year-locality eligibility, and year-age eligibility fixed effects. Standard errors are clustered at the level of treatment: locality and age. The mortality rate in the y-axis corresponds to percent changes by subtracting 1 from the rate ratio, i.e., $\hat{\theta}_{ATT\% } = exp(\hat{\beta})-1$. 95\% confidence intervals for $\hat{\theta}_{ATT\%}$ are computed using the delta method for univariate transformations on the coefficient estimated from the Poisson regression. The period of analysis is from 2002 to 2011. All regressions are weighted using the locality population aged 60 to 79 in 2005. The population offset is interpolated from the 2000, 2005, and 2010 Census data at the locality-age-year level.}
-% \end{figure}
+\input{figures_app}
 
 
 
@@ -353,96 +343,8 @@ Emma Aguila, William H. Dow, Felipe Menares, Susan Parker, Jorge Peniche, and So
 %%%%%%%%%%%TABLES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{table}[H]
-\RawCaption%
-  {\caption{Barham and Rowberry’s results and our replication: Impact of Progresa on elderly mortality 65+, municipalities incorporated in 1998 or 1999}
-   \label{t:did_robust}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.9}{
-      \input{tables/appendix/A_T1_robustness}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: The data analysis is restricted to municipalities incorporated into Progresa in 1998 or 1999. Progresa intensity data are pooled from 1990 to 2000. All regression models include year fixed effects and municipality fixed effects. Standard errors are clustered at the municipality level. The regression model is weighted by the number of population aged +65 for both sexes in (1), only male in (2), and only female in (3).\\
-a. The study period is between 1992 and 2002 (n = 1,961; n-years = 21,571).\\ 
-b. The study period is between 1992 and 2002 (n = 1,422; n-years = 15,642).\\
-c. The study period is between 1992 and 2002 (n = 1,422; n-years = 15,642). \\
-d. The study period is between 1991 and 2001 (n = 1,422; n-years = 15,642).\\ 
-e. The study period is between 1993 and 2003 (n = 1,422; n-years = 15,642).\\ 
-***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-  }
-\end{table}
-\newpage
 
-
-%1997 interaction Up to 2002, replacting short term effects on BR
-%This results almost the same as the long-term effects, reassuring there are no
-%many results..
-
-% \begin{table}[H]
-% \RawCaption%
-%     {\caption[]{\textit{Progresa} Effect on Individual Employment and Income Outcomes}
-%     \label{t:did_ind_enigh_1997_2002}}
-%     \floatbox[{\captop}]{table}[\FBwidth]
-%     {}
-%     {\scalebox{0.7}{
-%     \input{tables/main/T1_ind_enigh_1997_2002}
-%     }
-%     \vspace{-3mm}
-%  \floatfoot{Notes: This table shows the results obtained from estimating a difference-in-differences model using individual labor-related outcomes. It includes municipality and year fixed effects. Standard errors are clustered at the level of treatment: municipality. $Intensity_{year}\times Post_{\text{1997--2002}}$ captures the intervention effect due to the intensity of the treatment on labor related outcomes, i.e., the effect when 0\% of households in a municipality are Progresa beneficiaries goes up to 100\% after 1997. The period of analysis is from 1992 to 2002, using survey waves available every two years. It includes highly marginalized municipalities. All regressions are weighted using the survey weights, and excludes upper 1\% outliers. All monetary values are inflation-adjusted up to October 2025.
-%     ***p$<0.01$, **p$<0.05$, *p$<0.1$}
-%  }
-% \end{table}
-
-
-% \begin{table}[H]
-% \RawCaption%
-%     {\caption[]{\textit{Progresa} Effect on Household Income Outcomes}
-%     \label{t:did_hh_enigh_1997_2002}}
-%     \floatbox[{\captop}]{table}[\FBwidth]
-%     {}
-%     {\scalebox{0.7}{
-%     \input{tables/main/T2_hh_enigh_1997_2002}
-%     }
-%     \vspace{-3mm}
-%  \floatfoot{Notes: This table shows the results obtained from estimating a difference-in-differences model using household labor-related outcomes. It includes municipality and year fixed effects. Standard errors are clustered at the level of treatment: municipality. $Intensity_{year}\times Post_{\text{1997--2002}}$ captures the intervention effect due to the intensity of the treatment on labor related outcomes, i.e., the effect when 0\% of households in a municipality are Progresa beneficiaries goes up to 100\% after 1997. The period of analysis is from 1992 to 2002, using survey waves available every two years. It includes highly marginalized municipalities. All regressions are weighted using the survey weights, and excludes upper 1\% outliers. All monetary values are inflation-adjusted up to October 2025.
-%     ***p$<0.01$, **p$<0.05$, *p$<0.1$ }
-%  }
-% \end{table}
-
-
-% \begin{table}[H]
-% \RawCaption%
-%     {\caption[]{\textit{Progresa} Effect on Household Food Expenditure Outcomes}
-%     \label{t:did_food_enigh_1997_2002}}
-%     \floatbox[{\captop}]{table}[\FBwidth]
-%     {}
-%     {\scalebox{0.7}{
-%     \input{tables/main/T3_food_enigh_1997_2002}
-%     }
-%     \vspace{-3mm}
-%  \floatfoot{Notes: This table shows the results obtained from estimating a difference-in-differences model using household food expenditure outcomes. It includes municipality and year fixed effects. Standard errors are clustered at the level of treatment: municipality. $Intensity_{year}\times Post_{\text{1997--2002}}$ captures the intervention effect due to the intensity of the treatment on labor related outcomes, i.e., the effect when 0\% of households in a municipality are Progresa beneficiaries goes up to 100\% after 1997. The period of analysis is from 1992 to 2002, using survey waves available every two years. It includes highly marginalized municipalities. All regressions are weighted using the survey weights, and excludes upper 1\% outliers. All monetary values are inflation-adjusted up to October 2025.
-%     ***p$<0.01$, **p$<0.05$, *p$<0.1$ }
-%  }
-% \end{table}
-
-
-%  \begin{table}[H]
-% \RawCaption%
-%     {\caption[]{\textit{Progresa} Effect on Household Health Expenditure Outcomes}
-%     \label{t:did_health_enigh_1997_2002}}
-%     \floatbox[{\captop}]{table}[\FBwidth]
-%     {}
-%     {\scalebox{0.7}{
-%     \input{tables/main/T4_health_enigh_1997_2002}
-%     }
-%     \vspace{-3mm}
-%  \floatfoot{Notes: This table shows the results obtained from estimating a difference-in-differences model using household health expenditure outcomes. It includes municipality and year fixed effects. Standard errors are clustered at the level of treatment: municipality. $Intensity_{year}\times Post_{\text{1997--2002}}$ captures the intervention effect due to the intensity of the treatment on labor related outcomes, i.e., the effect when 0\% of households in a municipality are Progresa beneficiaries goes up to 100\% after 1997. The period of analysis is from 1992 to 2002, using survey waves available every two years. It includes highly marginalized municipalities. All regressions are weighted using the survey weights, and excludes upper 1\% outliers. All monetary values are inflation-adjusted up to October 2025.
-%     ***p$<0.01$, **p$<0.05$, *p$<0.1$ }
-%  }
-% \end{table}
-
-
+\input{tables_app}
 
 
 \end{document}

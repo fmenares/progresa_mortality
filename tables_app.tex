@@ -1,0 +1,41 @@
+
+\newcommand{\mectable}[4]{%
+  \begin{table}[H]
+    \centering
+    \caption{#1}
+    \label{#2}
+    \resizebox{\textwidth}{!}{\input{#3}}
+    {\footnotesize\raggedright\noindent Notes: #4\par}
+  \end{table}
+  \clearpage
+}
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Barham and Rowberry’s results and our replication: Impact of Progresa on elderly mortality 65+, municipalities incorporated in 1998 or 1999}
+   \label{t:did_robust}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/AT1_BR_replication}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: The data analysis is restricted to municipalities incorporated into Progresa in 1998 or 1999. Progresa intensity data are pooled from 1990 to 2000. All regression models include year fixed effects and municipality fixed effects. Standard errors are clustered at the municipality level. The regression model is weighted by the number of population aged +65 for both sexes in (1), only male in (2), and only female in (3).\\
+***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+\newpage
+\begin{table}[H]
+\RawCaption%
+  {\caption{Functional Forms}
+   \label{t:did_robust}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/AT2_functional_forms}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: Progresa intensity data are pooled from 1990 to 2000. All regression models include year fixed effects and municipality fixed effects. Standard errors are clustered at the municipality level. The regression model is weighted by the number of population aged +65. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+\newpage
