@@ -771,4 +771,4 @@ set more off
 	lab def margin_1990_grp 1"Marginalized areas" 0"Non-marginalized areas"
 	lab val margin_1990_grp margin_1990_grp
 	
-	save "$data/Temp_data/aamr_regression_municipality_gender_tb.dta", replace
+	save "$data/aamr_regression_municipality_gender_tb.dta", replace
