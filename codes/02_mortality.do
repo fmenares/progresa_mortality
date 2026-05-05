@@ -1634,11 +1634,3 @@ inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 
 } // end forval col
 */
-
-
-*============================================================
-* APPENDIX FIGURES: Event Study by Cause of Death
-* FA_es_cod_tb_XXX.pdf -- pooled, weighted + SP spec
-*============================================================
-
->>>>>>> claude/explore-repo-files-GfCm1
