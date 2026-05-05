@@ -1034,10 +1034,10 @@ local meanBR_2: di %12.2fc `r(mean)'
 local NBR_2: di %12.0fc `e(N)'
 
 * Col 3: BR+marg + UW + 1992-2002, lag2_intensity_new
-reghdfe emr65 lag2_intensity_new if ///
- inrange(year, 1992, 2002) & $sample_br & $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-local aux: di %12.3f _b[lag2_intensity_new]
-local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+reghdfe emr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] if ///
+ inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[1.post#c.inten1999]
+local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 if      `t' >= 2.576 local bBR_3 = "`aux'***"
 else if `t' >= 1.96  local bBR_3 = "`aux'**"
 else if `t' >= 1.645 local bBR_3 = "`aux'*"
@@ -1048,8 +1048,10 @@ local meanBR_3: di %12.2fc `r(mean)'
 local NBR_3: di %12.0fc `e(N)'
 
 * Col 4: BR+marg + W + 1992-2002, lag2_intensity_new
-reghdfe emr65 lag2_intensity_new [aw=popover65_] if ///
- inrange(year, 1992, 2002) & $sample_br & $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+reghdfe emr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] if ///
+ inrange(year, 1992, 2002) & $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[1.post#c.inten1999]
+local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 local aux: di %12.3f _b[lag2_intensity_new]
 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
 if      `t' >= 2.576 local bBR_4 = "`aux'***"
@@ -1062,8 +1064,8 @@ local meanBR_4: di %12.2fc `r(mean)'
 local NBR_4: di %12.0fc `e(N)'
 
 * Col 5: BR full period + UW + 1992-2006, lag2_intensity_new
-reghdfe emr65 lag2_intensity_new if ///
- inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+reghdfe emr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] if ///
+inrange(year, 1992, 2002) & $sample_marg & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[lag2_intensity_new]
 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
 if      `t' >= 2.576 local bBR_5 = "`aux'***"
@@ -1076,8 +1078,8 @@ local meanBR_5: di %12.2fc `r(mean)'
 local NBR_5: di %12.0fc `e(N)'
 
 * Col 6: BR full period + W + 1992-2006, lag2_intensity_new
-reghdfe emr65 lag2_intensity_new [aw=popover65_] if ///
- inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+reghdfe aamr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] if ///
+inrange(year, 1992, 2002) & $sample_br , a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[lag2_intensity_new]
 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
 if      `t' >= 2.576 local bBR_6 = "`aux'***"
