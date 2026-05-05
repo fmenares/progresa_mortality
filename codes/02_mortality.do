@@ -1164,46 +1164,52 @@ local NBR_10: di %12.0fc `e(N)'
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT2_BR_extended_v.tex", write replace
-	file write sm "\begin{tabular}{p{8cm}ccc} \hline \hline" _n
-	file write sm "Specification & Coeff. & Mean & Obs \\ " _n
-	file write sm " & (SE) & (pre) & \\ \toprule" _n
+	file write sm "\begin{tabular}{p{5.5cm}p{2.8cm}p{2.8cm}} \hline \hline" _n
+	file write sm "Specification & Unweighted & Weighted \\ " _n
+	file write sm " & & \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Short period (1992--2002)}} \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_1' & `meanBR_1' & `NBR_1' \\ " _n
-	file write sm " & (`seBR_1') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_2' & `meanBR_2' & `NBR_2' \\ " _n
-	file write sm " & (`seBR_2') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "2-yr lagged intensity, BR+marg sample, Unweighted & `bBR_3' & `meanBR_3' & `NBR_3' \\ " _n
-	file write sm " & (`seBR_3') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "2-yr lagged intensity, BR+marg sample, Weighted & `bBR_4' & `meanBR_4' & `NBR_4' \\ " _n
-	file write sm " & (`seBR_4') & & \\ " _n
-	file write sm "  & & & \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample & & \\ " _n
+	file write sm "Coeff. & `bBR_1' & `bBR_2' \\ " _n
+	file write sm "(SE) & (`seBR_1') & (`seBR_2') \\ " _n
+	file write sm "Mean (pre) & `meanBR_1' & `meanBR_2' \\ " _n
+	file write sm "Obs & `NBR_1' & `NBR_2' \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "2-yr lagged intensity, BR+marg sample & & \\ " _n
+	file write sm "Coeff. & `bBR_3' & `bBR_4' \\ " _n
+	file write sm "(SE) & (`seBR_3') & (`seBR_4') \\ " _n
+	file write sm "Mean (pre) & `meanBR_3' & `meanBR_4' \\ " _n
+	file write sm "Obs & `NBR_3' & `NBR_4' \\ " _n
+	file write sm "  & & \\ " _n
 	file write sm "\underline{\textit{Panel B: Full period (1992--2006)}} \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "2-yr lagged intensity, BR sample, Unweighted & `bBR_5' & `meanBR_5' & `NBR_5' \\ " _n
-	file write sm " & (`seBR_5') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "2-yr lagged intensity, BR sample, Weighted & `bBR_6' & `meanBR_6' & `NBR_6' \\ " _n
-	file write sm " & (`seBR_6') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "2-yr lagged intensity, BR+marg sample, Weighted & `bBR_7' & `meanBR_7' & `NBR_7' \\ " _n
-	file write sm " & (`seBR_7') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_8' & `meanBR_8' & `NBR_8' \\ " _n
-	file write sm " & (`seBR_8') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_9' & `meanBR_9' & `NBR_9' \\ " _n
-	file write sm " & (`seBR_9') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "Int.1999\$\times\$post + Int.2002\$\times\$post, BR sample, Weighted & `bBR_10' & `meanBR_10' & `NBR_10' \\ " _n
-	file write sm " & (`seBR_10') & & \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "Year FE & \multicolumn{3}{c}{Y} \\ " _n
-	file write sm "Mun FE & \multicolumn{3}{c}{Y} \\ " _n
-	file write sm "Cluster SE: Mun & \multicolumn{3}{c}{Y} \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "2-yr lagged intensity, BR sample & & \\ " _n
+	file write sm "Coeff. & `bBR_5' & `bBR_6' \\ " _n
+	file write sm "(SE) & (`seBR_5') & (`seBR_6') \\ " _n
+	file write sm "Mean (pre) & `meanBR_5' & `meanBR_6' \\ " _n
+	file write sm "Obs & `NBR_5' & `NBR_6' \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "2-yr lagged intensity, BR+marg sample & -- & \\ " _n
+	file write sm "Coeff. & -- & `bBR_7' \\ " _n
+	file write sm "(SE) & -- & (`seBR_7') \\ " _n
+	file write sm "Mean (pre) & -- & `meanBR_7' \\ " _n
+	file write sm "Obs & -- & `NBR_7' \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample & & \\ " _n
+	file write sm "Coeff. & `bBR_8' & `bBR_9' \\ " _n
+	file write sm "(SE) & (`seBR_8') & (`seBR_9') \\ " _n
+	file write sm "Mean (pre) & `meanBR_8' & `meanBR_9' \\ " _n
+	file write sm "Obs & `NBR_8' & `NBR_9' \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "Int.1999\$\times\$post + Int.2002\$\times\$post, BR sample & -- & \\ " _n
+	file write sm "Coeff. & -- & `bBR_10' \\ " _n
+	file write sm "(SE) & -- & (`seBR_10') \\ " _n
+	file write sm "Mean (pre) & -- & `meanBR_10' \\ " _n
+	file write sm "Obs & -- & `NBR_10' \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "Year FE & \multicolumn{2}{c}{Y} \\ " _n
+	file write sm "Mun FE & \multicolumn{2}{c}{Y} \\ " _n
+	file write sm "Cluster SE: Mun & \multicolumn{2}{c}{Y} \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
