@@ -656,19 +656,22 @@ forval pos = 2/12 {
 }
 twoway ///
 	(rcap hi_uw lo_uw xpos_uw, lcolor(black%60) lwidth(vthin)) ///
-	(connected b_uw xpos_uw, mcolor(black) lcolor(black) msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+	(scatter b_uw xpos_uw, mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap hi_w lo_w xpos_w, lcolor(blue%60) lwidth(vthin)) ///
-	(connected b_w xpos_w, mcolor(blue%80) lcolor(blue%80) msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)) ///
+	(scatter b_w xpos_w, mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
 	(rcap hi_wsp lo_wsp xpos_wsp, lcolor(red%60) lwidth(vthin)) ///
-	(connected b_wsp xpos_wsp, mcolor(red) lcolor(red) msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)), ///
+	(scatter b_wsp xpos_wsp, mcolor(red) msymbol(square) msize(vsmall)) ///
+	(line b_uw xpos_uw if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+	(line b_w xpos_w if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+	(line b_wsp xpos_wsp if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels_br', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(1.5 12.5)) ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Unweighted" 4 "Weighted" 6 "Weighted + SP") ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
