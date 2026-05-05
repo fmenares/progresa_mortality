@@ -611,18 +611,24 @@ restore
 * APPENDIX FIGURE 2b: Short-term Event Study (Barham & Rowberry sample)
 * FA_BR_es_pooled.pdf -- pooled, 3 specs: UW / W / W+SP
 *============================================================
+{
+
 global sample_br = "(inten_start_year==1998 |inten_start_year==1999)"
 local yr_labels_br `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
 
-foreach spec in uw w wsp {
+foreach spec in uw wsp marg aamr {
 	if "`spec'" == "uw" {
 		reghdfe emr65 c.inten1999##ib6.year_1995 if inrange(year,1992,2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	}
-	else if "`spec'" == "w" {
-		reghdfe emr65 c.inten1999##ib6.year_1995 [aw=popover65_] if inrange(year,1992,2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	}
-	else {
+	else if "`spec'" == "wsp" {
 		reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity [aw=popover65_] if inrange(year,1992,2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	}
+	else if "`spec'" == "marg" {
+		reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity  [aw=popover65_] if inrange(year,1992,2002) & $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	}
+	
+	else {
+		reghdfe aamr65 c.inten1999##ib6.year_1995 c.sp_intensity  [aw=popover65_] if inrange(year,1992,2002) & $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	}
 	forval pos = 2/12 {
 		if `pos' == 6 {
@@ -639,31 +645,35 @@ preserve
 clear
 set obs 11
 gen yr_pos = _n + 1
-gen xpos_uw  = yr_pos
-gen xpos_w   = yr_pos - 0.15
-gen xpos_wsp = yr_pos + 0.15
-foreach spec in uw w wsp {
+gen xpos_uw  = yr_pos -.15
+gen xpos_wsp   = yr_pos 
+gen xpos_marg = yr_pos + 0.15
+gen xpos_aamr = yr_pos + 0.3
+foreach spec in uw wsp marg aamr {
 	gen b_`spec'  = .
 	gen hi_`spec' = .
 	gen lo_`spec' = .
 }
 forval pos = 2/12 {
-	foreach spec in uw w wsp {
+	foreach spec in uw wsp marg aamr {
 		replace b_`spec'  = `b_`spec'_`pos''                             if yr_pos == `pos'
 		replace hi_`spec' = `b_`spec'_`pos'' + 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
 		replace lo_`spec' = `b_`spec'_`pos'' - 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
 	}
 }
 twoway ///
-	(rcap hi_uw lo_uw xpos_uw, lcolor(black%60) lwidth(vthin)) ///
-	(scatter b_uw xpos_uw, mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(rcap hi_w lo_w xpos_w, lcolor(blue%60) lwidth(vthin)) ///
-	(scatter b_w xpos_w, mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-	(rcap hi_wsp lo_wsp xpos_wsp, lcolor(red%60) lwidth(vthin)) ///
-	(scatter b_wsp xpos_wsp, mcolor(red) msymbol(square) msize(vsmall)) ///
-	(line b_uw xpos_uw if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
-	(line b_w xpos_w if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
-	(line b_wsp xpos_wsp if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+	(rcap hi_uw lo_uw xpos_uw, lcolor(red) lwidth(vthin)) ///
+	(scatter b_uw xpos_uw, mcolor(red) msymbol(circle) msize(vsmall)) ///
+	(rcap hi_wsp lo_wsp xpos_wsp, lcolor(red%80) lwidth(vthin)) ///
+	(scatter b_wsp xpos_wsp, mcolor(red%80) msymbol(square) msize(vsmall)) ///
+	(rcap hi_marg lo_marg xpos_marg, lcolor(red%60) lwidth(vthin)) ///
+	(scatter b_marg xpos_marg, mcolor(red%60) msymbol(triangle) msize(vsmall)) ///
+	(rcap hi_aamr lo_aamr xpos_aamr, lcolor(red%40) lwidth(vthin)) ///
+	(scatter b_aamr xpos_aamr, mcolor(red%40) msymbol(square) msize(vsmall)) ///
+	(line b_uw xpos_uw if 1==0, lcolor(red) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(red) msize(vsmall)) ///
+	(line b_wsp xpos_wsp if 1==0, lcolor(red%80) lpattern(solid) lwidth(thin) msymbol(square) mcolor(red%80) msize(vsmall)) ///
+	(line b_marg xpos_marg if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(red%60) msize(vsmall)) ///
+	(line b_aamr xpos_aamr if 1==0, lcolor(red%40) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(red%40) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels_br', labsize(small) angle(45) labcolor(black)) ///
@@ -671,13 +681,14 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 		ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
-		cols(3) size(medsmall) position(6) ring(1) ///
+	legend(order(9 "Unweighted" 10 "Weighted + SP" 11 "Higly Marginalized" 12 "AAMR") ///
+		cols(4) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
 	plotregion(margin(l=1 r=1))
 graph export "$figures/appendix/Figure_2b_BR_pooled.pdf", as(pdf) replace
 restore
+}
 *============================================================
 * APPENDIX FIGURE 3: Event Study — AAMR65 (1995 standard population)
 *============================================================
@@ -994,8 +1005,8 @@ foreach pnl in p m f {
 * APPENDIX TABLE: BR Analysis — Table FA_BR_table.tex
 *============================================================
 {
-* Col 1: BR sample + UW + 1992-2002, inten1999#post + inten2002#post
-reghdfe emr65 c.inten1999#i.post c.inten2002#i.post if ///
+* Col 1: BR sample + UW + 1992-2002, inten1999#post
+reghdfe emr65 c.inten1999#i.post if ///
  inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[1.post#c.inten1999]
 local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
@@ -1008,8 +1019,8 @@ sum emr65 if e(sample) & post == 2
 local meanBR_1: di %12.2fc `r(mean)'
 local NBR_1: di %12.0fc `e(N)'
 
-* Col 2: BR sample + W + 1992-2002, inten1999#post + inten2002#post
-reghdfe emr65 c.inten1999#i.post c.inten2002#i.post [aw=popover65_] if ///
+* Col 2: BR sample + W + 1992-2002, inten1999#post
+reghdfe emr65 c.inten1999#i.post [aw=popover65_] if ///
  inrange(year, 1992, 2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[1.post#c.inten1999]
 local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
@@ -1169,41 +1180,36 @@ local NBR_10: di %12.0fc `e(N)'
 	file write sm " & & \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Short period (1992--2002)}} \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Intensity 1999\$\times\$post, BR sample & & \\ " _n
-	file write sm "Coeff. & `bBR_1' & `bBR_2' \\ " _n
-	file write sm "(SE) & (`seBR_1') & (`seBR_2') \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample & `bBR_1' & `bBR_2' \\ " _n
+	file write sm " & (`seBR_1') & (`seBR_2') \\ " _n
+	file write sm "  & & \\ " _n
 	file write sm "Mean (pre) & `meanBR_1' & `meanBR_2' \\ " _n
 	file write sm "Obs & `NBR_1' & `NBR_2' \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "2-yr lagged intensity, BR+marg sample & & \\ " _n
-	file write sm "Coeff. & `bBR_3' & `bBR_4' \\ " _n
-	file write sm "(SE) & (`seBR_3') & (`seBR_4') \\ " _n
+	file write sm "2-yr lagged intensity, BR+marg sample & `bBR_3' & `bBR_4' \\ " _n
+	file write sm " & (`seBR_3') & (`seBR_4') \\ " _n
 	file write sm "Mean (pre) & `meanBR_3' & `meanBR_4' \\ " _n
 	file write sm "Obs & `NBR_3' & `NBR_4' \\ " _n
 	file write sm "  & & \\ " _n
 	file write sm "\underline{\textit{Panel B: Full period (1992--2006)}} \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "2-yr lagged intensity, BR sample & & \\ " _n
-	file write sm "Coeff. & `bBR_5' & `bBR_6' \\ " _n
-	file write sm "(SE) & (`seBR_5') & (`seBR_6') \\ " _n
+	file write sm "2-yr lagged intensity, BR sample & `bBR_5' & `bBR_6' \\ " _n
+	file write sm "& (`seBR_5') & (`seBR_6') \\ " _n
 	file write sm "Mean (pre) & `meanBR_5' & `meanBR_6' \\ " _n
 	file write sm "Obs & `NBR_5' & `NBR_6' \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "2-yr lagged intensity, BR+marg sample & -- & \\ " _n
-	file write sm "Coeff. & -- & `bBR_7' \\ " _n
-	file write sm "(SE) & -- & (`seBR_7') \\ " _n
+	file write sm "2-yr lagged intensity, BR+marg sample & -- & `bBR_7' \\ " _n
+	file write sm " & -- & (`seBR_7') \\ " _n
 	file write sm "Mean (pre) & -- & `meanBR_7' \\ " _n
 	file write sm "Obs & -- & `NBR_7' \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Intensity 1999\$\times\$post, BR sample & & \\ " _n
-	file write sm "Coeff. & `bBR_8' & `bBR_9' \\ " _n
-	file write sm "(SE) & (`seBR_8') & (`seBR_9') \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample & `bBR_8' & `bBR_9' \\ " _n
+	file write sm "& (`seBR_8') & (`seBR_9') \\ " _n
 	file write sm "Mean (pre) & `meanBR_8' & `meanBR_9' \\ " _n
 	file write sm "Obs & `NBR_8' & `NBR_9' \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Int.1999\$\times\$post + Int.2002\$\times\$post, BR sample & -- & \\ " _n
-	file write sm "Coeff. & -- & `bBR_10' \\ " _n
-	file write sm "(SE) & -- & (`seBR_10') \\ " _n
+	file write sm "Int.1999\$\times\$post + Int.2002\$\times\$post, BR sample & -- & `bBR_10' \\ " _n
+	file write sm " & -- & (`seBR_10') \\ " _n
 	file write sm "Mean (pre) & -- & `meanBR_10' \\ " _n
 	file write sm "Obs & -- & `NBR_10' \\ " _n
 	file write sm "  & & \\ " _n
