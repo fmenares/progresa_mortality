@@ -223,6 +223,7 @@ restore
 *============================================================
 
 { 
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 foreach grp in w f m {
 	if "`grp'" == "w" {
 		local outcome emr65
@@ -275,27 +276,27 @@ forval pos = 1/16 {
 twoway ///
 	(rcap hi_w lo_w xpos_w, ///
 		lcolor(black%60) lwidth(vthin)) ///
-	(connected b_w xpos_w, ///
-		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+	(scatter b_w xpos_w, ///
+		mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap hi_f lo_f xpos_f, ///
 		lcolor(red%60) lwidth(vthin)) ///
-	(connected b_f xpos_f, ///
-		mcolor(red) lcolor(red) ///
-		msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
+	(scatter b_f xpos_f, ///
+		mcolor(red) msymbol(square) msize(vsmall)) ///
 	(rcap hi_m lo_m xpos_m, ///
 		lcolor(blue%60) lwidth(vthin)) ///
-	(connected b_m xpos_m, ///
-		mcolor(blue%80) lcolor(blue%80) ///
-		msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
+	(scatter b_m xpos_m, ///
+		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+	(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+	(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+	(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(0.5 16.5)) ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -575,27 +576,27 @@ forval pos = 1/16 {
 twoway ///
 	(rcap hi_w lo_w xpos_w, ///
 		lcolor(black%60) lwidth(vthin)) ///
-	(connected b_w xpos_w, ///
-		mcolor(black) lcolor(black) ///
-		msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+	(scatter b_w xpos_w, ///
+		mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap hi_f lo_f xpos_f, ///
 		lcolor(red%60) lwidth(vthin)) ///
-	(connected b_f xpos_f, ///
-		mcolor(red) lcolor(red) ///
-		msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
+	(scatter b_f xpos_f, ///
+		mcolor(red) msymbol(square) msize(vsmall)) ///
 	(rcap hi_m lo_m xpos_m, ///
 		lcolor(blue%60) lwidth(vthin)) ///
-	(connected b_m xpos_m, ///
-		mcolor(blue%80) lcolor(blue%80) ///
-		msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
+	(scatter b_m xpos_m, ///
+		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+	(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+	(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+	(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(0.5 16.5)) ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -763,27 +764,27 @@ forval col = 1/4 {
 	twoway ///
 		(rcap hi_w lo_w xpos_w, ///
 			lcolor(black%60) lwidth(vthin)) ///
-		(connected b_w xpos_w, ///
-			mcolor(black) lcolor(black) ///
-			msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+		(scatter b_w xpos_w, ///
+			mcolor(black) msymbol(circle) msize(vsmall)) ///
 		(rcap hi_f lo_f xpos_f, ///
 			lcolor(red%60) lwidth(vthin)) ///
-		(connected b_f xpos_f, ///
-			mcolor(red) lcolor(red) ///
-			msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
+		(scatter b_f xpos_f, ///
+			mcolor(red) msymbol(square) msize(vsmall)) ///
 		(rcap hi_m lo_m xpos_m, ///
 			lcolor(blue%60) lwidth(vthin)) ///
-		(connected b_m xpos_m, ///
-			mcolor(blue%80) lcolor(blue%80) ///
-			msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
+		(scatter b_m xpos_m, ///
+			mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+		(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+		(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+		(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("AAMR 65+ (per 1,000)", size(medsmall)) ///
-		yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
-			legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+			legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 			cols(3) size(medsmall) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
@@ -802,6 +803,7 @@ forval col = 1/4 {
 * APPENDIX FIGURES 4: Event Study by Cause of Death
 * FA_es_cod_tb_XXX.pdf -- pooled, weighted + SP spec
 *============================================================
+
 local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 
 foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
@@ -837,16 +839,15 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	twoway ///
 		(rcap hi_cod lo_cod xpos_cod, ///
 			lcolor(black%60) lwidth(vthin)) ///
-		(connected b_cod xpos_cod, ///
-			mcolor(black) lcolor(black) ///
-			msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)), ///
+		(scatter b_cod xpos_cod, ///
+			mcolor(black) msymbol(circle) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
-		yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
+		ylabel(, grid gmin gmax labsize(small)) ///
 		legend(off) ///
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
@@ -1156,6 +1157,54 @@ local NBR_10: di %12.0fc `e(N)'
 
 
 } // end forval col
+
+{
+	cap file close sm
+	file open sm using "$tables/FA_BR_table_v.tex", write replace
+	file write sm "\begin{tabular}{p{8cm}ccc} \hline \hline" _n
+	file write sm "Specification & Coeff. & Mean & Obs \\ " _n
+	file write sm " & (SE) & (pre) & \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Short period (1992--2002)}} \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(1) Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_1' & `meanBR_1' & `NBR_1' \\ " _n
+	file write sm " & (`seBR_1') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(2) Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_2' & `meanBR_2' & `NBR_2' \\ " _n
+	file write sm " & (`seBR_2') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(3) 2-yr lagged intensity, BR+marg sample, Unweighted & `bBR_3' & `meanBR_3' & `NBR_3' \\ " _n
+	file write sm " & (`seBR_3') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(4) 2-yr lagged intensity, BR+marg sample, Weighted & `bBR_4' & `meanBR_4' & `NBR_4' \\ " _n
+	file write sm " & (`seBR_4') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\underline{\textit{Panel B: Full period (1992--2006)}} \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(5) 2-yr lagged intensity, BR sample, Unweighted & `bBR_5' & `meanBR_5' & `NBR_5' \\ " _n
+	file write sm " & (`seBR_5') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(6) 2-yr lagged intensity, BR sample, Weighted & `bBR_6' & `meanBR_6' & `NBR_6' \\ " _n
+	file write sm " & (`seBR_6') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(7) 2-yr lagged intensity, BR+marg sample, Weighted & `bBR_7' & `meanBR_7' & `NBR_7' \\ " _n
+	file write sm " & (`seBR_7') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(8) Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_8' & `meanBR_8' & `NBR_8' \\ " _n
+	file write sm " & (`seBR_8') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(9) Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_9' & `meanBR_9' & `NBR_9' \\ " _n
+	file write sm " & (`seBR_9') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "(10) Int.1999\$\times\$post + Int.2002\$\times\$post, BR sample, Weighted & `bBR_10' & `meanBR_10' & `NBR_10' \\ " _n
+	file write sm " & (`seBR_10') & & \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Year FE & \multicolumn{3}{c}{Y} \\ " _n
+	file write sm "Mun FE & \multicolumn{3}{c}{Y} \\ " _n
+	file write sm "Cluster SE: Mun & \multicolumn{3}{c}{Y} \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
 
 
 
@@ -1553,27 +1602,27 @@ inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super)  vce(cluster c
 	twoway ///
 		(rcap hi_w lo_w xpos_w, ///
 			lcolor(black%60) lwidth(vthin)) ///
-		(connected b_w xpos_w, ///
-			mcolor(black) lcolor(black) ///
-			msymbol(circle) msize(vsmall) lwidth(thin) lpattern(solid)) ///
+		(scatter b_w xpos_w, ///
+			mcolor(black) msymbol(circle) msize(vsmall)) ///
 		(rcap hi_f lo_f xpos_f, ///
 			lcolor(red%60) lwidth(vthin)) ///
-		(connected b_f xpos_f, ///
-			mcolor(red) lcolor(red) ///
-			msymbol(square) msize(vsmall) lwidth(thin) lpattern(dash)) ///
+		(scatter b_f xpos_f, ///
+			mcolor(red) msymbol(square) msize(vsmall)) ///
 		(rcap hi_m lo_m xpos_m, ///
 			lcolor(blue%60) lwidth(vthin)) ///
-		(connected b_m xpos_m, ///
-			mcolor(blue%80) lcolor(blue%80) ///
-			msymbol(triangle) msize(vsmall) lwidth(thin) lpattern(shortdash_dot)), ///
+		(scatter b_m xpos_m, ///
+			mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+		(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+		(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+		(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("AAMR 65+ (per 1,000)", size(medsmall)) ///
-		yscale(noline) ylabel(, grid gmin gmax labsize(small)) ///
-			legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+			legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 			cols(3) size(medsmall) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
@@ -1585,3 +1634,11 @@ inrange(year, 1992, 2006) & $sample_br, a(year cve_ent_mun_super) vce(cluster cv
 
 } // end forval col
 */
+
+
+*============================================================
+* APPENDIX FIGURES: Event Study by Cause of Death
+* FA_es_cod_tb_XXX.pdf -- pooled, weighted + SP spec
+*============================================================
+
+>>>>>>> claude/explore-repo-files-GfCm1
