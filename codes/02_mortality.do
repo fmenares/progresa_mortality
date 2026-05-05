@@ -1163,42 +1163,42 @@ local NBR_10: di %12.0fc `e(N)'
 
 {
 	cap file close sm
-	file open sm using "$tables/FA_BR_table_v.tex", write replace
+	file open sm using "$tables/appendix/AT2_BR_extended_v.tex", write replace
 	file write sm "\begin{tabular}{p{8cm}ccc} \hline \hline" _n
 	file write sm "Specification & Coeff. & Mean & Obs \\ " _n
 	file write sm " & (SE) & (pre) & \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Short period (1992--2002)}} \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(1) Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_1' & `meanBR_1' & `NBR_1' \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_1' & `meanBR_1' & `NBR_1' \\ " _n
 	file write sm " & (`seBR_1') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(2) Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_2' & `meanBR_2' & `NBR_2' \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_2' & `meanBR_2' & `NBR_2' \\ " _n
 	file write sm " & (`seBR_2') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(3) 2-yr lagged intensity, BR+marg sample, Unweighted & `bBR_3' & `meanBR_3' & `NBR_3' \\ " _n
+	file write sm "2-yr lagged intensity, BR+marg sample, Unweighted & `bBR_3' & `meanBR_3' & `NBR_3' \\ " _n
 	file write sm " & (`seBR_3') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(4) 2-yr lagged intensity, BR+marg sample, Weighted & `bBR_4' & `meanBR_4' & `NBR_4' \\ " _n
+	file write sm "2-yr lagged intensity, BR+marg sample, Weighted & `bBR_4' & `meanBR_4' & `NBR_4' \\ " _n
 	file write sm " & (`seBR_4') & & \\ " _n
 	file write sm "  & & & \\ " _n
 	file write sm "\underline{\textit{Panel B: Full period (1992--2006)}} \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(5) 2-yr lagged intensity, BR sample, Unweighted & `bBR_5' & `meanBR_5' & `NBR_5' \\ " _n
+	file write sm "2-yr lagged intensity, BR sample, Unweighted & `bBR_5' & `meanBR_5' & `NBR_5' \\ " _n
 	file write sm " & (`seBR_5') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(6) 2-yr lagged intensity, BR sample, Weighted & `bBR_6' & `meanBR_6' & `NBR_6' \\ " _n
+	file write sm "2-yr lagged intensity, BR sample, Weighted & `bBR_6' & `meanBR_6' & `NBR_6' \\ " _n
 	file write sm " & (`seBR_6') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(7) 2-yr lagged intensity, BR+marg sample, Weighted & `bBR_7' & `meanBR_7' & `NBR_7' \\ " _n
+	file write sm "2-yr lagged intensity, BR+marg sample, Weighted & `bBR_7' & `meanBR_7' & `NBR_7' \\ " _n
 	file write sm " & (`seBR_7') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(8) Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_8' & `meanBR_8' & `NBR_8' \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample, Unweighted & `bBR_8' & `meanBR_8' & `NBR_8' \\ " _n
 	file write sm " & (`seBR_8') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(9) Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_9' & `meanBR_9' & `NBR_9' \\ " _n
+	file write sm "Intensity 1999\$\times\$post, BR sample, Weighted & `bBR_9' & `meanBR_9' & `NBR_9' \\ " _n
 	file write sm " & (`seBR_9') & & \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "(10) Int.1999\$\times\$post + Int.2002\$\times\$post, BR sample, Weighted & `bBR_10' & `meanBR_10' & `NBR_10' \\ " _n
+	file write sm "Int.1999\$\times\$post + Int.2002\$\times\$post, BR sample, Weighted & `bBR_10' & `meanBR_10' & `NBR_10' \\ " _n
 	file write sm " & (`seBR_10') & & \\ " _n
 	file write sm "  & & & \\ " _n
 	file write sm "Year FE & \multicolumn{3}{c}{Y} \\ " _n
