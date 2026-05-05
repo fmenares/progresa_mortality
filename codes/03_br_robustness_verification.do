@@ -323,42 +323,42 @@ matrix list results_aamr65
 	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}" _n
-	file write tbl "& UW & UW+SP & W+SP & UW & UW+SP & W+SP & UW & UW+SP & W+SP \\ \toprule" _n
-	file write tbl "\underline{\textit{Coefficient}} \\ " _n
+	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
+	file write tbl "& \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
+	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write tbl "\textit{Intensity x Post (1997-2002)}"
 	forval i = 1/9 {
 		local coef = results_emr65[1,`i']
-		local se = results_emr65[2,`i']
 		local t = results_emr65[3,`i']
-		if `t' >= 2.576 file write tbl "& " %9.4f (`coef') "***"
-		else if `t' >= 1.96  file write tbl "& " %9.4f (`coef') "**"
-		else if `t' >= 1.645 file write tbl "& " %9.4f (`coef') "*"
-		else                  file write tbl "& " %9.4f (`coef') ""
+		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
+		else                  file write tbl "& " %9.3f (`coef') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Std. Error}} \\ " _n
+	file write tbl " "
 	forval i = 1/9 {
 		local se = results_emr65[2,`i']
-		file write tbl "& (" %9.4f (`se') ")"
+		file write tbl "& (" %9.3f (`se') ")"
 	}
 	file write tbl " \\ " _n
 	file write tbl "  & & & & & & & & & \\ " _n
-	file write tbl "\underline{\textit{Sample Size}} \\ " _n
+	file write tbl "Mean (1991-1996)"
+	forval i = 1/9 {
+		local mean = results_emr65[6,`i']
+		file write tbl "& " %9.2f (`mean') ""
+	}
+	file write tbl " \\ " _n
+	file write tbl "Obs"
 	forval i = 1/9 {
 		local n = results_emr65[4,`i']
 		file write tbl "& " %9.0f (`n') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Municipalities}} \\ " _n
+	file write tbl "No. Mun"
 	forval i = 1/9 {
 		local nmun = results_emr65[5,`i']
 		file write tbl "& " %9.0f (`nmun') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Mean (Pre-period)}} \\ " _n
-	forval i = 1/9 {
-		local mean = results_emr65[6,`i']
-		file write tbl "& " %9.2f (`mean') ""
 	}
 	file write tbl " \\ \bottomrule" _n
 	file write tbl "\end{tabular}"
@@ -372,42 +372,42 @@ matrix list results_aamr65
 	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}" _n
-	file write tbl "& UW & UW+SP & W+SP & UW & UW+SP & W+SP & UW & UW+SP & W+SP \\ \toprule" _n
-	file write tbl "\underline{\textit{Coefficient}} \\ " _n
+	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
+	file write tbl "& \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
+	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write tbl "\textit{Intensity x Post (1997-2002)}"
 	forval i = 1/9 {
 		local coef = results_aamr65[1,`i']
-		local se = results_aamr65[2,`i']
 		local t = results_aamr65[3,`i']
-		if `t' >= 2.576 file write tbl "& " %9.4f (`coef') "***"
-		else if `t' >= 1.96  file write tbl "& " %9.4f (`coef') "**"
-		else if `t' >= 1.645 file write tbl "& " %9.4f (`coef') "*"
-		else                  file write tbl "& " %9.4f (`coef') ""
+		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
+		else                  file write tbl "& " %9.3f (`coef') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Std. Error}} \\ " _n
+	file write tbl " "
 	forval i = 1/9 {
 		local se = results_aamr65[2,`i']
-		file write tbl "& (" %9.4f (`se') ")"
+		file write tbl "& (" %9.3f (`se') ")"
 	}
 	file write tbl " \\ " _n
 	file write tbl "  & & & & & & & & & \\ " _n
-	file write tbl "\underline{\textit{Sample Size}} \\ " _n
+	file write tbl "Mean (1991-1996)"
+	forval i = 1/9 {
+		local mean = results_aamr65[6,`i']
+		file write tbl "& " %9.2f (`mean') ""
+	}
+	file write tbl " \\ " _n
+	file write tbl "Obs"
 	forval i = 1/9 {
 		local n = results_aamr65[4,`i']
 		file write tbl "& " %9.0f (`n') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Municipalities}} \\ " _n
+	file write tbl "No. Mun"
 	forval i = 1/9 {
 		local nmun = results_aamr65[5,`i']
 		file write tbl "& " %9.0f (`nmun') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Mean (Pre-period)}} \\ " _n
-	forval i = 1/9 {
-		local mean = results_aamr65[6,`i']
-		file write tbl "& " %9.2f (`mean') ""
 	}
 	file write tbl " \\ \bottomrule" _n
 	file write tbl "\end{tabular}"
