@@ -698,13 +698,10 @@ foreach samp in `samples' {
         }
 
         twoway ///
-            (rcap hi_uw lo_uw xpos_uw, lcolor(blue) lwidth(vthin)) ///
-            (scatter b_uw xpos_uw, mcolor(blue) msymbol(circle) msize(vsmall)) ///
             (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(blue%70) lwidth(vthin)) ///
             (scatter b_uwsp xpos_uwsp, mcolor(blue%70) msymbol(square) msize(vsmall)) ///
             (rcap hi_wsp lo_wsp xpos_wsp, lcolor(blue%40) lwidth(vthin)) ///
             (scatter b_wsp xpos_wsp, mcolor(blue%40) msymbol(triangle) msize(vsmall)) ///
-            (line b_uw xpos_uw if 1==0, lcolor(blue) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(blue) msize(vsmall)) ///
             (line b_uwsp xpos_uwsp if 1==0, lcolor(blue%70) lpattern(solid) lwidth(thin) msymbol(square) mcolor(blue%70) msize(vsmall)) ///
             (line b_wsp xpos_wsp if 1==0, lcolor(blue%40) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(blue%40) msize(vsmall)), ///
             yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
@@ -714,8 +711,8 @@ foreach samp in `samples' {
             xtitle("") ///
             ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
             ylabel(, grid gmin gmax labsize(small)) ///
-            legend(order(7 "Unweighted" 8 "UW + SP" 9 "Weighted + SP") ///
-                cols(3) size(medsmall) position(6) ring(1) ///
+            legend(order(5 "UW + SP" 6 "Weighted + SP") ///
+                cols(2) size(medsmall) position(6) ring(1) ///
                 region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
             graphregion(color(white)) ///
             plotregion(margin(l=1 r=1))
