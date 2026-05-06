@@ -632,10 +632,13 @@ foreach samp in `samples' {
         local samp_cond = "($sample_br & $sample_marg)"
     }
 
-    foreach outcome in emr65 aamr65 {
+    foreach outcome in emr65 emr65f emr65m aamr65 aamr65f aamr65m {
 
-        if "`outcome'" == "emr65" {
-            local wvar = "popover65_"
+        if regexm("`outcome'", "f$") {
+            local wvar = "popover65_f"
+        }
+        else if regexm("`outcome'", "m$") {
+            local wvar = "popover65_m"
         }
         else {
             local wvar = "popover65_"
@@ -724,9 +727,11 @@ foreach samp in `samples' {
 }
 
 di ""
-di "Event study figures exported:"
-di "  ES_emr65_BR.pdf, ES_emr65_HighMarg.pdf, ES_emr65_BR_HighMarg.pdf"
-di "  ES_aamr65_BR.pdf, ES_aamr65_HighMarg.pdf, ES_aamr65_BR_HighMarg.pdf"
+di "Event study figures exported (3 samples x 6 outcomes = 18 figures):"
+di "  Pooled:  ES_emr65_*.pdf,  ES_aamr65_*.pdf"
+di "  Females: ES_emr65f_*.pdf, ES_aamr65f_*.pdf"
+di "  Males:   ES_emr65m_*.pdf, ES_aamr65m_*.pdf"
+di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
 }
 *============================================================
 * APPENDIX FIGURE 3: Event Study — AAMR65 (1995 standard population)
@@ -1061,353 +1066,153 @@ foreach pnl in p m f {
 * 2. sample_marg: highly marginalized municipalities (UW, UW+SP, W+SP)
 * 3. sample_br & sample_marg: BR sample restricted to high marginalization (UW, UW+SP, W+SP)
 
-* Store results in matrices
-matrix results_emr65 = J(6, 9, .)
-matrix results_aamr65 = J(6, 9, .)
-matrix colnames results_emr65 = "br_uw" "br_uwsp" "br_wsp" "marg_uw" "marg_uwsp" "marg_wsp" "brmarg_uw" "brmarg_uwsp" "brmarg_wsp"
-matrix colnames results_aamr65 = "br_uw" "br_uwsp" "br_wsp" "marg_uw" "marg_uwsp" "marg_wsp" "brmarg_uw" "brmarg_uwsp" "brmarg_wsp"
-matrix rownames results_emr65 = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
-matrix rownames results_aamr65 = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
+* Store results in matrices: one matrix per outcome × panel (Pooled, Female, Male)
+foreach pnl in p f m {
+    matrix results_emr65_`pnl' = J(6, 9, .)
+    matrix results_aamr65_`pnl' = J(6, 9, .)
+    matrix colnames results_emr65_`pnl' = "br_uw" "br_uwsp" "br_wsp" "marg_uw" "marg_uwsp" "marg_wsp" "brmarg_uw" "brmarg_uwsp" "brmarg_wsp"
+    matrix colnames results_aamr65_`pnl' = "br_uw" "br_uwsp" "br_wsp" "marg_uw" "marg_uwsp" "marg_wsp" "brmarg_uw" "brmarg_uwsp" "brmarg_wsp"
+    matrix rownames results_emr65_`pnl' = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
+    matrix rownames results_aamr65_`pnl' = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
+}
 
-local col_idx = 1
+* Loop: panel × sample × spec; fill all matrices in one pass
+foreach pnl in p f m {
+    if "`pnl'" == "p" {
+        local osfx ""
+        local wv "popover65_"
+    }
+    else if "`pnl'" == "f" {
+        local osfx "f"
+        local wv "popover65_f"
+    }
+    else {
+        local osfx "m"
+        local wv "popover65_m"
+    }
 
-* === SAMPLE 1: sample_br (BR sample) ===
-* Col 1: BR, UW
-reghdfe emr65 c.inten1999#i.post ///
-    if inrange(year,1992,2002) & $sample_br, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,1] = _b[1.post#c.inten1999]
-matrix results_emr65[2,1] = _se[1.post#c.inten1999]
-matrix results_emr65[3,1] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,1] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,1] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,1] = r(mean)
+    local col = 1
+    foreach samp in br marg brmarg {
+        if "`samp'" == "br"        local cond "$sample_br"
+        else if "`samp'" == "marg" local cond "$sample_marg"
+        else                        local cond "$sample_br & $sample_marg"
 
-reghdfe aamr65 c.inten1999#i.post ///
-    if inrange(year,1992,2002) & $sample_br, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,1] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,1] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,1] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,1] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,1] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,1] = r(mean)
+        foreach spec in uw uwsp wsp {
+            foreach out in emr65 aamr65 {
+                local depvar `out'`osfx'
 
-* Col 2: BR, UW + SP
-reghdfe emr65 c.inten1999#i.post c.sp_intensity ///
-    if inrange(year,1992,2002) & $sample_br, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,2] = _b[1.post#c.inten1999]
-matrix results_emr65[2,2] = _se[1.post#c.inten1999]
-matrix results_emr65[3,2] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,2] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,2] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,2] = r(mean)
+                if "`spec'" == "uw" {
+                    reghdfe `depvar' c.inten1999#i.post ///
+                        if inrange(year,1992,2002) & `cond', ///
+                        a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+                }
+                else if "`spec'" == "uwsp" {
+                    reghdfe `depvar' c.inten1999#i.post c.sp_intensity ///
+                        if inrange(year,1992,2002) & `cond', ///
+                        a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+                }
+                else {
+                    reghdfe `depvar' c.inten1999#i.post c.sp_intensity [aw=`wv'] ///
+                        if inrange(year,1992,2002) & `cond', ///
+                        a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+                }
 
-reghdfe aamr65 c.inten1999#i.post c.sp_intensity ///
-    if inrange(year,1992,2002) & $sample_br, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,2] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,2] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,2] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,2] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,2] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,2] = r(mean)
-
-* Col 3: BR, W + SP
-reghdfe emr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] ///
-    if inrange(year,1992,2002) & $sample_br, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,3] = _b[1.post#c.inten1999]
-matrix results_emr65[2,3] = _se[1.post#c.inten1999]
-matrix results_emr65[3,3] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,3] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,3] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,3] = r(mean)
-
-reghdfe aamr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] ///
-    if inrange(year,1992,2002) & $sample_br, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,3] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,3] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,3] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,3] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,3] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,3] = r(mean)
-
-* === SAMPLE 2: sample_marg (highly marginalized only) ===
-* Col 4: Marg, UW
-reghdfe emr65 c.inten1999#i.post ///
-    if inrange(year,1992,2002) & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,4] = _b[1.post#c.inten1999]
-matrix results_emr65[2,4] = _se[1.post#c.inten1999]
-matrix results_emr65[3,4] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,4] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,4] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,4] = r(mean)
-
-reghdfe aamr65 c.inten1999#i.post ///
-    if inrange(year,1992,2002) & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,4] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,4] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,4] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,4] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,4] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,4] = r(mean)
-
-* Col 5: Marg, UW + SP
-reghdfe emr65 c.inten1999#i.post c.sp_intensity ///
-    if inrange(year,1992,2002) & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,5] = _b[1.post#c.inten1999]
-matrix results_emr65[2,5] = _se[1.post#c.inten1999]
-matrix results_emr65[3,5] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,5] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,5] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,5] = r(mean)
-
-reghdfe aamr65 c.inten1999#i.post c.sp_intensity ///
-    if inrange(year,1992,2002) & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,5] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,5] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,5] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,5] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,5] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,5] = r(mean)
-
-* Col 6: Marg, W + SP
-reghdfe emr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] ///
-    if inrange(year,1992,2002) & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,6] = _b[1.post#c.inten1999]
-matrix results_emr65[2,6] = _se[1.post#c.inten1999]
-matrix results_emr65[3,6] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,6] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,6] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,6] = r(mean)
-
-reghdfe aamr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] ///
-    if inrange(year,1992,2002) & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,6] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,6] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,6] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,6] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,6] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,6] = r(mean)
-
-* === SAMPLE 3: sample_br & sample_marg (BR in high marginalization) ===
-* Col 7: BR & Marg, UW
-reghdfe emr65 c.inten1999#i.post ///
-    if inrange(year,1992,2002) & $sample_br & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,7] = _b[1.post#c.inten1999]
-matrix results_emr65[2,7] = _se[1.post#c.inten1999]
-matrix results_emr65[3,7] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,7] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,7] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,7] = r(mean)
-
-reghdfe aamr65 c.inten1999#i.post ///
-    if inrange(year,1992,2002) & $sample_br & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,7] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,7] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,7] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,7] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,7] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,7] = r(mean)
-
-* Col 8: BR & Marg, UW + SP
-reghdfe emr65 c.inten1999#i.post c.sp_intensity ///
-    if inrange(year,1992,2002) & $sample_br & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,8] = _b[1.post#c.inten1999]
-matrix results_emr65[2,8] = _se[1.post#c.inten1999]
-matrix results_emr65[3,8] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,8] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,8] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,8] = r(mean)
-
-reghdfe aamr65 c.inten1999#i.post c.sp_intensity ///
-    if inrange(year,1992,2002) & $sample_br & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,8] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,8] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,8] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,8] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,8] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,8] = r(mean)
-
-* Col 9: BR & Marg, W + SP
-reghdfe emr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] ///
-    if inrange(year,1992,2002) & $sample_br & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_emr65[1,9] = _b[1.post#c.inten1999]
-matrix results_emr65[2,9] = _se[1.post#c.inten1999]
-matrix results_emr65[3,9] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_emr65[4,9] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_emr65[5,9] = r(ndistinct)
-sum emr65 if e(sample) & post==2
-matrix results_emr65[6,9] = r(mean)
-
-reghdfe aamr65 c.inten1999#i.post c.sp_intensity [aw=popover65_] ///
-    if inrange(year,1992,2002) & $sample_br & $sample_marg, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-matrix results_aamr65[1,9] = _b[1.post#c.inten1999]
-matrix results_aamr65[2,9] = _se[1.post#c.inten1999]
-matrix results_aamr65[3,9] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-matrix results_aamr65[4,9] = e(N)
-distinct cve_ent_mun_super if e(sample)
-matrix results_aamr65[5,9] = r(ndistinct)
-sum aamr65 if e(sample) & post==2
-matrix results_aamr65[6,9] = r(mean)
+                matrix results_`out'_`pnl'[1,`col'] = _b[1.post#c.inten1999]
+                matrix results_`out'_`pnl'[2,`col'] = _se[1.post#c.inten1999]
+                matrix results_`out'_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+                matrix results_`out'_`pnl'[4,`col'] = e(N)
+                distinct cve_ent_mun_super if e(sample)
+                matrix results_`out'_`pnl'[5,`col'] = r(ndistinct)
+                sum `depvar' if e(sample) & post==2
+                matrix results_`out'_`pnl'[6,`col'] = r(mean)
+            }
+            local col = `col' + 1
+        }
+    }
+}
 
 *============================================================
 * Display & Export Results
 *============================================================
 
 di "=== MORTALITY RATE (EMR65) RESULTS ==="
-matrix list results_emr65
+foreach pnl in p f m {
+	di ""
+	di "Panel `pnl' (p=Pooled, f=Female, m=Male):"
+	matrix list results_emr65_`pnl'
+}
 
 di ""
 di "=== AGE-ADJUSTED MORTALITY RATE (AAMR65) RESULTS ==="
-matrix list results_aamr65
-
-*============================================================
-* Build formatted LaTeX tables
-*============================================================
-
-* Table for EMR65
-{
-	cap file close tbl
-	file open tbl using "$tables/appendix/T_BR_robustness_emr65.tex", write replace
-	file write tbl "\begin{tabular}{lccccccc} \hline \hline" _n
-	file write tbl "& \multicolumn{2}{c}{\textit{BR Sample}} " _n
-	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{2}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
-	file write tbl "& \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
-	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
-	file write tbl "\textit{Intensity x Post (1997-2002)}"
-	foreach col in 2 3 5 6 8 9 {
-		local coef = results_emr65[1,`col']
-		local t = results_emr65[3,`col']
-		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
-		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
-		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
-		else                  file write tbl "& " %9.3f (`coef') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl " "
-	foreach col in 2 3 5 6 8 9 {
-		local se = results_emr65[2,`col']
-		file write tbl "& (" %9.3f (`se') ")"
-	}
-	file write tbl " \\ " _n
-	file write tbl "  & & & & & & \\ " _n
-	file write tbl "Mean (1991-1996)"
-	foreach col in 2 3 5 6 8 9 {
-		local mean = results_emr65[6,`col']
-		file write tbl "& " %9.2f (`mean') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "Obs"
-	foreach col in 2 3 5 6 8 9 {
-		local n = results_emr65[4,`col']
-		file write tbl "& " %9.0f (`n') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "No. Mun"
-	foreach col in 2 3 5 6 8 9 {
-		local nmun = results_emr65[5,`col']
-		file write tbl "& " %9.0f (`nmun') ""
-	}
-	file write tbl " \\ \bottomrule" _n
-	file write tbl "\end{tabular}"
-	file close tbl
+foreach pnl in p f m {
+	di ""
+	di "Panel `pnl' (p=Pooled, f=Female, m=Male):"
+	matrix list results_aamr65_`pnl'
 }
 
-* Table for AAMR65
-{
+*============================================================
+* Build formatted LaTeX tables (3 panels: Pooled, Females, Males)
+*============================================================
+
+foreach out in emr65 aamr65 {
 	cap file close tbl
-	file open tbl using "$tables/appendix/T_BR_robustness_aamr65.tex", write replace
+	file open tbl using "$tables/appendix/T_BR_robustness_`out'.tex", write replace
 	file write tbl "\begin{tabular}{lccccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{2}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} " _n
 	file write tbl "& \multicolumn{2}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
 	file write tbl "& \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
 	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
-	file write tbl "\textit{Intensity x Post (1997-2002)}"
-	foreach col in 2 3 5 6 8 9 {
-		local coef = results_aamr65[1,`col']
-		local t = results_aamr65[3,`col']
-		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
-		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
-		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
-		else                  file write tbl "& " %9.3f (`coef') ""
+
+	foreach pnl in p f m {
+		if "`pnl'" == "p"      local plabel "Panel A: Pooled"
+		else if "`pnl'" == "f" local plabel "Panel B: Females"
+		else                    local plabel "Panel C: Males"
+
+		file write tbl "\multicolumn{7}{l}{\textbf{`plabel'}} \\ \midrule" _n
+
+		file write tbl "\textit{Intensity x Post (1997-2002)}"
+		foreach col in 2 3 5 6 8 9 {
+			local coef = results_`out'_`pnl'[1,`col']
+			local t = results_`out'_`pnl'[3,`col']
+			if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
+			else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
+			else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
+			else                  file write tbl "& " %9.3f (`coef') ""
+		}
+		file write tbl " \\ " _n
+		file write tbl " "
+		foreach col in 2 3 5 6 8 9 {
+			local se = results_`out'_`pnl'[2,`col']
+			file write tbl "& (" %9.3f (`se') ")"
+		}
+		file write tbl " \\ " _n
+		file write tbl "  & & & & & & \\ " _n
+		file write tbl "Mean (1991-1996)"
+		foreach col in 2 3 5 6 8 9 {
+			local mean = results_`out'_`pnl'[6,`col']
+			file write tbl "& " %9.2f (`mean') ""
+		}
+		file write tbl " \\ " _n
+		file write tbl "Obs"
+		foreach col in 2 3 5 6 8 9 {
+			local n = results_`out'_`pnl'[4,`col']
+			file write tbl "& " %9.0f (`n') ""
+		}
+		file write tbl " \\ " _n
+		file write tbl "No. Mun"
+		foreach col in 2 3 5 6 8 9 {
+			local nmun = results_`out'_`pnl'[5,`col']
+			file write tbl "& " %9.0f (`nmun') ""
+		}
+		if "`pnl'" != "m" {
+			file write tbl " \\ \midrule" _n
+		}
+		else {
+			file write tbl " \\ \bottomrule" _n
+		}
 	}
-	file write tbl " \\ " _n
-	file write tbl " "
-	foreach col in 2 3 5 6 8 9 {
-		local se = results_aamr65[2,`col']
-		file write tbl "& (" %9.3f (`se') ")"
-	}
-	file write tbl " \\ " _n
-	file write tbl "  & & & & & & \\ " _n
-	file write tbl "Mean (1991-1996)"
-	foreach col in 2 3 5 6 8 9 {
-		local mean = results_aamr65[6,`col']
-		file write tbl "& " %9.2f (`mean') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "Obs"
-	foreach col in 2 3 5 6 8 9 {
-		local n = results_aamr65[4,`col']
-		file write tbl "& " %9.0f (`n') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "No. Mun"
-	foreach col in 2 3 5 6 8 9 {
-		local nmun = results_aamr65[5,`col']
-		file write tbl "& " %9.0f (`nmun') ""
-	}
-	file write tbl " \\ \bottomrule" _n
+
 	file write tbl "\end{tabular}"
 	file close tbl
 }
