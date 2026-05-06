@@ -305,7 +305,7 @@ matrix results_aamr65[6,9] = r(mean)
 * Display & Export Results
 *============================================================
 
-di "=== EXCESS MORTALITY RATE (EMR65) RESULTS ==="
+di "=== MORTALITY RATE (EMR65) RESULTS ==="
 matrix list results_emr65
 
 di ""
@@ -319,7 +319,7 @@ matrix list results_aamr65
 * Table for EMR65
 {
 	cap file close tbl
-	file open tbl using "$tables/T_BR_robustness_emr65.tex", write replace
+	file open tbl using "$tables/appendix/T_BR_robustness_emr65.tex", write replace
 	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
@@ -368,7 +368,7 @@ matrix list results_aamr65
 * Table for AAMR65
 {
 	cap file close tbl
-	file open tbl using "$tables/T_BR_robustness_aamr65.tex", write replace
+	file open tbl using "$tables/appendix/T_BR_robustness_aamr65.tex", write replace
 	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
@@ -416,8 +416,8 @@ matrix list results_aamr65
 
 di ""
 di "Tables exported to:"
-di "  $tables/T_BR_robustness_emr65.tex"
-di "  $tables/T_BR_robustness_aamr65.tex"
+di "  $tables/appendix/T_BR_robustness_emr65.tex"
+di "  $tables/appendix/T_BR_robustness_aamr65.tex"
 
 *============================================================
 * EVENT STUDY FIGURES: 6 figures (3 samples × 2 outcomes)

@@ -612,82 +612,124 @@ restore
 * FA_BR_es_pooled.pdf -- pooled, 3 specs: UW / W / W+SP
 *============================================================
 {
+local yr_labels `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
 
-global sample_br = "(inten_start_year==1998 |inten_start_year==1999)"
-local yr_labels_br `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
+* Define sample conditions and labels
+local samples br marg brmarg
+local sample_label_br "BR"
+local sample_label_marg "HighMarg"
+local sample_label_brmarg "BR_HighMarg"
 
-foreach spec in uw wsp marg aamr {
-	if "`spec'" == "uw" {
-		reghdfe emr65 c.inten1999##ib6.year_1995 if inrange(year,1992,2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	}
-	else if "`spec'" == "wsp" {
-		reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity [aw=popover65_] if inrange(year,1992,2002) & $sample_br, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	}
-	else if "`spec'" == "marg" {
-		reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity  [aw=popover65_] if inrange(year,1992,2002) & $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	}
-	
-	else {
-		reghdfe aamr65 c.inten1999##ib6.year_1995 c.sp_intensity  [aw=popover65_] if inrange(year,1992,2002) & $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	}
-	forval pos = 2/12 {
-		if `pos' == 6 {
-			local b_`spec'_`pos'  = 0
-			local se_`spec'_`pos' = 0
-		}
-		else {
-			local b_`spec'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local se_`spec'_`pos' = _se[`pos'.year_1995#c.inten1999]
-		}
-	}
+foreach samp in `samples' {
+
+    if "`samp'" == "br" {
+        local samp_cond = "$sample_br"
+    }
+    else if "`samp'" == "marg" {
+        local samp_cond = "$sample_marg"
+    }
+    else {
+        local samp_cond = "($sample_br & $sample_marg)"
+    }
+
+    foreach outcome in emr65 aamr65 {
+
+        if "`outcome'" == "emr65" {
+            local wvar = "popover65_"
+        }
+        else {
+            local wvar = "popover65_"
+        }
+
+        *--- Run three event study regressions (UW, UW+SP, W+SP) ---
+        foreach spec in uw uwsp wsp {
+
+            if "`spec'" == "uw" {
+                reghdfe `outcome' c.inten1999##ib6.year_1995 ///
+                    if inrange(year,1992,2002) & `samp_cond', ///
+                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            }
+            else if "`spec'" == "uwsp" {
+                reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity ///
+                    if inrange(year,1992,2002) & `samp_cond', ///
+                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            }
+            else {
+                reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+                    if inrange(year,1992,2002) & `samp_cond', ///
+                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            }
+
+            *--- Extract year-by-year coefficients; reference year (pos 6 = 1996) set to 0 ---
+            forval pos = 2/12 {
+                if `pos' == 6 {
+                    local b_`spec'_`pos'  = 0
+                    local se_`spec'_`pos' = 0
+                }
+                else {
+                    local b_`spec'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+                    local se_`spec'_`pos' = _se[`pos'.year_1995#c.inten1999]
+                }
+            }
+        }
+
+        *--- Build plotting dataset ---
+        preserve
+        clear
+        set obs 11
+
+        gen yr_pos = _n + 1
+        gen xpos_uw   = yr_pos - 0.15
+        gen xpos_uwsp = yr_pos
+        gen xpos_wsp  = yr_pos + 0.15
+
+        foreach spec in uw uwsp wsp {
+            gen b_`spec'  = .
+            gen hi_`spec' = .
+            gen lo_`spec' = .
+        }
+
+        forval pos = 2/12 {
+            foreach spec in uw uwsp wsp {
+                replace b_`spec'  = `b_`spec'_`pos''                             if yr_pos == `pos'
+                replace hi_`spec' = `b_`spec'_`pos'' + 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
+                replace lo_`spec' = `b_`spec'_`pos'' - 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
+            }
+        }
+
+        twoway ///
+            (rcap hi_uw lo_uw xpos_uw, lcolor(blue) lwidth(vthin)) ///
+            (scatter b_uw xpos_uw, mcolor(blue) msymbol(circle) msize(vsmall)) ///
+            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(blue%70) lwidth(vthin)) ///
+            (scatter b_uwsp xpos_uwsp, mcolor(blue%70) msymbol(square) msize(vsmall)) ///
+            (rcap hi_wsp lo_wsp xpos_wsp, lcolor(blue%40) lwidth(vthin)) ///
+            (scatter b_wsp xpos_wsp, mcolor(blue%40) msymbol(triangle) msize(vsmall)) ///
+            (line b_uw xpos_uw if 1==0, lcolor(blue) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(blue) msize(vsmall)) ///
+            (line b_uwsp xpos_uwsp if 1==0, lcolor(blue%70) lpattern(solid) lwidth(thin) msymbol(square) mcolor(blue%70) msize(vsmall)) ///
+            (line b_wsp xpos_wsp if 1==0, lcolor(blue%40) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(blue%40) msize(vsmall)), ///
+            yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+            xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+            xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+            xscale(range(1.5 12.5)) ///
+            xtitle("") ///
+            ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
+            ylabel(, grid gmin gmax labsize(small)) ///
+            legend(order(7 "Unweighted" 8 "UW + SP" 9 "Weighted + SP") ///
+                cols(3) size(medsmall) position(6) ring(1) ///
+                region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+            graphregion(color(white)) ///
+            plotregion(margin(l=1 r=1))
+
+        graph export "$figures/appendix/ES_`outcome'_`sample_label_`samp''.pdf", as(pdf) replace
+
+        restore
+    }
 }
-preserve
-clear
-set obs 11
-gen yr_pos = _n + 1
-gen xpos_uw  = yr_pos -.15
-gen xpos_wsp   = yr_pos 
-gen xpos_marg = yr_pos + 0.15
-gen xpos_aamr = yr_pos + 0.3
-foreach spec in uw wsp marg aamr {
-	gen b_`spec'  = .
-	gen hi_`spec' = .
-	gen lo_`spec' = .
-}
-forval pos = 2/12 {
-	foreach spec in uw wsp marg aamr {
-		replace b_`spec'  = `b_`spec'_`pos''                             if yr_pos == `pos'
-		replace hi_`spec' = `b_`spec'_`pos'' + 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
-		replace lo_`spec' = `b_`spec'_`pos'' - 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
-	}
-}
-twoway ///
-	(rcap hi_uw lo_uw xpos_uw, lcolor(red) lwidth(vthin)) ///
-	(scatter b_uw xpos_uw, mcolor(red) msymbol(circle) msize(vsmall)) ///
-	(rcap hi_wsp lo_wsp xpos_wsp, lcolor(red%80) lwidth(vthin)) ///
-	(scatter b_wsp xpos_wsp, mcolor(red%80) msymbol(square) msize(vsmall)) ///
-	(rcap hi_marg lo_marg xpos_marg, lcolor(red%60) lwidth(vthin)) ///
-	(scatter b_marg xpos_marg, mcolor(red%60) msymbol(triangle) msize(vsmall)) ///
-	(rcap hi_aamr lo_aamr xpos_aamr, lcolor(red%40) lwidth(vthin)) ///
-	(scatter b_aamr xpos_aamr, mcolor(red%40) msymbol(square) msize(vsmall)) ///
-	(line b_uw xpos_uw if 1==0, lcolor(red) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(red) msize(vsmall)) ///
-	(line b_wsp xpos_wsp if 1==0, lcolor(red%80) lpattern(solid) lwidth(thin) msymbol(square) mcolor(red%80) msize(vsmall)) ///
-	(line b_marg xpos_marg if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(red%60) msize(vsmall)) ///
-	(line b_aamr xpos_aamr if 1==0, lcolor(red%40) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(red%40) msize(vsmall)), ///
-	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels_br', labsize(small) angle(45) labcolor(black)) ///
-	xscale(range(1.5 12.5)) ///
-	xtitle("") ///
-	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-		ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(9 "Unweighted" 10 "Weighted + SP" 11 "Higly Marginalized" 12 "AAMR") ///
-		cols(4) size(medsmall) position(6) ring(1) ///
-		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-	graphregion(color(white)) ///
-	plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/Figure_2b_BR_pooled.pdf", as(pdf) replace
-restore
+
+di ""
+di "Event study figures exported:"
+di "  ES_emr65_BR.pdf, ES_emr65_HighMarg.pdf, ES_emr65_BR_HighMarg.pdf"
+di "  ES_aamr65_BR.pdf, ES_aamr65_HighMarg.pdf, ES_aamr65_BR_HighMarg.pdf"
 }
 *============================================================
 * APPENDIX FIGURE 3: Event Study — AAMR65 (1995 standard population)
@@ -1013,53 +1055,6 @@ foreach pnl in p m f {
 * Output: Two tables (emr65 & aamr65) with 9 DD specifications
 *============================================================
 
-*	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]
-use "$data/aamr_regression_municipality_gender_tb.dta", clear
-merge m:1 cve_ent_mun_super using "$data/inten1999.dta"
-drop _merge
-merge m:1 cve_ent_mun_super using "$data/inten2005.dta"
-drop _merge
-
-gen post=.
-replace post=2 if year <1997 & year >1990 & year!=.
-replace post=1 if year >=1997 & year <2007 & year!=.
-
-lab def post 1"1997-2006" 2"1991-1996"
-lab val post post
-
-*	Merge with Seguro Popular data
-merge 1:1 cve_ent_mun_super year using "$data/SP_2001_2018.dta"
-drop _merge
-order year cve_ent_mun_super inten1999 post sp_intensity
-
-*	Restriction (year)
-keep if year >1990 & year <2007
-
-tab post
-global sample_marg = "gm_mun_1990==4|gm_mun_1990==5"
-global sample_br = "(inten_start_year==1998 |inten_start_year==1999)"
-
-lab var year "year"
-lab var inten1999 " "
-
-gen year_1995=.
-replace year_1995=1 if year==1991
-replace year_1995=2 if year==1992
-replace year_1995=3 if year==1993
-replace year_1995=4 if year==1994
-replace year_1995=5 if year==1995
-replace year_1995=6 if year==1996
-replace year_1995=7 if year==1997
-replace year_1995=8 if year==1998
-replace year_1995=9 if year==1999
-replace year_1995=10 if year==2000
-replace year_1995=11 if year==2001
-replace year_1995=12 if year==2002
-replace year_1995=13 if year==2003
-replace year_1995=14 if year==2004
-replace year_1995=15 if year==2005
-replace year_1995=16 if year==2006
-
 *============================================================
 * Run DD Regressions: 9 specifications for each outcome
 *============================================================
@@ -1329,42 +1324,42 @@ matrix list results_aamr65
 	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}" _n
-	file write tbl "& UW & UW+SP & W+SP & UW & UW+SP & W+SP & UW & UW+SP & W+SP \\ \toprule" _n
-	file write tbl "\underline{\textit{Coefficient}} \\ " _n
+	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
+	file write tbl "& \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
+	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write tbl "\textit{Intensity x Post (1997-2002)}"
 	forval i = 1/9 {
 		local coef = results_emr65[1,`i']
-		local se = results_emr65[2,`i']
 		local t = results_emr65[3,`i']
-		if `t' >= 2.576 file write tbl "& " %9.4f (`coef') "***"
-		else if `t' >= 1.96  file write tbl "& " %9.4f (`coef') "**"
-		else if `t' >= 1.645 file write tbl "& " %9.4f (`coef') "*"
-		else                  file write tbl "& " %9.4f (`coef') ""
+		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
+		else                  file write tbl "& " %9.3f (`coef') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Std. Error}} \\ " _n
+	file write tbl " "
 	forval i = 1/9 {
 		local se = results_emr65[2,`i']
-		file write tbl "& (" %9.4f (`se') ")"
+		file write tbl "& (" %9.3f (`se') ")"
 	}
 	file write tbl " \\ " _n
 	file write tbl "  & & & & & & & & & \\ " _n
-	file write tbl "\underline{\textit{Sample Size}} \\ " _n
+	file write tbl "Mean (1991-1996)"
+	forval i = 1/9 {
+		local mean = results_emr65[6,`i']
+		file write tbl "& " %9.2f (`mean') ""
+	}
+	file write tbl " \\ " _n
+	file write tbl "Obs"
 	forval i = 1/9 {
 		local n = results_emr65[4,`i']
 		file write tbl "& " %9.0f (`n') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Municipalities}} \\ " _n
+	file write tbl "No. Mun"
 	forval i = 1/9 {
 		local nmun = results_emr65[5,`i']
 		file write tbl "& " %9.0f (`nmun') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Mean (Pre-period)}} \\ " _n
-	forval i = 1/9 {
-		local mean = results_emr65[6,`i']
-		file write tbl "& " %9.2f (`mean') ""
 	}
 	file write tbl " \\ \bottomrule" _n
 	file write tbl "\end{tabular}"
@@ -1378,42 +1373,42 @@ matrix list results_aamr65
 	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}" _n
-	file write tbl "& UW & UW+SP & W+SP & UW & UW+SP & W+SP & UW & UW+SP & W+SP \\ \toprule" _n
-	file write tbl "\underline{\textit{Coefficient}} \\ " _n
+	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
+	file write tbl "& \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
+	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write tbl "\textit{Intensity x Post (1997-2002)}"
 	forval i = 1/9 {
 		local coef = results_aamr65[1,`i']
-		local se = results_aamr65[2,`i']
 		local t = results_aamr65[3,`i']
-		if `t' >= 2.576 file write tbl "& " %9.4f (`coef') "***"
-		else if `t' >= 1.96  file write tbl "& " %9.4f (`coef') "**"
-		else if `t' >= 1.645 file write tbl "& " %9.4f (`coef') "*"
-		else                  file write tbl "& " %9.4f (`coef') ""
+		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
+		else                  file write tbl "& " %9.3f (`coef') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Std. Error}} \\ " _n
+	file write tbl " "
 	forval i = 1/9 {
 		local se = results_aamr65[2,`i']
-		file write tbl "& (" %9.4f (`se') ")"
+		file write tbl "& (" %9.3f (`se') ")"
 	}
 	file write tbl " \\ " _n
 	file write tbl "  & & & & & & & & & \\ " _n
-	file write tbl "\underline{\textit{Sample Size}} \\ " _n
+	file write tbl "Mean (1991-1996)"
+	forval i = 1/9 {
+		local mean = results_aamr65[6,`i']
+		file write tbl "& " %9.2f (`mean') ""
+	}
+	file write tbl " \\ " _n
+	file write tbl "Obs"
 	forval i = 1/9 {
 		local n = results_aamr65[4,`i']
 		file write tbl "& " %9.0f (`n') ""
 	}
 	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Municipalities}} \\ " _n
+	file write tbl "No. Mun"
 	forval i = 1/9 {
 		local nmun = results_aamr65[5,`i']
 		file write tbl "& " %9.0f (`nmun') ""
-	}
-	file write tbl " \\ " _n
-	file write tbl "\underline{\textit{Mean (Pre-period)}} \\ " _n
-	forval i = 1/9 {
-		local mean = results_aamr65[6,`i']
-		file write tbl "& " %9.2f (`mean') ""
 	}
 	file write tbl " \\ \bottomrule" _n
 	file write tbl "\end{tabular}"
@@ -1424,7 +1419,6 @@ di ""
 di "Tables exported to:"
 di "  $tables/appendix/T_BR_robustness_emr65.tex"
 di "  $tables/appendix/T_BR_robustness_aamr65.tex"
-
 
 
 *============================================================
