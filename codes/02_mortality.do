@@ -1321,16 +1321,16 @@ matrix list results_aamr65
 {
 	cap file close tbl
 	file open tbl using "$tables/appendix/T_BR_robustness_emr65.tex", write replace
-	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
-	file write tbl "& \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
-	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write tbl "\begin{tabular}{lccccccc} \hline \hline" _n
+	file write tbl "& \multicolumn{2}{c}{\textit{BR Sample}} " _n
+	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} " _n
+	file write tbl "& \multicolumn{2}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
+	file write tbl "& \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
+	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 	file write tbl "\textit{Intensity x Post (1997-2002)}"
-	forval i = 1/9 {
-		local coef = results_emr65[1,`i']
-		local t = results_emr65[3,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local coef = results_emr65[1,`col']
+		local t = results_emr65[3,`col']
 		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
 		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
 		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
@@ -1338,27 +1338,27 @@ matrix list results_aamr65
 	}
 	file write tbl " \\ " _n
 	file write tbl " "
-	forval i = 1/9 {
-		local se = results_emr65[2,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local se = results_emr65[2,`col']
 		file write tbl "& (" %9.3f (`se') ")"
 	}
 	file write tbl " \\ " _n
-	file write tbl "  & & & & & & & & & \\ " _n
+	file write tbl "  & & & & & & \\ " _n
 	file write tbl "Mean (1991-1996)"
-	forval i = 1/9 {
-		local mean = results_emr65[6,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local mean = results_emr65[6,`col']
 		file write tbl "& " %9.2f (`mean') ""
 	}
 	file write tbl " \\ " _n
 	file write tbl "Obs"
-	forval i = 1/9 {
-		local n = results_emr65[4,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local n = results_emr65[4,`col']
 		file write tbl "& " %9.0f (`n') ""
 	}
 	file write tbl " \\ " _n
 	file write tbl "No. Mun"
-	forval i = 1/9 {
-		local nmun = results_emr65[5,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local nmun = results_emr65[5,`col']
 		file write tbl "& " %9.0f (`nmun') ""
 	}
 	file write tbl " \\ \bottomrule" _n
@@ -1370,16 +1370,16 @@ matrix list results_aamr65
 {
 	cap file close tbl
 	file open tbl using "$tables/appendix/T_BR_robustness_aamr65.tex", write replace
-	file write tbl "\begin{tabular}{lcccccccccc} \hline \hline" _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR Sample}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{3}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
-	file write tbl "& \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
-	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write tbl "\begin{tabular}{lccccccc} \hline \hline" _n
+	file write tbl "& \multicolumn{2}{c}{\textit{BR Sample}} " _n
+	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} " _n
+	file write tbl "& \multicolumn{2}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
+	file write tbl "& \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
+	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 	file write tbl "\textit{Intensity x Post (1997-2002)}"
-	forval i = 1/9 {
-		local coef = results_aamr65[1,`i']
-		local t = results_aamr65[3,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local coef = results_aamr65[1,`col']
+		local t = results_aamr65[3,`col']
 		if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
 		else if `t' >= 1.96  file write tbl "& " %9.3f (`coef') "**"
 		else if `t' >= 1.645 file write tbl "& " %9.3f (`coef') "*"
@@ -1387,27 +1387,27 @@ matrix list results_aamr65
 	}
 	file write tbl " \\ " _n
 	file write tbl " "
-	forval i = 1/9 {
-		local se = results_aamr65[2,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local se = results_aamr65[2,`col']
 		file write tbl "& (" %9.3f (`se') ")"
 	}
 	file write tbl " \\ " _n
-	file write tbl "  & & & & & & & & & \\ " _n
+	file write tbl "  & & & & & & \\ " _n
 	file write tbl "Mean (1991-1996)"
-	forval i = 1/9 {
-		local mean = results_aamr65[6,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local mean = results_aamr65[6,`col']
 		file write tbl "& " %9.2f (`mean') ""
 	}
 	file write tbl " \\ " _n
 	file write tbl "Obs"
-	forval i = 1/9 {
-		local n = results_aamr65[4,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local n = results_aamr65[4,`col']
 		file write tbl "& " %9.0f (`n') ""
 	}
 	file write tbl " \\ " _n
 	file write tbl "No. Mun"
-	forval i = 1/9 {
-		local nmun = results_aamr65[5,`i']
+	foreach col in 2 3 5 6 8 9 {
+		local nmun = results_aamr65[5,`col']
 		file write tbl "& " %9.0f (`nmun') ""
 	}
 	file write tbl " \\ \bottomrule" _n
