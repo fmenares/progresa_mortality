@@ -53,6 +53,7 @@ set more off
 	
 	tab post 
 	global sample_marg = "gm_mun_1990==4|gm_mun_1990==5"
+	global sample_br   = "(inten_start_year==1998|inten_start_year==1999)"
 	
 	
 	
