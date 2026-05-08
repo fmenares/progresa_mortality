@@ -907,8 +907,10 @@ foreach samp in br marg {
 
 	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
 
-		*--- Run regressions for pooled, female, male ---
+		*--- Run regressions for pooled, female, male with error handling ---
 		foreach grp in w f m {
+			local reg_success_`grp' = 0
+
 			if "`grp'" == "w" {
 				local outcome emr65`cod'
 				local wvar   popover65_
@@ -923,24 +925,34 @@ foreach samp in br marg {
 			}
 
 			if "`samp'" == "br" {
-				reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+				capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
 					if `samp_yr_cond' & `samp_cond', ///
 					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 			}
 			else {
-				reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+				capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
 					c.sp_intensity [aw=`wvar'] if `samp_cond', ///
 					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 			}
 
-			forval pos = `pos_start'/`pos_end' {
-				if `pos' == 6 {
-					local b_`grp'_`pos'  = 0
-					local se_`grp'_`pos' = 0
+			if _rc == 0 {
+				local reg_success_`grp' = 1
+				forval pos = `pos_start'/`pos_end' {
+					if `pos' == 6 {
+						local b_`grp'_`pos'  = 0
+						local se_`grp'_`pos' = 0
+					}
+					else {
+						local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+						local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+					}
 				}
-				else {
-					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+			}
+			else {
+				di "WARNING: Regression failed for `outcome' (`cod', `samp' sample) - skipping this group from plot"
+				forval pos = `pos_start'/`pos_end' {
+					local b_`grp'_`pos'  = .
+					local se_`grp'_`pos' = .
 				}
 			}
 		}
@@ -959,9 +971,11 @@ foreach samp in br marg {
 		}
 		forval pos = `pos_start'/`pos_end' {
 			foreach grp in w f m {
-				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+				if `reg_success_`grp'' == 1 {
+					replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+					replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+					replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+				}
 			}
 		}
 
@@ -973,34 +987,45 @@ foreach samp in br marg {
 			local yaxis_range "-6(3)6"
 		}
 
-		twoway ///
-			(rcap hi_w lo_w xpos_w, ///
-				lcolor(black%60) lwidth(vthin)) ///
-			(scatter b_w xpos_w, ///
-				mcolor(black) msymbol(circle) msize(vsmall)) ///
-			(rcap hi_f lo_f xpos_f, ///
-				lcolor(red%60) lwidth(vthin)) ///
-			(scatter b_f xpos_f, ///
-				mcolor(red) msymbol(square) msize(vsmall)) ///
-			(rcap hi_m lo_m xpos_m, ///
-				lcolor(blue%60) lwidth(vthin)) ///
-			(scatter b_m xpos_m, ///
-				mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-			(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
-			(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
-			(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
-			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-			xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-			xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) ///
-			xscale(`xscale_range') ///
-			xtitle("") ///
-			ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
-			ylabel(`yaxis_range', grid gmin gmax labsize(small)) ///
-			legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
-				cols(3) size(medsmall) position(6) ring(1) ///
-				region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-			graphregion(color(white)) ///
-			plotregion(margin(l=1 r=1))
+		*--- Build twoway command with only successful groups ---
+		local twoway_cmd "twoway"
+		local legend_order ""
+		local legend_count = 0
+
+		if `reg_success_w' == 1 {
+			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall))"
+			local legend_count = `legend_count' + 3
+			local legend_order "`legend_order' `legend_count' \"Pooled\""
+		}
+
+		if `reg_success_f' == 1 {
+			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall))"
+			local legend_count = `legend_count' + 3
+			local legend_order "`legend_order' `legend_count' \"Female\""
+		}
+
+		if `reg_success_m' == 1 {
+			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall))"
+			local legend_count = `legend_count' + 3
+			local legend_order "`legend_order' `legend_count' \"Male\""
+		}
+
+		*--- Add axis and other options ---
+		local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle(\"\") ytitle(\"EMR 65+ (per 1,000): `cod'\", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small))"
+
+		*--- Add legend only if there are groups to show ---
+		if `reg_success_w' == 1 | `reg_success_f' == 1 | `reg_success_m' == 1 {
+			local twoway_cmd "`twoway_cmd' legend(order(`legend_order') cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0))"
+		}
+		else {
+			local twoway_cmd "`twoway_cmd' legend(off)"
+		}
+
+		local twoway_cmd "`twoway_cmd' graphregion(color(white)) plotregion(margin(l=1 r=1))"
+
+		*--- Execute the graph command ---
+		`twoway_cmd'
+
 		graph export "$figures/appendix/Figure_4_`cod'`samp_label'.pdf", as(pdf) replace
 		restore
 
