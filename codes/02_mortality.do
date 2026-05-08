@@ -1242,22 +1242,21 @@ foreach pnl in p f m {
 foreach out in emr65 aamr65 {
 	cap file close tbl
 	file open tbl using "$tables/appendix/T_BR_robustness_`out'.tex", write replace
-	file write tbl "\begin{tabular}{lccccccc} \hline \hline" _n
+	file write tbl "\begin{tabular}{lccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{2}{c}{\textit{BR Sample}} " _n
-	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} " _n
-	file write tbl "& \multicolumn{2}{c}{\textit{BR \& High Marg}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
-	file write tbl "& \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} & \multicolumn{1}{c}{UW+SP} & \multicolumn{1}{c}{W+SP} \\ " _n
-	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+	file write tbl "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ \cmidrule(lr){2-5}" _n
+	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 
 	foreach pnl in p f m {
 		if "`pnl'" == "p"      local plabel "Panel A: Pooled"
 		else if "`pnl'" == "f" local plabel "Panel B: Females"
 		else                    local plabel "Panel C: Males"
 
-		file write tbl "\multicolumn{7}{l}{\textbf{`plabel'}} \\ \midrule" _n
+		file write tbl "\multicolumn{5}{l}{\textbf{`plabel'}} \\ \midrule" _n
 
 		file write tbl "\textit{Intensity x Post (1997-2002)}"
-		foreach col in 2 3 5 6 8 9 {
+		foreach col in 2 3 5 6 {
 			local coef = results_`out'_`pnl'[1,`col']
 			local t = results_`out'_`pnl'[3,`col']
 			if `t' >= 2.576 file write tbl "& " %9.3f (`coef') "***"
@@ -1267,26 +1266,26 @@ foreach out in emr65 aamr65 {
 		}
 		file write tbl " \\ " _n
 		file write tbl " "
-		foreach col in 2 3 5 6 8 9 {
+		foreach col in 2 3 5 6 {
 			local se = results_`out'_`pnl'[2,`col']
 			file write tbl "& (" %9.3f (`se') ")"
 		}
 		file write tbl " \\ " _n
-		file write tbl "  & & & & & & \\ " _n
+		file write tbl "  & & & & \\ " _n
 		file write tbl "Mean (1991-1996)"
-		foreach col in 2 3 5 6 8 9 {
+		foreach col in 2 3 5 6 {
 			local mean = results_`out'_`pnl'[6,`col']
 			file write tbl "& " %9.2f (`mean') ""
 		}
 		file write tbl " \\ " _n
 		file write tbl "Obs"
-		foreach col in 2 3 5 6 8 9 {
+		foreach col in 2 3 5 6 {
 			local n = results_`out'_`pnl'[4,`col']
 			file write tbl "& " %9.0f (`n') ""
 		}
 		file write tbl " \\ " _n
 		file write tbl "No. Mun"
-		foreach col in 2 3 5 6 8 9 {
+		foreach col in 2 3 5 6 {
 			local nmun = results_`out'_`pnl'[5,`col']
 			file write tbl "& " %9.0f (`nmun') ""
 		}
