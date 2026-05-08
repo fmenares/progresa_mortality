@@ -835,22 +835,28 @@ foreach samp in `samples' {
 
         *--- Set color based on outcome (sex) ---
         if regexm("`outcome'", "f$") {
-            local col = "red%80"
+            local col_base = "red"
+            local col_uwsp = "red%60"
+            local col_wsp = "red%80"
         }
         else if regexm("`outcome'", "m$") {
-            local col = "blue%80"
+            local col_base = "blue"
+            local col_uwsp = "blue%60"
+            local col_wsp = "blue%80"
         }
         else {
-            local col = "black"
+            local col_base = "black"
+            local col_uwsp = "black%60"
+            local col_wsp = "black"
         }
 
         twoway ///
-            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(`col'%60) lwidth(vthin)) ///
-            (scatter b_uwsp xpos_uwsp, mcolor(`col'%60) msymbol(square) msize(vsmall)) ///
-            (rcap hi_wsp lo_wsp xpos_wsp, lcolor(`col') lwidth(vthin)) ///
-            (scatter b_wsp xpos_wsp, mcolor(`col') msymbol(triangle) msize(vsmall)) ///
-            (line b_uwsp xpos_uwsp if 1==0, lcolor(`col'%60) lpattern(solid) lwidth(thin) msymbol(square) mcolor(`col'%60) msize(vsmall)) ///
-            (line b_wsp xpos_wsp if 1==0, lcolor(`col') lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(`col') msize(vsmall)), ///
+            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(`col_uwsp') lwidth(vthin)) ///
+            (scatter b_uwsp xpos_uwsp, mcolor(`col_uwsp') msymbol(square) msize(vsmall)) ///
+            (rcap hi_wsp lo_wsp xpos_wsp, lcolor(`col_wsp') lwidth(vthin)) ///
+            (scatter b_wsp xpos_wsp, mcolor(`col_wsp') msymbol(triangle) msize(vsmall)) ///
+            (line b_uwsp xpos_uwsp if 1==0, lcolor(`col_uwsp') lpattern(solid) lwidth(thin) msymbol(square) mcolor(`col_uwsp') msize(vsmall)) ///
+            (line b_wsp xpos_wsp if 1==0, lcolor(`col_wsp') lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(`col_wsp') msize(vsmall)), ///
             yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
             xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
             xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -858,7 +864,7 @@ foreach samp in `samples' {
             xtitle("") ///
             ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
             ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
-            legend(order(5 "UW" 6 "Weighted") ///
+            legend(order(5 "Unweighted" 6 "Weighted") ///
                 cols(2) size(medsmall) position(6) ring(1) ///
                 region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
             graphregion(color(white)) ///
@@ -1010,14 +1016,14 @@ foreach samp in br marg {
 		}
 
 		if `reg_success_f' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall))"
+			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red%60) msymbol(square) msize(vsmall))"
 			local plot_count = `plot_count' + 2
 			local legend_nums "`legend_nums' `plot_count'"
 			local legend_labels "`legend_labels' label(`plot_count' Female)"
 		}
 
 		if `reg_success_m' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall))"
+			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%60) msymbol(triangle) msize(vsmall))"
 			local plot_count = `plot_count' + 2
 			local legend_nums "`legend_nums' `plot_count'"
 			local legend_labels "`legend_labels' label(`plot_count' Male)"
