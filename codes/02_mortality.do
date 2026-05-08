@@ -1619,6 +1619,51 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	file close sm
 }
 
+*============================================================
+* APPENDIX TABLE 5B: Causes of Death (BR Sample, 1992-2002)
+* AT5_cod_br_mortality.tex
+*============================================================
+foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+	reghdfe emr65`cod' c.inten1999#i.post c.sp_intensity ///
+		[aw=popover65_] if inrange(year,1992,2002) & $sample_br, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local b99_br_`cod' = "`aux'***"
+	else if `t' >= 1.96  local b99_br_`cod' = "`aux'**"
+	else if `t' >= 1.645 local b99_br_`cod' = "`aux'*"
+	else                  local b99_br_`cod' = "`aux'"
+	local se99_br_`cod': di %12.3f _se[1.post#c.inten1999]
+	sum emr65`cod' if e(sample) & post == 0
+	local mean_br_`cod': di %12.2fc `r(mean)'
+	local N_br_`cod': di %12.0fc `e(N)'
+}
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT5_cod_br_mortality.tex", write replace
+	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
+	file write sm "& Card. & Infect. & Diab. & Resp. & Nutri. & Cancer & Accid. & IllDef & Other \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write sm "\textit{Intensity 1999 x post (1997-2002)} & `b99_br_tb_card' & `b99_br_tb_infect' & `b99_br_tb_diab' & `b99_br_tb_resp' & `b99_br_tb_nutri' & `b99_br_tb_cancer' & `b99_br_tb_accid' & `b99_br_tb_illdef' & `b99_br_tb_other' \\ " _n
+	file write sm " & (`se99_br_tb_card') & (`se99_br_tb_infect') & (`se99_br_tb_diab') & (`se99_br_tb_resp') & (`se99_br_tb_nutri') & (`se99_br_tb_cancer') & (`se99_br_tb_accid') & (`se99_br_tb_illdef') & (`se99_br_tb_other') \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "Mean (pre-1997) & `mean_br_tb_card' & `mean_br_tb_infect' & `mean_br_tb_diab' & `mean_br_tb_resp' & `mean_br_tb_nutri' & `mean_br_tb_cancer' & `mean_br_tb_accid' & `mean_br_tb_illdef' & `mean_br_tb_other' \\ " _n
+	file write sm "Obs & `N_br_tb_card' & `N_br_tb_infect' & `N_br_tb_diab' & `N_br_tb_resp' & `N_br_tb_nutri' & `N_br_tb_cancer' & `N_br_tb_accid' & `N_br_tb_illdef' & `N_br_tb_other' \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Seguro Popular & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Weights & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
+	file write sm "Year range & 1992-2002 & 1992-2002 & 1992-2002 & 1992-2002 & 1992-2002 & 1992-2002 & 1992-2002 & 1992-2002 & 1992-2002 \\ " _n
+	file write sm "Sample & BR & BR & BR & BR & BR & BR & BR & BR & BR \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
 
 
 /*
