@@ -875,10 +875,10 @@ di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
 
 *============================================================
 * APPENDIX FIGURES 4: Event Study by Cause of Death
-* Figure_4_XXX.pdf -- pooled, female, male; weighted + SP spec
+* Figure_4_XXX.pdf -- pooled, female, male; BR sample, weighted + SP, 1992-2002
 *============================================================
 
-local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+local yr_labels_cod `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
 
 foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
 
@@ -897,11 +897,11 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 			local wvar   popover65_m
 		}
 
-		reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-			c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
-			vce(cluster cve_ent_mun_super)
+		reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+			if inrange(year,1992,2002) & $sample_br, ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 
-		forval pos = 1/16 {
+		forval pos = 2/12 {
 			if `pos' == 6 {
 				local b_`grp'_6  = 0
 				local se_`grp'_6 = 0
@@ -915,8 +915,8 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 
 	preserve
 	clear
-	set obs 16
-	gen yr_pos = _n
+	set obs 11
+	gen yr_pos = _n + 1
 	gen xpos_w = yr_pos - 0.18
 	gen xpos_f = yr_pos
 	gen xpos_m = yr_pos + 0.18
@@ -925,7 +925,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 		gen hi_`grp' = .
 		gen lo_`grp' = .
 	}
-	forval pos = 1/16 {
+	forval pos = 2/12 {
 		foreach grp in w f m {
 			replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
 			replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
@@ -951,7 +951,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) ///
-		xscale(range(0.5 16.5)) ///
+		xscale(range(1.5 12.5)) ///
 		xtitle("") ///
 		ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
 		ylabel(-6(3)9, grid gmin gmax labsize(small)) ///
