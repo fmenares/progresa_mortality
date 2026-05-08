@@ -851,11 +851,11 @@ foreach samp in `samples' {
         }
 
         twoway ///
-            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(`col_uwsp') lwidth(vthin)) ///
+            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(`col_uwsp') lpattern(dash) lwidth(vthin)) ///
             (scatter b_uwsp xpos_uwsp, mcolor(`col_uwsp') msymbol(square) msize(vsmall)) ///
             (rcap hi_wsp lo_wsp xpos_wsp, lcolor(`col_wsp') lwidth(vthin)) ///
             (scatter b_wsp xpos_wsp, mcolor(`col_wsp') msymbol(triangle) msize(vsmall)) ///
-            (line b_uwsp xpos_uwsp if 1==0, lcolor(`col_uwsp') lpattern(solid) lwidth(thin) msymbol(square) mcolor(`col_uwsp') msize(vsmall)) ///
+            (line b_uwsp xpos_uwsp if 1==0, lcolor(`col_uwsp') lpattern(dash) lwidth(thin) msymbol(square) mcolor(`col_uwsp') msize(vsmall)) ///
             (line b_wsp xpos_wsp if 1==0, lcolor(`col_wsp') lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(`col_wsp') msize(vsmall)), ///
             yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
             xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
