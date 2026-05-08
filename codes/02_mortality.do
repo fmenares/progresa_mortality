@@ -203,7 +203,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/Figure_1c_inten2005.pdf", as(pdf) replace width(2)
+graph export "$figures/Figure_1c_inten2005.pdf", as(pdf) replace width(3)
 
  *---- Map 5: Initial rollout 1997 — mortality sample ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -211,7 +211,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1d_inten1997_mort.pdf", as(pdf) replace width(20)
+graph export "$figures/appendix/Figure_1d_inten1997_mort.pdf", as(pdf) replace width(5)
 
 
 restore
@@ -606,136 +606,9 @@ graph export "$figures/appendix/Figure_2a_uw.pdf", as(pdf) replace
 restore
 }
 
- 
-**Event Study (This would be similar to F2) *Unweighted
+
 *============================================================
-* APPENDIX FIGURE 2b: Short-term Event Study (Barham & Rowberry sample)
-* FA_BR_es_pooled.pdf -- pooled, 3 specs: UW / W / W+SP
-*============================================================
-{
-local yr_labels `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
-
-* Define sample conditions and labels
-local samples br marg brmarg
-local sample_label_br "BR"
-local sample_label_marg "HighMarg"
-local sample_label_brmarg "BR_HighMarg"
-
-foreach samp in `samples' {
-
-    if "`samp'" == "br" {
-        local samp_cond = "$sample_br"
-    }
-    else if "`samp'" == "marg" {
-        local samp_cond = "$sample_marg"
-    }
-    else {
-        local samp_cond = "($sample_br & $sample_marg)"
-    }
-
-    foreach outcome in emr65 emr65f emr65m aamr65 aamr65f aamr65m {
-
-        if regexm("`outcome'", "f$") {
-            local wvar = "popover65_f"
-        }
-        else if regexm("`outcome'", "m$") {
-            local wvar = "popover65_m"
-        }
-        else {
-            local wvar = "popover65_"
-        }
-
-        *--- Run three event study regressions (UW, UW+SP, W+SP) ---
-        foreach spec in uw uwsp wsp {
-
-            if "`spec'" == "uw" {
-                reghdfe `outcome' c.inten1999##ib6.year_1995 ///
-                    if inrange(year,1992,2002) & `samp_cond', ///
-                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-            }
-            else if "`spec'" == "uwsp" {
-                reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity ///
-                    if inrange(year,1992,2002) & `samp_cond', ///
-                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-            }
-            else {
-                reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
-                    if inrange(year,1992,2002) & `samp_cond', ///
-                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-            }
-
-            *--- Extract year-by-year coefficients; reference year (pos 6 = 1996) set to 0 ---
-            forval pos = 2/12 {
-                if `pos' == 6 {
-                    local b_`spec'_`pos'  = 0
-                    local se_`spec'_`pos' = 0
-                }
-                else {
-                    local b_`spec'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-                    local se_`spec'_`pos' = _se[`pos'.year_1995#c.inten1999]
-                }
-            }
-        }
-
-        *--- Build plotting dataset ---
-        preserve
-        clear
-        set obs 11
-
-        gen yr_pos = _n + 1
-        gen xpos_uw   = yr_pos - 0.15
-        gen xpos_uwsp = yr_pos
-        gen xpos_wsp  = yr_pos + 0.15
-
-        foreach spec in uw uwsp wsp {
-            gen b_`spec'  = .
-            gen hi_`spec' = .
-            gen lo_`spec' = .
-        }
-
-        forval pos = 2/12 {
-            foreach spec in uw uwsp wsp {
-                replace b_`spec'  = `b_`spec'_`pos''                             if yr_pos == `pos'
-                replace hi_`spec' = `b_`spec'_`pos'' + 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
-                replace lo_`spec' = `b_`spec'_`pos'' - 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
-            }
-        }
-
-        twoway ///
-            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(blue%70) lwidth(vthin)) ///
-            (scatter b_uwsp xpos_uwsp, mcolor(blue%70) msymbol(square) msize(vsmall)) ///
-            (rcap hi_wsp lo_wsp xpos_wsp, lcolor(blue%40) lwidth(vthin)) ///
-            (scatter b_wsp xpos_wsp, mcolor(blue%40) msymbol(triangle) msize(vsmall)) ///
-            (line b_uwsp xpos_uwsp if 1==0, lcolor(blue%70) lpattern(solid) lwidth(thin) msymbol(square) mcolor(blue%70) msize(vsmall)) ///
-            (line b_wsp xpos_wsp if 1==0, lcolor(blue%40) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(blue%40) msize(vsmall)), ///
-            yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-            xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-            xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-            xscale(range(1.5 12.5)) ///
-            xtitle("") ///
-            ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
-            ylabel(, grid gmin gmax labsize(small)) ///
-            legend(order(5 "UW + SP" 6 "Weighted + SP") ///
-                cols(2) size(medsmall) position(6) ring(1) ///
-                region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-            graphregion(color(white)) ///
-            plotregion(margin(l=1 r=1))
-
-        graph export "$figures/appendix/ES_`outcome'_`sample_label_`samp''.pdf", as(pdf) replace
-
-        restore
-    }
-}
-
-di ""
-di "Event study figures exported (3 samples x 6 outcomes = 18 figures):"
-di "  Pooled:  ES_emr65_*.pdf,  ES_aamr65_*.pdf"
-di "  Females: ES_emr65f_*.pdf, ES_aamr65f_*.pdf"
-di "  Males:   ES_emr65m_*.pdf, ES_aamr65m_*.pdf"
-di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
-}
-*============================================================
-* APPENDIX FIGURE 3: Event Study — AAMR65 (1995 standard population)
+* APPENDIX FIGURE 2b: Event Study — AAMR65 (1995 standard population)
 *============================================================
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 
@@ -854,6 +727,137 @@ forval col = 1/4 {
 } // end forval col = 1/4
 
 *First we get the PostxIntensity 1999, getting a negative and significant of 3.9
+
+ 
+**Event Study (This would be similar to F2) *Unweighted
+*============================================================
+* APPENDIX FIGURE 3: Short-term Event Study (Barham & Rowberry sample)
+* FA_BR_es_pooled.pdf -- pooled, 2 specs: UW // W+SP and 3 Samples
+*============================================================
+
+{
+local yr_labels `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
+
+* Define sample conditions and labels
+local samples br marg brmarg
+local sample_label_br "BR"
+local sample_label_marg "HighMarg"
+local sample_label_brmarg "BR_HighMarg"
+
+foreach samp in `samples' {
+
+    if "`samp'" == "br" {
+        local samp_cond = "$sample_br"
+    }
+    else if "`samp'" == "marg" {
+        local samp_cond = "$sample_marg"
+    }
+    else {
+        local samp_cond = "($sample_br & $sample_marg)"
+    }
+
+    foreach outcome in emr65 emr65f emr65m aamr65 aamr65f aamr65m {
+
+        if regexm("`outcome'", "f$") {
+            local wvar = "popover65_f"
+        }
+        else if regexm("`outcome'", "m$") {
+            local wvar = "popover65_m"
+        }
+        else {
+            local wvar = "popover65_"
+        }
+
+        *--- Run three event study regressions (UW, UW+SP, W+SP) ---
+        foreach spec in uw uwsp wsp {
+
+            if "`spec'" == "uw" {
+                reghdfe `outcome' c.inten1999##ib6.year_1995 ///
+                    if inrange(year,1992,2002) & `samp_cond', ///
+                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            }
+            else if "`spec'" == "uwsp" {
+                reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity ///
+                    if inrange(year,1992,2002) & `samp_cond', ///
+                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            }
+            else {
+                reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+                    if inrange(year,1992,2002) & `samp_cond', ///
+                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            }
+
+            *--- Extract year-by-year coefficients; reference year (pos 6 = 1996) set to 0 ---
+            forval pos = 2/12 {
+                if `pos' == 6 {
+                    local b_`spec'_`pos'  = 0
+                    local se_`spec'_`pos' = 0
+                }
+                else {
+                    local b_`spec'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+                    local se_`spec'_`pos' = _se[`pos'.year_1995#c.inten1999]
+                }
+            }
+        }
+
+        *--- Build plotting dataset ---
+        preserve
+        clear
+        set obs 11
+
+        gen yr_pos = _n + 1
+        gen xpos_uw   = yr_pos - 0.15
+        gen xpos_uwsp = yr_pos
+        gen xpos_wsp  = yr_pos + 0.15
+
+        foreach spec in uw uwsp wsp {
+            gen b_`spec'  = .
+            gen hi_`spec' = .
+            gen lo_`spec' = .
+        }
+
+        forval pos = 2/12 {
+            foreach spec in uw uwsp wsp {
+                replace b_`spec'  = `b_`spec'_`pos''                             if yr_pos == `pos'
+                replace hi_`spec' = `b_`spec'_`pos'' + 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
+                replace lo_`spec' = `b_`spec'_`pos'' - 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
+            }
+        }
+
+        twoway ///
+            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(blue%70) lwidth(vthin)) ///
+            (scatter b_uwsp xpos_uwsp, mcolor(blue%70) msymbol(square) msize(vsmall)) ///
+            (rcap hi_wsp lo_wsp xpos_wsp, lcolor(blue%40) lwidth(vthin)) ///
+            (scatter b_wsp xpos_wsp, mcolor(blue%40) msymbol(triangle) msize(vsmall)) ///
+            (line b_uwsp xpos_uwsp if 1==0, lcolor(blue%70) lpattern(solid) lwidth(thin) msymbol(square) mcolor(blue%70) msize(vsmall)) ///
+            (line b_wsp xpos_wsp if 1==0, lcolor(blue%40) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(blue%40) msize(vsmall)), ///
+            yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+            xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+            xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+            xscale(range(1.5 12.5)) ///
+            xtitle("") ///
+            ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
+            ylabel(, grid gmin gmax labsize(small)) ///
+            legend(order(5 "UW + SP" 6 "Weighted + SP") ///
+                cols(2) size(medsmall) position(6) ring(1) ///
+                region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+            graphregion(color(white)) ///
+            plotregion(margin(l=1 r=1))
+
+        graph export "$figures/appendix/Figure_3_`outcome'_`sample_label_`samp''.pdf", as(pdf) replace
+
+        restore
+    }
+}
+
+di ""
+di "Event study figures exported (3 samples x 6 outcomes = 18 figures):"
+di "  Pooled:  ES_emr65_*.pdf,  ES_aamr65_*.pdf"
+di "  Females: ES_emr65f_*.pdf, ES_aamr65f_*.pdf"
+di "  Males:   ES_emr65m_*.pdf, ES_aamr65m_*.pdf"
+di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
+}
+
 
 
 
