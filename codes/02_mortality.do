@@ -989,33 +989,33 @@ foreach samp in br marg {
 
 		*--- Build twoway command with only successful groups ---
 		local twoway_cmd "twoway"
-		local legend_order ""
-		local legend_count = 0
+		local plot_count = 0
+		local leg_order ""
 
 		if `reg_success_w' == 1 {
 			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall))"
-			local legend_count = `legend_count' + 3
-			local legend_order "`legend_order' `legend_count' \"Pooled\""
+			local plot_count = `plot_count' + 3
+			local leg_order "`leg_order' `plot_count' Pooled"
 		}
 
 		if `reg_success_f' == 1 {
 			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall))"
-			local legend_count = `legend_count' + 3
-			local legend_order "`legend_order' `legend_count' \"Female\""
+			local plot_count = `plot_count' + 3
+			local leg_order "`leg_order' `plot_count' Female"
 		}
 
 		if `reg_success_m' == 1 {
 			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall))"
-			local legend_count = `legend_count' + 3
-			local legend_order "`legend_order' `legend_count' \"Male\""
+			local plot_count = `plot_count' + 3
+			local leg_order "`leg_order' `plot_count' Male"
 		}
 
 		*--- Add axis and other options ---
-		local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle(\"\") ytitle(\"EMR 65+ (per 1,000): `cod'\", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small))"
+		local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small))"
 
 		*--- Add legend only if there are groups to show ---
 		if `reg_success_w' == 1 | `reg_success_f' == 1 | `reg_success_m' == 1 {
-			local twoway_cmd "`twoway_cmd' legend(order(`legend_order') cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0))"
+			local twoway_cmd "`twoway_cmd' legend(order(`leg_order') cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0))"
 		}
 		else {
 			local twoway_cmd "`twoway_cmd' legend(off)"
