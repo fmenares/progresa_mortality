@@ -836,11 +836,11 @@ foreach samp in `samples' {
         }
 
         twoway ///
-            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(`col') lwidth(vthin)) ///
-            (scatter b_uwsp xpos_uwsp, mcolor(`col') msymbol(square) msize(vsmall)) ///
+            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(`col'%60) lwidth(vthin)) ///
+            (scatter b_uwsp xpos_uwsp, mcolor(`col'%60) msymbol(square) msize(vsmall)) ///
             (rcap hi_wsp lo_wsp xpos_wsp, lcolor(`col') lwidth(vthin)) ///
             (scatter b_wsp xpos_wsp, mcolor(`col') msymbol(triangle) msize(vsmall)) ///
-            (line b_uwsp xpos_uwsp if 1==0, lcolor(`col') lpattern(solid) lwidth(thin) msymbol(square) mcolor(`col') msize(vsmall)) ///
+            (line b_uwsp xpos_uwsp if 1==0, lcolor(`col'%60) lpattern(solid) lwidth(thin) msymbol(square) mcolor(`col'%60) msize(vsmall)) ///
             (line b_wsp xpos_wsp if 1==0, lcolor(`col') lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(`col') msize(vsmall)), ///
             yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
             xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
@@ -848,7 +848,7 @@ foreach samp in `samples' {
             xscale(range(1.5 12.5)) ///
             xtitle("") ///
             ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
-            ylabel(-20(5)20, grid gmin gmax labsize(small)) ///
+            ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
             legend(order(5 "UW" 6 "Weighted") ///
                 cols(2) size(medsmall) position(6) ring(1) ///
                 region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
