@@ -875,95 +875,129 @@ di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
 
 *============================================================
 * APPENDIX FIGURES 4: Event Study by Cause of Death
-* Figure_4_XXX.pdf -- pooled, female, male; BR sample, weighted + SP, 1992-2002
+* Figure_4_XXX_BR.pdf and Figure_4_XXX_Marg.pdf
 *============================================================
 
-local yr_labels_cod `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
+foreach samp in br marg {
 
-foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+	if "`samp'" == "br" {
+		local yr_labels_cod `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
+		local samp_cond = "$sample_br"
+		local samp_yr_cond = "inrange(year,1992,2002)"
+		local obs_n = 11
+		local yr_pos_offset = 1
+		local xscale_range = "range(1.5 12.5)"
+		local pos_start = 2
+		local pos_end = 12
+		local samp_label = "_BR"
+		local inten_term = "c.inten1999"
+	}
+	else {
+		local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+		local samp_cond = "$sample_marg"
+		local samp_yr_cond = ""
+		local obs_n = 16
+		local yr_pos_offset = 0
+		local xscale_range = "range(0.5 16.5)"
+		local pos_start = 1
+		local pos_end = 16
+		local samp_label = "_Marg"
+		local inten_term = "c.inten1999 c.inten2005"
+	}
 
-	*--- Run regressions for pooled, female, male ---
-	foreach grp in w f m {
-		if "`grp'" == "w" {
-			local outcome emr65`cod'
-			local wvar   popover65_
-		}
-		else if "`grp'" == "f" {
-			local outcome emr65`cod'f
-			local wvar   popover65_f
-		}
-		else {
-			local outcome emr65`cod'm
-			local wvar   popover65_m
-		}
+	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
 
-		reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
-			if inrange(year,1992,2002) & $sample_br, ///
-			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-
-		forval pos = 2/12 {
-			if `pos' == 6 {
-				local b_`grp'_6  = 0
-				local se_`grp'_6 = 0
+		*--- Run regressions for pooled, female, male ---
+		foreach grp in w f m {
+			if "`grp'" == "w" {
+				local outcome emr65`cod'
+				local wvar   popover65_
+			}
+			else if "`grp'" == "f" {
+				local outcome emr65`cod'f
+				local wvar   popover65_f
 			}
 			else {
-				local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-				local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+				local outcome emr65`cod'm
+				local wvar   popover65_m
+			}
+
+			if "`samp'" == "br" {
+				reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+					if `samp_yr_cond' & `samp_cond', ///
+					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			else {
+				reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+					c.sp_intensity [aw=`wvar'] if `samp_cond', ///
+					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+
+			forval pos = `pos_start'/`pos_end' {
+				if `pos' == 6 {
+					local b_`grp'_`pos'  = 0
+					local se_`grp'_`pos' = 0
+				}
+				else {
+					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+				}
 			}
 		}
-	}
 
-	preserve
-	clear
-	set obs 11
-	gen yr_pos = _n + 1
-	gen xpos_w = yr_pos - 0.18
-	gen xpos_f = yr_pos
-	gen xpos_m = yr_pos + 0.18
-	foreach grp in w f m {
-		gen b_`grp'  = .
-		gen hi_`grp' = .
-		gen lo_`grp' = .
-	}
-	forval pos = 2/12 {
+		preserve
+		clear
+		set obs `obs_n'
+		gen yr_pos = _n + `yr_pos_offset'
+		gen xpos_w = yr_pos - 0.18
+		gen xpos_f = yr_pos
+		gen xpos_m = yr_pos + 0.18
 		foreach grp in w f m {
-			replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-			replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-			replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+			gen b_`grp'  = .
+			gen hi_`grp' = .
+			gen lo_`grp' = .
 		}
-	}
-	twoway ///
-		(rcap hi_w lo_w xpos_w, ///
-			lcolor(black%60) lwidth(vthin)) ///
-		(scatter b_w xpos_w, ///
-			mcolor(black) msymbol(circle) msize(vsmall)) ///
-		(rcap hi_f lo_f xpos_f, ///
-			lcolor(red%60) lwidth(vthin)) ///
-		(scatter b_f xpos_f, ///
-			mcolor(red) msymbol(square) msize(vsmall)) ///
-		(rcap hi_m lo_m xpos_m, ///
-			lcolor(blue%60) lwidth(vthin)) ///
-		(scatter b_m xpos_m, ///
-			mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-		(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
-		(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
-		(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
-		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-		xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) ///
-		xscale(range(1.5 12.5)) ///
-		xtitle("") ///
-		ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
-		ylabel(-6(3)9, grid gmin gmax labsize(small)) ///
-		legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
-			cols(3) size(medsmall) position(6) ring(1) ///
-			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-		graphregion(color(white)) ///
-		plotregion(margin(l=1 r=1))
-	graph export "$figures/appendix/Figure_4_`cod'.pdf", as(pdf) replace
-	restore
+		forval pos = `pos_start'/`pos_end' {
+			foreach grp in w f m {
+				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+			}
+		}
+		twoway ///
+			(rcap hi_w lo_w xpos_w, ///
+				lcolor(black%60) lwidth(vthin)) ///
+			(scatter b_w xpos_w, ///
+				mcolor(black) msymbol(circle) msize(vsmall)) ///
+			(rcap hi_f lo_f xpos_f, ///
+				lcolor(red%60) lwidth(vthin)) ///
+			(scatter b_f xpos_f, ///
+				mcolor(red) msymbol(square) msize(vsmall)) ///
+			(rcap hi_m lo_m xpos_m, ///
+				lcolor(blue%60) lwidth(vthin)) ///
+			(scatter b_m xpos_m, ///
+				mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+			(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+			(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+			(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+			xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+			xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) ///
+			xscale(`xscale_range') ///
+			xtitle("") ///
+			ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
+			ylabel(-6(3)9, grid gmin gmax labsize(small)) ///
+			legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+				cols(3) size(medsmall) position(6) ring(1) ///
+				region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+			graphregion(color(white)) ///
+			plotregion(margin(l=1 r=1))
+		graph export "$figures/appendix/Figure_4_`cod'`samp_label'.pdf", as(pdf) replace
+		restore
 
-} // end foreach cod
+	} // end foreach cod
+
+} // end foreach samp
 
 *============================================================
 * APPENDIX TABLE 1: Barham & Rowberry (2013) Replication
