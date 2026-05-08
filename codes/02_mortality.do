@@ -989,21 +989,29 @@ foreach samp in br marg {
 
 		*--- Build twoway command with only successful groups ---
 		local twoway_cmd "twoway"
+		local legend_order ""
+		local plot_count = 0
 
 		if `reg_success_w' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin) legend(off)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall) legend(off)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall) label(Pooled))"
+			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin) legend(off)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall) legend(off)) (line b_w xpos_w, lcolor(black) lpattern(solid) lwidth(thin))"
+			local plot_count = `plot_count' + 3
+			local legend_order "`legend_order' `plot_count' Pooled"
 		}
 
 		if `reg_success_f' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) legend(off)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall) legend(off)) (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall) label(Female))"
+			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) legend(off)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall) legend(off)) (line b_f xpos_f, lcolor(red) lpattern(dash) lwidth(thin))"
+			local plot_count = `plot_count' + 3
+			local legend_order "`legend_order' `plot_count' Female"
 		}
 
 		if `reg_success_m' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) legend(off)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall) legend(off)) (line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall) label(Male))"
+			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) legend(off)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall) legend(off)) (line b_m xpos_m, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin))"
+			local plot_count = `plot_count' + 3
+			local legend_order "`legend_order' `plot_count' Male"
 		}
 
 		*--- Add axis and other options ---
-		local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
+		local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_order') cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 
 		*--- Execute the graph command ---
 		`twoway_cmd'
