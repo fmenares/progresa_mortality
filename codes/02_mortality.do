@@ -824,21 +824,32 @@ foreach samp in `samples' {
             }
         }
 
+        *--- Set color based on outcome (sex) ---
+        if regexm("`outcome'", "f$") {
+            local col = "red%80"
+        }
+        else if regexm("`outcome'", "m$") {
+            local col = "blue%80"
+        }
+        else {
+            local col = "black"
+        }
+
         twoway ///
-            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(blue%70) lwidth(vthin)) ///
-            (scatter b_uwsp xpos_uwsp, mcolor(blue%70) msymbol(square) msize(vsmall)) ///
-            (rcap hi_wsp lo_wsp xpos_wsp, lcolor(blue%40) lwidth(vthin)) ///
-            (scatter b_wsp xpos_wsp, mcolor(blue%40) msymbol(triangle) msize(vsmall)) ///
-            (line b_uwsp xpos_uwsp if 1==0, lcolor(blue%70) lpattern(solid) lwidth(thin) msymbol(square) mcolor(blue%70) msize(vsmall)) ///
-            (line b_wsp xpos_wsp if 1==0, lcolor(blue%40) lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(blue%40) msize(vsmall)), ///
+            (rcap hi_uwsp lo_uwsp xpos_uwsp, lcolor(`col') lwidth(vthin)) ///
+            (scatter b_uwsp xpos_uwsp, mcolor(`col') msymbol(square) msize(vsmall)) ///
+            (rcap hi_wsp lo_wsp xpos_wsp, lcolor(`col') lwidth(vthin)) ///
+            (scatter b_wsp xpos_wsp, mcolor(`col') msymbol(triangle) msize(vsmall)) ///
+            (line b_uwsp xpos_uwsp if 1==0, lcolor(`col') lpattern(solid) lwidth(thin) msymbol(square) mcolor(`col') msize(vsmall)) ///
+            (line b_wsp xpos_wsp if 1==0, lcolor(`col') lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(`col') msize(vsmall)), ///
             yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
             xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
             xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
             xscale(range(1.5 12.5)) ///
             xtitle("") ///
             ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
-            ylabel(, grid gmin gmax labsize(small)) ///
-            legend(order(5 "UW + SP" 6 "Weighted + SP") ///
+            ylabel(-20(10)20, grid gmin gmax labsize(small)) ///
+            legend(order(5 "UW" 6 "Weighted") ///
                 cols(2) size(medsmall) position(6) ring(1) ///
                 region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
             graphregion(color(white)) ///
