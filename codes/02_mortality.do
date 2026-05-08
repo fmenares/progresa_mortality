@@ -848,7 +848,7 @@ foreach samp in `samples' {
             xscale(range(1.5 12.5)) ///
             xtitle("") ///
             ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
-            ylabel(-20(10)20, grid gmin gmax labsize(small)) ///
+            ylabel(-20(5)20, grid gmin gmax labsize(small)) ///
             legend(order(5 "UW" 6 "Weighted") ///
                 cols(2) size(medsmall) position(6) ring(1) ///
                 region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
