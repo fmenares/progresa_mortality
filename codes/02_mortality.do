@@ -964,6 +964,15 @@ foreach samp in br marg {
 				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
 			}
 		}
+
+		*--- Set y-axis range based on COD ---
+		if "`cod'" == "tb_card" {
+			local yaxis_range "-9(3)9"
+		}
+		else {
+			local yaxis_range "-6(3)6"
+		}
+
 		twoway ///
 			(rcap hi_w lo_w xpos_w, ///
 				lcolor(black%60) lwidth(vthin)) ///
@@ -986,7 +995,7 @@ foreach samp in br marg {
 			xscale(`xscale_range') ///
 			xtitle("") ///
 			ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
-			ylabel(-6(3)9, grid gmin gmax labsize(small)) ///
+			ylabel(`yaxis_range', grid gmin gmax labsize(small)) ///
 			legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 				cols(3) size(medsmall) position(6) ring(1) ///
 				region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
