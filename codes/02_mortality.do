@@ -875,25 +875,41 @@ di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
 
 *============================================================
 * APPENDIX FIGURES 4: Event Study by Cause of Death
-* FA_es_cod_tb_XXX.pdf -- pooled, weighted + SP spec
+* Figure_4_XXX.pdf -- pooled, female, male; weighted + SP spec
 *============================================================
 
 local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 
 foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
 
-	reghdfe emr65`cod' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-		c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
-		vce(cluster cve_ent_mun_super)
-
-	forval pos = 1/16 {
-		if `pos' == 6 {
-			local b_cod_6  = 0
-			local se_cod_6 = 0
+	*--- Run regressions for pooled, female, male ---
+	foreach grp in w f m {
+		if "`grp'" == "w" {
+			local outcome emr65`cod'
+			local wvar   popover65_
+		}
+		else if "`grp'" == "f" {
+			local outcome emr65`cod'f
+			local wvar   popover65_f
 		}
 		else {
-			local b_cod_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local se_cod_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local outcome emr65`cod'm
+			local wvar   popover65_m
+		}
+
+		reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+			c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
+			vce(cluster cve_ent_mun_super)
+
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local b_`grp'_6  = 0
+				local se_`grp'_6 = 0
+			}
+			else {
+				local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+				local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+			}
 		}
 	}
 
@@ -901,28 +917,47 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	clear
 	set obs 16
 	gen yr_pos = _n
-	gen xpos_cod = yr_pos
-	gen b_cod  = .
-	gen hi_cod = .
-	gen lo_cod = .
+	gen xpos_w = yr_pos - 0.18
+	gen xpos_f = yr_pos
+	gen xpos_m = yr_pos + 0.18
+	foreach grp in w f m {
+		gen b_`grp'  = .
+		gen hi_`grp' = .
+		gen lo_`grp' = .
+	}
 	forval pos = 1/16 {
-		replace b_cod  = `b_cod_`pos''                             if yr_pos == `pos'
-		replace hi_cod = `b_cod_`pos'' + 1.96 * `se_cod_`pos'' if yr_pos == `pos'
-		replace lo_cod = `b_cod_`pos'' - 1.96 * `se_cod_`pos'' if yr_pos == `pos'
+		foreach grp in w f m {
+			replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+			replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+			replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+		}
 	}
 	twoway ///
-		(rcap hi_cod lo_cod xpos_cod, ///
+		(rcap hi_w lo_w xpos_w, ///
 			lcolor(black%60) lwidth(vthin)) ///
-		(scatter b_cod xpos_cod, ///
-			mcolor(black) msymbol(circle) msize(vsmall)), ///
+		(scatter b_w xpos_w, ///
+			mcolor(black) msymbol(circle) msize(vsmall)) ///
+		(rcap hi_f lo_f xpos_f, ///
+			lcolor(red%60) lwidth(vthin)) ///
+		(scatter b_f xpos_f, ///
+			mcolor(red) msymbol(square) msize(vsmall)) ///
+		(rcap hi_m lo_m xpos_m, ///
+			lcolor(blue%60) lwidth(vthin)) ///
+		(scatter b_m xpos_m, ///
+			mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+		(line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+		(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+		(line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ///
-		ylabel(, grid gmin gmax labsize(small)) ///
-		legend(off) ///
+		ylabel(-6(3)9, grid gmin gmax labsize(small)) ///
+		legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+			cols(3) size(medsmall) position(6) ring(1) ///
+			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/appendix/Figure_4_`cod'.pdf", as(pdf) replace
