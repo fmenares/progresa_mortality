@@ -994,22 +994,22 @@ foreach samp in br marg {
 		local plot_count = 0
 
 		if `reg_success_w' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin) legend(off)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall) legend(off)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin))"
-			local plot_count = `plot_count' + 3
+			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin) legend(off)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall))"
+			local plot_count = `plot_count' + 2
 			local legend_nums "`legend_nums' `plot_count'"
 			local legend_labels "`legend_labels' label(`plot_count' Pooled)"
 		}
 
 		if `reg_success_f' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) legend(off)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall) legend(off)) (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin))"
-			local plot_count = `plot_count' + 3
+			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) legend(off)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall))"
+			local plot_count = `plot_count' + 2
 			local legend_nums "`legend_nums' `plot_count'"
 			local legend_labels "`legend_labels' label(`plot_count' Female)"
 		}
 
 		if `reg_success_m' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) legend(off)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall) legend(off)) (line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin))"
-			local plot_count = `plot_count' + 3
+			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) legend(off)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall))"
+			local plot_count = `plot_count' + 2
 			local legend_nums "`legend_nums' `plot_count'"
 			local legend_labels "`legend_labels' label(`plot_count' Male)"
 		}
