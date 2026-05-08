@@ -989,39 +989,21 @@ foreach samp in br marg {
 
 		*--- Build twoway command with only successful groups ---
 		local twoway_cmd "twoway"
-		local plot_count = 0
-		local leg_order ""
 
 		if `reg_success_w' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall))"
-			local plot_count = `plot_count' + 3
-			local leg_order "`leg_order' `plot_count' Pooled"
+			local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin) legend(off)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall) legend(off)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall) label(Pooled))"
 		}
 
 		if `reg_success_f' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall))"
-			local plot_count = `plot_count' + 3
-			local leg_order "`leg_order' `plot_count' Female"
+			local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) legend(off)) (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall) legend(off)) (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall) label(Female))"
 		}
 
 		if `reg_success_m' == 1 {
-			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall))"
-			local plot_count = `plot_count' + 3
-			local leg_order "`leg_order' `plot_count' Male"
+			local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) legend(off)) (scatter b_m xpos_m, mcolor(blue%80) msymbol(triangle) msize(vsmall) legend(off)) (line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall) label(Male))"
 		}
 
 		*--- Add axis and other options ---
-		local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small))"
-
-		*--- Add legend only if there are groups to show ---
-		if `reg_success_w' == 1 | `reg_success_f' == 1 | `reg_success_m' == 1 {
-			local twoway_cmd "`twoway_cmd' legend(order(`leg_order') cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0))"
-		}
-		else {
-			local twoway_cmd "`twoway_cmd' legend(off)"
-		}
-
-		local twoway_cmd "`twoway_cmd' graphregion(color(white)) plotregion(margin(l=1 r=1))"
+		local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 
 		*--- Execute the graph command ---
 		`twoway_cmd'
@@ -1606,16 +1588,19 @@ foreach pnl in p m f {
 foreach grp in w f m {
 	if "`grp'" == "w" {
 		local wvar = "popover65_"
+		local suffix = ""
 	}
 	else if "`grp'" == "f" {
 		local wvar = "popover65_f"
+		local suffix = "f"
 	}
 	else {
 		local wvar = "popover65_m"
+		local suffix = "m"
 	}
 
 	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-		reghdfe emr65`cod'`grp' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+		reghdfe emr65`cod'`suffix' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
 			[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) ///
 			vce(cluster cve_ent_mun_super)
 		local aux: di %12.3f _b[1.post#c.inten1999]
@@ -1632,7 +1617,7 @@ foreach grp in w f m {
 		else if `t' >= 1.645 local b05_`grp'_`cod' = "`aux'*"
 		else                  local b05_`grp'_`cod' = "`aux'"
 		local se05_`grp'_`cod': di %12.3f _se[1.post#c.inten2005]
-		sum emr65`cod'`grp' if e(sample) & post == 0
+		sum emr65`cod'`suffix' if e(sample) & post == 0
 		local mean_`grp'_`cod': di %12.2fc `r(mean)'
 		local N_`grp'_`cod': di %12.0fc `e(N)'
 	}
@@ -1692,16 +1677,19 @@ foreach grp in w f m {
 foreach grp in w f m {
 	if "`grp'" == "w" {
 		local wvar = "popover65_"
+		local suffix = ""
 	}
 	else if "`grp'" == "f" {
 		local wvar = "popover65_f"
+		local suffix = "f"
 	}
 	else {
 		local wvar = "popover65_m"
+		local suffix = "m"
 	}
 
 	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-		reghdfe emr65`cod'`grp' c.inten1999#i.post c.sp_intensity ///
+		reghdfe emr65`cod'`suffix' c.inten1999#i.post c.sp_intensity ///
 			[aw=`wvar'] if inrange(year,1992,2002) & $sample_br, ///
 			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		local aux: di %12.3f _b[1.post#c.inten1999]
@@ -1711,7 +1699,7 @@ foreach grp in w f m {
 		else if `t' >= 1.645 local b99_br_`grp'_`cod' = "`aux'*"
 		else                  local b99_br_`grp'_`cod' = "`aux'"
 		local se99_br_`grp'_`cod': di %12.3f _se[1.post#c.inten1999]
-		sum emr65`cod'`grp' if e(sample) & post == 0
+		sum emr65`cod'`suffix' if e(sample) & post == 0
 		local mean_br_`grp'_`cod': di %12.2fc `r(mean)'
 		local N_br_`grp'_`cod': di %12.0fc `e(N)'
 	}
