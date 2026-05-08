@@ -28,6 +28,15 @@ set more off
 
 }
 
+ if c(username)=="root" {
+	global data "/home/user/progresa_mortality/data/"
+	global tables "/home/user/progresa_mortality/tables"
+	global figures "/home/user/progresa_mortality/figures"
+	global deaths "/home/user/progresa_mortality/data/"
+	global iter "/home/user/progresa_mortality/data/"
+	global SP "/home/user/progresa_mortality/data/"
+}
+
  
  *	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]  
 	use "$data/aamr_regression_municipality_gender_tb.dta", clear
