@@ -1588,16 +1588,19 @@ foreach pnl in p m f {
 foreach grp in w f m {
 	if "`grp'" == "w" {
 		local wvar = "popover65_"
+		local suffix = ""
 	}
 	else if "`grp'" == "f" {
 		local wvar = "popover65_f"
+		local suffix = "f"
 	}
 	else {
 		local wvar = "popover65_m"
+		local suffix = "m"
 	}
 
 	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-		reghdfe emr65`cod'`grp' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+		reghdfe emr65`cod'`suffix' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
 			[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) ///
 			vce(cluster cve_ent_mun_super)
 		local aux: di %12.3f _b[1.post#c.inten1999]
@@ -1614,7 +1617,7 @@ foreach grp in w f m {
 		else if `t' >= 1.645 local b05_`grp'_`cod' = "`aux'*"
 		else                  local b05_`grp'_`cod' = "`aux'"
 		local se05_`grp'_`cod': di %12.3f _se[1.post#c.inten2005]
-		sum emr65`cod'`grp' if e(sample) & post == 0
+		sum emr65`cod'`suffix' if e(sample) & post == 0
 		local mean_`grp'_`cod': di %12.2fc `r(mean)'
 		local N_`grp'_`cod': di %12.0fc `e(N)'
 	}
@@ -1674,16 +1677,19 @@ foreach grp in w f m {
 foreach grp in w f m {
 	if "`grp'" == "w" {
 		local wvar = "popover65_"
+		local suffix = ""
 	}
 	else if "`grp'" == "f" {
 		local wvar = "popover65_f"
+		local suffix = "f"
 	}
 	else {
 		local wvar = "popover65_m"
+		local suffix = "m"
 	}
 
 	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-		reghdfe emr65`cod'`grp' c.inten1999#i.post c.sp_intensity ///
+		reghdfe emr65`cod'`suffix' c.inten1999#i.post c.sp_intensity ///
 			[aw=`wvar'] if inrange(year,1992,2002) & $sample_br, ///
 			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		local aux: di %12.3f _b[1.post#c.inten1999]
@@ -1693,7 +1699,7 @@ foreach grp in w f m {
 		else if `t' >= 1.645 local b99_br_`grp'_`cod' = "`aux'*"
 		else                  local b99_br_`grp'_`cod' = "`aux'"
 		local se99_br_`grp'_`cod': di %12.3f _se[1.post#c.inten1999]
-		sum emr65`cod'`grp' if e(sample) & post == 0
+		sum emr65`cod'`suffix' if e(sample) & post == 0
 		local mean_br_`grp'_`cod': di %12.2fc `r(mean)'
 		local N_br_`grp'_`cod': di %12.0fc `e(N)'
 	}
