@@ -457,6 +457,9 @@ set more off
 		gen pop6569_19`k'   = age_65_69_both
 		gen pop6569_m19`k'  = age_65_69_male
 		gen pop6569_f19`k'  = age_65_69_female
+		gen pop7074_19`k'   = age_70_74_both
+		gen pop7074_m19`k'  = age_70_74_male
+		gen pop7074_f19`k'  = age_70_74_female
 		egen popover70_19`k'  = rowtotal(age_70_74_both   age_75_79_both   age_80_84_both   ///
 			age_85_89_both   age_90_94_both   age_95_99_both   age_100m_both)
 		egen popover70_m19`k' = rowtotal(age_70_74_male   age_75_79_male   age_80_84_male   ///
@@ -515,6 +518,9 @@ set more off
 		gen pop6569_20`k'   = age_65_69_both
 		gen pop6569_m20`k'  = age_65_69_male
 		gen pop6569_f20`k'  = age_65_69_female
+		gen pop7074_20`k'   = age_70_74_both
+		gen pop7074_m20`k'  = age_70_74_male
+		gen pop7074_f20`k'  = age_70_74_female
 		gen popover70_20`k'   = age_70_74_both   + age_75_100_both  + age_100m_both
 		gen popover70_m20`k'  = age_70_74_male   + age_75_100_male  + age_100m_male
 		gen popover70_f20`k'  = age_70_74_female + age_75_100_female + age_100m_female
@@ -534,7 +540,7 @@ set more off
 	
 	
 *** Generate multiplyer and linearize population
-	foreach k in 5054 5559 6064 over65 6569 over70 {
+	foreach k in 5054 5559 6064 over65 6569 7074 over70 {
 	gen m1pop`k'=(pop`k'_1995/pop`k'_1990)^(1/5)
 	gen m1pop`k'm=(pop`k'_m1995/pop`k'_m1990)^(1/5)
 	gen m1pop`k'f=(pop`k'_f1995/pop`k'_f1990)^(1/5)
@@ -573,9 +579,9 @@ set more off
 	drop m1* m2* m3* 
 	
 *** Reshape wide to long
-	reshape long pop5054_ pop5559_ pop6064_ popover65_ pop6569_ popover70_  ///
-	pop5054_m pop5559_m pop6064_m popover65_m pop6569_m popover70_m ///
-	pop5054_f pop5559_f pop6064_f popover65_f pop6569_f popover70_f  , i(cve_ent_mun_super) j(year)
+	reshape long pop5054_ pop5559_ pop6064_ popover65_ pop6569_ pop7074_ popover70_  ///
+	pop5054_m pop5559_m pop6064_m popover65_m pop6569_m pop7074_m popover70_m ///
+	pop5054_f pop5559_f pop6064_f popover65_f pop6569_f pop7074_f popover70_f  , i(cve_ent_mun_super) j(year)
 	sort cve_ent_mun_super year 
 
 	drop if pop5054_f ==.| pop5054_m==.|pop5559_m==.
@@ -584,7 +590,7 @@ set more off
 	egen pop_over50_m = rowtotal (pop5054_m pop5559_m pop6064_m popover65_m)
 	
 *** Labeling
-	foreach i in 5054 5559 6064 over65 6569 over70 _over50 {
+	foreach i in 5054 5559 6064 over65 6569 7074 over70 _over50 {
 	lab var pop`i'_ "Population age group `i'"
 	lab var pop`i'_m "Population age group `i', male"
 	lab var pop`i'_f "Population age group `i', female"

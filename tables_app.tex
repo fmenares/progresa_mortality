@@ -161,7 +161,7 @@
 \begin{landscape}
 \begin{table}[H]
 \RawCaption%
-  {\caption{\added{Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts by 5-Year Age Group, Highly Marginalized Municipalities (Census Years)}}
+  {\caption{\added{Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts by Age Group (65--69, 70--74, 75+), Highly Marginalized Municipalities}}
    \label{t:migration_rob_agefe}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
@@ -169,7 +169,7 @@
       \input{tables/appendix/AT_migration_robustness_ageFE}
     }
     \vspace{-3mm}
-    \floatfoot{\added{Notes: This table replicates the migration robustness check of Appendix Table~\ref{t:migration_rob} using a stacked dataset at the municipality $\times$ census year $\times$ 5-year age-group level (65--69, 70--74, 75--79, 80+), with age-group fixed effects included in all regressions. The stacked design is restricted to census years (1990, 1995, 2000, 2005) because 5-year age-group population counts are only available for census enumeration years. Age-group fixed effects absorb the systematic level differences across age cohorts (there are always more 65--69 year-olds than 80+ year-olds); identifying variation comes from differential within-age-group changes in population counts across municipalities with different Progresa intensity. Columns (1)--(3) cover the short-run window (census years 1990--2000); columns (4)--(6) cover the full window (census years 1990--2005). Within each panel, column (1)/(4) uses OLS with counts; column (2)/(5) uses OLS with log counts; column (3)/(6) uses Poisson PML. All regressions include municipality, year, and age-group fixed effects. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{\added{Notes: This table replicates the migration robustness check of Appendix Table~\ref{t:migration_rob} using a stacked dataset at the municipality $\times$ year $\times$ age-group level, with age-group fixed effects included in all regressions. The three age groups are 65--69, 70--74, and 75+, constructed from the annually interpolated population series (geometric interpolation between census enumeration years 1990, 1995, 2000, and 2005). The 75+ group equals the 70+ population minus the 70--74 population, ensuring consistency across all four census vintages (the 2000 and 2005 censuses do not provide a further breakdown of the 75+ group). Age-group fixed effects absorb systematic level differences across age cohorts; identifying variation comes from differential within-age-group changes in population counts across municipalities with different Progresa intensity. Columns (1)--(3) cover the short-run window (1992--2002); columns (4)--(6) cover the long-run window (1991--2006). Within each panel, column (1)/(4) uses OLS with population counts; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood. All regressions include municipality, year, and age-group fixed effects. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
   }
 \end{table}
 \end{landscape}
