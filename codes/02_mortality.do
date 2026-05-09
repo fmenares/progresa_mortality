@@ -1773,4 +1773,310 @@ foreach grp in w f m {
 }
 
 
+*============================================================
+* APPENDIX TABLE: Migration Robustness — Effect of Progresa
+*   intensity on elderly population counts (65+).
+*   Long-run window 1991-2006. Three functional forms in
+*   columns (Levels, Log, Poisson); three panels (Pooled,
+*   Male, Female).
+*============================================================
+
+cap drop lpopover65 lpopover65_m lpopover65_f
+g lpopover65   = log(popover65_)
+g lpopover65_m = log(popover65_m)
+g lpopover65_f = log(popover65_f)
+
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local outcome  popover65_
+		local loutcome lpopover65
+	}
+	else if "`pnl'" == "m" {
+		local outcome  popover65_m
+		local loutcome lpopover65_m
+	}
+	else {
+		local outcome  popover65_f
+		local loutcome lpopover65_f
+	}
+
+	* col 1: Levels (unweighted)
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg & year>=1991 & year<=2006, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bMG99_`pnl'_1 = "`aux'***"
+	else if `t' >= 1.96  local bMG99_`pnl'_1 = "`aux'**"
+	else if `t' >= 1.645 local bMG99_`pnl'_1 = "`aux'*"
+	else                  local bMG99_`pnl'_1 = "`aux'"
+	local seMG99_`pnl'_1: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bMG05_`pnl'_1 = "`aux'***"
+	else if `t' >= 1.96  local bMG05_`pnl'_1 = "`aux'**"
+	else if `t' >= 1.645 local bMG05_`pnl'_1 = "`aux'*"
+	else                  local bMG05_`pnl'_1 = "`aux'"
+	local seMG05_`pnl'_1: di %12.3f _se[1.post#c.inten2005]
+	sum `outcome' if e(sample) & post == 0
+	local meanMG_`pnl'_1: di %12.0fc `r(mean)'
+	local NMG_`pnl'_1:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunMG_`pnl'_1: di %12.0fc `r(ndistinct)'
+
+	* col 2: Log (unweighted)
+	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg & year>=1991 & year<=2006, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bMG99_`pnl'_2 = "`aux'***"
+	else if `t' >= 1.96  local bMG99_`pnl'_2 = "`aux'**"
+	else if `t' >= 1.645 local bMG99_`pnl'_2 = "`aux'*"
+	else                  local bMG99_`pnl'_2 = "`aux'"
+	local seMG99_`pnl'_2: di %12.3f _se[1.post#c.inten1999]
+	local aux: di %12.3f _b[1.post#c.inten2005]
+	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+	if      `t' >= 2.576 local bMG05_`pnl'_2 = "`aux'***"
+	else if `t' >= 1.96  local bMG05_`pnl'_2 = "`aux'**"
+	else if `t' >= 1.645 local bMG05_`pnl'_2 = "`aux'*"
+	else                  local bMG05_`pnl'_2 = "`aux'"
+	local seMG05_`pnl'_2: di %12.3f _se[1.post#c.inten2005]
+	sum `loutcome' if e(sample) & post == 0
+	local meanMG_`pnl'_2: di %12.2f `r(mean)'
+	local NMG_`pnl'_2:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunMG_`pnl'_2: di %12.0fc `r(ndistinct)'
+
+	* col 3: Poisson (count outcome)
+	ppmlhdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg & year>=1991 & year<=2006, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f exp(_b[1.post#c.inten1999])-1
+	local seMG99_`pnl'_3: di %12.3f exp(_b[1.post#c.inten1999])*_se[1.post#c.inten1999]
+	local t = abs(`aux' / `seMG99_`pnl'_3')
+	if      `t' >= 2.576 local bMG99_`pnl'_3 = "`aux'***"
+	else if `t' >= 1.96  local bMG99_`pnl'_3 = "`aux'**"
+	else if `t' >= 1.645 local bMG99_`pnl'_3 = "`aux'*"
+	else                  local bMG99_`pnl'_3 = "`aux'"
+	local aux: di %12.3f exp(_b[1.post#c.inten2005])-1
+	local seMG05_`pnl'_3: di %12.3f exp(_b[1.post#c.inten2005])*_se[1.post#c.inten2005]
+	local t = abs(`aux' / `seMG05_`pnl'_3')
+	if      `t' >= 2.576 local bMG05_`pnl'_3 = "`aux'***"
+	else if `t' >= 1.96  local bMG05_`pnl'_3 = "`aux'**"
+	else if `t' >= 1.645 local bMG05_`pnl'_3 = "`aux'*"
+	else                  local bMG05_`pnl'_3 = "`aux'"
+	sum `outcome' if e(sample) & post == 0
+	local meanMG_`pnl'_3: di %12.0fc `r(mean)'
+	local NMG_`pnl'_3:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunMG_`pnl'_3: di %12.0fc `r(ndistinct)'
+}
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_migration_robustness.tex", write replace
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& Levels & Log & Poisson \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_p_1' & `bMG99_p_2' & `bMG99_p_3' \\ " _n
+	file write sm "  & (`seMG99_p_1') & (`seMG99_p_2') & (`seMG99_p_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_p_1' & `bMG05_p_2' & `bMG05_p_3' \\ " _n
+	file write sm " & (`seMG05_p_1') & (`seMG05_p_2') & (`seMG05_p_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_3' \\ " _n
+	file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `bMG05_m_2' & `bMG05_m_3' \\ " _n
+	file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') \\ " _n
+	file write sm " & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & `bMG99_f_2' & `bMG99_f_3' \\ " _n
+	file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_f_1' & `bMG05_f_2' & `bMG05_f_3' \\ " _n
+	file write sm " & (`seMG05_f_1') & (`seMG05_f_2') & (`seMG05_f_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' \\ " _n
+	file write sm "No. Mun & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Year FE & Y & Y & Y \\ " _n
+	file write sm "Mun FE  & Y & Y & Y \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+
+*============================================================
+* APPENDIX TABLE: Migration Robustness — Triple-Difference (DDD)
+*   Differential growth of the 65+ population relative to the
+*   50-64 population, in high- vs low-intensity municipalities,
+*   post vs pre. Stacks 6 five-year age groups (50-54, 55-59,
+*   60-64, 65-69, 70-74, 75+). popover75 = popover70 - pop7074.
+*   Old65 = 1{age >= 65}.
+*
+*   Specification (long-run, 1991-2006):
+*       pop_{m,t,a} = beta · (Intensity_1999 × Post × Old65)
+*                   + gamma · (Intensity_2005 × Post × Old65)
+*                   + Mun×Year + Mun×Age + Year×Age FE + e
+*   Mun×Year FE absorbs overall municipality-year pop growth;
+*   identification rests on the triple interaction.
+*
+*   3 cols (Levels / Log / Poisson) × 3 panels (Pooled / M / F).
+*============================================================
+
+foreach pnl in p m f {
+	preserve
+	if "`pnl'" == "p" local sfx "_"
+	else              local sfx "_`pnl'"
+
+	keep cve_ent_mun_super year inten1999 inten2005 post gm_mun_1990 ///
+		pop5054`sfx' pop5559`sfx' pop6064`sfx' ///
+		pop6569`sfx' pop7074`sfx' popover70`sfx'
+	keep if year>=1991 & year<=2006
+
+	gen popover75`sfx' = popover70`sfx' - pop7074`sfx'
+	drop popover70`sfx'
+
+	rename pop5054`sfx'   pop1
+	rename pop5559`sfx'   pop2
+	rename pop6064`sfx'   pop3
+	rename pop6569`sfx'   pop4
+	rename pop7074`sfx'   pop5
+	rename popover75`sfx' pop6
+
+	reshape long pop, i(cve_ent_mun_super year) j(age_grp)
+	gen old65 = (age_grp >= 4)
+	gen lpop  = log(pop)
+
+	* col 1: Levels DDD
+	reghdfe pop c.inten1999#i.post#i.old65 c.inten2005#i.post#i.old65 if $sample_marg, ///
+		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+		vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#1.old65#c.inten1999]
+	local t = abs(_b[1.post#1.old65#c.inten1999] / _se[1.post#1.old65#c.inten1999])
+	if      `t' >= 2.576 local bDDD99_`pnl'_1 = "`aux'***"
+	else if `t' >= 1.96  local bDDD99_`pnl'_1 = "`aux'**"
+	else if `t' >= 1.645 local bDDD99_`pnl'_1 = "`aux'*"
+	else                  local bDDD99_`pnl'_1 = "`aux'"
+	local seDDD99_`pnl'_1: di %12.3f _se[1.post#1.old65#c.inten1999]
+	local aux: di %12.3f _b[1.post#1.old65#c.inten2005]
+	local t = abs(_b[1.post#1.old65#c.inten2005] / _se[1.post#1.old65#c.inten2005])
+	if      `t' >= 2.576 local bDDD05_`pnl'_1 = "`aux'***"
+	else if `t' >= 1.96  local bDDD05_`pnl'_1 = "`aux'**"
+	else if `t' >= 1.645 local bDDD05_`pnl'_1 = "`aux'*"
+	else                  local bDDD05_`pnl'_1 = "`aux'"
+	local seDDD05_`pnl'_1: di %12.3f _se[1.post#1.old65#c.inten2005]
+	sum pop if e(sample) & post == 0 & old65 == 1
+	local meanDDD_`pnl'_1: di %12.0fc `r(mean)'
+	local NDDD_`pnl'_1:    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunDDD_`pnl'_1: di %12.0fc `r(ndistinct)'
+
+	* col 2: Log DDD
+	reghdfe lpop c.inten1999#i.post#i.old65 c.inten2005#i.post#i.old65 if $sample_marg, ///
+		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+		vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#1.old65#c.inten1999]
+	local t = abs(_b[1.post#1.old65#c.inten1999] / _se[1.post#1.old65#c.inten1999])
+	if      `t' >= 2.576 local bDDD99_`pnl'_2 = "`aux'***"
+	else if `t' >= 1.96  local bDDD99_`pnl'_2 = "`aux'**"
+	else if `t' >= 1.645 local bDDD99_`pnl'_2 = "`aux'*"
+	else                  local bDDD99_`pnl'_2 = "`aux'"
+	local seDDD99_`pnl'_2: di %12.3f _se[1.post#1.old65#c.inten1999]
+	local aux: di %12.3f _b[1.post#1.old65#c.inten2005]
+	local t = abs(_b[1.post#1.old65#c.inten2005] / _se[1.post#1.old65#c.inten2005])
+	if      `t' >= 2.576 local bDDD05_`pnl'_2 = "`aux'***"
+	else if `t' >= 1.96  local bDDD05_`pnl'_2 = "`aux'**"
+	else if `t' >= 1.645 local bDDD05_`pnl'_2 = "`aux'*"
+	else                  local bDDD05_`pnl'_2 = "`aux'"
+	local seDDD05_`pnl'_2: di %12.3f _se[1.post#1.old65#c.inten2005]
+	sum lpop if e(sample) & post == 0 & old65 == 1
+	local meanDDD_`pnl'_2: di %12.2f `r(mean)'
+	local NDDD_`pnl'_2:    di %12.0fc `e(N)'
+
+	* col 3: Poisson DDD
+	ppmlhdfe pop c.inten1999#i.post#i.old65 c.inten2005#i.post#i.old65 if $sample_marg, ///
+		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+		vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f exp(_b[1.post#1.old65#c.inten1999])-1
+	local seDDD99_`pnl'_3: di %12.3f exp(_b[1.post#1.old65#c.inten1999])*_se[1.post#1.old65#c.inten1999]
+	local t = abs(`aux' / `seDDD99_`pnl'_3')
+	if      `t' >= 2.576 local bDDD99_`pnl'_3 = "`aux'***"
+	else if `t' >= 1.96  local bDDD99_`pnl'_3 = "`aux'**"
+	else if `t' >= 1.645 local bDDD99_`pnl'_3 = "`aux'*"
+	else                  local bDDD99_`pnl'_3 = "`aux'"
+	local aux: di %12.3f exp(_b[1.post#1.old65#c.inten2005])-1
+	local seDDD05_`pnl'_3: di %12.3f exp(_b[1.post#1.old65#c.inten2005])*_se[1.post#1.old65#c.inten2005]
+	local t = abs(`aux' / `seDDD05_`pnl'_3')
+	if      `t' >= 2.576 local bDDD05_`pnl'_3 = "`aux'***"
+	else if `t' >= 1.96  local bDDD05_`pnl'_3 = "`aux'**"
+	else if `t' >= 1.645 local bDDD05_`pnl'_3 = "`aux'*"
+	else                  local bDDD05_`pnl'_3 = "`aux'"
+	sum pop if e(sample) & post == 0 & old65 == 1
+	local meanDDD_`pnl'_3: di %12.0fc `r(mean)'
+	local NDDD_`pnl'_3:    di %12.0fc `e(N)'
+
+	restore
+}
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_migration_robustness_ageFE.tex", write replace
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& Levels & Log & Poisson \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_1' & `bDDD99_p_2' & `bDDD99_p_3' \\ " _n
+	file write sm "  & (`seDDD99_p_1') & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_p_1' & `bDDD05_p_2' & `bDDD05_p_3' \\ " _n
+	file write sm " & (`seDDD05_p_1') & (`seDDD05_p_2') & (`seDDD05_p_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_1' & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_1' & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
+	file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_m_1' & `bDDD05_m_2' & `bDDD05_m_3' \\ " _n
+	file write sm " & (`seDDD05_m_1') & (`seDDD05_m_2') & (`seDDD05_m_3') \\ " _n
+	file write sm " & & & \\ " _n
+	file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_1' & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
+	file write sm "  & (`seDDD99_f_1') & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_f_1' & `bDDD05_f_2' & `bDDD05_f_3' \\ " _n
+	file write sm " & (`seDDD05_f_1') & (`seDDD05_f_2') & (`seDDD05_f_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_1' & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "Obs & `NDDD_f_1' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+	file write sm "No. Mun & `NmunDDD_p_1' & `NmunDDD_p_1' & `NmunDDD_p_1' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mun \$\times\$ Year FE & Y & Y & Y \\ " _n
+	file write sm "Mun \$\times\$ Age FE  & Y & Y & Y \\ " _n
+	file write sm "Year \$\times\$ Age FE & Y & Y & Y \\ " _n
+	file write sm "Cluster SE: Mun & Y & Y & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+
 
