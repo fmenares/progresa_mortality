@@ -140,3 +140,36 @@
     \floatfoot{\deleted{Notes: . ***p$<0.01$, **p$<0.05$, *p$<0.1$.}\added{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on household expenditure outcomes, stratified by the presence of elderly members in the household. The sample is restricted to eligible households. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
   }
 \end{table}
+
+
+\begin{landscape}
+\begin{table}[H]
+\RawCaption%
+  {\caption{\added{Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts (65+), Highly Marginalized Municipalities}}
+   \label{t:migration_rob}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/appendix/AT_migration_robustness}
+    }
+    \vspace{-3mm}
+    \floatfoot{\added{Notes: This table tests whether Progresa enrollment intensity predicts changes in the size of the elderly population (65+) at the municipality level, providing a direct check on the selective out-migration threat to the parallel-trends assumption. If Progresa induced differential elderly out-migration from high-intensity municipalities, we would expect a negative and significant effect on population counts. Columns (1)--(3) report the short-run specification (1992--2002) with $Intensity_{1999} \times Post$; columns (4)--(6) report the long-run specification (1991--2006) with $Intensity_{1999} \times Post$ and $Intensity_{2005} \times Post$. Within each panel, column (1)/(4) uses OLS with population counts as the outcome; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood with population counts. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+  }
+\end{table}
+\end{landscape}
+
+\begin{landscape}
+\begin{table}[H]
+\RawCaption%
+  {\caption{\added{Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts by 5-Year Age Group, Highly Marginalized Municipalities (Census Years)}}
+   \label{t:migration_rob_agefe}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/appendix/AT_migration_robustness_ageFE}
+    }
+    \vspace{-3mm}
+    \floatfoot{\added{Notes: This table replicates the migration robustness check of Appendix Table~\ref{t:migration_rob} using a stacked dataset at the municipality $\times$ census year $\times$ 5-year age-group level (65--69, 70--74, 75--79, 80+), with age-group fixed effects included in all regressions. The stacked design is restricted to census years (1990, 1995, 2000, 2005) because 5-year age-group population counts are only available for census enumeration years. Age-group fixed effects absorb the systematic level differences across age cohorts (there are always more 65--69 year-olds than 80+ year-olds); identifying variation comes from differential within-age-group changes in population counts across municipalities with different Progresa intensity. Columns (1)--(3) cover the short-run window (census years 1990--2000); columns (4)--(6) cover the full window (census years 1990--2005). Within each panel, column (1)/(4) uses OLS with counts; column (2)/(5) uses OLS with log counts; column (3)/(6) uses Poisson PML. All regressions include municipality, year, and age-group fixed effects. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+  }
+\end{table}
+\end{landscape}
