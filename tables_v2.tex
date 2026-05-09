@@ -1,0 +1,30 @@
+
+\begin{table}[H]
+\RawCaption%
+  {\caption[]{Summary Statistics: Marginalized and Non-Marginalized Municipalities in Mexico, Pre-Program Period}
+   \label{t:descriptives}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/T1_descriptives}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: Panel A reports the proportion (\%) of municipalities with Progresa beneficiaries, defined as the ratio of beneficiary households to total municipal households, with standard deviations in parentheses. Panel B presents sample means (\%) for socioeconomic characteristics with standard deviations in parentheses. Marginalized municipalities are those classified as high (grade 4) or very high (grade 5) on the 1990 CONAPO Marginalization Index; non-marginalized municipalities comprise those with medium, low, or very low marginalization levels. ``With crowding'' is measured as the number of occupants per room.}
+  }
+\end{table}
+
+
+\begin{table}[H]
+\RawCaption%
+  {\caption[]{Effects of Progresa Enrollment Intensity on Elder Mortality Rate (EMR 65+) by Sex, Marginalized Municipalities, 1991--2006}
+   \label{t:did}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/T2_mortality}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Elder Mortality Rate (EMR) for adults aged 65 and older per 1,000 inhabitants, separately for the pooled (Panel A), male (Panel B), and female (Panel C) populations. Columns (1) and (2) report unweighted estimates without and with Seguro Popular intensity, respectively; columns (3) and (4) report estimates weighted by the population aged 65 and older without and with Seguro Popular intensity. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.
+}
+  }
+\end{table}
