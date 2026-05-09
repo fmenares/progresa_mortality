@@ -433,23 +433,41 @@ foreach pnl in p m f {
 
 
 *============================================================
-* FIGURE 1a: Mortality trends and PROGRESA penetration All municipalities
+* FIGURE 1a (Appendix): Elder Mortality Trends — Highly Marginalized
+*   vs Non-Marginalized Municipalities
 *============================================================
 
 {
-
-
 preserve
-collapse (mean) emr65 emr65m emr65f intensity_new_per [aw=popover65_], by(year)
-twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
-       (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
-       (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
-       (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
-	ytitle("Mortality Rate (65+ per 1000)", axis(1)) ///
-	ytitle("Progresa Intensity (%)", axis(2)) ///
+
+* Collapse marginalized
+tempfile marg_trend
+preserve
+keep if $sample_marg
+collapse (mean) emr65_marg=emr65 emr65m_marg=emr65m emr65f_marg=emr65f ///
+	[aw=popover65_], by(year)
+save `marg_trend'
+restore
+
+* Collapse non-marginalized (complement: gm_mun_1990 <= 3)
+keep if !(gm_mun_1990==4 | gm_mun_1990==5)
+drop if gm_mun_1990==.
+collapse (mean) emr65_nm=emr65 emr65m_nm=emr65m emr65f_nm=emr65f ///
+	[aw=popover65_], by(year)
+
+merge 1:1 year using `marg_trend', nogen
+
+twoway (line emr65_marg  year, lcolor(navy)        lpattern(solid)) ///
+       (line emr65m_marg year, lcolor(navy)        lpattern(dash)) ///
+       (line emr65f_marg year, lcolor(navy)        lpattern(dot)) ///
+       (line emr65_nm    year, lcolor(maroon)      lpattern(solid)) ///
+       (line emr65m_nm   year, lcolor(maroon)      lpattern(dash)) ///
+       (line emr65f_nm   year, lcolor(maroon)      lpattern(dot)), ///
+	ytitle("Mortality Rate (65+ per 1,000)") ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
-	cols(4) size(medsmall) position(6) ring(1)) ///
+	legend(order(1 "Marg: All" 2 "Marg: Male" 3 "Marg: Female" ///
+	             4 "Non-Marg: All" 5 "Non-Marg: Male" 6 "Non-Marg: Female") ///
+	cols(3) size(medsmall) position(6) ring(1)) ///
 	graphregion(fcolor(white))
 graph export "$figures/appendix/Figure_1a_all.pdf", as(pdf) replace
 restore
