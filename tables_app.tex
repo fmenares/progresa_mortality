@@ -161,7 +161,7 @@
 \begin{landscape}
 \begin{table}[H]
 \RawCaption%
-  {\caption{\added{Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts by Age Group (65--69, 70--74, 75+), Highly Marginalized Municipalities}}
+  {\caption{\added{Migration Robustness, Triple-Difference: Differential Growth of the 65+ Population Relative to 50--64 in High- vs Low-Intensity Municipalities}}
    \label{t:migration_rob_agefe}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
@@ -169,7 +169,11 @@
       \input{tables/appendix/AT_migration_robustness_ageFE}
     }
     \vspace{-3mm}
-    \floatfoot{\added{Notes: This table replicates the migration robustness check of Appendix Table~\ref{t:migration_rob} using a stacked dataset at the municipality $\times$ year $\times$ age-group level, with age-group fixed effects included in all regressions. The three age groups are 65--69, 70--74, and 75+, constructed from the annually interpolated population series (geometric interpolation between census enumeration years 1990, 1995, 2000, and 2005). The 75+ group equals the 70+ population minus the 70--74 population, ensuring consistency across all four census vintages (the 2000 and 2005 censuses do not provide a further breakdown of the 75+ group). Age-group fixed effects absorb systematic level differences across age cohorts; identifying variation comes from differential within-age-group changes in population counts across municipalities with different Progresa intensity. Columns (1)--(3) cover the short-run window (1992--2002); columns (4)--(6) cover the long-run window (1991--2006). Within each panel, column (1)/(4) uses OLS with population counts; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood. All regressions include municipality, year, and age-group fixed effects. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{\added{Notes: This table sharpens the migration robustness check of Appendix Table~\ref{t:migration_rob} by adopting a triple-difference (DDD) specification that uses the within-municipality 50--64 population as a control group for the 65+ population. The dataset is stacked at the municipality $\times$ year $\times$ 5-year age-group level using six annually interpolated 5-year age groups (50--54, 55--59, 60--64, 65--69, 70--74, 75+), constructed via geometric interpolation between the 1990, 1995, 2000, and 2005 census vintages. The indicator $Old65 = 1$ for ages 65+ and $0$ for ages 50--64. The estimating equation is
+    \[
+    pop_{m,t,a} = \beta \cdot \big(\textit{Intensity}_{1999,m} \times \textit{Post}_t \times \textit{Old65}_a\big) \,+\, \mu_{m,t} \,+\, \mu_{m,a} \,+\, \mu_{t,a} \,+\, \varepsilon_{m,t,a},
+    \]
+    where the long-run specification additionally includes $\textit{Intensity}_{2005} \times \textit{Post} \times \textit{Old65}$. The three saturated two-way fixed effects (Municipality$\times$Year, Municipality$\times$Age, Year$\times$Age) absorb overall municipality-year population growth (so $\beta$ does not pick up the simple fact that pop grew faster in high-intensity municipalities), municipality-specific age composition, and national age-cohort trends respectively. Identification rests on differential post-program growth of the 65+ population \textit{relative to} the 50--64 population in high- versus low-intensity municipalities. A negative coefficient would indicate selective elderly out-migration in high-intensity municipalities. Columns (1)--(3) cover the short-run window (1992--2002); columns (4)--(6) cover the long-run window (1991--2006). Within each panel, column (1)/(4) uses OLS with population counts; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
   }
 \end{table}
 \end{landscape}

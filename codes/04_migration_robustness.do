@@ -1,35 +1,44 @@
 /*===========================================================================
   04_migration_robustness.do
 
-  Robustness check: Does Progresa intensity predict changes in the size
-  of the elderly population (65+) at the municipality level?
-
-  If Progresa caused differential elderly out-migration, we expect a
-  negative effect on elderly population counts in high-intensity
-  municipalities. A null result supports the parallel-trends assumption.
+  Robustness check: Does Progresa intensity predict differential changes
+  in the size of the elderly (65+) population at the municipality level
+  RELATIVE TO the 50-64 population in the same municipality?
 
   The main regression dataset (aamr_regression_municipality_gender_tb.dta)
-  already contains annually interpolated population series by 5-year age
-  group (geometric interpolation between census years 1990/1995/2000/2005):
-      pop6569_     pop7074_     popover70_   (both sexes)
-      popover65_   (total 65+, both sexes)
+  contains annually interpolated population series by 5-year age group
+  (geometric interpolation between census years 1990/1995/2000/2005):
+      pop5054_  pop5559_  pop6064_   (control age groups: 50-64)
+      pop6569_  pop7074_  popover70_ (treated age groups: 65+)
+      popover65_, popover75_ = popover70_ - pop7074_
 
-  Panel A — Total 65+, no age-group FE (municipality × year panel)
+  Panel A — Total 65+ DiD (municipality × year panel)
     Outcome: popover65_ (levels, logs, Poisson)
+    Identification: Intensity_1999 × Post within municipality and year FE
 
-  Panel B — Stacked by age group (65-69, 70-74, 75+), with age-group FE
-    Reshape to municipality × year × age-group (65-69, 70-74, 75+)
-    popover75_ = popover70_ - pop7074_
-    Outcome: age-group count (levels, logs, Poisson)
-    FEs: municipality + year + age-group
+  Panel B — Triple-difference (DDD) on age x year x intensity
+    Stacks 6 five-year age groups: 50-54, 55-59, 60-64, 65-69, 70-74, 75+
+    Old65_a = 1 if age group is 65+, 0 if 50-64
+    Specification:
+        pop_{m,t,a} = beta · (Intensity_1999 × Post × Old65)
+                    + Mun×Year FE + Mun×Age FE + Year×Age FE + e
+    Mun×Year FE absorbs overall municipality-year population growth
+      (the Intensity × Post variation in levels);
+    Mun×Age FE absorbs municipality-specific age composition;
+    Year×Age FE absorbs national age-cohort trends.
+    The triple interaction identifies whether the 65+ population grew
+    differentially relative to 50-64 in municipalities with higher
+    Progresa intensity, post versus pre. A negative coefficient would
+    indicate selective elderly out-migration.
 
   Both panels run:
-    Short-run  (1992–2002): Intensity_1999 × Post
-    Long-run   (1991–2006): Intensity_1999 × Post + Intensity_2005 × Post
+    Short-run  (1992–2002): Intensity_1999 × Post (× Old65)
+    Long-run   (1991–2006): Intensity_1999 × Post (× Old65)
+                          + Intensity_2005 × Post (× Old65)
 
   Outputs:
-    tables/appendix/AT_migration_robustness.tex        (Panel A)
-    tables/appendix/AT_migration_robustness_ageFE.tex  (Panel B)
+    tables/appendix/AT_migration_robustness.tex        (Panel A: DiD)
+    tables/appendix/AT_migration_robustness_ageFE.tex  (Panel B: DDD)
 ===========================================================================*/
 
 *--- 0. Paths ---------------------------------------------------------------
@@ -95,69 +104,85 @@ eststo pa_lr3
 
 
 *===========================================================================
-*  PANEL B — Stacked by age group (65-69, 70-74, 75+), with age-group FE
-*  Uses annually interpolated pop6569_, pop7074_, popover70_ from the same
-*  dataset. popover75_ = popover70_ - pop7074_
+*  PANEL B — Triple-difference (DDD): age (50-64 vs 65+) × post × intensity
+*  Stacks 6 five-year age groups using annually interpolated population
+*  series. The Old65 indicator separates "treated" age cells (65+) from
+*  the within-municipality control group (50-64). With Mun×Year, Mun×Age,
+*  and Year×Age FE absorbed, identification rests on differential pop
+*  growth across age groups within municipality-year.
 *===========================================================================
 
 use "$data/aamr_regression_municipality_gender_tb.dta", clear
 keep if year >= 1991 & year <= 2006
 
-*--- Construct 75+ and reshape to long by age group -------------------------
+*--- Construct 75+ and stack 6 five-year age groups -------------------------
 keep cve_ent_mun_super year gm_mun_1990 inten1999 inten2005 post ///
-     pop6569_ pop7074_ popover70_ inten_start_year
+     pop5054_ pop5559_ pop6064_ pop6569_ pop7074_ popover70_
 
 gen popover75_ = popover70_ - pop7074_
-
-rename pop6569_   pop1      // age group 1: 65-69
-rename pop7074_   pop2      // age group 2: 70-74
-rename popover75_ pop3      // age group 3: 75+
-
 drop popover70_
+
+rename pop5054_   pop1      // age group 1: 50-54  (control)
+rename pop5559_   pop2      // age group 2: 55-59  (control)
+rename pop6064_   pop3      // age group 3: 60-64  (control)
+rename pop6569_   pop4      // age group 4: 65-69  (treated)
+rename pop7074_   pop5      // age group 5: 70-74  (treated)
+rename popover75_ pop6      // age group 6: 75+    (treated)
 
 reshape long pop, i(cve_ent_mun_super year) j(age_grp)
 
-label define age_grp_lbl 1 "65-69" 2 "70-74" 3 "75+"
+label define age_grp_lbl 1 "50-54" 2 "55-59" 3 "60-64" 4 "65-69" 5 "70-74" 6 "75+"
 label values age_grp age_grp_lbl
-lab var pop "Population count by age group"
+lab var pop "Population count by 5-year age group"
+
+gen old65 = (age_grp >= 4)
+lab var old65 "Age group 65+ (1) vs 50-64 (0)"
+lab def old65_lbl 0 "50-64 (control)" 1 "65+ (treated)"
+lab val old65 old65_lbl
 
 gen ln_pop = ln(pop)
 lab var ln_pop "log population count by age group"
 
-*--- Short-run (1992–2002) --------------------------------------------------
+*--- Short-run DDD (1992–2002) ----------------------------------------------
 preserve
 keep if year >= 1992 & year <= 2002
 
-* (B1) OLS — levels
-reghdfe pop c.inten1999#i.post if ($sample_marg), ///
-	a(year cve_ent_mun_super age_grp) vce(cluster cve_ent_mun_super)
+* (B1) OLS — levels: triple interaction with saturated 2-way FEs
+reghdfe pop c.inten1999#i.post#i.old65 if ($sample_marg), ///
+	a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+	vce(cluster cve_ent_mun_super)
 eststo pb_sr1
 
 * (B2) OLS — logs
-reghdfe ln_pop c.inten1999#i.post if ($sample_marg), ///
-	a(year cve_ent_mun_super age_grp) vce(cluster cve_ent_mun_super)
+reghdfe ln_pop c.inten1999#i.post#i.old65 if ($sample_marg), ///
+	a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+	vce(cluster cve_ent_mun_super)
 eststo pb_sr2
 
 * (B3) Poisson PML
-ppmlhdfe pop c.inten1999#i.post if ($sample_marg), ///
-	a(year cve_ent_mun_super age_grp) vce(cluster cve_ent_mun_super)
+ppmlhdfe pop c.inten1999#i.post#i.old65 if ($sample_marg), ///
+	a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+	vce(cluster cve_ent_mun_super)
 eststo pb_sr3
 restore
 
-*--- Long-run (1991–2006) ---------------------------------------------------
+*--- Long-run DDD (1991–2006) -----------------------------------------------
 * (B4) OLS — levels
-reghdfe pop c.inten1999#i.post c.inten2005#i.post if ($sample_marg), ///
-	a(year cve_ent_mun_super age_grp) vce(cluster cve_ent_mun_super)
+reghdfe pop c.inten1999#i.post#i.old65 c.inten2005#i.post#i.old65 if ($sample_marg), ///
+	a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+	vce(cluster cve_ent_mun_super)
 eststo pb_lr1
 
 * (B5) OLS — logs
-reghdfe ln_pop c.inten1999#i.post c.inten2005#i.post if ($sample_marg), ///
-	a(year cve_ent_mun_super age_grp) vce(cluster cve_ent_mun_super)
+reghdfe ln_pop c.inten1999#i.post#i.old65 c.inten2005#i.post#i.old65 if ($sample_marg), ///
+	a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+	vce(cluster cve_ent_mun_super)
 eststo pb_lr2
 
 * (B6) Poisson PML
-ppmlhdfe pop c.inten1999#i.post c.inten2005#i.post if ($sample_marg), ///
-	a(year cve_ent_mun_super age_grp) vce(cluster cve_ent_mun_super)
+ppmlhdfe pop c.inten1999#i.post#i.old65 c.inten2005#i.post#i.old65 if ($sample_marg), ///
+	a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+	vce(cluster cve_ent_mun_super)
 eststo pb_lr3
 
 
@@ -165,37 +190,44 @@ eststo pb_lr3
 *  EXPORT — Panel A and Panel B as separate .tex files
 *===========================================================================
 
-local coef_labels  ///
+local coef_labels_a  ///
 	1.post#c.inten1999 "\$Intensity_{1999} \times Post\$" ///
 	1.post#c.inten2005 "\$Intensity_{2005} \times Post\$"
+
+local coef_labels_b  ///
+	1.post#1.old65#c.inten1999 "\$Intensity_{1999} \times Post \times Old65\$" ///
+	1.post#1.old65#c.inten2005 "\$Intensity_{2005} \times Post \times Old65\$"
 
 local stat_labels  ///
 	N       "Observations"  ///
 	N_clust "Municipalities"
 
-*--- Panel A ----------------------------------------------------------------
+*--- Panel A (DiD) ----------------------------------------------------------
 esttab pa_sr1 pa_sr2 pa_sr3 pa_lr1 pa_lr2 pa_lr3 ///
 	using "$tables/appendix/AT_migration_robustness.tex", ///
 	replace booktabs compress label nomtitles ///
 	b(%12.3f) se(%12.3f) star(* 0.10 ** 0.05 *** 0.01) ///
 	keep(1.post#c.inten1999 1.post#c.inten2005) ///
-	coeflabels(`coef_labels') ///
+	coeflabels(`coef_labels_a') ///
 	mgroups("Short-run (1992--2002)" "Long-run (1991--2006)", ///
 		pattern(1 0 0 1 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) ///
 		span erepeat(\cmidrule(lr){@span})) ///
 	mtitles("OLS" "OLS (log)" "Poisson" "OLS" "OLS (log)" "Poisson") ///
 	stats(N N_clust, fmt(%9.0f %9.0f) labels(`stat_labels')) ///
-	prehead("\multicolumn{7}{l}{\textit{Panel A: Total 65+ population (no age-group FE)}} \\") ///
+	prehead("\multicolumn{7}{l}{\textit{Panel A: Total 65+ population, DiD (Mun + Year FE)}} \\") ///
 	postfoot("")
 
-*--- Panel B ----------------------------------------------------------------
+*--- Panel B (DDD) ----------------------------------------------------------
 esttab pb_sr1 pb_sr2 pb_sr3 pb_lr1 pb_lr2 pb_lr3 ///
 	using "$tables/appendix/AT_migration_robustness_ageFE.tex", ///
 	replace booktabs compress label nomtitles ///
 	b(%12.3f) se(%12.3f) star(* 0.10 ** 0.05 *** 0.01) ///
-	keep(1.post#c.inten1999 1.post#c.inten2005) ///
-	coeflabels(`coef_labels') ///
-	nomtitles ///
+	keep(1.post#1.old65#c.inten1999 1.post#1.old65#c.inten2005) ///
+	coeflabels(`coef_labels_b') ///
+	mgroups("Short-run (1992--2002)" "Long-run (1991--2006)", ///
+		pattern(1 0 0 1 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) ///
+		span erepeat(\cmidrule(lr){@span})) ///
+	mtitles("OLS" "OLS (log)" "Poisson" "OLS" "OLS (log)" "Poisson") ///
 	stats(N N_clust, fmt(%9.0f %9.0f) labels(`stat_labels')) ///
-	prehead("\addlinespace \multicolumn{7}{l}{\textit{Panel B: Stacked by age group (65--69, 70--74, 75+) with age-group FE}} \\") ///
+	prehead("\addlinespace \multicolumn{7}{l}{\textit{Panel B: Triple-difference (DDD), 65+ vs 50--64, with Mun$\times$Year, Mun$\times$Age, Year$\times$Age FE}} \\") ///
 	postfoot("")
