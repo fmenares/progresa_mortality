@@ -33,7 +33,10 @@
 \usepackage{subfigure}
 \bibliographystyle{chicago}
 \usepackage{soul}
+\usepackage{xcolor}
 \usepackage[addedmarkup=colored,deletedmarkup=sout,commandnameprefix=always]{changes}
+\setaddedmarkup{\textcolor{blue}{#1}}
+\setdeletedmarkup{\textcolor{red}{\sout{#1}}}
 \usepackage{tikz}
 \usetikzlibrary{datavisualization}
 \usetikzlibrary{datavisualization.formats.functions}
