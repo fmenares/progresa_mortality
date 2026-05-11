@@ -518,9 +518,7 @@ foreach pnl in p m f {
 *============================================================
 
 {
-preserve
-
-* Collapse marginalized
+* Collapse marginalized into tempfile
 tempfile marg_trend
 preserve
 keep if $sample_marg
@@ -529,7 +527,8 @@ collapse (mean) emr65_marg=emr65 emr65m_marg=emr65m emr65f_marg=emr65f ///
 save `marg_trend'
 restore
 
-* Collapse non-marginalized (complement: gm_mun_1990 <= 3)
+* Collapse non-marginalized, merge, and plot
+preserve
 keep if !(gm_mun_1990==4 | gm_mun_1990==5)
 drop if gm_mun_1990==.
 collapse (mean) emr65_nm=emr65 emr65m_nm=emr65m emr65f_nm=emr65f ///
@@ -537,12 +536,12 @@ collapse (mean) emr65_nm=emr65 emr65m_nm=emr65m emr65f_nm=emr65f ///
 
 merge 1:1 year using `marg_trend', nogen
 
-twoway (line emr65_marg  year, lcolor(navy)        lpattern(solid)) ///
-       (line emr65m_marg year, lcolor(navy)        lpattern(dash)) ///
-       (line emr65f_marg year, lcolor(navy)        lpattern(dot)) ///
-       (line emr65_nm    year, lcolor(maroon)      lpattern(solid)) ///
-       (line emr65m_nm   year, lcolor(maroon)      lpattern(dash)) ///
-       (line emr65f_nm   year, lcolor(maroon)      lpattern(dot)), ///
+twoway (line emr65_marg  year, lcolor(navy)   lpattern(solid)) ///
+       (line emr65m_marg year, lcolor(navy)   lpattern(dash)) ///
+       (line emr65f_marg year, lcolor(navy)   lpattern(dot)) ///
+       (line emr65_nm    year, lcolor(maroon) lpattern(solid)) ///
+       (line emr65m_nm   year, lcolor(maroon) lpattern(dash)) ///
+       (line emr65f_nm   year, lcolor(maroon) lpattern(dot)), ///
 	ytitle("Mortality Rate (65+ per 1,000)") ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
 	legend(order(1 "Marg: All" 2 "Marg: Male" 3 "Marg: Female" ///
