@@ -30,16 +30,21 @@
 \end{table}
 
 
-\begin{table}[htbp]
-\centering
-\caption{\deleted{Progresa Impacts on Labor Supply and Living Arrangements: Eligible Elderly (Age 65+ in 1997)}\added{Short-Run Effects of Progresa on Labor Supply and Living Arrangements of Elderly in Eligible Households}}
-\label{tab:combined_elderly}
-\begin{threeparttable}
-\input{tables/T3_experimental}
-\begin{tablenotes}
-\small
-\item \textit{Notes:} This table reports difference-in-differences estimates of the short-run effect of Progresa on labor supply and living arrangements for elderly individuals aged 65 and older in eligible households. The sample is restricted to households eligible for Progresa. Column (1) reports weekly hours worked. Columns (2)--(4) report living arrangement outcomes: living alone, living with children, and living only with other elderly members, respectively. The baseline year is 1997. Standard errors are clustered at the municipality level and shown in parentheses. $^{*}$ $p < 0.10$, $^{**}$ $p < 0.05$, $^{***}$ $p < 0.01$
-\end{tablenotes}
-\end{threeparttable}
-
+\begin{table}[H]
+\RawCaption%
+  {\caption[]{\deleted{Progresa Impacts on Labor Supply and Living Arrangements: Eligible Elderly (Age 65+ in 1997)}\added{Short-Run Effects of Progresa on Labor Supply and Living Arrangements of Elderly in Eligible Households}}
+   \label{tab:combined_elderly}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \begin{tabular}{lcccc} \hline \hline
+      & \multicolumn{1}{c}{Hours Worked} & \multicolumn{1}{c}{Living Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} \\
+      \cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}
+      & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule
+      \input{tables/T3_experimental}
+      \end{tabular}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports difference-in-differences estimates of the short-run effect of Progresa on labor supply and living arrangements for elderly individuals aged 65 and older in eligible households. The sample is restricted to households eligible for Progresa. Column (1) reports weekly hours worked. Columns (2)--(4) report living arrangement outcomes: living alone, living with children, and living only with other elderly members, respectively. The baseline year is 1997. Standard errors are clustered at the municipality level and shown in parentheses. $^{*}$ $p < 0.10$, $^{**}$ $p < 0.05$, $^{***}$ $p < 0.01$}
+  }
 \end{table}
