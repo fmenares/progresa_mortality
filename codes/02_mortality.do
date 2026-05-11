@@ -204,7 +204,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/Figure_1b_inten1999.pdf", as(pdf) replace width(5)
+graph export "$figures/Figure_1b_inten1999.pdf", as(pdf) replace width(3)
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -220,7 +220,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1d_inten1997_mort.pdf", as(pdf) replace width(5)
+graph export "$figures/appendix/Figure_1d_inten1997_mort.pdf", as(pdf) replace width(3)
 
 
 restore
@@ -527,7 +527,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1b_inten1999_all.pdf", as(pdf) replace width(0.7)
+graph export "$figures/appendix/Figure_1b_inten1999_all.pdf", as(pdf) replace width(2)
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
@@ -535,7 +535,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1c_inten2005_all.pdf", as(pdf) replace width(0.5)
+graph export "$figures/appendix/Figure_1c_inten2005_all.pdf", as(pdf) replace width(2)
 
 * ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) /// 
@@ -543,7 +543,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1e_inten1997_mort_all.pdf", as(pdf) replace width(1)
+graph export "$figures/appendix/Figure_1e_inten1997_mort_all.pdf", as(pdf) replace width(2)
 
 
 
