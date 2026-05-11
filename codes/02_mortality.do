@@ -220,7 +220,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1d_inten1997_mort.pdf", as(pdf) replace width(3)
+graph export "$figures/appendix/Figure_2c_inten1997_mort.pdf", as(pdf) replace width(3)
 
 
 restore
@@ -513,7 +513,7 @@ foreach pnl in p m f {
 
 
 *============================================================
-* FIGURE 1a (Appendix): Elder Mortality Trends — Highly Marginalized
+* FIGURE 1 (Appendix): Elder Mortality Trends — Highly Marginalized
 *   vs Non-Marginalized Municipalities
 *============================================================
 
@@ -548,11 +548,11 @@ twoway (line emr65_marg  year, lcolor(navy)   lpattern(solid)) ///
 	             4 "Non-Marg: All" 5 "Non-Marg: Male" 6 "Non-Marg: Female") ///
 	cols(3) size(medsmall) position(6) ring(1)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1a_all.pdf", as(pdf) replace
+graph export "$figures/appendix/Figure_1_all.pdf", as(pdf) replace
 restore
 }
 *============================================================
-* FIGURE 1 b c: Mexican municipality maps — PROGRESA intensity variation *All Municipalities
+* FIGURE 2: Mexican municipality maps — PROGRESA intensity variation *All Municipalities
 *============================================================
 * Requires: spmap (ssc install spmap)
 {
@@ -605,7 +605,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1b_inten1999_all.pdf", as(pdf) replace width(2)
+graph export "$figures/appendix/Figure_2a_inten1999_all.pdf", as(pdf) replace width(2)
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
@@ -613,7 +613,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1c_inten2005_all.pdf", as(pdf) replace width(2)
+graph export "$figures/appendix/Figure_2b_inten2005_all.pdf", as(pdf) replace width(2)
 
 * ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) /// 
@@ -621,7 +621,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_1e_inten1997_mort_all.pdf", as(pdf) replace width(2)
+graph export "$figures/appendix/Figure_2d_inten1997_mort_all.pdf", as(pdf) replace width(2)
 
 
 
@@ -629,13 +629,129 @@ restore
 
 }
 
+*============================================================
+* APPENDIX FIGURE 3-4: Event Study by Cause of Death (Our Sample, 1991-2006)
+* Figure_5_XXX_Marg.pdf — y-axis -9(3)9 for tb_card, -6(3)6 otherwise
+*============================================================
+
+{
+local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+local samp_cond  "$sample_marg"
+local samp_yr_cond ""
+local obs_n = 16
+local yr_pos_offset = 0
+local xscale_range "range(0.5 16.5)"
+local pos_start = 1
+local pos_end   = 16
+
+foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+
+	foreach grp in w f m {
+		local reg_success_`grp' = 0
+		if "`grp'" == "w" {
+			local outcome emr65`cod'
+			local wvar   popover65_
+		}
+		else if "`grp'" == "f" {
+			local outcome emr65`cod'f
+			local wvar   popover65_f
+		}
+		else {
+			local outcome emr65`cod'm
+			local wvar   popover65_m
+		}
+		capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+			c.sp_intensity [aw=`wvar'] if `samp_cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		if _rc == 0 {
+			local reg_success_`grp' = 1
+			forval pos = `pos_start'/`pos_end' {
+				if `pos' == 6 {
+					local b_`grp'_`pos'  = 0
+					local se_`grp'_`pos' = 0
+				}
+				else {
+					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+				}
+			}
+		}
+		else {
+			di "WARNING: Regression failed for `outcome' (`cod', Marg sample) - skipping"
+			forval pos = `pos_start'/`pos_end' {
+				local b_`grp'_`pos'  = .
+				local se_`grp'_`pos' = .
+			}
+		}
+	}
+
+	preserve
+	clear
+	set obs `obs_n'
+	gen yr_pos = _n + `yr_pos_offset'
+	gen xpos_w = yr_pos - 0.18
+	gen xpos_f = yr_pos
+	gen xpos_m = yr_pos + 0.18
+	foreach grp in w f m {
+		gen b_`grp'  = .
+		gen hi_`grp' = .
+		gen lo_`grp' = .
+	}
+	forval pos = `pos_start'/`pos_end' {
+		foreach grp in w f m {
+			if `reg_success_`grp'' == 1 {
+				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+			}
+		}
+	}
+
+	if "`cod'" == "tb_card" {
+		local yaxis_range "-9(3)9"
+	}
+	else {
+		local yaxis_range "-6(3)6"
+	}
+
+	local twoway_cmd "twoway"
+	local legend_nums ""
+	local legend_labels ""
+	local plot_count = 0
+	if `reg_success_w' == 1 {
+		local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin))"
+		local plot_count = `plot_count' + 3
+		local legend_nums "`legend_nums' `plot_count'"
+		local legend_labels "`legend_labels' label(`plot_count' Pooled)"
+	}
+	if `reg_success_f' == 1 {
+		local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red%60) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin))"
+		local plot_count = `plot_count' + 3
+		local legend_nums "`legend_nums' `plot_count'"
+		local legend_labels "`legend_labels' label(`plot_count' Female)"
+	}
+	if `reg_success_m' == 1 {
+		local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%60) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%60) lpattern(solid) lwidth(thin))"
+		local plot_count = `plot_count' + 3
+		local legend_nums "`legend_nums' `plot_count'"
+		local legend_labels "`legend_labels' label(`plot_count' Male)"
+	}
+	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
+	`twoway_cmd'
+	graph export "$figures/appendix/Figure_3_`cod'_Marg.pdf", as(pdf) replace
+	restore
+
+} // end foreach cod
+} // end Marg block
+
+
 
 *============================================================
-* APPENDIX FIGURE 2:
+* APPENDIX FIGURE 5:
 *============================================================
 
 *============================================================
-*Appendix Figure 2a: Unweighted + Seguro Popular — manual event study (pooled / female / male)
+*Appendix Figure 5a: Unweighted + Seguro Popular — manual event study (pooled / female / male)
 *============================================================
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 {
@@ -707,13 +823,14 @@ twoway ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
 	plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/Figure_2a_uw.pdf", as(pdf) replace
+graph export "$figures/appendix/Figure_5a_uw.pdf", as(pdf) replace
 restore
 }
 
 
-*============================================================
-* APPENDIX FIGURE 2b: Event Study — AAMR65 (1995 standard population)
+
+*==========================================================
+* APPENDIX FIGURE 5b: Event Study — AAMR65 (1995 standard population)
 *============================================================
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 
@@ -827,7 +944,7 @@ forval col = 1/4 {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 
-	graph export "$figures/appendix/Figure_3_aamr_col`col'.pdf", as(pdf) replace
+	graph export "$figures/appendix/Figure_5_aamr_col`col'.pdf", as(pdf) replace
 	restore
 } // end forval col = 1/4
 
@@ -836,7 +953,7 @@ forval col = 1/4 {
  
 **Event Study (This would be similar to F2) *Unweighted
 *============================================================
-* APPENDIX FIGURE 3: Short-term Event Study (Barham & Rowberry sample)
+* APPENDIX FIGURE 6: Short-term Event Study (Barham & Rowberry sample)
 * FA_BR_es_pooled.pdf -- pooled, 2 specs: UW // W+SP and 3 Samples
 *============================================================
 
@@ -966,7 +1083,7 @@ foreach samp in `samples' {
             graphregion(color(white)) ///
             plotregion(margin(l=1 r=1))
 
-        graph export "$figures/appendix/Figure_3_`outcome'_`sample_label_`samp''.pdf", as(pdf) replace
+        graph export "$figures/appendix/Figure_6_`outcome'_`sample_label_`samp''.pdf", as(pdf) replace
 
         restore
     }
@@ -979,9 +1096,6 @@ di "  Females: ES_emr65f_*.pdf, ES_aamr65f_*.pdf"
 di "  Males:   ES_emr65m_*.pdf, ES_aamr65m_*.pdf"
 di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
 }
-
-
-
 
 
 *============================================================
@@ -1088,127 +1202,14 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	}
 	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 	`twoway_cmd'
-	graph export "$figures/appendix/Figure_6_`cod'_BR.pdf", as(pdf) replace
+	graph export "$figures/appendix/Figure_7_`cod'_BR.pdf", as(pdf) replace
 	restore
 
 } // end foreach cod
 } // end BR block
 
 
-*============================================================
-* APPENDIX FIGURE 5: Event Study by Cause of Death (Our Sample, 1991-2006)
-* Figure_5_XXX_Marg.pdf — y-axis -9(3)9 for tb_card, -6(3)6 otherwise
-*============================================================
 
-{
-local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-local samp_cond  "$sample_marg"
-local samp_yr_cond ""
-local obs_n = 16
-local yr_pos_offset = 0
-local xscale_range "range(0.5 16.5)"
-local pos_start = 1
-local pos_end   = 16
-
-foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-
-	foreach grp in w f m {
-		local reg_success_`grp' = 0
-		if "`grp'" == "w" {
-			local outcome emr65`cod'
-			local wvar   popover65_
-		}
-		else if "`grp'" == "f" {
-			local outcome emr65`cod'f
-			local wvar   popover65_f
-		}
-		else {
-			local outcome emr65`cod'm
-			local wvar   popover65_m
-		}
-		capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-			c.sp_intensity [aw=`wvar'] if `samp_cond', ///
-			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		if _rc == 0 {
-			local reg_success_`grp' = 1
-			forval pos = `pos_start'/`pos_end' {
-				if `pos' == 6 {
-					local b_`grp'_`pos'  = 0
-					local se_`grp'_`pos' = 0
-				}
-				else {
-					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
-				}
-			}
-		}
-		else {
-			di "WARNING: Regression failed for `outcome' (`cod', Marg sample) - skipping"
-			forval pos = `pos_start'/`pos_end' {
-				local b_`grp'_`pos'  = .
-				local se_`grp'_`pos' = .
-			}
-		}
-	}
-
-	preserve
-	clear
-	set obs `obs_n'
-	gen yr_pos = _n + `yr_pos_offset'
-	gen xpos_w = yr_pos - 0.18
-	gen xpos_f = yr_pos
-	gen xpos_m = yr_pos + 0.18
-	foreach grp in w f m {
-		gen b_`grp'  = .
-		gen hi_`grp' = .
-		gen lo_`grp' = .
-	}
-	forval pos = `pos_start'/`pos_end' {
-		foreach grp in w f m {
-			if `reg_success_`grp'' == 1 {
-				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-			}
-		}
-	}
-
-	if "`cod'" == "tb_card" {
-		local yaxis_range "-9(3)9"
-	}
-	else {
-		local yaxis_range "-6(3)6"
-	}
-
-	local twoway_cmd "twoway"
-	local legend_nums ""
-	local legend_labels ""
-	local plot_count = 0
-	if `reg_success_w' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Pooled)"
-	}
-	if `reg_success_f' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red%60) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Female)"
-	}
-	if `reg_success_m' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%60) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Male)"
-	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
-	`twoway_cmd'
-	graph export "$figures/appendix/Figure_5_`cod'_Marg.pdf", as(pdf) replace
-	restore
-
-} // end foreach cod
-} // end Marg block
 
 *============================================================
 * APPENDIX TABLE 1: Barham & Rowberry (2013) Replication
