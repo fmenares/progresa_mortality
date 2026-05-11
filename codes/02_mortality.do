@@ -581,15 +581,14 @@ global shp "$data/mgm"   // update path to match local shapefile location
 
 
 preserve
+
+* Save intensity values to tempfile (keep before use clears memory)
 keep cve_ent_mun_super inten1997 inten1998 inten1999 inten2000 inten2005
 duplicates drop cve_ent_mun_super, force
-
 tempfile inten_data_all
 save `inten_data_all'
-restore
 
-
-preserve
+* Load shapefile attribute file and merge intensity
 use "${shp}\municipios_2000.dta", clear
 *rename CVE_ENT cve_ent
 *rename CVE_MUN cve_mun
