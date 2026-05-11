@@ -665,6 +665,30 @@ set more off
 	lab def pob50_c 0"0-49" 50"50-99" 100"100-199" 200"200-299" 300"300-399" 400"400-499" 500"500-999" 1000">=1000"
 	lab val pob50_c pob50_c
 
+	lab var death50 "Deaths aged +50"
+	lab var death65 "Deaths aged +65"
+	cap lab var death50_2 "Deaths aged +50 (which have info on age)"
+	cap lab var death_assist "Deaths +50 that had medical assistance"
+	cap lab var death_hospital "Deaths +50 occurred at health facilities"
+	cap lab var hospital_p "% deaths +50 in health facilities in total deaths +50"
+	cap lab var assist_p "% received medical assistance +50 in total deaths +50"
+	foreach i in 5054 5559 6064 6569 over70 {
+		cap lab var death`i'  "Deaths age `i'"
+		cap lab var death`i'm "Deaths age `i' (male)"
+		cap lab var death`i'f "Deaths age `i' (female)"
+	}
+	foreach i in 5054f 5559f 6064f 6569f over70f 5054m 5559m 6064m 6569m over70m {
+		cap lab var tb_card`i'   "Cardiovascular and circulatory diseases"
+		cap lab var tb_infect`i' "Infections"
+		cap lab var tb_diab`i'   "Diabetes"
+		cap lab var tb_resp`i'   "Respiratory illnesses"
+		cap lab var tb_nutri`i'  "Nutrition and anemia"
+		cap lab var tb_cancer`i' "Cancers"
+		cap lab var tb_accid`i'  "Accidents (Transportation accidents)"
+		cap lab var tb_illdef`i' "Ill-defined"
+		cap lab var tb_other`i'  "Others"
+	}
+
 
 *** ==============================================================
 *** 6. Construct AAMR (2002-2013): deaths per 100,000 population
