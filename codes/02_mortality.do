@@ -1936,6 +1936,7 @@ foreach pnl in p m f {
 *
 *   3 cols (Levels / Log / Poisson) × 3 panels (Pooled / M / F).
 *============================================================
+destring(cve_ent_mun_super), replace
 
 foreach pnl in p m f {
 	preserve
