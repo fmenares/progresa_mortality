@@ -13,7 +13,7 @@
 \begin{table}[H]
 \RawCaption%
   {\caption{Replication of Barham and Rowberry (2013): Effect of Progresa on Mortality Rate (EMR 65+)}
-   \label{t:did_robust_br}}
+   \label{at:br_replication}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
@@ -30,7 +30,7 @@
 \begin{table}[H]
 \RawCaption%
   {\caption{Sensitivity Analysis: Barham and Rowberry (2013) Replication with Alternative Lag Structures and Sample Restrictions}
-   \label{t:did_robust_br2}}
+   \label{at:br_sensitivity}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
@@ -58,20 +58,19 @@
 
 
 
-% \begin{table}[H]
-% \RawCaption%
-%   {\caption{Functional Forms}
-%    \label{t:did_robust}}
-% \floatbox[{\captop}]{table}[\FBwidth]
-%   {}
-%   {\scalebox{0.9}{
-%       \input{tables/appendix/AT3_functional_forms}
-%     }
-%     \vspace{-3mm}
-%     \floatfoot{Notes: Progresa intensity data are pooled from 1990 to 2000. All regression models include year fixed effects and municipality fixed effects. Standard errors are clustered at the municipality level. The regression model is weighted by the number of population aged +65. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-%   }
-% \end{table}
-% \newpage
+\begin{table}[H]
+\RawCaption%
+  {\caption{Effects of Progresa Enrollment Intensity on Elderly Mortality, by Functional Form}
+   \label{at:func_form}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.7}{
+      \input{tables/appendix/AT3_functional_forms}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on elderly mortality under three functional forms: levels (EMR per 1,000, columns 1--3), log-transformed EMR (columns 4--6), and Poisson pseudo-maximum-likelihood regression on raw death counts with a log-population offset (columns 7--9, coefficients reported as IRR$-$1). Within each functional form, columns (1)/(4)/(7) report pooled results, columns (2)/(5)/(8) report results for males, and columns (3)/(6)/(9) report results for females. All regressions include municipality and year fixed effects and control for Seguro Popular intensity. Regressions are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+\end{table}
+\newpage
 
 
 
@@ -81,7 +80,7 @@
 \begin{table}[H]
 \RawCaption%
   {\caption{Effects of Progresa Enrollment Intensity on Age-Adjusted Mortality Rate (AAMR 65+) by Sex}
-   \label{t:did_robust_aamr}}
+   \label{at:aamr}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
@@ -95,7 +94,7 @@
 \begin{table}[H]
 \RawCaption%
   {\caption{Effects of Progresa Enrollment Intensity on Cause-Specific Mortality Rate (EMR 65+)}
-   \label{t:did_robust_cod}}
+   \label{at:cod_marg}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.7}{
@@ -109,7 +108,7 @@
 \begin{table}[H]
 \RawCaption%
   {\caption{Effects of Progresa Enrollment Intensity on Cause-Specific Elder Mortality Rate (EMR 65+), Barham-Rowberry Sample, 1992--2002}
-   \label{t:did_robust_cod_br}}
+   \label{at:cod_br}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.7}{
@@ -124,7 +123,7 @@
 \begin{table}[H]
 \RawCaption%
     {\caption{Short-Run Effects of Progresa on Household Expenditure by Elderly Presence, Eligible Households}
-\label{tab:expenditures_elderly}}
+\label{at:expenditures_elderly}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.99}{
