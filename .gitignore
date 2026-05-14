@@ -2,8 +2,7 @@
 .claude/
 
 # ---- Generated outputs (managed via Dropbox, not Git) ----
-figures/
-tables/
+
 
 # ---- Common LaTeX temporary files ----
 *.aux
