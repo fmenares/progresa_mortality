@@ -958,7 +958,7 @@ forval col = 1/4 {
 * APPENDIX FIGURE 7: Event Study by Functional Form
 * Three PDFs — one per functional form (Levels / Log / Poisson).
 * Each plot overlays Pooled, Female, and Male point estimates + 95% CIs.
-* Specification mirrors AT3_functional_forms: weighted + Seguro Popular control.
+* Specification mirrors AT_functional_forms: weighted + Seguro Popular control.
 * Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5).
 * Reference year: 1996 (position 6 in year_1995 coding).
 * Output:
@@ -1471,7 +1471,7 @@ foreach pnl in p m f {
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT1_BR_replication.tex", write replace
+	file open sm using "$tables/appendix/AT3_BR_replication.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Males} & \multicolumn{1}{c}{Females} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}  " _n
@@ -1519,7 +1519,7 @@ foreach pnl in p m f {
 
 
 *============================================================
-* APPENDIX TABLE: BR Analysis — Table FA_BR_table.tex
+* APPENDIX TABLE: BR Analysis — Table AT3_BR_replication.tex
 *============================================================
 *============================================================
 * BR 2013 Robustness: DD with sample & weighting variations
@@ -1629,7 +1629,7 @@ foreach pnl in p f m {
 
 foreach out in emr65 aamr65 {
 	cap file close tbl
-	file open tbl using "$tables/appendix/T_BR_robustness_`out'.tex", write replace
+	file open tbl using "$tables/appendix/AT4_BR_robustness_`out'.tex", write replace
 	file write tbl "\begin{tabular}{lccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{2}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
@@ -1692,8 +1692,8 @@ foreach out in emr65 aamr65 {
 
 di ""
 di "Tables exported to:"
-di "  $tables/appendix/T_BR_robustness_emr65.tex"
-di "  $tables/appendix/T_BR_robustness_aamr65.tex"
+di "  $tables/appendix/AT4_BR_robustness_emr65.tex"
+di "  $tables/appendix/AT4_BR_robustness_aamr65.tex"
 
 
 *============================================================
@@ -1803,7 +1803,7 @@ foreach pnl in p m f {
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT3_functional_forms.tex", write replace
+	file open sm using "$tables/appendix/AT_functional_forms.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& Levels & Log & Poisson \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
@@ -1907,7 +1907,7 @@ foreach pnl in p m f {
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT4_aamr_mortality.tex", write replace
+	file open sm using "$tables/appendix/AT2_aamr_mortality.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
@@ -1956,7 +1956,7 @@ foreach pnl in p m f {
 
 *============================================================
 * APPENDIX TABLE 5: Causes of Death (Weighted + SP spec)
-* AT5_cod_mortality.tex -- Pooled, Female, Male panels
+* AT1_cod_mortality.tex -- Pooled, Female, Male panels
 *============================================================
 foreach grp in w f m {
 	if "`grp'" == "w" {
@@ -1998,7 +1998,7 @@ foreach grp in w f m {
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT5_cod_mortality.tex", write replace
+	file open sm using "$tables/appendix/AT1_cod_mortality.tex", write replace
 	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write sm "& Card. & Infect. & Diab. & Resp. & Nutri. & Cancer & Accid. & IllDef & Other \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
