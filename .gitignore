@@ -1,1 +1,26 @@
-*.stswp
+# ---- Claude internal files (never commit) ----
+.claude/
+
+# ---- Generated outputs (managed via Dropbox, not Git) ----
+figures/
+tables/
+
+# ---- Common LaTeX temporary files ----
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+
+# ---- Editor / OS clutter ----
+.DS_Store
+Thumbs.db
+``

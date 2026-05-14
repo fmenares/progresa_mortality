@@ -1,7 +1,7 @@
 
 \begin{table}[H]
 \RawCaption%
-  {\caption[]{\deleted{Summary statistics of non-marginalized and marginalized municipalities, Mexico (\%)}\added{Summary Statistics: Marginalized and Non-Marginalized Municipalities in Mexico, Pre-Program Period}}
+  {\caption[]{Summary Statistics: Marginalized and Non-Marginalized Municipalities in Mexico, Pre-Program Period}
    \label{t:descriptives}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
@@ -9,14 +9,27 @@
       \input{tables/T1_descriptives}
     }
     \vspace{-3mm}
-    \floatfoot{\deleted{Notes: Section A reports the mean proportion (\%) with standard deviations of municipalities with a ratio of the Progresa beneficiary households to the total number of households in the municipality. Section B presents sample mean (\%) of each variable and standard deviations are in parentheses. Marginalized areas include municipalities categorized as high and very high level of the Margination Index, while non-marginalized areas include municipalities categorized as medium, low, and very low level of the Margination Index. “With crowding” is measured by number of rooms divided by household size. Source: Authors’ calculations using Mexican Census 1990 and Progresa administrative data on beneficiaries.}\added{Notes: Panel A reports the proportion (\%) of municipalities with Progresa beneficiaries, defined as the ratio of beneficiary households to total municipal households, with standard deviations in parentheses. Panel B presents sample means (\%) for socioeconomic characteristics with standard deviations in parentheses. Marginalized municipalities are those classified as high (grade 4) or very high (grade 5) on the 1990 CONAPO Marginalization Index; non-marginalized municipalities comprise those with medium, low, or very low marginalization levels. ``With crowding’’ is measured as the number of occupants per room.}}
+    \floatfoot{Notes: Panel A reports the proportion (\%) of municipalities with Progresa beneficiaries, defined as the ratio of beneficiary households to total municipal households, with standard deviations in parentheses. Panel B presents sample means (\%) for socioeconomic characteristics with standard deviations in parentheses. Marginalized municipalities are those classified as high (grade 4) or very high (grade 5) on the 1990 CONAPO Marginalization Index; non-marginalized municipalities comprise those with medium, low, or very low marginalization levels. ``With crowding’’ is measured as the number of occupants per room.}
   }
 \end{table}
 
+\begin{table}[H]
+\RawCaption%
+  {\caption[]{Summary Statistics: Marginalized and Non-Marginalized Municipalities in Mexico, Pre-Program Period}
+   \label{t:descriptives}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/T1_descriptives_b}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: Panel A reports the proportion (\%) of municipalities with Progresa beneficiaries, defined as the ratio of beneficiary households to total municipal households, with standard deviations in parentheses. Panel B presents sample means (\%) for socioeconomic characteristics with standard deviations in parentheses. Marginalized municipalities are those classified as high (grade 4) or very high (grade 5) on the 1990 CONAPO Marginalization Index; non-marginalized municipalities comprise those with medium, low, or very low marginalization levels. ``With crowding’’ is measured as the number of occupants per room.}
+  }
+\end{table}
 
 \begin{table}[H]
 \RawCaption%
-  {\caption[]{\deleted{Effects of Progresa on Elderly Mortality (65+) by Sex, Marginalized Municipalities}\added{Effects of Progresa Enrollment Intensity on Elder Mortality Rate (EMR 65+) by Sex, Marginalized Municipalities, 1991--2006}}
+  {\caption[]{Effects of Progresa Enrollment Intensity on Mortality Rate by Sex}
    \label{t:did}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
@@ -24,27 +37,21 @@
       \input{tables/T2_mortality}
     }
     \vspace{-3mm}
-    \floatfoot{\deleted{Notes: The analysis is restricted to marginalized municipalities, 1991–2006. Progresa and Seguro Popular intensities are continuous variables. The post-dummy equals 1 for years 1997–2006. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}\added{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Elder Mortality Rate (EMR) for adults aged 65 and older per 1,000 inhabitants, separately for the pooled (Panel A), male (Panel B), and female (Panel C) populations. Columns (1) and (2) report unweighted estimates without and with Seguro Popular intensity, respectively; columns (3) and (4) report estimates weighted by the population aged 65 and older without and with Seguro Popular intensity. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-}
+    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. Columns (1) and (2) report unweighted estimates without and with Seguro Popular intensity, respectively; columns (3) and (4) report estimates weighted by the population aged 65 and older without and with Seguro Popular intensity. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
 
 
-\begin{table}[H]
-\RawCaption%
-  {\caption[]{\deleted{Progresa Impacts on Labor Supply and Living Arrangements: Eligible Elderly (Age 65+ in 1997)}\added{Short-Run Effects of Progresa on Labor Supply and Living Arrangements of Elderly in Eligible Households}}
-   \label{t:combined_elderly}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.9}{
-      \begin{tabular}{lcccc} \hline \hline
-      & \multicolumn{1}{c}{Hours Worked} & \multicolumn{1}{c}{Living Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} \\
-      \cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}
-      & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule
-      \input{tables/T3_experimental}
-      \end{tabular}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table reports difference-in-differences estimates of the short-run effect of Progresa on labor supply and living arrangements for elderly individuals aged 65 and older in eligible households. The sample is restricted to households eligible for Progresa. Column (1) reports weekly hours worked. Columns (2)--(4) report living arrangement outcomes: living alone, living with children, and living only with other elderly members, respectively. The baseline year is 1997. Standard errors are clustered at the municipality level and shown in parentheses. $^{*}$ $p < 0.10$, $^{**}$ $p < 0.05$, $^{***}$ $p < 0.01$}
-  }
+\begin{table}[htbp]
+\centering
+\caption{Effects of Progresa on Labor Supply and Living Arrangements of Elderly in Eligible Households}
+\label{tab:combined_elderly}
+\begin{threeparttable}
+\input{tables/T3_experimental}
+\begin{tablenotes}
+\small
+\item \textit{Notes:} This table reports difference-in-differences estimates of the short-run effect of Progresa on labor supply and living arrangements for elderly individuals aged 65 and older in eligible households. The sample is restricted to households eligible for Progresa. Column (1) reports weekly hours worked. Columns (2)--(4) report living arrangement outcomes: living alone, living with children, and living only with other elderly members, respectively. The baseline year is 1997. Standard errors are clustered at the municipality level and shown in parentheses. $^{*}$ $p < 0.10$, $^{**}$ $p < 0.05$, $^{***}$ $p < 0.01$
+\end{tablenotes}
+\end{threeparttable}
+
 \end{table}
