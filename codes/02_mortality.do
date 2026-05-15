@@ -986,11 +986,11 @@ foreach ff in levels log poisson {
 		local figname   "Figure_7_ES_func_form_levels"
 	}
 	else if "`ff'" == "log" {
-		local ytitle_ff "log(Mortality Rate, 65+)"
+		local ytitle_ff "% Change in Mortality Rate, 65+"
 		local figname   "Figure_7_ES_func_form_log"
 	}
 	else {
-		local ytitle_ff "IRR - 1 (death counts, Poisson)"
+		local ytitle_ff "Relative Change in Deaths (%)"
 		local figname   "Figure_7_ES_func_form_poisson"
 	}
 
@@ -1036,6 +1036,7 @@ foreach ff in levels log poisson {
 		}
 		else if "`ff'" == "log" {
 			* Cells where mortality rate = 0 produce missing log values and are dropped automatically
+			* Coefficients multiplied by 100: approximate % change in mortality rate per unit intensity
 			reghdfe `outcome_log' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
 				c.sp_intensity [pw=`wvar'] if $sample_marg, ///
 				a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
@@ -1045,15 +1046,15 @@ foreach ff in levels log poisson {
 					local se_`grp'_`pos' = 0
 				}
 				else {
-					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999] * 100
+					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999] * 100
 				}
 			}
 		}
 		else {
-			* Poisson: raw death count outcome with log-population offset.
-			* Coefficients transformed to exp(b)-1 (semi-elasticity).
-			* SEs via delta method: se_transformed = exp(b) * se_raw.
+			* Poisson: raw death count outcome with log-population offset and population weights.
+			* Coefficients transformed to (exp(b)-1)*100: % change in death counts.
+			* SEs via delta method: se_transformed = exp(b) * se_raw * 100.
 			ppmlhdfe `outcome_poi' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
 				c.sp_intensity [pw=`wvar'] if $sample_marg, ///
 				a(year cve_ent_mun_super) offset(`offset_poi') vce(cluster cve_ent_mun_super)
@@ -1065,8 +1066,8 @@ foreach ff in levels log poisson {
 				else {
 					local b_raw  = _b[`pos'.year_1995#c.inten1999]
 					local se_raw = _se[`pos'.year_1995#c.inten1999]
-					local b_`grp'_`pos'  = exp(`b_raw') - 1
-					local se_`grp'_`pos' = exp(`b_raw') * `se_raw'
+					local b_`grp'_`pos'  = (exp(`b_raw') - 1) * 100
+					local se_`grp'_`pos' = exp(`b_raw') * `se_raw' * 100
 				}
 			}
 		}
@@ -1520,42 +1521,41 @@ foreach pnl in p m f {
 	local NFF_`pnl'_4:    di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunFF_`pnl'_4: di %12.0fc `r(ndistinct)'
-	* col 5: log mortality rate, weighted
+	* col 5: log mortality rate, weighted; coef x100 = approx % change in mortality rate
 	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
 		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	local aux: di %12.3f _b[1.post#c.inten1999]
+	local aux: di %12.2f _b[1.post#c.inten1999] * 100
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
 	if      `t' >= 2.576 local bFF99_`pnl'_5 = "`aux'***"
 	else if `t' >= 1.96  local bFF99_`pnl'_5 = "`aux'**"
 	else if `t' >= 1.645 local bFF99_`pnl'_5 = "`aux'*"
 	else                  local bFF99_`pnl'_5 = "`aux'"
-	local seFF99_`pnl'_5: di %12.3f _se[1.post#c.inten1999]
-	local aux: di %12.3f _b[1.post#c.inten2005]
+	local seFF99_`pnl'_5: di %12.2f _se[1.post#c.inten1999] * 100
+	local aux: di %12.2f _b[1.post#c.inten2005] * 100
 	local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
 	if      `t' >= 2.576 local bFF05_`pnl'_5 = "`aux'***"
 	else if `t' >= 1.96  local bFF05_`pnl'_5 = "`aux'**"
 	else if `t' >= 1.645 local bFF05_`pnl'_5 = "`aux'*"
 	else                  local bFF05_`pnl'_5 = "`aux'"
-	local seFF05_`pnl'_5: di %12.3f _se[1.post#c.inten2005]
+	local seFF05_`pnl'_5: di %12.2f _se[1.post#c.inten2005] * 100
 	sum `loutcome' if e(sample) & post == 2
 	local meanFF_`pnl'_5: di %12.2fc `r(mean)'
 	local NFF_`pnl'_5:    di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunFF_`pnl'_5: di %12.0fc `r(ndistinct)'
-	* col 6: Poisson, weighted
+	* col 6: Poisson, weighted; coef = (exp(b)-1)*100 = % change in death counts
 	ppmlhdfe `doutcome' c.inten1999#i.post c.inten2005#i.post ///
 		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
-	local aux: di %12.3f exp(_b[1.post#c.inten1999])-1
-	*local Poi1 : di %12.4f exp(_b[Post70ymas])-1
-	local seFF99_`pnl'_6 : di %12.3f exp(_b[1.post#c.inten1999])*_se[1.post#c.inten1999]
+	local aux: di %12.2f (exp(_b[1.post#c.inten1999])-1)*100
+	local seFF99_`pnl'_6 : di %12.2f exp(_b[1.post#c.inten1999])*_se[1.post#c.inten1999]*100
 	local t = abs(`aux' / `seFF99_`pnl'_6')
 	if      `t' >= 2.576 local bFF99_`pnl'_6 = "`aux'***"
 	else if `t' >= 1.96  local bFF99_`pnl'_6 = "`aux'**"
 	else if `t' >= 1.645 local bFF99_`pnl'_6 = "`aux'*"
 	else                  local bFF99_`pnl'_6 = "`aux'"
-	
-	local seFF05_`pnl'_6: di %12.3f exp(_b[1.post#c.inten2005])*_se[1.post#c.inten2005]
-	local aux: di %12.3f exp(_b[1.post#c.inten2005])-1
+
+	local seFF05_`pnl'_6: di %12.2f exp(_b[1.post#c.inten2005])*_se[1.post#c.inten2005]*100
+	local aux: di %12.2f (exp(_b[1.post#c.inten2005])-1)*100
 	local t = abs(`aux' / `seFF05_`pnl'_6')
 	if      `t' >= 2.576 local bFF05_`pnl'_6 = "`aux'***"
 	else if `t' >= 1.96  local bFF05_`pnl'_6 = "`aux'**"
