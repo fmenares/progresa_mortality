@@ -736,7 +736,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 		local legend_nums "`legend_nums' `plot_count'"
 		local legend_labels "`legend_labels' label(`plot_count' Male)"
 	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
+	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 	`twoway_cmd'
 	graph export "$figures/appendix/Figure_3_`cod'_Marg.pdf", as(pdf) replace
 	restore
@@ -962,8 +962,8 @@ forval col = 1/4 {
 * Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5).
 * Reference year: 1996 (position 6 in year_1995 coding).
 * Output:
-*   Figure_7_ES_func_form_levels.pdf   — EMR in levels (per 1,000)
-*   Figure_7_ES_func_form_log.pdf      — log(EMR); zeros dropped
+*   Figure_7_ES_func_form_levels.pdf   — mortality rate in levels (per 1,000)
+*   Figure_7_ES_func_form_log.pdf      — log(mortality rate); zeros dropped
 *   Figure_7_ES_func_form_poisson.pdf  — death counts, ppmlhdfe, exp(b)-1
 *============================================================
 
@@ -982,11 +982,11 @@ foreach ff in levels log poisson {
 
 	*--- Labels and filenames ---
 	if "`ff'" == "levels" {
-		local ytitle_ff "EMR 65+ (per 1,000)"
+		local ytitle_ff "Mortality Rate, 65+ (per 1,000)"
 		local figname   "Figure_7_ES_func_form_levels"
 	}
 	else if "`ff'" == "log" {
-		local ytitle_ff "log(EMR 65+)"
+		local ytitle_ff "log(Mortality Rate, 65+)"
 		local figname   "Figure_7_ES_func_form_log"
 	}
 	else {
@@ -1035,7 +1035,7 @@ foreach ff in levels log poisson {
 			}
 		}
 		else if "`ff'" == "log" {
-			* Cells where EMR = 0 produce missing log values and are dropped automatically
+			* Cells where mortality rate = 0 produce missing log values and are dropped automatically
 			reghdfe `outcome_log' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
 				c.sp_intensity [pw=`wvar'] if $sample_marg, ///
 				a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
@@ -1376,7 +1376,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 		local legend_nums "`legend_nums' `plot_count'"
 		local legend_labels "`legend_labels' label(`plot_count' Male)"
 	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("EMR 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
+	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 	`twoway_cmd'
 	graph export "$figures/appendix/Figure_7_`cod'_BR.pdf", as(pdf) replace
 	restore
@@ -1525,7 +1525,7 @@ foreach pnl in p m f {
 	local NFF_`pnl'_4:    di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunFF_`pnl'_4: di %12.0fc `r(ndistinct)'
-	* col 5: log EMR, weighted
+	* col 5: log mortality rate, weighted
 	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
 		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
