@@ -1429,6 +1429,65 @@ foreach grp in w f m {
 	}
 }
 
+*------------------------------------------------------------
+* Romano-Wolf multiple hypothesis correction for AT1_cod_mortality
+* Family: 9 CoD outcomes; correction applied separately for
+* Intensity1999xPost and Intensity2005xPost, within each panel.
+* Requires: ssc install rwolf
+* NOTE: rw_treat99/05 = inten*post give the same coef as
+*       1.post#c.inten in reghdfe (municipality FE absorbs level)
+*------------------------------------------------------------
+cap drop rw_treat99 rw_treat05
+gen rw_treat99 = inten1999 * (post == 1)
+gen rw_treat05 = inten2005 * (post == 1)
+
+local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other"
+local rw_pval_col = 4   /* column of RW p-val in e(RW): verify with -matrix list e(RW)- */
+
+foreach grp in w f m {
+	if "`grp'" == "w" {
+		local wvar "popover65_"
+		local suffix ""
+	}
+	else if "`grp'" == "f" {
+		local wvar "popover65_f"
+		local suffix "f"
+	}
+	else {
+		local wvar "popover65_m"
+		local suffix "m"
+	}
+
+	local outcomes ""
+	foreach cod in `cod_rw' {
+		local outcomes "`outcomes' emr65`cod'`suffix'"
+	}
+
+	* RW for Intensity 1999 x post
+	rwolf `outcomes' [aw=`wvar'] if $sample_marg, ///
+		indepvar(rw_treat99) controls(rw_treat05 sp_intensity) ///
+		method(reghdfe) absorb(year cve_ent_mun_super) ///
+		cluster(cve_ent_mun_super) seed(12345) reps(500)
+	matrix RW99_`grp' = e(RW)
+	local i = 1
+	foreach cod in `cod_rw' {
+		local rwp99_`grp'_`cod': di %6.3f RW99_`grp'[`i', `rw_pval_col']
+		local i = `i' + 1
+	}
+
+	* RW for Intensity 2005 x post
+	rwolf `outcomes' [aw=`wvar'] if $sample_marg, ///
+		indepvar(rw_treat05) controls(rw_treat99 sp_intensity) ///
+		method(reghdfe) absorb(year cve_ent_mun_super) ///
+		cluster(cve_ent_mun_super) seed(12345) reps(500)
+	matrix RW05_`grp' = e(RW)
+	local i = 1
+	foreach cod in `cod_rw' {
+		local rwp05_`grp'_`cod': di %6.3f RW05_`grp'[`i', `rw_pval_col']
+		local i = `i' + 1
+	}
+}
+
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT1_cod_mortality.tex", write replace
@@ -1439,9 +1498,11 @@ foreach grp in w f m {
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post} & `b99_w_tb_cancer' & `b99_w_tb_diab' & `b99_w_tb_illdef' & `b99_w_tb_resp' & `b99_w_tb_card' & `b99_w_tb_infect' & `b99_w_tb_nutri' & `b99_w_tb_accid' & `b99_w_tb_other' \\ " _n
 	file write sm " & (`se99_w_tb_cancer') & (`se99_w_tb_diab') & (`se99_w_tb_illdef') & (`se99_w_tb_resp') & (`se99_w_tb_card') & (`se99_w_tb_infect') & (`se99_w_tb_nutri') & (`se99_w_tb_accid') & (`se99_w_tb_other') \\ " _n
+	file write sm " & [`rwp99_w_tb_cancer'] & [`rwp99_w_tb_diab'] & [`rwp99_w_tb_illdef'] & [`rwp99_w_tb_resp'] & [`rwp99_w_tb_card'] & [`rwp99_w_tb_infect'] & [`rwp99_w_tb_nutri'] & [`rwp99_w_tb_accid'] & [`rwp99_w_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "\textit{Intensity 2005 x post} & `b05_w_tb_cancer' & `b05_w_tb_diab' & `b05_w_tb_illdef' & `b05_w_tb_resp' & `b05_w_tb_card' & `b05_w_tb_infect' & `b05_w_tb_nutri' & `b05_w_tb_accid' & `b05_w_tb_other' \\ " _n
 	file write sm " & (`se05_w_tb_cancer') & (`se05_w_tb_diab') & (`se05_w_tb_illdef') & (`se05_w_tb_resp') & (`se05_w_tb_card') & (`se05_w_tb_infect') & (`se05_w_tb_nutri') & (`se05_w_tb_accid') & (`se05_w_tb_other') \\ " _n
+	file write sm " & [`rwp05_w_tb_cancer'] & [`rwp05_w_tb_diab'] & [`rwp05_w_tb_illdef'] & [`rwp05_w_tb_resp'] & [`rwp05_w_tb_card'] & [`rwp05_w_tb_infect'] & [`rwp05_w_tb_nutri'] & [`rwp05_w_tb_accid'] & [`rwp05_w_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "Mean (pre-1997) & `mean_w_tb_cancer' & `mean_w_tb_diab' & `mean_w_tb_illdef' & `mean_w_tb_resp' & `mean_w_tb_card' & `mean_w_tb_infect' & `mean_w_tb_nutri' & `mean_w_tb_accid' & `mean_w_tb_other' \\ " _n
 	file write sm "Obs & `N_w_tb_cancer' & `N_w_tb_diab' & `N_w_tb_illdef' & `N_w_tb_resp' & `N_w_tb_card' & `N_w_tb_infect' & `N_w_tb_nutri' & `N_w_tb_accid' & `N_w_tb_other' \\ " _n
@@ -1449,9 +1510,11 @@ foreach grp in w f m {
 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post} & `b99_f_tb_cancer' & `b99_f_tb_diab' & `b99_f_tb_illdef' & `b99_f_tb_resp' & `b99_f_tb_card' & `b99_f_tb_infect' & `b99_f_tb_nutri' & `b99_f_tb_accid' & `b99_f_tb_other' \\ " _n
 	file write sm " & (`se99_f_tb_cancer') & (`se99_f_tb_diab') & (`se99_f_tb_illdef') & (`se99_f_tb_resp') & (`se99_f_tb_card') & (`se99_f_tb_infect') & (`se99_f_tb_nutri') & (`se99_f_tb_accid') & (`se99_f_tb_other') \\ " _n
+	file write sm " & [`rwp99_f_tb_cancer'] & [`rwp99_f_tb_diab'] & [`rwp99_f_tb_illdef'] & [`rwp99_f_tb_resp'] & [`rwp99_f_tb_card'] & [`rwp99_f_tb_infect'] & [`rwp99_f_tb_nutri'] & [`rwp99_f_tb_accid'] & [`rwp99_f_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "\textit{Intensity 2005 x post} & `b05_f_tb_cancer' & `b05_f_tb_diab' & `b05_f_tb_illdef' & `b05_f_tb_resp' & `b05_f_tb_card' & `b05_f_tb_infect' & `b05_f_tb_nutri' & `b05_f_tb_accid' & `b05_f_tb_other' \\ " _n
 	file write sm " & (`se05_f_tb_cancer') & (`se05_f_tb_diab') & (`se05_f_tb_illdef') & (`se05_f_tb_resp') & (`se05_f_tb_card') & (`se05_f_tb_infect') & (`se05_f_tb_nutri') & (`se05_f_tb_accid') & (`se05_f_tb_other') \\ " _n
+	file write sm " & [`rwp05_f_tb_cancer'] & [`rwp05_f_tb_diab'] & [`rwp05_f_tb_illdef'] & [`rwp05_f_tb_resp'] & [`rwp05_f_tb_card'] & [`rwp05_f_tb_infect'] & [`rwp05_f_tb_nutri'] & [`rwp05_f_tb_accid'] & [`rwp05_f_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "Mean (pre-1997) & `mean_f_tb_cancer' & `mean_f_tb_diab' & `mean_f_tb_illdef' & `mean_f_tb_resp' & `mean_f_tb_card' & `mean_f_tb_infect' & `mean_f_tb_nutri' & `mean_f_tb_accid' & `mean_f_tb_other' \\ " _n
 	file write sm "Obs & `N_f_tb_cancer' & `N_f_tb_diab' & `N_f_tb_illdef' & `N_f_tb_resp' & `N_f_tb_card' & `N_f_tb_infect' & `N_f_tb_nutri' & `N_f_tb_accid' & `N_f_tb_other' \\ " _n
@@ -1459,9 +1522,11 @@ foreach grp in w f m {
 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post} & `b99_m_tb_cancer' & `b99_m_tb_diab' & `b99_m_tb_illdef' & `b99_m_tb_resp' & `b99_m_tb_card' & `b99_m_tb_infect' & `b99_m_tb_nutri' & `b99_m_tb_accid' & `b99_m_tb_other' \\ " _n
 	file write sm " & (`se99_m_tb_cancer') & (`se99_m_tb_diab') & (`se99_m_tb_illdef') & (`se99_m_tb_resp') & (`se99_m_tb_card') & (`se99_m_tb_infect') & (`se99_m_tb_nutri') & (`se99_m_tb_accid') & (`se99_m_tb_other') \\ " _n
+	file write sm " & [`rwp99_m_tb_cancer'] & [`rwp99_m_tb_diab'] & [`rwp99_m_tb_illdef'] & [`rwp99_m_tb_resp'] & [`rwp99_m_tb_card'] & [`rwp99_m_tb_infect'] & [`rwp99_m_tb_nutri'] & [`rwp99_m_tb_accid'] & [`rwp99_m_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "\textit{Intensity 2005 x post} & `b05_m_tb_cancer' & `b05_m_tb_diab' & `b05_m_tb_illdef' & `b05_m_tb_resp' & `b05_m_tb_card' & `b05_m_tb_infect' & `b05_m_tb_nutri' & `b05_m_tb_accid' & `b05_m_tb_other' \\ " _n
 	file write sm " & (`se05_m_tb_cancer') & (`se05_m_tb_diab') & (`se05_m_tb_illdef') & (`se05_m_tb_resp') & (`se05_m_tb_card') & (`se05_m_tb_infect') & (`se05_m_tb_nutri') & (`se05_m_tb_accid') & (`se05_m_tb_other') \\ " _n
+	file write sm " & [`rwp05_m_tb_cancer'] & [`rwp05_m_tb_diab'] & [`rwp05_m_tb_illdef'] & [`rwp05_m_tb_resp'] & [`rwp05_m_tb_card'] & [`rwp05_m_tb_infect'] & [`rwp05_m_tb_nutri'] & [`rwp05_m_tb_accid'] & [`rwp05_m_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "Mean (pre-1997) & `mean_m_tb_cancer' & `mean_m_tb_diab' & `mean_m_tb_illdef' & `mean_m_tb_resp' & `mean_m_tb_card' & `mean_m_tb_infect' & `mean_m_tb_nutri' & `mean_m_tb_accid' & `mean_m_tb_other' \\ " _n
 	file write sm "Obs & `N_m_tb_cancer' & `N_m_tb_diab' & `N_m_tb_illdef' & `N_m_tb_resp' & `N_m_tb_card' & `N_m_tb_infect' & `N_m_tb_nutri' & `N_m_tb_accid' & `N_m_tb_other' \\ " _n
