@@ -5,6 +5,9 @@
 figures/
 tables/
 
+# ---- Generated word count (rebuilt on each compile) ----
+wordcount.tex
+
 # ---- Common LaTeX temporary files ----
 *.aux
 *.bbl

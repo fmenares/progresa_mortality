@@ -47,6 +47,11 @@
 \usepackage{datetime}
 \newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
 
+% Word count: updated automatically by latexmkrc via texcount on each compile
+\newcommand{\wordcount}{%
+  \IfFileExists{wordcount.tex}{\input{wordcount.tex}}{N/A}%
+}
+
 % Paragraph numbering
 \newcounter{paragraphnum}
 \setcounter{paragraphnum}{0}
@@ -86,7 +91,7 @@ We study the long-term effects of Mexico's \textit{Progresa} conditional cash tr
 \noindent\textbf{JEL Codes:} I13, I14, I15, I18
 \end{abstract}
 
-\noindent\textbf{Word Count:} 4,958 words (main text, excluding figures, tables, and references)
+\noindent\textbf{Word Count:} \wordcount words (main text, excluding figures, tables, and references)
 
 \clearpage
 \setcounter{page}{1}
