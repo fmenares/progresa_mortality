@@ -204,7 +204,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/Figure_1b_inten1999.pdf", as(pdf) replace width(3)
+graph export "$figures/Figure_1b_inten1999.png", as(png) replace width(1200)
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -212,7 +212,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/Figure_1c_inten2005.pdf", as(pdf) replace width(3)
+graph export "$figures/Figure_1c_inten2005.png", as(png) replace width(1200)
 
  *---- Map 5: Initial rollout 1997 — mortality sample ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -220,7 +220,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2c_inten1997_mort.pdf", as(pdf) replace width(3)
+graph export "$figures/appendix/Figure_2c_inten1997_mort.png", as(png) replace width(1200)
 
 
 restore
@@ -605,7 +605,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2a_inten1999_all.pdf", as(pdf) replace width(2)
+graph export "$figures/appendix/Figure_2a_inten1999_all.png", as(png) replace width(1200)
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
@@ -613,7 +613,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2b_inten2005_all.pdf", as(pdf) replace width(2)
+graph export "$figures/appendix/Figure_2b_inten2005_all.png", as(png) replace width(1200)
 
 * ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) /// 
@@ -621,7 +621,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2d_inten1997_mort_all.pdf", as(pdf) replace width(2)
+graph export "$figures/appendix/Figure_2d_inten1997_mort_all.png", as(png) replace width(1200)
 
 
 
