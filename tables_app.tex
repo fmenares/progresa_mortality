@@ -32,7 +32,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
-      \input{tables/appendix/AT2_aamr_mortality}
+      \input{tables/appendix/AT3_aamr_mortality}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table reports difference-in-differences estimates using the Age-Adjusted Mortality Rate (AAMR) as an alternative outcome to the EMR used in the main analysis (Table~\ref{t:did}). The AAMR directly standardizes the mortality rate to a reference population. Columns (1) and (2) report unweighted estimates without and with Seguro Popular intensity, respectively; columns (3) and (4) report population-weighted estimates. The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
@@ -46,7 +46,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
-      \input{tables/appendix/AT3_BR_replication}
+      \input{tables/appendix/AT4_BR_replication}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the Elder Mortality Rate (EMR) for adults aged 65 and older per 1,000 inhabitants. Row (A) reproduces their original unweighted estimate using a two-year lagged intensity variable and the BR sample (municipalities incorporated in 1998 or 1999); row (B) reports our close replication. Row (C) adds population weights, which attenuates the estimate by approximately 50\% and reduces precision. Rows (D) and (E) replace the two-year lag with one-year and three-year lags, respectively. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
@@ -63,7 +63,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
-      \input{tables/appendix/AT4_BR_robustness_emr65}
+      \input{tables/appendix/AT5_BR_robustness_emr65}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table applies the interaction design of equation~(\ref{eq:didadapted}) to both the Barham-Rowberry sample and the full highly marginalized sample, using $\textit{Intensity}_{1999} \times \textit{Post}$ as the treatment variable over a 1992--2002 window. The outcome is the Elder Mortality Rate (EMR) for adults aged 65 and older per 1,000 inhabitants. Columns (1) and (2) report unweighted and population-weighted estimates for the Barham-Rowberry sample (municipalities incorporated into Progresa in 1998 or 1999); columns (3) and (4) report the corresponding estimates for the full highly marginalized sample ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
@@ -77,7 +77,7 @@
 % \floatbox[{\captop}]{table}[\FBwidth]
 %   {}
 %   {\scalebox{0.9}{
-%       \input{tables/appendix/AT4_BR_robustness_aamr65}
+%       \input{tables/appendix/AT5_BR_robustness_aamr65}
 %     }
 %     \vspace{-3mm}
 %     \floatfoot{Notes: Progresa intensity data are pooled from 1990 to 2000. All regression models include year fixed effects and municipality fixed effects. Standard errors are clustered at the municipality level. The regression model is weighted by the number of population aged +65. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
@@ -92,7 +92,7 @@
 % \floatbox[{\captop}]{table}[\FBwidth]
 %   {}
 %   {\scalebox{0.9}{
-%       \input{tables/appendix/AT_functional_forms}
+%       \input{tables/appendix/AT2_functional_forms}
 %     }
 %     \vspace{-3mm}
 %     \floatfoot{Notes: Progresa intensity data are pooled from 1990 to 2000. All regression models include year fixed effects and municipality fixed effects. Standard errors are clustered at the municipality level. The regression model is weighted by the number of population aged +65. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
@@ -108,7 +108,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.7}{
-      \input{tables/appendix/AT5_cod_br_mortality}
+      \input{tables/appendix/AT6_cod_br_mortality}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table replicates the cause-specific analysis of Appendix Table~\ref{at:did_robust_cod} using the Barham-Rowberry sample (municipalities incorporated into \textit{Progresa} in 1998 or 1999) over 1992--2002. Each column corresponds to a specific cause of death. \textit{Progresa} enrollment intensity ($\textit{Intensity}_{1999}$) is interacted with the post-1997 dummy following equation~(\ref{eq:didadapted}). Regressions are weighted by the population aged 65 and older. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
