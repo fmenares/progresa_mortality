@@ -1276,7 +1276,7 @@ di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
 
 *============================================================
 * APPENDIX FIGURE 6: Event Study by Cause of Death (BR Sample, 1992-2002)
-* Figure_6_XXX_BR.pdf — y-axis fixed at -6(3)6 for all causes
+* Figure_7_XXX_BR.pdf — y-axis fixed at -3(3)3 for all causes
 *============================================================
 
 {
@@ -1352,15 +1352,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 		}
 	}
 
-	if inlist("`cod'", "tb_cancer", "tb_diab", "tb_illdef", "tb_infect") {
-		local yaxis_range "-6(3)3"
-	}
-	else if "`cod'" == "tb_card" {
-		local yaxis_range "-9(3)9"
-	}
-	else {
-		local yaxis_range "-6(3)6"
-	}
+	local yaxis_range "-3(3)3"
 
 	local twoway_cmd "twoway"
 	local legend_nums ""
@@ -1384,7 +1376,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 		local legend_nums "`legend_nums' `plot_count'"
 		local legend_labels "`legend_labels' label(`plot_count' Male)"
 	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
+	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 	`twoway_cmd'
 	graph export "$figures/appendix/Figure_7_`cod'_BR.pdf", as(pdf) replace
 	restore
