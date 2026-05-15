@@ -20,6 +20,10 @@ tables/
 *.nav
 *.snm
 
+# ---- Stata temporary files ----
+*.stswp
+~*.do
+
 # ---- Editor / OS clutter ----
 .DS_Store
 Thumbs.db
