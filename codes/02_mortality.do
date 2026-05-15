@@ -710,6 +710,9 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	if inlist("`cod'", "tb_cancer", "tb_diab", "tb_illdef", "tb_infect") {
 		local yaxis_range "-6(3)3"
 	}
+	else if "`cod'" == "tb_card" {
+		local yaxis_range "-9(3)9"
+	}
 	else {
 		local yaxis_range "-6(3)6"
 	}
@@ -1354,6 +1357,9 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 
 	if inlist("`cod'", "tb_cancer", "tb_diab", "tb_illdef", "tb_infect") {
 		local yaxis_range "-6(3)3"
+	}
+	else if "`cod'" == "tb_card" {
+		local yaxis_range "-9(3)9"
 	}
 	else {
 		local yaxis_range "-6(3)6"
