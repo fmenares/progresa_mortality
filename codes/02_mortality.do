@@ -1422,7 +1422,7 @@ foreach grp in w f m {
 		else if `t' >= 1.645 local b05_`grp'_`cod' = "`aux'*"
 		else                  local b05_`grp'_`cod' = "`aux'"
 		local se05_`grp'_`cod': di %12.3f _se[1.post#c.inten2005]
-		sum emr65`cod'`suffix' if e(sample) & post == 0
+		sum emr65`cod'`suffix' if e(sample) & post == 2
 		local mean_`grp'_`cod': di %12.2fc `r(mean)'
 		local N_`grp'_`cod': di %12.0fc `e(N)'
 	}
@@ -1969,7 +1969,7 @@ foreach grp in w f m {
 		else if `t' >= 1.645 local b99_br_`grp'_`cod' = "`aux'*"
 		else                  local b99_br_`grp'_`cod' = "`aux'"
 		local se99_br_`grp'_`cod': di %12.3f _se[1.post#c.inten1999]
-		sum emr65`cod'`suffix' if e(sample) & post == 0
+		sum emr65`cod'`suffix' if e(sample) & post == 2
 		local mean_br_`grp'_`cod': di %12.2fc `r(mean)'
 		local N_br_`grp'_`cod': di %12.0fc `e(N)'
 	}
