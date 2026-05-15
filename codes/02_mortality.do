@@ -1728,41 +1728,41 @@ foreach pnl in p m f {
 	cap file close sm
 	file open sm using "$tables/appendix/AT3_BR_replication.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Males} & \multicolumn{1}{c}{Females} \\ " _n
+	file write sm "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}  " _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule " _n
 	* Panel A: hardcoded BR (2013) original results
 	file write sm "\underline{\textit{Panel A: BR (2013)}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & -6.37*** & -6.42*** & -6.46*** \\ " _n
-	file write sm " & (1.04) & (1.42) & (1.31) \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & -6.37*** & -6.46*** & -6.42*** \\ " _n
+	file write sm " & (1.04) & (1.31) & (1.42) \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mean 1996 & 47.5 & 49.3 & 46.0 \\ " _n
+	file write sm "Mean 1996 & 47.5 & 46.0 & 49.3 \\ " _n
 	file write sm "Obs & 21,571 & 21,571 & 21,571 \\ " _n
 	file write sm "No. Mun & 1,961 & 1,961 & 1,961 \\ " _n
 	file write sm "  & & & \\ " _n
 	* Panel B: lag2, UW
 	file write sm "\underline{\textit{Panel B: Replication (Unweighted)}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & `bBR2_2_p' & `bBR2_2_m' & `bBR2_2_f' \\ " _n
-	file write sm " & (`seBR2_2_p') & (`seBR2_2_m') & (`seBR2_2_f') \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_2_p' & `bBR2_2_f' & `bBR2_2_m' \\ " _n
+	file write sm " & (`seBR2_2_p') & (`seBR2_2_f') & (`seBR2_2_m') \\ " _n
 	file write sm "  & & & \\ " _n
 	* Panel C: lag2, W
 	file write sm "\underline{\textit{Panel C: Replication (Weighted)}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & `bBR2_3_p' & `bBR2_3_m' & `bBR2_3_f' \\ " _n
-	file write sm " & (`seBR2_3_p') & (`seBR2_3_m') & (`seBR2_3_f') \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_3_p' & `bBR2_3_f' & `bBR2_3_m' \\ " _n
+	file write sm " & (`seBR2_3_p') & (`seBR2_3_f') & (`seBR2_3_m') \\ " _n
 	file write sm "  & & & \\ " _n
 	* Panel D: lag1, W
 	file write sm "\underline{\textit{Panel D: 1-yr Lag (Weighted)}}  \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & `bBR1_4_p' & `bBR1_4_m' & `bBR1_4_f' \\ " _n
-	file write sm " & (`seBR1_4_p') & (`seBR1_4_m') & (`seBR1_4_f') \\ " _n
+	file write sm "\textit{1-yr lagged Intensity} & `bBR1_4_p' & `bBR1_4_f' & `bBR1_4_m' \\ " _n
+	file write sm " & (`seBR1_4_p') & (`seBR1_4_f') & (`seBR1_4_m') \\ " _n
 	file write sm "  & & & \\ " _n
 	* Panel E: lag3, W
 	file write sm "\underline{\textit{Panel E: 3-yr Lag (Weighted)}}  \\ " _n
-	file write sm "\textit{3-yr lagged Intensity} & `bBR3_5_p' & `bBR3_5_m' & `bBR3_5_f' \\ " _n
-	file write sm " & (`seBR3_5_p') & (`seBR3_5_m') & (`seBR3_5_f') \\ " _n
+	file write sm "\textit{3-yr lagged Intensity} & `bBR3_5_p' & `bBR3_5_f' & `bBR3_5_m' \\ " _n
+	file write sm " & (`seBR3_5_p') & (`seBR3_5_f') & (`seBR3_5_m') \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mean 1996 & `meanBR_5_p' & `meanBR_5_m' & `meanBR_5_f' \\ " _n
-	file write sm "Obs & `NBR_5_p' & `NBR_5_m' & `NBR_5_f' \\ " _n
-	file write sm "No. Mun & `NmunBR_2_p' & `NmunBR_2_m' & `NmunBR_2_f' \\ " _n
+	file write sm "Mean 1996 & `meanBR_5_p' & `meanBR_5_f' & `meanBR_5_m' \\ " _n
+	file write sm "Obs & `NBR_5_p' & `NBR_5_f' & `NBR_5_m' \\ " _n
+	file write sm "No. Mun & `NmunBR_2_p' & `NmunBR_2_f' & `NmunBR_2_m' \\ " _n
 	file write sm "  & & & \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
