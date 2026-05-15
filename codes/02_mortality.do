@@ -496,11 +496,8 @@ foreach pnl in p m f {
 	file write sm "  & & & & \\ " _n
 	file write sm "No. Mun & `Nmun_p_1' & `Nmun_p_2' & `Nmun_p_3' & `Nmun_p_4' \\ " _n
 	file write sm "  & & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y & Y \\ " _n
-	file write sm "Mun FE & Y & Y & Y & Y \\ " _n
 	file write sm "Seguro Popular & N & Y & N & Y \\ " _n
 	file write sm "Weights & N & N & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1476,11 +1473,6 @@ foreach grp in w f m {
 	file write sm "Mean (pre-1997) & `mean_m_tb_cancer' & `mean_m_tb_diab' & `mean_m_tb_illdef' & `mean_m_tb_resp' & `mean_m_tb_card' & `mean_m_tb_infect' & `mean_m_tb_nutri' & `mean_m_tb_accid' & `mean_m_tb_other' \\ " _n
 	file write sm "Obs & `N_m_tb_cancer' & `N_m_tb_diab' & `N_m_tb_illdef' & `N_m_tb_resp' & `N_m_tb_card' & `N_m_tb_infect' & `N_m_tb_nutri' & `N_m_tb_accid' & `N_m_tb_other' \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Seguro Popular & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Weights & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1647,11 +1639,7 @@ foreach pnl in p m f {
 	file write sm "Obs & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' & `NAAMR_f' \\ " _n
 	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
 	file write sm "  & & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y & Y \\ " _n
-	file write sm "Mun FE  & Y & Y & Y & Y \\ " _n
 	file write sm "Seguro Popular & N & N & N & Y \\ " _n
-	file write sm "Weights & Y & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1776,9 +1764,6 @@ foreach pnl in p m f {
 	file write sm "Obs & `NBR_5_p' & `NBR_5_m' & `NBR_5_f' \\ " _n
 	file write sm "No. Mun & `NmunBR_2_p' & `NmunBR_2_m' & `NmunBR_2_f' \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y \\ " _n
-	file write sm "Mun FE & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2026,11 +2011,6 @@ foreach grp in w f m {
 	file write sm "Mean (pre-1997) & `mean_br_m_tb_cancer' & `mean_br_m_tb_diab' & `mean_br_m_tb_illdef' & `mean_br_m_tb_resp' & `mean_br_m_tb_card' & `mean_br_m_tb_infect' & `mean_br_m_tb_nutri' & `mean_br_m_tb_accid' & `mean_br_m_tb_other' \\ " _n
 	file write sm "Obs & `N_br_m_tb_cancer' & `N_br_m_tb_diab' & `N_br_m_tb_illdef' & `N_br_m_tb_resp' & `N_br_m_tb_card' & `N_br_m_tb_infect' & `N_br_m_tb_nutri' & `N_br_m_tb_accid' & `N_br_m_tb_other' \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Mun FE & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Seguro Popular & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Weights & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y & Y & Y & Y & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2174,9 +2154,6 @@ foreach pnl in p m f {
 	file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' \\ " _n
 	file write sm "No. Mun & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Year FE & Y & Y & Y \\ " _n
-	file write sm "Mun FE  & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2334,10 +2311,6 @@ foreach pnl in p m f {
 	file write sm "Obs & `NDDD_f_1' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
 	file write sm "No. Mun & `NmunDDD_p_1' & `NmunDDD_p_1' & `NmunDDD_p_1' \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mun \$\times\$ Year FE & Y & Y & Y \\ " _n
-	file write sm "Mun \$\times\$ Age FE  & Y & Y & Y \\ " _n
-	file write sm "Year \$\times\$ Age FE & Y & Y & Y \\ " _n
-	file write sm "Cluster SE: Mun & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
