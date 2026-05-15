@@ -474,17 +474,7 @@ foreach pnl in p m f {
 	file write sm "Mean (1991-1996) & `mean_p_1' & `mean_p_2' & `mean_p_3' & `mean_p_4' \\ " _n
 	file write sm "Obs & `N_p_1' & `N_p_2' & `N_p_3' & `N_p_4' \\ " _n
 	file write sm "  & & & & \\ " _n
-	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_m_1' & `b99_m_2' & `b99_m_3' & `b99_m_4' \\ " _n
-	file write sm " & (`se99_m_1') & (`se99_m_2') & (`se99_m_3') & (`se99_m_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_m_1' & `b05_m_2' & `b05_m_3' & `b05_m_4' \\ " _n
-	file write sm " & (`se05_m_1') & (`se05_m_2') & (`se05_m_3') & (`se05_m_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `mean_m_1' & `mean_m_2' & `mean_m_3' & `mean_m_4' \\ " _n
-	file write sm "Obs & `N_m_1' & `N_m_2' & `N_m_3' & `N_m_4' \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_f_1' & `b99_f_2' & `b99_f_3' & `b99_f_4' \\ " _n
 	file write sm " & (`se99_f_1') & (`se99_f_2') & (`se99_f_3') & (`se99_f_4') \\ " _n
 	file write sm "  & & & & \\ " _n
@@ -493,6 +483,16 @@ foreach pnl in p m f {
 	file write sm "  & & & & \\ " _n
 	file write sm "Mean (1991-1996) & `mean_f_1' & `mean_f_2' & `mean_f_3' & `mean_f_4' \\ " _n
 	file write sm "Obs & `N_f_1' & `N_f_2' & `N_f_3' & `N_f_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_m_1' & `b99_m_2' & `b99_m_3' & `b99_m_4' \\ " _n
+	file write sm " & (`se99_m_1') & (`se99_m_2') & (`se99_m_3') & (`se99_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_m_1' & `b05_m_2' & `b05_m_3' & `b05_m_4' \\ " _n
+	file write sm " & (`se05_m_1') & (`se05_m_2') & (`se05_m_3') & (`se05_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_m_1' & `mean_m_2' & `mean_m_3' & `mean_m_4' \\ " _n
+	file write sm "Obs & `N_m_1' & `N_m_2' & `N_m_3' & `N_m_4' \\ " _n
 	file write sm "  & & & & \\ " _n
 	file write sm "No. Mun & `Nmun_p_1' & `Nmun_p_2' & `Nmun_p_3' & `Nmun_p_4' \\ " _n
 	file write sm "  & & & & \\ " _n
@@ -1626,16 +1626,7 @@ foreach pnl in p m f {
 	file write sm "  & & & & \\ " _n
 	file write sm "Mean (1991-1996)  & `meanFF_p_4' & `meanFF_p_5' & `meanFF_p_6' & `meanAAMR_p' \\ " _n
 	file write sm "  & & & &  \\ " _n
-	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_m_4' & `bFF99_m_5' & `bFF99_m_6' & `bAAMR99_m' \\ " _n
-	file write sm "  & (`seFF99_m_4') & (`seFF99_m_5') & (`seFF99_m_6') & (`seAAMR99_m') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bFF05_m_4' & `bFF05_m_5' & `bFF05_m_6' & `bAAMR05_m' \\ " _n
-	file write sm " & (`seFF05_m_4') & (`seFF05_m_5') & (`seFF05_m_6') & (`seAAMR05_m') \\ " _n
-	file write sm " & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `meanFF_m_4' & `meanFF_m_5' & `meanFF_m_6' & `meanAAMR_m' \\ " _n
-	file write sm "  & & & &  \\ " _n
-	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bFF99_f_4' & `bFF99_f_5' & `bFF99_f_6' & `bAAMR99_f' \\ " _n
 	file write sm "  & (`seFF99_f_4') & (`seFF99_f_5') & (`seFF99_f_6') & (`seAAMR99_f') \\ " _n
 	file write sm "  & & & & \\ " _n
@@ -1643,6 +1634,15 @@ foreach pnl in p m f {
 	file write sm " & (`seFF05_f_4') & (`seFF05_f_5') & (`seFF05_f_6') & (`seAAMR05_f') \\ " _n
 	file write sm "   & & & & \\ " _n
 	file write sm "Mean (1991-1996)  & `meanFF_f_4' & `meanFF_f_5' & `meanFF_f_6' & `meanAAMR_f' \\ " _n
+	file write sm "  & & & &  \\ " _n
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_m_4' & `bFF99_m_5' & `bFF99_m_6' & `bAAMR99_m' \\ " _n
+	file write sm "  & (`seFF99_m_4') & (`seFF99_m_5') & (`seFF99_m_6') & (`seAAMR99_m') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bFF05_m_4' & `bFF05_m_5' & `bFF05_m_6' & `bAAMR05_m' \\ " _n
+	file write sm " & (`seFF05_m_4') & (`seFF05_m_5') & (`seFF05_m_6') & (`seAAMR05_m') \\ " _n
+	file write sm " & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanFF_m_4' & `meanFF_m_5' & `meanFF_m_6' & `meanAAMR_m' \\ " _n
 	file write sm "  & & & &  \\ " _n
 	file write sm "Obs & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' & `NAAMR_f' \\ " _n
 	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
@@ -2153,16 +2153,7 @@ foreach pnl in p m f {
 	file write sm "  & & & \\ " _n
 	file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' \\ " _n
 	file write sm "  & & &  \\ " _n
-	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_3' \\ " _n
-	file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `bMG05_m_2' & `bMG05_m_3' \\ " _n
-	file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') \\ " _n
-	file write sm " & & & \\ " _n
-	file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' \\ " _n
-	file write sm "  & & &  \\ " _n
-	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & `bMG99_f_2' & `bMG99_f_3' \\ " _n
 	file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') \\ " _n
 	file write sm "  & & & \\ " _n
@@ -2170,6 +2161,15 @@ foreach pnl in p m f {
 	file write sm " & (`seMG05_f_1') & (`seMG05_f_2') & (`seMG05_f_3') \\ " _n
 	file write sm "   & & & \\ " _n
 	file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_3' \\ " _n
+	file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `bMG05_m_2' & `bMG05_m_3' \\ " _n
+	file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') \\ " _n
+	file write sm " & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' \\ " _n
 	file write sm "No. Mun & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' \\ " _n
@@ -2313,16 +2313,7 @@ foreach pnl in p m f {
 	file write sm "  & & & \\ " _n
 	file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_1' & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
 	file write sm "  & & &  \\ " _n
-	file write sm "\underline{\textit{Panel B: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_1' & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
-	file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_m_1' & `bDDD05_m_2' & `bDDD05_m_3' \\ " _n
-	file write sm " & (`seDDD05_m_1') & (`seDDD05_m_2') & (`seDDD05_m_3') \\ " _n
-	file write sm " & & & \\ " _n
-	file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
-	file write sm "  & & &  \\ " _n
-	file write sm "\underline{\textit{Panel C: Females}}  \\ " _n
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_1' & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
 	file write sm "  & (`seDDD99_f_1') & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
 	file write sm "  & & & \\ " _n
@@ -2330,6 +2321,15 @@ foreach pnl in p m f {
 	file write sm " & (`seDDD05_f_1') & (`seDDD05_f_2') & (`seDDD05_f_3') \\ " _n
 	file write sm "   & & & \\ " _n
 	file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_1' & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_1' & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
+	file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_m_1' & `bDDD05_m_2' & `bDDD05_m_3' \\ " _n
+	file write sm " & (`seDDD05_m_1') & (`seDDD05_m_2') & (`seDDD05_m_3') \\ " _n
+	file write sm " & & & \\ " _n
+	file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "Obs & `NDDD_f_1' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
 	file write sm "No. Mun & `NmunDDD_p_1' & `NmunDDD_p_1' & `NmunDDD_p_1' \\ " _n
