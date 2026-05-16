@@ -1433,7 +1433,8 @@ foreach grp in w f m {
 * Romano-Wolf multiple hypothesis correction for AT1_cod_mortality
 * Family: 9 CoD outcomes; correction applied separately for
 * Intensity1999xPost and Intensity2005xPost, within each panel.
-* Requires: ssc install rwolf2
+* Requires Chiburis-Buckner rwolf2 (supports method/absorb/controls):
+*   ssc install rwolf2, replace
 * NOTE: rw_treat99/05 = inten*post give the same coef as
 *       1.post#c.inten in reghdfe (municipality FE absorbs level)
 *------------------------------------------------------------
@@ -1466,7 +1467,7 @@ foreach grp in w f m {
 
 	* RW for Intensity 1999 x post only
 	rwolf2 `outcomes' [aw=`wvar'] if $sample_marg, ///
-		indepvar(rw_treat99) controls(rw_treat05 sp_intensity) ///
+		indepvars(rw_treat99) controls(rw_treat05 sp_intensity) ///
 		method(reghdfe) absorb(year cve_ent_mun_super) ///
 		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
 		seed(12345) nbootstraps(500)
