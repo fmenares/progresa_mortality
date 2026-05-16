@@ -1458,14 +1458,18 @@ foreach grp in w f m {
 		local suffix "m"
 	}
 
-	* Build one equation per outcome; both treatment variables enter each regression
-	local rw_eqs ""
+	* Build outcome varlist
+	local outcomes ""
 	foreach cod in `cod_rw' {
-		local rw_eqs "`rw_eqs' (reghdfe emr65`cod'`suffix' rw_treat99 rw_treat05 sp_intensity [aw=`wvar'] if $sample_marg, absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super))"
+		local outcomes "`outcomes' emr65`cod'`suffix'"
 	}
 
 	* RW for Intensity 1999 x post only
-	rwolf2 `rw_eqs', indepvars(rw_treat99) seed(12345) reps(500)
+	rwolf2 `outcomes' [aw=`wvar'] if $sample_marg, ///
+		indepvars(rw_treat99) controls(rw_treat05 sp_intensity) ///
+		method(reghdfe) absorb(year cve_ent_mun_super) ///
+		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
+		seed(12345) reps(500)
 	matrix RW99_`grp' = e(RW)
 	local i = 1
 	foreach cod in `cod_rw' {
