@@ -1430,20 +1430,22 @@ foreach grp in w f m {
 }
 
 *------------------------------------------------------------
-* Romano-Wolf multiple hypothesis correction for AT1_cod_mortality
-* Family: 9 CoD outcomes; correction applied for Intensity1999xPost
-* within each panel (pooled, female, male).
-* Package: ssc install rwolf   (Clarke, Romano & Wolf, SJ 2020)
-* e(RW): rows = outcomes (in varlist order), col 1 = p, col 2 = RW p
-* NOTE: rw_treat99 = inten1999*(post==1) is numerically identical to
-*       the 1.post#c.inten1999 coefficient from the main regressions
+* Romano-Wolf step-down correction for AT1_cod_mortality
+* Family: 9 CoD outcomes; correction for Intensity1999xPost within each panel.
+* Package: ssc install wyoung   (Jones, Molitor & Reif, SJ 2019)
+* wyoung uses OUTCOMEVAR as placeholder in cmd(); the weight is embedded
+* directly so it varies correctly across pooled/female/male panels.
+* r(table): rows = outcomes in varlist order; col 5 = RW adjusted p-value.
+*   Verify on first run with: matrix list r(table)
+* NOTE: rw_treat99 = inten1999*(post==1) gives same coef as
+*       1.post#c.inten1999 in the main reghdfe regressions.
 *------------------------------------------------------------
 cap drop rw_treat99 rw_treat05
 gen rw_treat99 = inten1999 * (post == 1)
 gen rw_treat05 = inten2005 * (post == 1)
 
 local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other"
-local rw_pval_col = 2   /* col 2 of e(RW) = RW-adjusted p-value */
+local wy_pval_col = 5   /* verify with: matrix list r(table) after first run */
 
 foreach grp in w f m {
 	if "`grp'" == "w" {
@@ -1465,17 +1467,18 @@ foreach grp in w f m {
 		local outcomes "`outcomes' emr65`cod'`suffix'"
 	}
 
-	* RW for Intensity 1999 x post only
-	* No if-condition needed: dataset already restricted to $sample_marg
-	rwolf `outcomes' [aw=`wvar'], ///
-		indepvar(rw_treat99) controls(rw_treat05 sp_intensity) ///
-		method(reghdfe) absorb(year cve_ent_mun_super) ///
-		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
-		seed(12345) reps(500)
-	matrix RW99_`grp' = e(RW)
+	* Embed weight in command template so it is panel-specific
+	local cmd_str "reghdfe OUTCOMEVAR rw_treat99 rw_treat05 sp_intensity [aw=`wvar'], absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)"
+
+	wyoung `outcomes', ///
+		cmd(`"`cmd_str'"') ///
+		familyp(rw_treat99) bootstraps(500) seed(12345) ///
+		cluster(cve_ent_mun_super)
+
+	matrix WY99_`grp' = r(table)
 	local i = 1
 	foreach cod in `cod_rw' {
-		local rwp99_`grp'_`cod': di %6.3f RW99_`grp'[`i', `rw_pval_col']
+		local rwp99_`grp'_`cod': di %6.3f WY99_`grp'[`i', `wy_pval_col']
 		local i = `i' + 1
 	}
 }
