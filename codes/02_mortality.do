@@ -1433,7 +1433,7 @@ foreach grp in w f m {
 * Romano-Wolf multiple hypothesis correction for AT1_cod_mortality
 * Family: 9 CoD outcomes; correction applied separately for
 * Intensity1999xPost and Intensity2005xPost, within each panel.
-* Requires: ssc install rwolf
+* Requires: ssc install rwolf2
 * NOTE: rw_treat99/05 = inten*post give the same coef as
 *       1.post#c.inten in reghdfe (municipality FE absorbs level)
 *------------------------------------------------------------
@@ -1458,17 +1458,14 @@ foreach grp in w f m {
 		local suffix "m"
 	}
 
-	local outcomes ""
+	* Build one equation per outcome; both treatment variables enter each regression
+	local rw_eqs ""
 	foreach cod in `cod_rw' {
-		local outcomes "`outcomes' emr65`cod'`suffix'"
+		local rw_eqs "`rw_eqs' (reghdfe emr65`cod'`suffix' rw_treat99 rw_treat05 sp_intensity [aw=`wvar'] if $sample_marg, absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super))"
 	}
 
 	* RW for Intensity 1999 x post
-	rwolf `outcomes' [aw=`wvar'] if $sample_marg, ///
-		indepvar(rw_treat99) controls(rw_treat05 sp_intensity) ///
-		method(reghdfe) absorb(year cve_ent_mun_super) ///
-		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
-		seed(12345) reps(500)
+	rwolf2 `rw_eqs', indepvar(rw_treat99) seed(12345) reps(500)
 	matrix RW99_`grp' = e(RW)
 	local i = 1
 	foreach cod in `cod_rw' {
@@ -1477,11 +1474,7 @@ foreach grp in w f m {
 	}
 
 	* RW for Intensity 2005 x post
-	rwolf `outcomes' [aw=`wvar'] if $sample_marg, ///
-		indepvar(rw_treat05) controls(rw_treat99 sp_intensity) ///
-		method(reghdfe) absorb(year cve_ent_mun_super) ///
-		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
-		seed(12345) reps(500)
+	rwolf2 `rw_eqs', indepvar(rw_treat05) seed(12345) reps(500)
 	matrix RW05_`grp' = e(RW)
 	local i = 1
 	foreach cod in `cod_rw' {
