@@ -1464,21 +1464,12 @@ foreach grp in w f m {
 		local rw_eqs "`rw_eqs' (reghdfe emr65`cod'`suffix' rw_treat99 rw_treat05 sp_intensity [aw=`wvar'] if $sample_marg, absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super))"
 	}
 
-	* RW for Intensity 1999 x post
-	rwolf2 `rw_eqs', indepvar(rw_treat99) seed(12345) reps(500)
+	* RW for Intensity 1999 x post only
+	rwolf2 `rw_eqs', indepvars(rw_treat99) seed(12345) reps(500)
 	matrix RW99_`grp' = e(RW)
 	local i = 1
 	foreach cod in `cod_rw' {
 		local rwp99_`grp'_`cod': di %6.3f RW99_`grp'[`i', `rw_pval_col']
-		local i = `i' + 1
-	}
-
-	* RW for Intensity 2005 x post
-	rwolf2 `rw_eqs', indepvar(rw_treat05) seed(12345) reps(500)
-	matrix RW05_`grp' = e(RW)
-	local i = 1
-	foreach cod in `cod_rw' {
-		local rwp05_`grp'_`cod': di %6.3f RW05_`grp'[`i', `rw_pval_col']
 		local i = `i' + 1
 	}
 }
@@ -1497,7 +1488,6 @@ foreach grp in w f m {
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "\textit{Intensity 2005 x post} & `b05_w_tb_cancer' & `b05_w_tb_diab' & `b05_w_tb_illdef' & `b05_w_tb_resp' & `b05_w_tb_card' & `b05_w_tb_infect' & `b05_w_tb_nutri' & `b05_w_tb_accid' & `b05_w_tb_other' \\ " _n
 	file write sm " & (`se05_w_tb_cancer') & (`se05_w_tb_diab') & (`se05_w_tb_illdef') & (`se05_w_tb_resp') & (`se05_w_tb_card') & (`se05_w_tb_infect') & (`se05_w_tb_nutri') & (`se05_w_tb_accid') & (`se05_w_tb_other') \\ " _n
-	file write sm " & [`rwp05_w_tb_cancer'] & [`rwp05_w_tb_diab'] & [`rwp05_w_tb_illdef'] & [`rwp05_w_tb_resp'] & [`rwp05_w_tb_card'] & [`rwp05_w_tb_infect'] & [`rwp05_w_tb_nutri'] & [`rwp05_w_tb_accid'] & [`rwp05_w_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "Mean (pre-1997) & `mean_w_tb_cancer' & `mean_w_tb_diab' & `mean_w_tb_illdef' & `mean_w_tb_resp' & `mean_w_tb_card' & `mean_w_tb_infect' & `mean_w_tb_nutri' & `mean_w_tb_accid' & `mean_w_tb_other' \\ " _n
 	file write sm "Obs & `N_w_tb_cancer' & `N_w_tb_diab' & `N_w_tb_illdef' & `N_w_tb_resp' & `N_w_tb_card' & `N_w_tb_infect' & `N_w_tb_nutri' & `N_w_tb_accid' & `N_w_tb_other' \\ " _n
@@ -1509,7 +1499,6 @@ foreach grp in w f m {
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "\textit{Intensity 2005 x post} & `b05_f_tb_cancer' & `b05_f_tb_diab' & `b05_f_tb_illdef' & `b05_f_tb_resp' & `b05_f_tb_card' & `b05_f_tb_infect' & `b05_f_tb_nutri' & `b05_f_tb_accid' & `b05_f_tb_other' \\ " _n
 	file write sm " & (`se05_f_tb_cancer') & (`se05_f_tb_diab') & (`se05_f_tb_illdef') & (`se05_f_tb_resp') & (`se05_f_tb_card') & (`se05_f_tb_infect') & (`se05_f_tb_nutri') & (`se05_f_tb_accid') & (`se05_f_tb_other') \\ " _n
-	file write sm " & [`rwp05_f_tb_cancer'] & [`rwp05_f_tb_diab'] & [`rwp05_f_tb_illdef'] & [`rwp05_f_tb_resp'] & [`rwp05_f_tb_card'] & [`rwp05_f_tb_infect'] & [`rwp05_f_tb_nutri'] & [`rwp05_f_tb_accid'] & [`rwp05_f_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "Mean (pre-1997) & `mean_f_tb_cancer' & `mean_f_tb_diab' & `mean_f_tb_illdef' & `mean_f_tb_resp' & `mean_f_tb_card' & `mean_f_tb_infect' & `mean_f_tb_nutri' & `mean_f_tb_accid' & `mean_f_tb_other' \\ " _n
 	file write sm "Obs & `N_f_tb_cancer' & `N_f_tb_diab' & `N_f_tb_illdef' & `N_f_tb_resp' & `N_f_tb_card' & `N_f_tb_infect' & `N_f_tb_nutri' & `N_f_tb_accid' & `N_f_tb_other' \\ " _n
@@ -1521,7 +1510,6 @@ foreach grp in w f m {
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "\textit{Intensity 2005 x post} & `b05_m_tb_cancer' & `b05_m_tb_diab' & `b05_m_tb_illdef' & `b05_m_tb_resp' & `b05_m_tb_card' & `b05_m_tb_infect' & `b05_m_tb_nutri' & `b05_m_tb_accid' & `b05_m_tb_other' \\ " _n
 	file write sm " & (`se05_m_tb_cancer') & (`se05_m_tb_diab') & (`se05_m_tb_illdef') & (`se05_m_tb_resp') & (`se05_m_tb_card') & (`se05_m_tb_infect') & (`se05_m_tb_nutri') & (`se05_m_tb_accid') & (`se05_m_tb_other') \\ " _n
-	file write sm " & [`rwp05_m_tb_cancer'] & [`rwp05_m_tb_diab'] & [`rwp05_m_tb_illdef'] & [`rwp05_m_tb_resp'] & [`rwp05_m_tb_card'] & [`rwp05_m_tb_infect'] & [`rwp05_m_tb_nutri'] & [`rwp05_m_tb_accid'] & [`rwp05_m_tb_other'] \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "Mean (pre-1997) & `mean_m_tb_cancer' & `mean_m_tb_diab' & `mean_m_tb_illdef' & `mean_m_tb_resp' & `mean_m_tb_card' & `mean_m_tb_infect' & `mean_m_tb_nutri' & `mean_m_tb_accid' & `mean_m_tb_other' \\ " _n
 	file write sm "Obs & `N_m_tb_cancer' & `N_m_tb_diab' & `N_m_tb_illdef' & `N_m_tb_resp' & `N_m_tb_card' & `N_m_tb_infect' & `N_m_tb_nutri' & `N_m_tb_accid' & `N_m_tb_other' \\ " _n
