@@ -1431,19 +1431,19 @@ foreach grp in w f m {
 
 *------------------------------------------------------------
 * Romano-Wolf multiple hypothesis correction for AT1_cod_mortality
-* Family: 9 CoD outcomes; correction applied separately for
-* Intensity1999xPost and Intensity2005xPost, within each panel.
-* Requires Chiburis-Buckner rwolf2 (supports method/absorb/controls):
-*   ssc install rwolf2, replace
-* NOTE: rw_treat99/05 = inten*post give the same coef as
-*       1.post#c.inten in reghdfe (municipality FE absorbs level)
+* Family: 9 CoD outcomes; correction applied for Intensity1999xPost
+* within each panel (pooled, female, male).
+* Package: ssc install rwolf   (Clarke, Romano & Wolf, SJ 2020)
+* e(RW): rows = outcomes (in varlist order), col 1 = p, col 2 = RW p
+* NOTE: rw_treat99 = inten1999*(post==1) is numerically identical to
+*       the 1.post#c.inten1999 coefficient from the main regressions
 *------------------------------------------------------------
 cap drop rw_treat99 rw_treat05
 gen rw_treat99 = inten1999 * (post == 1)
 gen rw_treat05 = inten2005 * (post == 1)
 
 local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other"
-local rw_pval_col = 4   /* column of RW p-val in e(RW): verify with -matrix list e(RW)- */
+local rw_pval_col = 2   /* col 2 of e(RW) = RW-adjusted p-value */
 
 foreach grp in w f m {
 	if "`grp'" == "w" {
@@ -1466,11 +1466,11 @@ foreach grp in w f m {
 	}
 
 	* RW for Intensity 1999 x post only
-	rwolf2 `outcomes' [aw=`wvar'] if $sample_marg, ///
-		indepvars(rw_treat99) controls(rw_treat05 sp_intensity) ///
+	rwolf `outcomes' [aw=`wvar'] if $sample_marg, ///
+		indepvar(rw_treat99) controls(rw_treat05 sp_intensity) ///
 		method(reghdfe) absorb(year cve_ent_mun_super) ///
 		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
-		seed(12345) nbootstraps(500)
+		seed(12345) reps(500)
 	matrix RW99_`grp' = e(RW)
 	local i = 1
 	foreach cod in `cod_rw' {
