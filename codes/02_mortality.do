@@ -1469,7 +1469,7 @@ foreach grp in w f m {
 	rwolf `outcomes' [aw=`wvar'] if $sample_marg, ///
 		indepvar(rw_treat99) controls(rw_treat05 sp_intensity) ///
 		method(reghdfe) absorb(year cve_ent_mun_super) ///
-		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
+		cluster(cve_ent_mun_super) ///
 		seed(12345) reps(500)
 	matrix RW99_`grp' = e(RW)
 	local i = 1
