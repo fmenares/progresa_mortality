@@ -1466,10 +1466,10 @@ foreach grp in w f m {
 
 	* RW for Intensity 1999 x post only
 	rwolf2 `outcomes' [aw=`wvar'] if $sample_marg, ///
-		indepvars(rw_treat99) controls(rw_treat05 sp_intensity) ///
+		indepvar(rw_treat99) controls(rw_treat05 sp_intensity) ///
 		method(reghdfe) absorb(year cve_ent_mun_super) ///
 		cluster(cve_ent_mun_super) vce(cluster cve_ent_mun_super) ///
-		seed(12345) reps(500)
+		seed(12345) nbootstraps(500)
 	matrix RW99_`grp' = e(RW)
 	local i = 1
 	foreach cod in `cod_rw' {
