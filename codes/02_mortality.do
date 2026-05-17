@@ -1439,10 +1439,12 @@ foreach grp in w f m {
 *   Verify on first run with: matrix list r(table)
 * NOTE: rw_treat99 = inten1999*(post==1) gives same coef as
 *       1.post#c.inten1999 in the main reghdfe regressions.
+* _hm indicator avoids | in if conditions inside wyoung cmd string.
 *------------------------------------------------------------
-cap drop rw_treat99 rw_treat05
+cap drop rw_treat99 rw_treat05 _hm
 gen rw_treat99 = inten1999 * (post == 1)
 gen rw_treat05 = inten2005 * (post == 1)
+gen _hm        = (gm_mun_1990 == 4 | gm_mun_1990 == 5)
 
 local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other"
 local wy_pval_col = 5   /* verify with: matrix list r(table) after first run */
@@ -1467,8 +1469,8 @@ foreach grp in w f m {
 		local outcomes "`outcomes' emr65`cod'`suffix'"
 	}
 
-	* Embed weight in command template so it is panel-specific
-	local cmd_str "reghdfe OUTCOMEVAR rw_treat99 rw_treat05 sp_intensity [aw=`wvar'], absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)"
+	* Embed weight and HM filter in command template (long-run window, all years in data)
+	local cmd_str "reghdfe OUTCOMEVAR rw_treat99 rw_treat05 sp_intensity [aw=`wvar'] if _hm, absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)"
 
 	wyoung `outcomes', ///
 		cmd(`"`cmd_str'"') ///
@@ -2059,6 +2061,76 @@ foreach grp in w f m {
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "Mean (pre-1997) & `mean_br_m_tb_cancer' & `mean_br_m_tb_diab' & `mean_br_m_tb_illdef' & `mean_br_m_tb_resp' & `mean_br_m_tb_card' & `mean_br_m_tb_infect' & `mean_br_m_tb_nutri' & `mean_br_m_tb_accid' & `mean_br_m_tb_other' \\ " _n
 	file write sm "Obs & `N_br_m_tb_cancer' & `N_br_m_tb_diab' & `N_br_m_tb_illdef' & `N_br_m_tb_resp' & `N_br_m_tb_card' & `N_br_m_tb_infect' & `N_br_m_tb_nutri' & `N_br_m_tb_accid' & `N_br_m_tb_other' \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+
+*============================================================
+* APPENDIX TABLE 6: Causes of Death (Highly Marginalized Sample, 1992-2002)
+* AT6_cod_marg_short_mortality.tex -- Pooled, Female, Male panels
+* Short-run spec: Intensity1999 x Post only (no Intensity2005 term)
+*============================================================
+foreach grp in w f m {
+	if "`grp'" == "w" {
+		local wvar = "popover65_"
+		local suffix = ""
+	}
+	else if "`grp'" == "f" {
+		local wvar = "popover65_f"
+		local suffix = "f"
+	}
+	else {
+		local wvar = "popover65_m"
+		local suffix = "m"
+	}
+
+	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+		reghdfe emr65`cod'`suffix' c.inten1999#i.post c.sp_intensity ///
+			[aw=`wvar'] if inrange(year,1992,2002) & $sample_marg, ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local b99_sh_`grp'_`cod' = "`aux'***"
+		else if `t' >= 1.96  local b99_sh_`grp'_`cod' = "`aux'**"
+		else if `t' >= 1.645 local b99_sh_`grp'_`cod' = "`aux'*"
+		else                  local b99_sh_`grp'_`cod' = "`aux'"
+		local se99_sh_`grp'_`cod': di %12.3f _se[1.post#c.inten1999]
+		sum emr65`cod'`suffix' if e(sample) & post == 2
+		local mean_sh_`grp'_`cod': di %12.2fc `r(mean)'
+		local N_sh_`grp'_`cod': di %12.0fc `e(N)'
+	}
+}
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT6_cod_marg_short_mortality.tex", write replace
+	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
+	file write sm "& Cancer & Diab. & IllDef & Resp. & Card. & Infect. & Nutri. & Accid. & Other \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post} & `b99_sh_w_tb_cancer' & `b99_sh_w_tb_diab' & `b99_sh_w_tb_illdef' & `b99_sh_w_tb_resp' & `b99_sh_w_tb_card' & `b99_sh_w_tb_infect' & `b99_sh_w_tb_nutri' & `b99_sh_w_tb_accid' & `b99_sh_w_tb_other' \\ " _n
+	file write sm " & (`se99_sh_w_tb_cancer') & (`se99_sh_w_tb_diab') & (`se99_sh_w_tb_illdef') & (`se99_sh_w_tb_resp') & (`se99_sh_w_tb_card') & (`se99_sh_w_tb_infect') & (`se99_sh_w_tb_nutri') & (`se99_sh_w_tb_accid') & (`se99_sh_w_tb_other') \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "Mean (pre-1997) & `mean_sh_w_tb_cancer' & `mean_sh_w_tb_diab' & `mean_sh_w_tb_illdef' & `mean_sh_w_tb_resp' & `mean_sh_w_tb_card' & `mean_sh_w_tb_infect' & `mean_sh_w_tb_nutri' & `mean_sh_w_tb_accid' & `mean_sh_w_tb_other' \\ " _n
+	file write sm "Obs & `N_sh_w_tb_cancer' & `N_sh_w_tb_diab' & `N_sh_w_tb_illdef' & `N_sh_w_tb_resp' & `N_sh_w_tb_card' & `N_sh_w_tb_infect' & `N_sh_w_tb_nutri' & `N_sh_w_tb_accid' & `N_sh_w_tb_other' \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post} & `b99_sh_f_tb_cancer' & `b99_sh_f_tb_diab' & `b99_sh_f_tb_illdef' & `b99_sh_f_tb_resp' & `b99_sh_f_tb_card' & `b99_sh_f_tb_infect' & `b99_sh_f_tb_nutri' & `b99_sh_f_tb_accid' & `b99_sh_f_tb_other' \\ " _n
+	file write sm " & (`se99_sh_f_tb_cancer') & (`se99_sh_f_tb_diab') & (`se99_sh_f_tb_illdef') & (`se99_sh_f_tb_resp') & (`se99_sh_f_tb_card') & (`se99_sh_f_tb_infect') & (`se99_sh_f_tb_nutri') & (`se99_sh_f_tb_accid') & (`se99_sh_f_tb_other') \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "Mean (pre-1997) & `mean_sh_f_tb_cancer' & `mean_sh_f_tb_diab' & `mean_sh_f_tb_illdef' & `mean_sh_f_tb_resp' & `mean_sh_f_tb_card' & `mean_sh_f_tb_infect' & `mean_sh_f_tb_nutri' & `mean_sh_f_tb_accid' & `mean_sh_f_tb_other' \\ " _n
+	file write sm "Obs & `N_sh_f_tb_cancer' & `N_sh_f_tb_diab' & `N_sh_f_tb_illdef' & `N_sh_f_tb_resp' & `N_sh_f_tb_card' & `N_sh_f_tb_infect' & `N_sh_f_tb_nutri' & `N_sh_f_tb_accid' & `N_sh_f_tb_other' \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post} & `b99_sh_m_tb_cancer' & `b99_sh_m_tb_diab' & `b99_sh_m_tb_illdef' & `b99_sh_m_tb_resp' & `b99_sh_m_tb_card' & `b99_sh_m_tb_infect' & `b99_sh_m_tb_nutri' & `b99_sh_m_tb_accid' & `b99_sh_m_tb_other' \\ " _n
+	file write sm " & (`se99_sh_m_tb_cancer') & (`se99_sh_m_tb_diab') & (`se99_sh_m_tb_illdef') & (`se99_sh_m_tb_resp') & (`se99_sh_m_tb_card') & (`se99_sh_m_tb_infect') & (`se99_sh_m_tb_nutri') & (`se99_sh_m_tb_accid') & (`se99_sh_m_tb_other') \\ " _n
+	file write sm "  & & & & & & & & & \\ " _n
+	file write sm "Mean (pre-1997) & `mean_sh_m_tb_cancer' & `mean_sh_m_tb_diab' & `mean_sh_m_tb_illdef' & `mean_sh_m_tb_resp' & `mean_sh_m_tb_card' & `mean_sh_m_tb_infect' & `mean_sh_m_tb_nutri' & `mean_sh_m_tb_accid' & `mean_sh_m_tb_other' \\ " _n
+	file write sm "Obs & `N_sh_m_tb_cancer' & `N_sh_m_tb_diab' & `N_sh_m_tb_illdef' & `N_sh_m_tb_resp' & `N_sh_m_tb_card' & `N_sh_m_tb_infect' & `N_sh_m_tb_nutri' & `N_sh_m_tb_accid' & `N_sh_m_tb_other' \\ " _n
 	file write sm "  & & & & & & & & & \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
