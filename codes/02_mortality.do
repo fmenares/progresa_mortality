@@ -457,6 +457,10 @@ foreach pnl in p m f {
 	}
 }
 
+* Mean Intensity 1999 for T2 (HM sample, cross-sectional)
+quietly sum inten1999 if $sample_marg & year == 1999
+local meanI99_T2: di %6.3f r(mean)
+
 {
 	cap file close sm
 	file open sm using "$tables/T2_mortality.tex", write replace
@@ -498,6 +502,7 @@ foreach pnl in p m f {
 	file write sm "  & & & & \\ " _n
 	file write sm "Seguro Popular & N & Y & N & Y \\ " _n
 	file write sm "Weights & N & N & Y & Y \\ " _n
+	file write sm "Mean Intensity 1999 & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1766,6 +1771,10 @@ foreach pnl in p m f {
 	local NmunAAMR_`pnl': di %12.0fc `r(ndistinct)'
 }
 
+* Mean Intensity 1999 for AT2 (HM sample, cross-sectional)
+quietly sum inten1999 if $sample_marg & year == 1999
+local meanI99_AT2: di %6.3f r(mean)
+
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT2_functional_forms.tex", write replace
@@ -1804,6 +1813,7 @@ foreach pnl in p m f {
 	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
 	file write sm "  & & & & \\ " _n
 	file write sm "Seguro Popular & N & N & N & Y \\ " _n
+	file write sm "Mean Intensity 1999 & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1888,6 +1898,10 @@ foreach pnl in p m f {
 	local NmunBR_5_`pnl': di %12.0fc `r(ndistinct)'
 }
 
+* Mean Intensity 1999 for AT3 (BR sample, cross-sectional)
+quietly sum inten1999 if $sample_br & year == 1999
+local meanI99_AT3: di %6.3f r(mean)
+
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT3_BR_replication.tex", write replace
@@ -1928,6 +1942,7 @@ foreach pnl in p m f {
 	file write sm "Obs & `NBR_5_p' & `NBR_5_f' & `NBR_5_m' \\ " _n
 	file write sm "No. Mun & `NmunBR_2_p' & `NmunBR_2_f' & `NmunBR_2_m' \\ " _n
 	file write sm "  & & & \\ " _n
+	file write sm "Mean Intensity 1999 & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2043,6 +2058,12 @@ foreach pnl in p f m {
 * Build formatted LaTeX tables (3 panels: Pooled, Females, Males)
 *============================================================
 
+* Mean Intensity 1999 by sample for AT4
+quietly sum inten1999 if $sample_br & year == 1999
+local meanI99_br: di %6.3f r(mean)
+quietly sum inten1999 if $sample_marg & year == 1999
+local meanI99_hm: di %6.3f r(mean)
+
 foreach out in emr65 aamr65 {
 	cap file close tbl
 	file open tbl using "$tables/appendix/AT4_BR_robustness_`out'.tex", write replace
@@ -2098,10 +2119,13 @@ foreach out in emr65 aamr65 {
 			file write tbl "  & & & & \\ " _n
 		}
 		else {
-			file write tbl " \\ \bottomrule" _n
+			file write tbl " \\ " _n
 		}
 	}
 
+	file write tbl "  & & & & \\ " _n
+	file write tbl "Mean Intensity 1999 & `meanI99_br' & `meanI99_br' & `meanI99_hm' & `meanI99_hm' \\ " _n
+	file write tbl "\bottomrule" _n
 	file write tbl "\end{tabular}"
 	file close tbl
 }
