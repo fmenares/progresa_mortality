@@ -2058,12 +2058,14 @@ foreach pnl in p f m {
 * Build formatted LaTeX tables (3 panels: Pooled, Females, Males)
 *============================================================
 
-* Mean Intensity 1999 by sample for AT4, displayed as %
-* AT4 uses 1992-2002 window; year==1996 is within range for both samples
-quietly sum inten1999 if $sample_br & year == 1996
+* Mean Intensity 1999 by sample for AT4 — mirror T1 approach: one obs per municipality
+preserve
+keep if year == 1996
+quietly sum inten1999 if $sample_br
 local meanI99_br: di %6.1f r(mean) * 100
-quietly sum inten1999 if $sample_marg & year == 1996
+quietly sum inten1999 if $sample_marg
 local meanI99_hm: di %6.1f r(mean) * 100
+restore
 
 foreach out in emr65 aamr65 {
 	cap file close tbl
