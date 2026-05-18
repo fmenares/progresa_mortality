@@ -457,9 +457,8 @@ foreach pnl in p m f {
 	}
 }
 
-* Mean Intensity 1999 for T2 — regression sample, displayed as %
-* (e(sample) reflects the last regression: pnl=f, col=4)
-quietly sum inten1999 if e(sample) & year == 1996
+* Mean Intensity 1999 for T2 — HM sample, displayed as %
+quietly sum inten1999 if $sample_marg & year == 1996
 local meanI99_T2: di %6.1f r(mean) * 100
 
 {
@@ -1772,8 +1771,8 @@ foreach pnl in p m f {
 	local NmunAAMR_`pnl': di %12.0fc `r(ndistinct)'
 }
 
-* Mean Intensity 1999 for AT2 — regression sample (last reg: pnl=f, AAMR col), displayed as %
-quietly sum inten1999 if e(sample) & year == 1996
+* Mean Intensity 1999 for AT2 — HM sample, displayed as %
+quietly sum inten1999 if $sample_marg & year == 1996
 local meanI99_AT2: di %6.1f r(mean) * 100
 
 {
@@ -1899,8 +1898,8 @@ foreach pnl in p m f {
 	local NmunBR_5_`pnl': di %12.0fc `r(ndistinct)'
 }
 
-* Mean Intensity 1999 for AT3 — regression sample (last reg: pnl=f, lag3), displayed as %
-quietly sum inten1999 if e(sample) & year == 1996
+* Mean Intensity 1999 for AT3 — BR sample, displayed as %
+quietly sum inten1999 if $sample_br & year == 1996
 local meanI99_AT3: di %6.1f r(mean) * 100
 
 {
