@@ -457,9 +457,10 @@ foreach pnl in p m f {
 	}
 }
 
-* Mean Intensity 1999 for T2 (HM sample, cross-sectional)
-quietly sum inten1999 if $sample_marg & year == 1999
-local meanI99_T2: di %6.3f r(mean)
+* Mean Intensity 1999 for T2 — regression sample, displayed as %
+* (e(sample) reflects the last regression: pnl=f, col=4)
+quietly sum inten1999 if e(sample) & year == 1996
+local meanI99_T2: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
@@ -502,7 +503,7 @@ local meanI99_T2: di %6.3f r(mean)
 	file write sm "  & & & & \\ " _n
 	file write sm "Seguro Popular & N & Y & N & Y \\ " _n
 	file write sm "Weights & N & N & Y & Y \\ " _n
-	file write sm "Mean Intensity 1999 & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' \\ " _n
+	file write sm "Mean Intensity 1999 (%) & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1771,9 +1772,9 @@ foreach pnl in p m f {
 	local NmunAAMR_`pnl': di %12.0fc `r(ndistinct)'
 }
 
-* Mean Intensity 1999 for AT2 (HM sample, cross-sectional)
-quietly sum inten1999 if $sample_marg & year == 1999
-local meanI99_AT2: di %6.3f r(mean)
+* Mean Intensity 1999 for AT2 — regression sample (last reg: pnl=f, AAMR col), displayed as %
+quietly sum inten1999 if e(sample) & year == 1996
+local meanI99_AT2: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
@@ -1813,7 +1814,7 @@ local meanI99_AT2: di %6.3f r(mean)
 	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
 	file write sm "  & & & & \\ " _n
 	file write sm "Seguro Popular & N & N & N & Y \\ " _n
-	file write sm "Mean Intensity 1999 & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
+	file write sm "Mean Intensity 1999 (%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1898,9 +1899,9 @@ foreach pnl in p m f {
 	local NmunBR_5_`pnl': di %12.0fc `r(ndistinct)'
 }
 
-* Mean Intensity 1999 for AT3 (BR sample, cross-sectional)
-quietly sum inten1999 if $sample_br & year == 1999
-local meanI99_AT3: di %6.3f r(mean)
+* Mean Intensity 1999 for AT3 — regression sample (last reg: pnl=f, lag3), displayed as %
+quietly sum inten1999 if e(sample) & year == 1996
+local meanI99_AT3: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
@@ -1942,7 +1943,7 @@ local meanI99_AT3: di %6.3f r(mean)
 	file write sm "Obs & `NBR_5_p' & `NBR_5_f' & `NBR_5_m' \\ " _n
 	file write sm "No. Mun & `NmunBR_2_p' & `NmunBR_2_f' & `NmunBR_2_m' \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mean Intensity 1999 & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
+	file write sm "Mean Intensity 1999 (%) & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2058,11 +2059,12 @@ foreach pnl in p f m {
 * Build formatted LaTeX tables (3 panels: Pooled, Females, Males)
 *============================================================
 
-* Mean Intensity 1999 by sample for AT4
-quietly sum inten1999 if $sample_br & year == 1999
-local meanI99_br: di %6.3f r(mean)
-quietly sum inten1999 if $sample_marg & year == 1999
-local meanI99_hm: di %6.3f r(mean)
+* Mean Intensity 1999 by sample for AT4, displayed as %
+* AT4 uses 1992-2002 window; year==1996 is within range for both samples
+quietly sum inten1999 if $sample_br & year == 1996
+local meanI99_br: di %6.1f r(mean) * 100
+quietly sum inten1999 if $sample_marg & year == 1996
+local meanI99_hm: di %6.1f r(mean) * 100
 
 foreach out in emr65 aamr65 {
 	cap file close tbl
@@ -2124,7 +2126,7 @@ foreach out in emr65 aamr65 {
 	}
 
 	file write tbl "  & & & & \\ " _n
-	file write tbl "Mean Intensity 1999 & `meanI99_br' & `meanI99_br' & `meanI99_hm' & `meanI99_hm' \\ " _n
+	file write tbl "Mean Intensity 1999 (%) & `meanI99_br' & `meanI99_br' & `meanI99_hm' & `meanI99_hm' \\ " _n
 	file write tbl "\bottomrule" _n
 	file write tbl "\end{tabular}"
 	file close tbl
