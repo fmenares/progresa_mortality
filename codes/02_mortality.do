@@ -2153,9 +2153,18 @@ local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_i
 local wy_pval_col = 5
 
 foreach grp in w f m {
-	if "`grp'" == "w" { local wvar "popover65_"; local suffix "" }
-	else if "`grp'" == "f" { local wvar "popover65_f"; local suffix "f" }
-	else { local wvar "popover65_m"; local suffix "m" }
+	if "`grp'" == "w" {
+		local wvar "popover65_"
+		local suffix ""
+	}
+	else if "`grp'" == "f" {
+		local wvar "popover65_f"
+		local suffix "f"
+	}
+	else {
+		local wvar "popover65_m"
+		local suffix "m"
+	}
 
 	local outcomes ""
 	foreach cod in `cod_rw' {
@@ -2256,9 +2265,18 @@ local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_i
 local wy_pval_col = 5
 
 foreach grp in w f m {
-	if "`grp'" == "w" { local wvar "popover65_"; local suffix "" }
-	else if "`grp'" == "f" { local wvar "popover65_f"; local suffix "f" }
-	else { local wvar "popover65_m"; local suffix "m" }
+	if "`grp'" == "w" {
+		local wvar "popover65_"
+		local suffix ""
+	}
+	else if "`grp'" == "f" {
+		local wvar "popover65_f"
+		local suffix "f"
+	}
+	else {
+		local wvar "popover65_m"
+		local suffix "m"
+	}
 
 	local outcomes ""
 	foreach cod in `cod_rw' {
