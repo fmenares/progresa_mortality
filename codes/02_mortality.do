@@ -502,7 +502,7 @@ local meanI99_T2: di %6.1f r(mean) * 100
 	file write sm "  & & & & \\ " _n
 	file write sm "Seguro Popular & N & Y & N & Y \\ " _n
 	file write sm "Weights & N & N & Y & Y \\ " _n
-	file write sm "Mean Intensity 1999 (%) & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' & `meanI99_T2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1813,7 +1813,7 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
 	file write sm "  & & & & \\ " _n
 	file write sm "Seguro Popular & N & N & N & Y \\ " _n
-	file write sm "Mean Intensity 1999 (%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1942,7 +1942,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 	file write sm "Obs & `NBR_5_p' & `NBR_5_f' & `NBR_5_m' \\ " _n
 	file write sm "No. Mun & `NmunBR_2_p' & `NmunBR_2_f' & `NmunBR_2_m' \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mean Intensity 1999 (%) & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2127,7 +2127,7 @@ foreach out in emr65 aamr65 {
 	}
 
 	file write tbl "  & & & & \\ " _n
-	file write tbl "Mean Intensity 1999 (%) & `meanI99_br' & `meanI99_br' & `meanI99_hm' & `meanI99_hm' \\ " _n
+	file write tbl "Mean Intensity 1999 (\%) & `meanI99_br' & `meanI99_br' & `meanI99_hm' & `meanI99_hm' \\ " _n
 	file write tbl "\bottomrule" _n
 	file write tbl "\end{tabular}"
 	file close tbl
