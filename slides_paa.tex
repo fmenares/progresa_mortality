@@ -1,0 +1,756 @@
+\documentclass[aspectratio=169,usenames,dvipsnames]{beamer}
+
+\mode<presentation>{
+  \usetheme{default}
+  \usecolortheme{default}
+  \usefonttheme{default}
+}
+
+% ------------------------------------------------
+% Colors
+% ------------------------------------------------
+\usepackage{xcolor}
+\definecolor{purple}{HTML}{695693}
+\definecolor{navy}{HTML}{567293}
+\definecolor{ruby}{HTML}{9a2515}
+\definecolor{alice}{HTML}{107895}
+\definecolor{daisy}{HTML}{EBC944}
+\definecolor{coral}{HTML}{F26D21}
+\definecolor{kelly}{HTML}{829356}
+\definecolor{cranberry}{HTML}{E64173}
+\definecolor{jet}{HTML}{131516}
+\definecolor{asher}{HTML}{555F61}
+\definecolor{slate}{HTML}{314F4F}
+\definecolor{accent}{HTML}{107895}
+\definecolor{accent2}{HTML}{9a2515}
+
+\documentclass[aspectratio=169]{beamer}
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+
+\usepackage{tikz}
+\usepackage{xcolor}
+
+\definecolor{blue1}{RGB}{27,  98, 168}
+\definecolor{blue2}{RGB}{67, 135, 195}
+\definecolor{blue3}{RGB}{114,169, 211}
+\definecolor{blue4}{RGB}{169,206, 227}
+\definecolor{redUT}{RGB}{215, 48,  39}
+
+% ------------------------------------------------
+% Fonts & math
+% ------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{setspace}
+\usepackage{bbm}
+
+% ------------------------------------------------
+% Tables / figures
+% ------------------------------------------------
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{threeparttable}
+\usepackage{makecell}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% ------------------------------------------------
+% TikZ
+% ------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{fit,shapes.misc}
+\usetikzlibrary{tikzmark}
+\usepackage[beamer,customcolors]{hf-tikz}
+\usepackage{colortbl}
+
+% ------------------------------------------------
+% Misc
+% ------------------------------------------------
+\usepackage{comment}
+\usepackage{multimedia}
+\usepackage{caption}
+\usepackage{color}
+
+% ------------------------------------------------
+% Bibliography
+% ------------------------------------------------
+\usepackage[style=authoryear, backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+\newcommand{\smallcite}[1]{{\footnotesize\parencite{#1}}}
+% ------------------------------------------------
+% Replace "and" with "&" in citations
+% ------------------------------------------------
+\renewcommand*{\finalnamedelim}{\addspace\&\space}
+
+% ------------------------------------------------
+% Hyperref
+% ------------------------------------------------
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    citecolor=Blue,
+    linkcolor=Blue,
+    urlcolor=Blue
+}
+
+% ------------------------------------------------
+% IMPORTANT FIX:
+% citations match ORIGINAL Beamer title color (Blue)
+% ------------------------------------------------
+\AtEveryCitekey{\color{Blue}}
+
+% ------------------------------------------------
+% Beamer colors (RESTORED CONSISTENCY)
+% ------------------------------------------------
+\setbeamercolor{frametitle}{fg=Blue}
+\setbeamercolor{item projected}{fg=Blue}
+\setbeamercolor{title}{fg=Blue}
+\setbeamercolor{section in head/foot}{fg=Blue}
+\setbeamercolor{subsection in head/foot}{fg=Blue}
+
+% ------------------------------------------------
+% Footline
+% ------------------------------------------------
+\setbeamertemplate{footline}{
+  \leavevmode
+  \hbox{
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in foot}
+    \usebeamerfont{title in foot}\insertsection
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{date in foot}
+    \usebeamerfont{date in foot}\hspace*{2em}
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{number in foot}
+    \usebeamerfont{numb in foot}\insertframenumber{}/\inserttotalframenumber{}\hspace*{2em}
+  \end{beamercolorbox}}
+  \vskip1pt
+}
+
+\setbeamertemplate{navigation symbols}{}
+
+% ------------------------------------------------
+% TikZ helpers
+% ------------------------------------------------
+\newcommand\marktopleft[1]{%
+    \tikz[overlay,remember picture]
+        \node (marker-#1-a) at (0,1.5ex) {};%
+}
+
+\newcommand\markbottomright[1]{%
+    \tikz[overlay,remember picture]
+        \node (marker-#1-b) at (0,0) {};%
+    \tikz[accent!80!jet, ultra thick, overlay, remember picture, inner sep=4pt]
+        \node[draw, rectangle, fit=(marker-#1-a.center) (marker-#1-b.center)] {};%
+}
+
+% ------------------------------------------------
+% Backup slides
+% ------------------------------------------------
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
+
+% ------------------------------------------------
+% Graphics
+% ------------------------------------------------
+\graphicspath{{Figures/}}
+
+% NOTES
+%\setbeameroption{show only notes}
+
+% ------------------------------------------------
+% TITLE
+% ------------------------------------------------
+\title[W]{\LARGE{Inequality and Inclusion: The Long-Term Effects of Peru's \textit{Juntos} Program among Indigenous and Non-Indigenous Children}}
+
+\author[]{%
+  \texorpdfstring{%
+    \begin{tabular}{c c}
+      Susan Parker & Janina Leon \\
+      \textcolor{gray}{University of Maryland, College Park} & \textcolor{gray}{Catholic University, Peru} \\
+      Eduardo Haro & Natalia Testa \\
+      \textcolor{gray}{Catholic University, Peru} & \textcolor{gray}{University of Maryland, College Park} \\
+    \end{tabular}
+  }
+  {Susan Parker, Janina Leon, Eduardo Haro, Natalia Testa}
+}
+
+\date{Oral Session - Public Policy and Child Outcomes \\ PAA Annual Meeting 2026}
+
+\note{Hi everyone, my name is Natalia Testa, I'm a first year PhD student at the University of Maryland, School of Public Policy.
+
+Today I'm presenting a joint work with Susan Parker, also from the University of Maryland, and Janina Leon and Eduardo Haro from the Catholic University of Peru.
+
+Our research focuses on the long-term effects of a Conditional Cash Transfer in Peru on education and labor market outcomes.}
+
+% ------------------------------------------------
+% DOCUMENT
+% ------------------------------------------------
+\begin{document}
+
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+
+{
+\setbeamertemplate{footline}{}
+\begin{frame}
+  \titlepage
+\vfill
+\end{frame}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% MOTIVATION%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background}
+\begin{frame}{Motivation}\label{motivation}
+\vspace{2pt}
+\small
+\begin{itemize}
+  \item[$\circ$] Conditional Cash Transfers (CCT) have two goals:
+    \begin{itemize}
+      \item Reduce poverty today through direct cash transfers
+      \item Improve children's long-run outcomes through conditionalities on human capital investment
+    \end{itemize}
+  \vspace{4pt}
+  \item[$\circ$] Long-run evidence remains limited
+    \begin{itemize}
+      \item Positive effects on education and labor market outcomes in Honduras \smallcite{molinamillanetal2020}, Mexico \smallcite{ParkerVogl2023}, Nicaragua \smallcite{barhametal2024}, and Brazil \smallcite{brittoetal2025}
+      \item Effects are often larger for women \smallcite{ParkerVogl2023, brittoetal2025}
+      \item But smaller or no gains for indigenous populations \smallcite{molinamillanetal2020, neidhofer2019}
+    \end{itemize}
+  \vspace{4pt}
+  \item[$\circ$] \textbf{This paper:} long-run impacts of Peru's \textit{Juntos} CCT on education and labor force participation, by gender and indigenous status
+    \begin{itemize}
+      \item Short-to medium-term effects documented \smallcite{perovavakis2012, andersenetal2015, gaentzsch2020}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\note{Conditional Cash Transfers are a widespread social policy in Latin America and other developing contexts. These kinds of programs have two goals: first, to alleviate poverty in the short term through cash transfers. Second, to improve children's long-term outcomes through conditionalities on human capital investment.
+
+While there is a great body of research on the short-term effects, research on the long-run impacts of these programs remains limited. Some studies find positive effects on education and labor markets in Honduras and Mexico, among others. Effects are often larger for women and smaller for indigenous populations.
+
+In this paper, we study the long-run impacts of Peru's Juntos program on education and labor market outcomes, by gender and indigenous status. As of today, short- to medium-term effects are documented.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% JUNTOS PROGRAM %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Peru's \textit{Juntos}: Programme Overview}\label{juntos}
+\small
+\begin{itemize}
+    \item[$\circ$] \textbf{Early rollout (2005--2011):} 14 states, with high concentration of indigenous population
+    \vspace{4pt}
+    \item[$\circ$] \textbf{Targeting:} 2 stages
+    \begin{itemize}
+        \item \textit{County:} poverty index combining extreme poverty rate, poverty gap, chronic malnutrition, political violence, and unsatisfied basic needs
+            \vspace{4pt}
+        \item \textit{Household:} poor households with children or pregnant women
+    \end{itemize}
+    \vspace{4pt}
+    \item[$\circ$] \textbf{Benefits:} 100 soles/month; $\approx$15\% of beneficiary household spending
+    \vspace{4pt}
+    \item[$\circ$] \textbf{Conditionalities:}
+    \begin{itemize}
+        \item \textit{Health:} prenatal checkups; growth controls for children; vaccinations
+                    \vspace{4pt}
+        \item \textit{Education:} school enrollment and attendance for children ($\geq$85\%)
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\note{We focus our study on the first stage of the program, from 2005 to 2011. At the early stage, Juntos covered 14 states with a high concentration of indigenous populations.
+
+They targeted poor counties based on a poverty index, and within those counties, they identified eligible households using a proxy means test.
+
+The conditionalities included keeping children enrolled in school and meeting preventive health requirements.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% DATA SOURCES %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data}
+\begin{frame}{Data Sources}\label{data}
+\small
+\begin{itemize}
+    \item \textbf{2017 Peruvian Population Census} $\rightarrow$ individual-level outcomes
+    \begin{itemize}
+        \item Education: high school completion, school attendance
+        \item Labor market: employment, wage work, self employment, informality
+        \item Demographics: age, gender, indigenous status
+        \item Sample restricted to 14 states in the first-stage expansion
+    \end{itemize}
+    \vspace{4pt}
+    \item \textbf{Beneficiary household records (2005--2011)} $\rightarrow$ district-level treatment
+    \begin{itemize}
+        \item Counts of enrolled households by district
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\note{Our data comes from two sources. First, the 2017 Peruvian Census, which gives us individual-level outcomes on education, labor markets, and demographics.
+
+Second, beneficiary household records from 2005 to 2011, which we use to construct district-level treatment.
+
+We merged the beneficiary data with the population census data by district of birth.
+
+We restrict our sample to the 14 states in the first stage of Juntos' rollout.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% EMPIRICAL STRATEGY %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Empirical Strategy}
+\begin{frame}{Empirical Strategy: Difference-in-Differences}\label{empirics}
+\small
+
+\textbf{Sources of variation}
+
+\begin{itemize}
+    \item \textbf{Intensity:} $\mathit{enrol}^{2005\text{-}2007}_{d}$ — district enrollment rate in \textit{Juntos} (continuous, 0 to 1)
+    \item \textbf{Exposure:} $\mathit{post}_t$ — cohort eligibility based on age in 2005 (6 to 18 vs. 19 to 21)
+\end{itemize}
+
+\vspace{6pt}
+
+\textbf{Baseline specification}
+
+\vspace{-2pt}
+
+\begin{equation*}
+y_{idt} =
+\beta \left(\mathit{enrol}^{2005\text{-}2007}_{d} \times \mathit{post}_t\right)
++ \gamma \left(\mathit{enrol}^{2011}_{d} \times \mathit{post}_t\right)
++ \delta_d + \eta_t + \varepsilon_{idt}
+\end{equation*}
+
+\vspace{4pt}
+
+\begin{itemize}
+    \item $y_{idt}$: adult outcome of individual $i$, born in district $d$, cohort $t$
+    \begin{itemize}
+        \item \textit{e.g.} Maria, born in Acobamba, aged 10 in 2005: did she complete high school by 2017?
+    \end{itemize}
+    \item $\delta_d$, $\eta_t$: district and cohort fixed effects
+    \item $\beta$: effect of early cohort exposure to \textit{Juntos} in high-enrollment districts on adult outcomes
+    \item $\gamma$: controls for later program expansion, ensuring $\beta$ captures early exposure only
+    \item SE clustered at district of birth
+\end{itemize}
+
+\end{frame}
+
+\note{We use two sources of variation. First, how many households in a district were enrolled in Juntos between 2005 and 2007. Second, whether a cohort was young enough to benefit — those aged 6 to 18 in 2005 compared to those aged 19 to 21 who were too old.
+
+We interact these two sources of variation. Think of Maria, born in Acobamba and aged 10 in 2005 — she was in a high-enrollment district and young enough to be exposed. We ask: did she complete secondary school by 2017?
+
+We include district and cohort fixed effects, and control for later program expansion to make sure we capture early exposure only.}
+
+\begin{frame}
+\frametitle{Cohorts and Treatment Exposure}
+
+\vspace{-4mm}
+
+% Side-by-side: plot on left (~75%), legend on right (~25%)
+\begin{columns}[T]
+
+  %------------------------------------------------------------
+  \begin{column}{0.74\textwidth}
+  \begin{center}
+  \begin{tikzpicture}[xscale=0.575, yscale=0.215]
+
+    % ---- Grid ----------------------------------------------
+    \foreach \y in {6,9,12,15,18,21,24,27,30}{
+      \draw[gray!20, thin] (0,\y) -- (12,\y);
+    }
+    \foreach \x in {0,1,...,12}{
+      \draw[gray!20, thin] (\x,6) -- (\x,30);
+    }
+
+    % ---- Axes ----------------------------------------------
+    \draw[black, thick] (0,4) -- (0,32);
+    \draw[black, thick] (-0.3,4) -- (12.8,4);
+
+    % ---- X ticks + labels ----------------------------------
+    \foreach \x/\yr in {0/2005,2/2007,4/2009,6/2011,8/2013,10/2015,12/2017}{
+      \draw[black] (\x,4) -- (\x,3.0);
+      \node[below, font=\fontsize{7}{8}\selectfont] at (\x,2.8) {\yr};
+    }
+    \node[below, font=\fontsize{8}{9}\selectfont] at (6,0.5)
+      {\textbf{Calendar Year}};
+
+    % ---- Y ticks + labels ----------------------------------
+    \foreach \age in {6,9,12,15,18,21,24,27,30}{
+      \draw[black] (0,\age) -- (-0.4,\age);
+      \node[left, font=\fontsize{7}{8}\selectfont] at (-0.6,\age) {\age};
+    }
+    \node[rotate=90, font=\fontsize{8}{9}\selectfont] at (-2.0,18)
+      {\textbf{Age (younger endpoint)}};
+
+    % ---- Lifelines -----------------------------------------
+    \draw[blue1, line width=2pt, line cap=round] (0,6)  -- (12,18);
+    \draw[blue2, line width=2pt, line cap=round] (0,9)  -- (12,21);
+    \draw[blue3, line width=2pt, line cap=round] (0,12) -- (12,24);
+    \draw[blue4, line width=2pt, line cap=round] (0,15) -- (12,27);
+    \draw[redUT, line width=2pt, line cap=round] (0,18) -- (12,30);
+
+    % ---- Endpoint dots -------------------------------------
+    \foreach \ys/\ye/\col in {6/18/blue1,9/21/blue2,12/24/blue3,15/27/blue4}{
+      \filldraw[\col] (0,\ys)  circle (3pt);
+      \filldraw[\col] (12,\ye) circle (3pt);
+    }
+    \filldraw[redUT] (0,18)  circle (3pt);
+    \filldraw[redUT] (12,30) circle (3pt);
+
+
+    % ---- End labels ----------------------------------------
+    \node[right, font=\fontsize{6}{7}\selectfont, blue1] at (12.2,18) {18--20};
+    \node[right, font=\fontsize{6}{7}\selectfont, blue2] at (12.2,21) {21--23};
+    \node[right, font=\fontsize{6}{7}\selectfont, blue3] at (12.2,24) {24--26};
+    \node[right, font=\fontsize{6}{7}\selectfont, blue4] at (12.2,27) {27--29};
+    \node[right, font=\fontsize{6}{7}\selectfont, redUT] at (12.2,30) {30--32};
+
+  \end{tikzpicture}
+  \end{center}
+  \end{column}
+
+  %------------------------------------------------------------
+  \begin{column}{0.24\textwidth}
+  \vspace{8mm}
+  \begin{tikzpicture}[x=1cm, y=0.62cm]
+
+    % Vertical legend, 5 entries
+    \foreach \i/\col/\lbl in {
+        5/blue1/{Treated\\age 6--8\\(most exposed)},
+        4/blue2/{Treated\\age 9--11},
+        3/blue3/{Treated\\age 12--14},
+        2/blue4/{Treated\\age 15--17\\(least exposed)},
+        1/redUT/{Untreated\\age 18--20}}{
+      \draw[\col, line width=2.5pt] (0,\i) -- (0.6,\i);
+      \filldraw[\col] (0.3,\i) circle (2.5pt);
+      \node[right, font=\fontsize{6}{7}\selectfont, \col, align=left]
+        at (0.7,\i) {\lbl};
+    }
+
+
+
+  \end{tikzpicture}
+  \end{column}
+
+\end{columns}
+
+\end{frame}
+
+\note{what is important to highlight that we will be referring to the cohort in 2005, but will be measuring the outcomes in 2017. So that those who were 6 in 2005 will be 18 by 2017.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% EVENT STUDY AND ROBUSTNESS %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Event Study and Robustness Checks}\label{identification2}
+\small
+\begin{itemize}
+    \item[$\circ$] \textbf{Event study:} estimates $\beta_t$ for 4 cohort bins separately (ages 6--8, 9--11, 12--14, 15--18)
+    \begin{equation*}
+        y_{idt} = \sum_{t} \beta_t \, \mathit{enrol}^{2005\text{-}2007}_{d} + \sum_{t} \gamma_t \, \mathit{enrol}^{2011}_{d} + \delta_d + \eta_t + \varepsilon_{idt}
+    \end{equation*}
+    \begin{itemize}
+        \item Normalized to \textbf{zero} for cohort aged 19--21 (untreated group)
+        \item Younger cohorts should show larger effects $\rightarrow$ greater cumulative exposure
+    \end{itemize}
+    \vspace{6pt}
+    \item[$\circ$] \textbf{Additional specification:} adds cohort $\times$ district poverty percentile interactions to further control for differential trends across poorer and richer districts
+    \vspace{6pt}
+    \item[$\circ$] \textbf{Heterogeneity:} all specifications estimated separately by \textbf{gender} and \textbf{indigenous status}
+\end{itemize}
+\end{frame}
+
+\note{We also run an event study, estimating effects separately for four age groups — 6 to 8, 9 to 11, 12 to 14, and 15 to 18 — normalizing the oldest untreated cohort to zero.
+
+Younger cohorts should show larger effects since they had more years of exposure.
+
+As a robustness check, we add interactions between cohort and district poverty to make sure our results are not driven by different trends across richer and poorer districts.
+
+Finally, we estimate all specifications separately by gender and indigenous status.}
+
+%%%%%%%%%%%%%%%
+%%% RESULTS %%%
+%%%%%%%%%%%%%%%
+\section{Results}
+
+\setcounter{subfigure}{0}
+\begin{frame}{Event Studies for Education}\label{did2}
+\vskip -1mm
+\begin{figure}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(a) High School Completion}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_combined/es_secundaria_comp_educ_a_mas_all.png}    
+        \end{column}     
+        \begin{column}{0.5\textwidth}
+            \centering {(b) School Attendance}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_combined/es_asiste_centro_educ_all.png}
+        \end{column}        
+    \end{columns}
+    \label{fig:edu_sex}
+\end{figure}
+\vspace{-0.5cm}
+\end{frame}
+
+\note{The x-axis shows age when the program started in 2005, and the y-axis shows the event studies coefficients by outcome in 2017. We are looking at two outcomes: high school completion on the left, and school attendance on the right. For high school completion, we see a clear gradient for women — the younger the cohort, the larger the effect. Men are essentially flat. Then, looking at school attendance, both men and women in the youngest cohort show positive effects, which tells us many are still in school in 2017. This is important because it means high school completion effects may still increase.}
+
+\setcounter{subfigure}{0}
+\begin{frame}{Event Studies for Education --- Indigenous Population}\label{did3}
+\vskip -1mm
+\begin{figure}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(a) High School Completion}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{Figures/es_indigenous/es_secundaria_comp_educ_a_mas_ind.png}
+        \end{column}            
+        \begin{column}{0.5\textwidth}
+            \centering {(b) School Attendance}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{Figures/es_indigenous/es_asiste_centro_educ_ind.png}
+        \end{column}
+    \end{columns}
+    \label{fig:edu_ind}
+\end{figure}
+\vspace{-0.3cm}
+
+\end{frame}
+
+\note{When we split by indigenous status, effects are much larger. For high school completion, indigenous women show very large effects for the youngest cohorts (around 0.2). Indigenous men also show some positive effects for the youngest cohort, which we did not see in for the whole sample. For school attendance, both indigenous men and women in the youngest cohort are still enrolled, suggesting high school completion effects may grow further for both groups.}
+
+\setcounter{subfigure}{0}
+\begin{frame}{Event Studies for Education --- Non Indigenous Population}\label{did3}
+\vskip -1mm
+\begin{figure}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(a) High School Completion}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_no_indigenous/es_secundaria_comp_educ_a_mas_no_ind.png}
+        \end{column}            
+        \begin{column}{0.5\textwidth}
+            \centering {(b) School Attendance}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.65\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_no_indigenous/es_asiste_centro_educ_no_ind.png}
+        \end{column}
+    \end{columns}
+    \label{fig:edu_ind}
+\end{figure}
+\vspace{-0.3cm}
+\end{frame}
+
+\note{In contrast, for non-indigenous populations, high school completion is essentially flat for everyone, showing no meaningful effect. For school attendance, there is some positive effect for the youngest women, but much smaller than what we saw for indigenous women. This highlights that the educational gains are concentrated among indigenous women.}
+
+\setcounter{subfigure}{0}
+\begin{frame}[shrink=20]{Programme Impacts on Educational Attainment}\label{tab_edu}
+\vspace{0.3cm}
+\begin{center}
+\begin{table}
+    \centering
+    \scriptsize
+    \begin{center}
+    \begin{threeparttable}
+        \setlength{\tabcolsep}{3pt}
+        \begin{tabularx}{\textwidth}{@{} l *{8}{C} @{}}
+            \toprule\toprule
+             & \multicolumn{4}{c}{All 2017} & \multicolumn{4}{c}{Indigenous 2017} \\
+            \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+             & \multicolumn{2}{c}{Men} & \multicolumn{2}{c}{Women} & \multicolumn{2}{c}{Men} & \multicolumn{2}{c}{Women} \\
+            \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+             & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
+            \midrule
+            \textbf{A. Attends an educational institution} & & & & & & & & \\
+            Enrolment ratio, 2005-2007 & 0.034 & 0.029 & \tikzmark{ws}0.037 & 0.045 & 0.027 & 0.025 & 0.030 & 0.041 \\
+            $\quad \times$ post cohort & [0.020]$^{*}$ & [0.020]$^{}$ & [0.022]$^{*}$ & [0.022]$^{**}$ & [0.029]$^{}$ & [0.025]$^{}$ & [0.033]$^{}$ & [0.026]$^{}$ \\
+            Mean dep. var. 2017 & 0.23 & 0.23 & 0.22 & 0.22 & 0.20 & 0.20 & 0.16 & 0.16 \\
+            \addlinespace
+            \textbf{B. Full secondary education} & & & & & & & & \\
+            Enrolment ratio, 2005-2007 & 0.037 & 0.028 & 0.105 & 0.058 & 0.072 & 0.044 & \tikzmark{iws}0.129 & 0.096 \\
+            $\quad \times$ post cohort & [0.031]$^{}$ & [0.025]$^{}$ & [0.031]$^{***}$ & [0.028]$^{**}$ & [0.050]$^{}$ & [0.042]$^{}$ & [0.053]$^{**}$ & [0.046]$^{**}$ \\
+            Mean dep. var. 2017 & 0.75 & 0.75 & 0.68 & 0.68\tikzmark{we} & 0.72 & 0.72 & 0.57 & 0.57\tikzmark{iwe} \\
+            $N$ & 1,986,518 & 1,986,308 & 2,110,437 & 2,110,146 & 444,001 & 443,983 & 478,317 & 478,281 \\
+            \midrule
+            District FE, cohort FE & X & X & X & X & X & X & X & X \\
+            Cohort dummies $\times$ & & & & & & & & \\
+            \quad Dist. poverty \%-ile dummies & & X & & X & & X & & X \\
+            \bottomrule\bottomrule
+        \end{tabularx}
+        \begin{tikzpicture}[remember picture, overlay]
+            \draw[green!50!black, thick, rounded corners=2pt]
+                ([xshift=-15pt, yshift=8pt]pic cs:ws) rectangle
+                ([xshift=15pt, yshift=-4pt]pic cs:we);
+            \draw[green!50!black, thick, rounded corners=2pt]
+                ([xshift=-15pt, yshift=8pt]pic cs:iws) rectangle
+                ([xshift=15pt, yshift=-4pt]pic cs:iwe);
+        \end{tikzpicture}
+        \begin{tablenotes}
+            \tiny
+            \item \textit{Notes:} Brackets contain standard errors clustered at the district level. All regressions additionally control for the interaction of the post indicator with the cumulative enrolment ratio in 2005-2007. Test versus 0: $^{*} p < 0.1, ^{**} p < 0.05, ^{***} p < 0.01$.
+        \end{tablenotes}
+    \end{threeparttable}
+    \end{center}
+\end{table}
+\end{center}
+\vspace{0.3cm}
+
+\end{frame}
+
+\note{This table confirms what we saw in the event studies. The effects are concentrated among women, driven mostly by indigenous women. For example, in column 8, the coefficient is 0.096 — that means a 10 percentage point increase in the probability of completing high school for indigenous women, relative to a baseline of 57\%, bringing it to about 67\%. Effects on the probability of secondary completion for non-indigenous women and men are small and not significant.}
+
+\setcounter{subfigure}{0}
+\begin{frame}{Event Studies for Labor Market Outcomes}\label{did4}
+\vskip -1mm
+\begin{figure}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(a) Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_combined/es_pob_ocupada_all.png}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \centering {(b) Wage Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_combined/es_pob_ocupada_ingreso_all.png}
+        \end{column}
+    \end{columns}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(c) Self-Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_combined/es_trabajador_independiente_all.png}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \centering {(d) Informality}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_combined/es_empleo_informal1_all.png}
+        \end{column}
+    \end{columns}
+\end{figure}
+\vskip -4mm
+\end{frame}
+
+\note{Turning to labor market outcomes — employment, wage employment, self-employment, and informality. Overall effects are weak. Notably, for the youngest men, we see a negative effect on employment, consistent with them being still at school.}
+
+\setcounter{subfigure}{0}
+\begin{frame}{Event Studies for Labor Market Outcomes --- Indigenous Population}\label{did5}
+\vskip -1mm
+\begin{figure}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(a) Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Figures/es_indigenous/es_pob_ocupada_ind.png}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \centering {(b) Wage Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Figures/es_indigenous/es_pob_ocupada_ingreso_ind.png}
+        \end{column}
+    \end{columns}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(c) Self-Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Figures/es_indigenous/es_trabajador_independiente_ind.png}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \centering {(d) Informality}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Figures/es_indigenous/es_empleo_informal1_ind.png}
+        \end{column}
+    \end{columns}
+\end{figure}
+\vskip -4mm
+\end{frame}
+
+\note{For indigenous populations, we see some positive effects beginning to emerge for indigenous women in employment and wage employment. For indigenous men, the youngest cohort shows a negative employment effect — again, this likely reflects that they are still in school. Self-employment and informality are flat for both groups.}
+
+\setcounter{subfigure}{0}
+\begin{frame}{Event Studies for Labor Market Outcomes --- Non Indigenous Population}\label{did5}
+\vskip -1mm
+\begin{figure}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(a) Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_no_indigenous/es_pob_ocupada_no_ind.png}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \centering {(b) Wage Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_no_indigenous/es_pob_ocupada_ingreso_no_ind.png}
+        \end{column}
+    \end{columns}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering {(c) Self-Employment}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_no_indigenous/es_trabajador_independiente_no_ind.png}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \centering {(d) Informality}\\
+            \vspace{2pt}
+            \includegraphics[width=\textwidth, height=0.4\textheight, keepaspectratio]{Presentations/PAA 2026/Figures/es_no_indigenous/es_empleo_informal1_no_ind.png}
+        \end{column}
+    \end{columns}
+\end{figure}
+\vskip -4mm
+\end{frame}
+
+\note{Finally, for non-indigenous populations, labor market effects are flat across all four outcomes and both genders. This again reinforces that the program's impacts are concentrated among indigenous women.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CONCLUDING REMARKS %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+\begin{frame}{Concluding Remarks}
+\small
+\begin{itemize}
+    \item This paper estimates long-run effects of Peru's \textit{Juntos} CCT on education and labor force participation using cohort variation in program intensity
+
+    \item Strong and persistent educational gains, concentrated among women, especially indigenous women (secondary completion up to 10--13 p.p.)
+
+    \item Effects for non-indigenous are small, and effects for men are generally weak or imprecise
+
+    \item Labor market effects are more limited, likely reflecting that our cohorts are only beginning to enter the labor market
+
+    \item Future work: expand analysis to demographics (marital status and fertility) and use the 2025 Census for longer-run outcomes
+\end{itemize}
+\end{frame}
+
+\note{To summarize, we find strong and persistent educational gains from Juntos, concentrated among women and especially indigenous women. Labor market effects are more limited, which is consistent with the young age of the 2017 cohorts. We expect these effects to grow as cohorts age into their prime working years.}
+
+\begin{frame}[noframenumbering, plain]
+\begin{center}
+\Huge{\color{Blue}Thank you!} \\
+\small{Natalia Testa \\
+natesta@umd.edu}
+\end{center}
+\end{frame}
+
+\end{document}
