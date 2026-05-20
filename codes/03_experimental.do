@@ -34,14 +34,20 @@ if _rc {
 // set root:
 
 if "`c(username)'" == "swparker" {
-	local root "/Users/swparker/Dropbox/PROJECTS_CURRENT\Aging_Progresa" 
+	local root "/Users/swparker/Dropbox/PROJECTS_CURRENT/Aging_Progresa"
+}
+else if "`c(username)'" == "FELIPEME" {
+	local root "C:/Users/FELIPEME/Dropbox/2026/progresa_mortality"
 }
 
-global dataFolder "`root'/ENCASEH_ENCEL_PROGRESA/"
-global tempFolder "`root'/Temp"
-global resultsFolder "`root'/Results"
+global data "`root'"
+global dataFolder "$data/data/ENCASEH_ENCEL_PROGRESA/"
+global tables "$data/data/Tables"
+global tempFolder "$data/data/Temp_data"
 
-cap mkdir "$resultsFolder"
+cap mkdir "$tables"
+cap mkdir "$tempFolder"
+cap mkdir "$tables/appendix"
 
 ****************
 *Read locality level data*
@@ -395,15 +401,15 @@ iebaltab `balvars' ///
     grpvar(contba) ///
     vce(cluster claveofi) ///
     rowvarlabels ///
-    savecsv("$resultsFolder/elderly_balance.csv") replace
+    savecsv("$tables/elderly_balance.csv") replace
 
 iebaltab work days_week hours_day live_alone ///
     if age97>=65, ///
-    groupvar(contba) control(0) ///
+    grpvar(contba) control(0) ///
     vce(cluster claveofi) ///
     rowvarlabels ///
     stats(pair(diff)) ///
-    savexlsx("$resultsFolder/elderly_balance.xlsx") replace
+    savexlsx("$tables/elderly_balance.xlsx") replace
 
 
 *------------------------------------------------------------
@@ -460,7 +466,7 @@ esttab work_all work_elig ///
       days_week_all days_week_elig ///
 	   hours_day_all hours_day_elig ///
        weekly_hours_all weekly_hours_elig ///
-       using "$resultsFolder/progresa_elderly_individual_outcomes_male.rtf", replace ///
+       using "$tables/progresa_elderly_individual_outcomes_male.rtf", replace ///
     title("Progresa impacts on male elderly individuals (age 65+ in 1997)") ///
     keep(98.year#1.contba 99.year#1.contba) ///
     order(98.year#1.contba 99.year#1.contba) ///
@@ -550,13 +556,13 @@ foreach yvar of local indiv_outcomes {
 }
 
 
-* Export 
+* Export
 * Keep only Progresa treatment effects in 1998 and 1999 relative to 1997
 esttab work_all work_elig ///
       days_week_all days_week_elig ///
 	   hours_day_all hours_day_elig ///
      weekly_hours_all weekly_hours_elig ///
-       using "$resultsFolder/progresa_elderly_individual_outcomes_female.rtf", replace ///
+       using "$tables/progresa_elderly_individual_outcomes_female.rtf", replace ///
     title("Progresa impacts on female elderly individuals (age 65+ in 1997)") ///
     keep(98.year#1.contba 99.year#1.contba) ///
     order(98.year#1.contba 99.year#1.contba) ///
@@ -601,8 +607,8 @@ esttab work_all work_elig ///
 esttab live_alone_all live_alone_elig ///
     	   with_children_all with_children_elig ///
       only_elderly_all only_elderly_elig ///
-       using "$resultsFolder/progresa_elderly_living_outcomes_female.rtf", replace ///
-    title("Progresa impacts on male elderly individuals (age 65+ in 1997)") ///
+       using "$tables/progresa_elderly_living_outcomes_female.rtf", replace ///
+    title("Progresa impacts on female elderly individuals (age 65+ in 1997)") ///
     keep(98.year#1.contba 99.year#1.contba) ///
     order(98.year#1.contba 99.year#1.contba) ///
     coeflabels(98.year#1.contba "Treatment x 1998" ///
@@ -668,14 +674,14 @@ iebaltab `balvars' ///
     grpvar(contba) ///
     vce(cluster claveofi) ///
     rowvarlabels ///
-    savecsv("$resultsFolder/balance_HH.csv") replace
+    savecsv("$tables/balance_HH.csv") replace
 
 iebaltab `balvars' ///
     if elderly97>=1, ///
     grpvar(contba) ///
     vce(cluster claveofi) ///
     rowvarlabels ///
-    savecsv("$resultsFolder/elderly_balance_HH.csv") replace
+    savecsv("$tables/elderly_balance_HH.csv") replace
 *------------------------------------------------------------
 * HOUSEHOLD-LEVEL RESULTS (expenditures)
 * Store estimates and export clean tables focused on Progresa effects
@@ -737,11 +743,10 @@ foreach yvar of local hh_outcomes {
 }
 
 
-* Table 1: main effects (full vs eligible)
-esttab food_all food_elig medicine_all medicine_elig ///
-       porc_food_all porc_food_elig porc_med_all porc_med_elig ///
-    using "$resultsFolder/progresa_household_expenditures_main.rtf", replace ///
-    title("Progresa impacts on household expenditures") ///
+* Table 3: main effects (eligible sample only) - for main paper Table 3
+esttab live_alone_elig with_children_elig only_elderly_elig weekly_hours_elig ///
+    using "$tables/T3_experimental.tex", replace ///
+    title("Progresa impacts on elderly individuals: Living arrangements and work hours") ///
     keep(98.year#1.contba 99.year#1.contba) ///
     order(98.year#1.contba 99.year#1.contba) ///
     coeflabels(98.year#1.contba "Treatment x 1998" ///
@@ -750,20 +755,20 @@ esttab food_all food_elig medicine_all medicine_elig ///
     star(* 0.10 ** 0.05 *** 0.01) ///
     stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1997)")) ///
     compress
-	
-* Table 2: heterogeneity by baseline elderly presence
-* Keep both the main treatment-year effects and the DDD terms (treatment-year x elderly97)
-esttab food_het food_hetelig medicine_het medicine_hetelig ///
-       porc_food_het porc_food_hetelig porc_med_het porc_med_hetelig ///
-    using "$resultsFolder/progresa_household_expenditures_elderlyhet.rtf", replace ///
-    title("Progresa impacts on household expenditures: heterogeneity by elderly presence (baseline)") ///
-    keep(99.year#1.contba 99.year#1.contba#1.elderly97) ///
-    order(99.year#1.contba 99.year#1.contba#1.elderly97) ///
-    coeflabels(99.year#1.contba "Treatment x 1999 (no elderly)" ///
-               99.year#1.contba#1.elderly97 "Diff: elderly hh x 1999") ///
+
+* Appendix Table A.6: Household expenditures analysis (elderly households)
+* Main effects (full vs eligible)
+esttab food_all food_elig medicine_all medicine_elig ///
+       porc_food_all porc_food_elig porc_med_all porc_med_elig ///
+    using "$tables/appendix/AT6_expenditures_elderly.tex", replace ///
+    title("Progresa impacts on household expenditures (elderly households)") ///
+    keep(98.year#1.contba 99.year#1.contba) ///
+    order(98.year#1.contba 99.year#1.contba) ///
+    coeflabels(98.year#1.contba "Treatment x 1998" ///
+               99.year#1.contba "Treatment x 1999") ///
     b(%9.3f) se(%9.3f) ///
     star(* 0.10 ** 0.05 *** 0.01) ///
-    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1997)")) ///
+    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1998)")) ///
     compress
 
 
