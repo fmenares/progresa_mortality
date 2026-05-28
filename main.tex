@@ -1,0 +1,329 @@
+\documentclass[12pt]{article}
+\usepackage{natbib}
+\usepackage{floatrow,threeparttable}
+\floatsetup[figure]{capposition=top}
+\floatsetup[table]{capposition=top}
+\usepackage{ragged2e}
+\usepackage[left=1in, right=1in,top=1.25in,bottom=1.25in]{geometry}
+\usepackage{multirow}
+\usepackage{bbm}
+\usepackage{lscape}
+\usepackage{xparse}
+\usepackage{xr}
+\usepackage{amsmath,amssymb,amsthm,mathrsfs,amsfonts,dsfont}
+\usepackage{commath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[bf]{titlesec}
+\usepackage{setspace}
+\usepackage{pdflscape}
+\usepackage{bibunits}
+\usepackage[nottoc,numbib]{tocbibind}
+\defaultbibliography{bibliography.bib}
+\defaultbibliographystyle{ecta}
+\usepackage{verbatim}
+\usepackage{subfigure}
+\bibliographystyle{chicago}
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage[addedmarkup=colored,deletedmarkup=sout,commandnameprefix=ifneeded]{changes}
+\setaddedmarkup{\textcolor{blue}{#1}}
+\setdeletedmarkup{\textcolor{red}{\sout{#1}}}
+\usepackage{tikz}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+\usetikzlibrary{decorations.pathreplacing}
+\tikzset{every picture/.style={line width=0.75pt}}
+\usepackage{colortbl}
+\usepackage[bf]{caption}
+\usepackage{enumerate}
+\usepackage[bookmarks, pdftitle={}, pdfauthor={}, colorlinks=true, linkcolor=red, citecolor=blue, urlcolor=blue]{hyperref}
+\usepackage{txfonts}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage[multiple,stable]{footmisc}
+\setlength{\footnotesep}{.1in}
+\linespread{1.25}
+\setlength{\parskip}{6pt}
+\usepackage{datetime}
+\newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
+
+% Word count: updated automatically by latexmkrc via texcount on each compile
+\newcommand{\wordcount}{%
+  \IfFileExists{wordcount.tex}{\input{wordcount.tex}}{N/A}%
+}
+
+% Paragraph numbering
+\newcounter{paragraphnum}
+\setcounter{paragraphnum}{0}
+\newcommand{\p}{\refstepcounter{paragraphnum}\textbf{[\theparagraphnum]}\enspace}
+
+\begin{document}
+%TC:ignore
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                TITLE                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{\Large{Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico}%
+\thanks{This version: May 2026. We thank Victoria Barone and Pedro Bernal for useful comments. The opinions expressed in this paper are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent, nor of INEGI. All remaining errors are our own. All data used in this study are publicly available from INEGI.}}
+
+\author{Emma Aguila\footnote{Sol Price School of Public Policy, University of Southern California.}
+\and William H.\ Dow\footnote{School of Public Health and Department of Demography, University of California, Berkeley.}
+\and Felipe Menares\footnote{Inter-American Development Bank.}}
+\and Susan W.\ Parker\footnote{School of Public Policy, University of Maryland.}
+\and Jorge Peniche\footnote{Sol Price School of Public Policy, University of Southern California.}
+\and Soomin Ryu\footnote{Department of Public Health, University of Missouri.}}
+
+\date{}
+\maketitle
+\vspace{-12mm}
+\thispagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%               ABSTRACT              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{abstract}
+\noindent
+We study the long-term effects of Mexico's \textit{Progresa} conditional cash transfer (CCT) program on adult mortality at ages 65 and older. Using vital statistics combined with administrative records on program enrollment, and a difference-in-differences design that exploits geographic variation in program intensity across highly marginalized municipalities, we find no evidence of medium- or long-run effects on mortality. Earlier short-run estimates suggested large mortality gains turn out to be sensitive to weighting and lag structure, becoming smaller and statistically insignificant under equally defensible specifications. To examine behavioral channels, we use \textit{Progresa}'s own experimental evaluation data and find no significant effects on elderly labor supply or household composition.
+
+\noindent \\
+\noindent\textbf{Keywords:} Mortality, Conditional Cash Transfers, \textit{Progresa}, Mexico, Elderly \\
+\noindent\textbf{JEL Codes:} I13, I14, I15, I18
+\end{abstract}
+
+\noindent\textbf{Word Count:} \wordcount words (main text, excluding figures, tables, and references)
+
+\clearpage
+\setcounter{page}{1}
+%TC:endignore
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%            INTRODUCTION             %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}\label{s:intro}
+
+\p The health effects of income-support programs for older adults have attracted substantial attention, yet the evidence remains mixed. Some studies find important health benefits \citep{ Case2004PerspectivesAging, BarhamRowberry2013JDE, Aguila2015PNAS}, others find no effects \citep{LloydSherlockAgrawal2014JDS}, and still others identify unintended adverse consequences linked to obesity and diet change \citep{FernaldGertlerHou2008JN, KronebuschDamon2019EHB}. Most existing evidence focuses on short-run outcomes, leaving long-run mortality effects poorly understood.
+
+\p Mexico's \textit{Progresa} conditional cash transfer (CCT) program, launched in 1997 and subsequently renamed Oportunidades and then Prospera, offers the opportunity to study longer-term mortality effects of a large-scale transfer program. \textit{Progresa} has served as a model for CCT programs in over 60 countries \citep{Baird2014JDEffectiveness, Fiszbein2009CCTBook, ParkerTodd2017JEL}, and a growing literature evaluates its health impacts \citep{Gertler2004AER, LagardeHainesPalmer2009Cochrane, ParkerTodd2017JEL, RiveraHernandez2016HSR}. However, long-term effects—particularly on elderly mortality—remain largely unstudied \citep{ParkerTodd2017JEL}.
+
+\p Despite extensive evaluation of \textit{Progresa}'s effects on children, the literature on its consequences for elderly household members is thin and almost entirely short-run. \cite{BehrmanParker2013Demography} document improved health-service utilization for elderly women but not men six years after implementation. \cite{aguila2024conditional} find that \textit{Progresa} improved hypertension diagnosis and treatment use among adults aged 50 and older but did not reduce uncontrolled blood pressure as measured by biomarkers, suggesting that CCTs can raise healthcare utilization without producing clinically meaningful improvements in chronic disease control. \cite{BarhamRowberry2013JDE} reported short-run reductions in aggregate elderly mortality over the first five years of program operation, but no study has examined whether such effects persist or accumulate over a longer horizon. By contrast, evidence on programs that target older adults directly is more developed: Mexico's subsequent \textit{70 y Más} non-contributory pension reduced elderly women mortality in rural areas \citep{Menares2026JHR} by 5.5\%, and \cite{MiglinoNavarrete2023AEJP} find that Chile's non-contributory basic pension reduced four-year mortality by 2.7 percentage points among elderly recipients. Whether a CCT structured around children's conditionalities can deliver comparable mortality benefits to the elderly over a meaningful horizon is the question we take up.
+
+\p These findings raise a natural question: through what channels could a CCT designed for women with young children plausibly affect elderly health? Three pathways are grounded in the program's design. First, the health conditionality requires \textit{all} household members—including the elderly—to attend one annual clinic visit, creating an opportunity for early detection and treatment of conditions such as infectious disease, diabetes, and hypertension that disproportionately drive mortality in older age \citep{aguila2024conditional, Angel2017Gerontologist}. Second, the cash transfer raises household income by over 25\% \citep{ParkerTodd2017JEL, Gertler2004AER}, potentially improving nutrition and healthcare access for elderly members who share household resources. Third, if program-induced changes in labor or living arrangements alter the availability of informal caregiving within the household, this could affect elderly health through established social-support pathways \citep{BehrmanParker2013Demography}. These channels provide a credible theoretical case for expecting \textit{Progresa} to benefit elderly household members indirectly—even though the program never targeted them directly.
+
+\p In this paper, we estimate difference-in-differences models exploiting variation in the proportion of households enrolled in \textit{Progresa} across municipalities, comparing municipalities that enrolled more intensively in the program's early phase (1997--1999) to those that enrolled more intensively in the later phase (2000--2005), following the strategy of \cite{parker2023conditional}. We focus on highly marginalized municipalities where the program was most heavily targeted, and study the period 1991--2006, stopping before a major structural change in 2006 when \textit{Progresa} added a direct pension component for the elderly.
+
+\p Our main finding is that \textit{Progresa} had no significant effect on elderly mortality over its first ten years of operation. This result is robust to weighting, inclusion of Seguro Popular controls (a health insurance program for informal sector workers implemented in 2003), and alternative mortality measures (levels, logs, counts, and age adjustments). We extend our analysis to cause-specific mortality, for which previous research attributed the short-run aggregate reduction to diabetes and infectious diseases, but we find no conclusive long-term significant effects, given the absence of flat pre-trends. To examine behavioral channels, we use \textit{Progresa}'s own experimental evaluation data and find no significant effects on elderly labor supply or household composition; an attempt to analyze income and nutrition using the Mexican Household Expenditure and Income Survey similarly yields no significant results, though with limited power. As a secondary exercise, we revisit the earlier short-run evidence in \cite{BarhamRowberry2013JDE} and show that the positive estimates reported for the first year's program are sensitive to weighting and lag structure: minor and similarly defensible changes to the specification attenuate them by half or more and erode statistical significance. We argue the null results are consistent with program design: \textit{Progresa}'s benefits were primarily conditioned on children's schooling, elderly individuals living in extended households were not the direct transfer recipients, and health conditionalities required only one annual clinic visit for adults.
+
+\p The paper proceeds as follows. Section~\ref{s:progresa} describes the \textit{Progresa} program. Section~\ref{s:data} presents the data, sample, and empirical strategy. Section~\ref{s:results} reports the main mortality results, the replication and cause-of-death analysis, and the mechanisms evidence. Section~\ref{s:conclusion} concludes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%         PROGRAM BACKGROUND          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Mexico's \textit{Progresa} CCT Program}\label{s:progresa}
+
+\p \textit{Progresa} began in small rural communities in 1997, providing monetary transfers to poor families conditional on children attending school and family members visiting health clinics. The program rapidly expanded to cover six million families—one quarter of all Mexican families—with two thirds of beneficiaries residing in communities with fewer than 2,500 inhabitants \citep{ParkerTodd2017JEL, Fiszbein2009CCTBook}. Average monthly transfers reached approximately MXN~\$800 (US~\$90 PPP), representing more than a 25\% income increase for many poor households \citep{Gertler2004AER, ParkerTodd2017JEL}. All transfers are paid to the female head of household.
+
+\p The program includes two main grant types: grants conditional on children's school attendance (for children under 22), and a health and nutrition transfer requiring all family members to attend regular health clinic visits. For adults aged 17 and older, including the elderly, the attendance requirement is one clinic visit per year—a minimal conditionality. In 2006, a pension component for adults aged 70 and older was added, fundamentally altering the program's reach for the elderly. We end our analysis in 2006 to focus on the original CCT design.
+
+\p The majority of elderly individuals in rural eligible households live in extended families \citep{BehrmanParker2013Demography}. Before the program, approximately 75\% of elderly individuals lived in households with children under 15 \citep{BehrmanParker2013Demography}. In most cases, elderly individuals are grandparents of children receiving educational grants and thus do not directly control program expenditures, though they may benefit indirectly. Given this structure, large and immediate effects on elderly health and mortality would not be expected.
+
+\p Elderly mortality in Mexico has declined over time and is slightly higher in non-marginalized areas than in marginalized (poor) areas, as shown in Figure~\ref{f:variation}, and Appendix Figure~\ref{af:variation_all}. \cite{BeltranSanchezWong2025CSP} demonstrate using panel data from the Mexican Health and Aging Survey that this pattern is not explained by selective migration of unhealthy individuals toward urban areas.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%          DATA AND METHODS           %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Data and Empirical Strategy}\label{s:data}
+
+\subsection{Data}\label{s:sources}
+
+\p \textbf{Mortality data.} We use individual-level death registries derived from death certificates, covering every death in Mexico between 1991 and 2006—over three million records. The data include cause of death, birth year, sex, and the municipality of residence of the deceased, which we use to link to population denominators and program variables. All data are publicly available from the Mexican National Institute of Statistics and Geography (INEGI).\footnote{INEGI derives mortality data from the certification system of the Mexican Ministry of Public Health. Mexico generally maintains high-quality vital statistics \citep{mahapatra2007civil, mikkelsen2015global}.}
+
+\p The expansion of Seguro Popular—Mexico's public health insurance program for informal-sector workers, which rolled out staggered across municipalities beginning in 2002—may have improved the accuracy of death registration. To address this, we control for Seguro Popular enrollment intensity at the municipality level.\footnote{Seguro Popular reached full municipal coverage by 2006 but significant portions of the eligible population remained uninsured throughout our study period.}
+
+\p \textbf{Population data.} We use INEGI population counts disaggregated by sex, municipality, and age from Census data (1990, 2000, 2005, 2010, 2020), linearly interpolating annual estimates for each sex-age-municipality cell. We similarly interpolate municipal household counts to construct program intensity denominators.
+
+\p \textbf{\textit{Progresa} administrative data.} We obtain annual counts of enrolled \textit{Progresa} households by municipality from administrative records, which we use to construct our treatment intensity variable.
+
+\p \textbf{Additional controls.} We use the 1990 CONAPO Municipal Marginalization Index to restrict the sample to highly marginalized areas.\footnote{The Marginalization Index classifies all Mexican municipalities into five categories based on household poverty indicators, including dirt floors, crowding, illiteracy, and lack of sanitation infrastructure.} We also incorporate administrative data on Seguro Popular beneficiaries to construct a municipality-year enrollment intensity variable.
+
+\p \textbf{\textit{Progresa} experimental survey data.} To examine short-run mechanisms, we use the \textit{Progresa} evaluation surveys—the baseline household survey (ENCASEH, 1997) and follow-up rounds (ENCEL, 1998--2000)—collected in 506 treatment and 320 control localities across seven Mexican states (Guerrero, Hidalgo, Michoacán, Puebla, Querétaro, San Luis Potosí, and Veracruz). Treatment localities began receiving \textit{Progresa} transfers in early 1998; control localities were enrolled in late 1999, providing an 18-month experimental window for comparison. The surveys collected individual-level information on labor supply, household composition, and income for all household members. Our mechanisms sample is restricted to elderly individuals aged 65 and older living in eligible households, identified using the program's eligibility criteria applied to the 1997 baseline. 
+
+\subsection{Sample and Descriptive Statistics}\label{s:sample}
+
+\p Our analysis sample is restricted to deaths among adults aged 65 and older, in highly marginalized municipalities classified as high (grade 4) or very high (grade 5) on the 1990 CONAPO Marginalization Index. We construct municipality-year cells combining death counts with population denominators and program variables. Table~\ref{t:descriptives} reports summary statistics comparing marginalized and non-marginalized municipalities in the pre-program period. As expected, marginalized municipalities have substantially worse socioeconomic conditions and much higher \textit{Progresa} enrollment rates. 
+
+% For the short-run replication of \cite{BarhamRowberry2013JDE}, we restrict to municipalities incorporated in 1998--1999, following their original design. 
+
+\subsection{Empirical Strategy}\label{subsec:empirical_strategy}
+
+\p We exploit variation in the proportion of households enrolled in \textit{Progresa} across municipalities before and after the program began in 1997.\footnote{\textit{Progresa} enrollment was originally assigned at the locality level, following a targeting algorithm based on community-level poverty scores \citep{ParkerTodd2017JEL}. Beneficiary counts are, however, available and used at the municipality level, which aggregates multiple localities.} Following \cite{parker2023conditional}, who study the long-run effects of \textit{Progresa}, we distinguish between municipalities that enrolled households more intensively in the early phase (1997--1999, denoted $\textit{Intensity}_{1999}$) and those that enrolled more intensively in the later phase (2000--2005, denoted $\textit{Intensity}_{2005}$). They argue that after 2005 program expansion shifted substantially toward urban areas, making the two phases distinct and largely non-overlapping sources of intensity variation across municipalities.\footnote{Appendix Figures~\ref{af:variation_all} and~\ref{af:variation_maps} document mortality trends and the spatial distribution of \textit{Progresa} intensity across all municipalities and separately for the highly marginalized subsample, confirming substantial variation in both early-phase (1999) and late-phase (2005) enrollment.} 
+
+We adopt the same approach and apply it to elderly mortality in using municipality-level intensity because (i) the municipality is the finest geographic unit at which mortality data and population denominators are consistently observed across our 1991--2006 panel; (ii) aggregating intensity to the municipality level averages over within-municipality variation in program rollout, reducing noise from locality-level targeting decisions; and (iii) municipal coverage rates better capture population-level exposure.\footnote{Staggered adoption estimators \citep{callaway2021difference, sun2021estimating, de2020two} require a clearly defined binary treatment date for each unit. Our setting does not satisfy this requirement: \textit{Progresa} was rolled out gradually within municipalities, and the intensity measure captures cumulative enrollment rather than a discrete entry date.}
+
+\p Because \textit{Progresa} was preferentially targeted toward more disadvantaged areas, a simple difference-in-differences comparing \textit{Progresa} municipalities to all others could be confounded by differential trends. Restricting the sample to highly marginalized municipalities mitigates this concern. Our identification strategy further refines variation to capture the impact of earlier versus later cumulative exposure to the program (rather than ever-versus-never), under the assumption that mortality effects are cumulative. We estimate:
+
+\begin{equation}\label{eq:did}
+\text{MR}_{m,t}
+= \beta_{0}\,\textit{Post}_{t}\times\textit{Intensity}_{m,1999}
++ \beta_{1}\,\textit{Post}_{t}\times\textit{Intensity}_{m,2005}
++ \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
+\end{equation}
+
+\noindent where $\text{MR}_{m,t}$ is the mortality rate (deaths per 1,000 inhabitants aged 65+) in municipality $m$ in year $t$. $\textit{Post}_{t}$ equals one for years 1997--2006 and zero for 1991--1996. Municipality fixed effects $\delta_{m}$ control for time-invariant unobservables; year fixed effects $\gamma_{t}$ absorb common time trends. $\chi_{m,t}$ is the Seguro Popular enrollment intensity, included in specifications that control for this potentially confounding program. Standard errors are clustered at the municipality level. Throughout this analysis, our coefficient of interest is $\beta_0$, which captures the effect of early-phase enrollment intensity ($\textit{Intensity}_{1999} \times \textit{Post}$); $\beta_1$ controls for later-phase enrollment, as previously described.\footnote{The mortality rate equals zero in a non-trivial share of municipality-year cells, particularly in small municipalities with few elderly residents. We address this in the appendix by estimating the same specification using raw death counts (Poisson regression) and log-transformed outcomes—both yield qualitatively similar results to the level specification.} We retain the level outcome in the main analysis for three reasons: it eases interpretation (effects in deaths per 1,000), it preserves comparability across outcome definitions and with prior work, and it avoids discarding municipality-year cells with zero deaths that a log transformation would require.\footnote{\cite{ChenRoth2024QJE} formalize the problems that arise when taking logs in the presence of zeros and recommend count-based alternatives; while Poisson regression addresses these concerns, we report it only as a robustness check to maintain comparability with prior literature.}
+
+\p We also estimate event study specifications to trace dynamic effects and test for differential pre-trends:
+
+\begin{equation}\label{eq:eventstudy}
+\text{MR}_{m,t}
+= \sum_{k \neq 1996} \beta_{k}\,\mathbf{1}[t=k]\times\textit{Intensity}_{m,1999}
++ \sum_{k \neq 1996} \theta_{k}\,\mathbf{1}[t=k]\times\textit{Intensity}_{m,2005}
++ \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
+\end{equation}
+
+\noindent with 1996 as the reference year. The $\beta_{k}$ coefficients trace the effect of early-phase enrollment intensity on mortality in each year relative to 1996.
+
+\p Our interaction design, following \cite{parker2023conditional}, anchors identification to a discrete break in 1997 and explicitly controls for later-phase enrollment, separating the effects of the two rollout phases, and allowing us to include all highly marginalized municipalities without a phase-in restriction. The event study format of equation~(\ref{eq:eventstudy}) additionally allows us to test for differential pre-trends—a test. We include also include population weights because \textit{Progresa} targeted the most isolated and impoverished communities first, unweighted estimates may overstate the average effect by giving excess weight to the highest-intensity, smallest municipalities, whose mortality rates are also most volatile. Weighting by the elderly population gives each municipality influence proportional to its contribution to total elderly deaths.
+
+\p Our difference-in-differences coefficient $\beta_0$ in equation~(\ref{eq:did}) measures the average effect of a one-unit increase in early-phase enrollment intensity on the mortality rate for adults aged 65 and older, and aligns with the population-level policy question: what was the average effect of \textit{Progresa} on the mortality of elderly Mexicans living in marginalized areas? Identification relies on the assumption that, conditional on municipality and year fixed effects, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends to those with lower intensity in the absence of the program.\footnote{Restricting to highly marginalized municipalities means the coefficient estimates an Intent-to-Treat (ITT) effect: the reduced-form impact of municipal-level program exposure on elderly mortality, regardless of whether individual elderly residents' households directly received transfers. Since Progresa primarily targeted families with school-age children, any effect on elderly mortality operates through indirect channels — household income spillovers, improved local health access, or caregiver effects. The sample restriction ensures this ITT is estimated within Progresa's intended geographic target population, making it policy-relevant for assessing the program's reach.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%              RESULTS                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Results}\label{s:results}
+
+\subsection{Main Results}\label{s:main_results}
+
+\p Table~\ref{t:did} reports difference-in-differences estimates of the effect of \textit{Progresa} enrollment intensity on the mortality rate for adults aged 65 and older. The bottom rows of the table report the mean dependent variable and mean intensity values, providing the scale needed to interpret the coefficients. As documented in Figure~\ref{f:variation} and Figure~1, enrollment intensity varied substantially across municipalities—from near zero in the pre-program period to meaningful coverage by 1999 and further by 2005—with the geographic spread and temporal dynamics that motivate the two-phase design. Panel~A reports pooled results, Panel~B results for females, and Panel~C results for males. Within each panel, column~(1) presents unweighted estimates without Seguro Popular controls; column~(2) adds Seguro Popular intensity; column~(3) presents population-weighted estimates (weighted by the elderly population); and column~(4) combines weighting with Seguro Popular controls.
+
+\p Across all specifications, columns, and panels, the estimated effect of \textit{Progresa} enrollment intensity on elderly mortality is small and statistically insignificant. The interaction of early-phase intensity ($\textit{Intensity}_{1999} \times \textit{Post}$) is close to zero in both the unweighted and weighted specifications, for the pooled sample and separately by sex. Adding Seguro Popular controls in columns~(2) and~(4) does not materially alter results. These findings hold regardless of whether we weight by the size of the elderly population.
+
+\p Figure~\ref{f:es_dd_sex_no_weight} presents the event study estimates for the weighted specification with Seguro Popular controls (column~4). The pre-program coefficients do not show a clear and stable point estimate close to zero, and thus statistically significant differential trends, which prevent us from supporting the parallel trends assumption underlying our design. In the post-program period, while some individual year-specific coefficients—particularly those associated with males following the 1997 rollout—are negative and individually significant, we do not have enough evidence to conclude that the possible transitory decline in mortality in those years is attributable to the program, consistent with the null average DiD estimate documented in Table~\ref{t:did}. For females, while it seems to show no significant pre-trends, post-period effects are mostly zero.
+
+
+
+\p \textbf{Cause-of-death analysis} Following previous work suggesting cause of death paths on mortality reduction, we decompose the aggregate null result into nine cause-specific components: cancer, cardiovascular disease, respiratory disease, infectious disease, diabetes, nutritional causes, ill-defined causes, accidents, and other. Appendix Table~\ref{at:did_robust_cod} and Figures~\ref{af:es_cod_marg_a}--\ref{af:es_cod_marg_b} present DiD estimates and event studies for this exploratory decomposition. Early-phase enrollment ($\textit{Intensity}_{1999} \times \textit{Post}$) yields negative point estimates for cancer (pooled: $-0.887$, $p<0.01$), ill-defined causes ($-0.574$, $p<0.01$), and diabetes ($-0.508$, $p<0.05$), alongside a positive point estimate for cardiovascular mortality ($+1.530$, $p<0.10$). However, none of these results survives Romano-Wolf step-down correction for the familywise error rate across the nine hypotheses tested jointly (all adjusted $p$-values $>0.05$, except for cancer), indicating that the individually significant estimates likely reflect multiple-testing variation rather than genuine cause-specific impacts. The significant coefficient on ill-defined causes warrants additional caution, as it may capture changes in cause-of-death coding or registration practices over the panel rather than true mortality reductions. The event studies in Appendix Figures~\ref{af:es_cod_marg_a}--\ref{af:es_cod_marg_b} are broadly consistent with this interpretation: post-period confidence intervals overlap substantially with the pre-period distribution for most causes, providing no clear visual evidence of a break at program rollout. We therefore conclude that the cause-specific results are consistent with the aggregate null rather than indicative of heterogeneous program effects that cancel in the aggregate.
+
+\subsection{Robustness}\label{s:robustness}
+
+\p We first assess robustness to functional form and outcome definition. Appendix Table~\ref{at:did_robust_ff} presents DiD estimates under four specifications: column~(1) is the baseline mortality rate in levels (weighted); column~(2) uses the natural log of the mortality rate; column~(3) uses Poisson pseudo-maximum likelihood with raw death counts; and column~(4) replaces the mortality rate with the Age-Adjusted Mortality Rate (AAMR), which directly standardizes for the age structure of each municipality's elderly population. All regressions are weighted and include Seguro Popular intensity. Estimates remain small and statistically insignificant across all columns, mirroring the structure of Table~\ref{t:did}. Appendix Figure~\ref{af:es_func_form} presents the corresponding event study estimate; the pre- and post-period patterns are qualitatively similar to the baseline level specification in all cases.
+
+\p We next examine the relationship between our long-run findings and the short-run results of \cite{BarhamRowberry2013JDE} (hereafter BR). BR provided the first systematic evidence that \textit{Progresa} reduced elderly mortality, using a design in which mortality is regressed on a two-year lagged enrollment intensity measure without a pre/post interaction:
+
+\begin{equation}\label{eq:br}
+\text{MR}_{m,t}
+= \alpha_{0} + \alpha_{1}\,\textit{Intensity}_{m,t-2}
++ \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
+\end{equation}
+
+\p Appendix Table~\ref{at:did_robust_br} reproduces their exercise, restricting to municipalities incorporated into \textit{Progresa} in 1998 or 1999. Row~(A) reports their original pooled estimate; row~(B) shows our close replication with a comparable coefficient. This confirms that data and procedural differences are not the source of the divergence between their results and ours. When population weights are added in row~(C), the estimate attenuates by approximately 50\% and loses precision, reflecting the disproportionate influence of small, high-intensity municipalities in the unweighted specification. Rows~(D) and~(E) show that replacing the two-year lag with one- or three-year alternatives further reduces the estimated coefficient, underscoring the sensitivity of the finding to this specification choice.
+
+\p BR's specification regresses mortality on a time-varying two-year lag of enrollment intensity, which evolves continuously throughout the sample—including during the pre-program period—and therefore does not permit a clean separation of pre- and post-program phases from which to test for differential trends. Applying our interaction design to their sample and window restructures the same identifying variation into a pre/post framework without altering the sample composition or the underlying cross-sectional intensity variation. This yields two key advantages over their original approach: it enables the pre-trend test their design precluded, and it places the short-run estimates on a directly comparable footing with our long-run design, permitting validation across both samples and time horizons. Specifically, we replace the time-varying lagged intensity with a fixed early-phase measure interacted with a post-1997 indicator:
+
+\begin{equation}\label{eq:didadapted}
+\text{MR}_{m,t}
+= \beta_{0}\,\textit{Post}_{t}\times\textit{Intensity}_{m,1999}
++ \delta_{m} + \gamma_{t} + \varepsilon_{m,t}
+\end{equation}
+
+\textcolor{red}{\p Appendix Table~\ref{at:did_robust_br2} reports estimates under this adapted design for both the BR sample and the full highly marginalized sample over 1992--2002. In the BR sample, the unweighted estimate is negative and statistically significant; adding population weights attenuates it by approximately 50\%—from roughly $-4.0$ to $-1.7$ deaths per 1,000—consistent with the sensitivity to weighting documented in Appendix Table~\ref{at:did_robust_br}. This attenuation reflects the disproportionate influence of small, high-intensity municipalities in the unweighted specification—communities that are among the most isolated and least representative of the program's broader target population. When the full highly marginalized sample is used, the effect is not statistically significant in any specification. The short-run results are therefore sensitive to both sample composition and weighting: the most defensible estimate under the adapted design is approximately $-1.6$ deaths per 1,000, and it does not survive extension to the broader sample. Together, these results suggest that the divergence between BR's short-run finding and our long-run null is at least partly explained by sample and specification choices, and that the short-run effect—if real—was more modest and less robust than BR's original estimates imply.}
+
+\textcolor{red}{\p Appendix Figure~\ref{af:es_sample_compare} presents event study estimates by sample and sex. For the BR phase-in sample, the male panel displays clear differential pre-trends in the pre-program period—a violation sufficient by itself to question the credibility of identification in that subsample. For females in the BR sample, pre-trends are less pronounced, but post-program coefficients do not exhibit a consistent break from the pre-period level, making the aggregate inference inconclusive. In the highly marginalized sample, neither sex produces post-program coefficients distinguishable from pre-period variation. The pooled short-run estimate of approximately $-1.6$ deaths per 1,000 is thus not corroborated by the event study: the visual evidence does not display the clean post-1997 break that would be required to credibly attribute the short-run table estimates to \textit{Progresa}. Since the pooled event study is not displayed, the sex-specific panels in Appendix Figure~\ref{af:es_sample_compare} are the relevant visual evidence—and neither the female nor the male panel provides consistent support for the $-1.6$ pooled estimate.}
+
+\textcolor{red}{\p As a further check using our sample, we examine cause-specific mortality in the short run (1992--2002) for highly marginalized municipalities under the same interaction design. We do not find significant reductions in any of the causes BR attributed the effect to—infectious disease, diabetes, or other amenable conditions. The corresponding cause-specific event studies (Appendix Figures~\ref{af:es_cod_marg_a}--\ref{af:es_cod_marg_b}) are noisy across all causes, with wide confidence intervals and no discernible post-program break for any cause of death, further confirming that the BR short-run patterns are not replicated in our sample even at short horizons.}
+
+\textcolor{red}{\p To put the magnitudes in perspective, Appendix Table~\ref{at:did_robust_br} (Row~A) reproduces \cite{BarhamRowberry2013JDE}'s original estimate—a mortality reduction \cite{BarhamRowberry2013JDE} translate into approximately one year of gain in life expectancy at age 65. Against the BR sample's pre-program mean of approximately 47 deaths per 1,000 (Appendix Table~\ref{at:did_robust_br}), their coefficient implies a reduction of roughly 4 deaths per 1,000 per unit of intensity.\footnote{Row~(A) of Appendix Table~\ref{at:did_robust_br} reproduces \cite{BarhamRowberry2013JDE}'s original unweighted estimate; Row~(B) shows our close replication, which yields $-3.963$ deaths per 1,000—nearly identical to BR's reported result. We use 4 deaths per 1,000 as a convenient round figure.} Appendix Table~\ref{at:did_robust_br2} applies our adapted interaction design (equation~\ref{eq:didadapted}) to the same BR sample; this is our closest comparable replication. In the unweighted specification (column~1 of Appendix Table~\ref{at:did_robust_br2}), the estimate is of similar magnitude ($-3.963$); once population weights are added (column~2), it attenuates to $-1.727$ deaths per 1,000. Against the pre-program mean of approximately 46.5 deaths per 1,000 and mean \textit{Progresa} enrollment intensity of 44.4\% (Table~\ref{t:did}), this weighted estimate translates into roughly 0.7 fewer deaths per 1,000 at mean intensity—a hypothetical gain of at most 0.3--0.4 years of life expectancy using a constant-hazard approximation.\footnote{Using a constant-hazard (exponential) survival approximation: $e_{65} = 1/\mu$ where $\mu$ is the annual mortality rate. Against a pre-program mean of approximately 46.5 deaths per 1,000 ($\mu \approx 0.0465$), the baseline life expectancy at 65 is $1/0.0465 \approx 21.5$ years. The $-1.727$ estimate at full intensity implies a new rate of $\approx 0.0448$, yielding $e_{65} \approx 22.3$ years—a gain of approximately 0.8 years at full intensity, or approximately 0.3--0.4 years at the mean enrollment intensity of 44.4\%.} This is a fraction of what BR report, and the confidence interval includes zero. Our long-run design finds no statistically significant effect through 2006. We therefore conclude that neither the short-run nor the long-run evidence provides a sufficient basis to claim that \textit{Progresa} produced meaningful reductions in elderly mortality.}
+ 
+
+% \subsection{Threats to identification.} First, \textit{confounding by differential trends}: by restricting the sample to highly marginalized municipalities (grade 4 or 5), we compare early and late program adopters that shared the same poverty profile in 1990. Both groups were targeted by \textit{Progresa} from the outset; they differ only in the speed and intensity of enrollment. This makes the parallel-trends assumption substantially more credible than a design that compares \textit{Progresa} municipalities to a broader control group with different development trajectories. The pre-period coefficients in Figure~\ref{f:es_dd_sex_no_weight} provide a direct test: they show no systematic differential trend in the years before 1997, supporting the identifying assumption empirically.
+
+% Second, \textit{selective out-migration of the elderly}: if elderly residents differentially left high-intensity municipalities in response to the program, the surviving population could differ in health composition from what would have been observed in their absence. In practice, elderly migration in rural Mexico is very low. The most rigorous study of \textit{Progresa}'s effects on migration finds that the program reduced international out-migration by approximately 58\%—through the physical-presence requirement for cash collection—but had no significant effect on domestic migration for household members under age 60 \citep{StecklovWintersStampiniDavis2005Demography}. As elderly individuals aged 65 and older are not the household members constrained by the physical-presence requirement, and as this age group has the lowest mobility rates in rural Mexico regardless of program exposure, differential elderly out-migration from high-intensity municipalities is unlikely to be a meaningful threat. We provide a direct test in Appendix Tables~\ref{at:migration_rob} and~\ref{at:migration_rob_agefe}, which regress elderly population counts on \textit{Progresa} intensity using OLS (levels and logs) and Poisson regression, for both the short-run and long-run specifications. Appendix Table~\ref{at:migration_rob_agefe} additionally stacks the data by 5-year age group (65--69, 70--74, 75--79, 80+) and includes age-group fixed effects, exploiting the fact that population counts are available for each age cell in census years. Null effects across all specifications would confirm that \textit{Progresa} did not alter the size of the elderly population in high-intensity municipalities.\footnote{Stecklov et al. (2005) do not report separate estimates for household members aged 65 and older. Age-group fixed effects in Appendix Table~\ref{at:migration_rob_agefe} further tighten the test by controlling for demographic composition within the elderly population.}
+
+% Third, \textit{compositional change in the elderly population}: \textit{Progresa} could indirectly alter the composition of who survives to age 65 during our sample period. If the program improved health among adults aged 55--64 in 1997, more of them would age into the 65-and-older group by 2006, potentially changing the average health profile of that group. However, this mechanism is unlikely to be quantitatively important here: \textit{Progresa}'s conditionalities are focused on children's schooling and maternal health, limiting direct health pathways for middle-aged adults; and even if some additional survival occurred among those aged 55--64, the resulting compositional shift in the 65-and-older group over a ten-year horizon would be small relative to the turnover from natural mortality in that age bracket. We nevertheless present population-weighted estimates throughout as a partial check on compositional artifacts.
+
+\subsection{Mechanisms: Labor Supply, Household Composition, and Income Effects}\label{s:mechanisms}
+
+\p We take additional steps to examine the behavioral channels through which \textit{Progresa} could plausibly have affected elderly health. The theoretical case for expecting an effect rests on three program-specific pathways. The most direct is the \textit{health conditionality}: \textit{Progresa} required all household members, including the elderly, to attend one annual clinic visit, which could enable early detection of infectious disease, diabetes, and hypertension—precisely the causes BR identify as driving their short-run mortality reduction. \cite{BehrmanParker2013Demography} document that this conditionality increased health-service utilization among elderly women; however, \cite{aguila2024conditional} find that while hypertension diagnosis and treatment uptake improved, uncontrolled blood pressure as measured by clinical biomarkers did not—indicating that increased healthcare contact did not translate into clinically meaningful improvements for this group. The literature therefore does not support the clinical contact pathway as an operative mechanism for the mortality reductions BR claim. Consistent with this, neither our cause-specific results nor those implicit in BR's own specification find significant reductions in cardiovascular mortality, providing additional evidence against the hypothesis. The second pathway is \textit{income and nutrition}: a 25\%-plus increase in household income could reduce nutritional deficiencies and improve access to medications and outpatient care for elderly members who share household resources. The third pathway operates through \textit{living arrangements}: if \textit{Progresa}'s transfers changed co-residence patterns—for instance, by reducing the need for adult children to migrate for work—elderly household members could benefit from increased informal caregiving and social support, both of which are associated with lower elderly mortality \citep{duflo2000child}. We test the second and third channels directly; the first is already undermined by the biomarker evidence in \cite{aguila2024conditional} and the cause-of-death analysis above.
+
+\p Table~\ref{t:combined_elderly} uses experimental data from eligible households in the original 1997 \textit{Progresa} rollout to examine the short-run behavioral responses in labor supply and household composition channels. Column~(1) reports the effect on weekly hours worked by elderly individuals; columns~(2)--(4) report effects on the probability of living alone, living with children, and living exclusively with other elderly members, respectively. The estimates show no significant changes: \textit{Progresa} did not reduce elderly labor hours and did not systematically alter whether elderly lived with children or alone. The null on living arrangements is informative—it rules out the informal-caregiving pathway as an operative mechanism, at least within the experimental sample and time horizon. \textcolor{red}{Appendix Table~\ref{at:expenditures_elderly}\footnote{The experimental results in Appendix Table~\ref{at:expenditures_elderly} follow the same estimation strategy as Table~\ref{t:combined_elderly}, estimated using difference-in-differences with municipality fixed effects and clustering at the locality level. The specification leverages the randomized experimental assignment of treatment and control localities to obtain unbiased estimates of short-run effects on household expenditure patterns (food, medicine, and shares of household spending) among households with and without elderly members. The identification strategy is valid because treatment locality assignment was prospectively randomized before any outcome realization.} extends this analysis to household expenditure outcomes stratified by elderly household presence; the estimated differential effects for households with elderly members are similarly imprecise and not statistically significant.}
+
+\p The identification strategy in Table~\ref{t:combined_elderly} exploits the randomized assignment of \textit{Progresa} treatment and control localities prior to program implementation, creating a clean experimental design.\footnote{We estimate the specification: $Y_{ij,t} = \alpha + \beta_1 \mathbb{1}(\text{Year}=1998)_t + \beta_2 \mathbb{1}(\text{Year}=1999)_t + \gamma \mathbb{1}(\text{Treatment})_i + \delta_1 \mathbb{1}(\text{Year}=1998)_t \times \mathbb{1}(\text{Treatment})_i + \delta_2 \mathbb{1}(\text{Year}=1999)_t \times \mathbb{1}(\text{Treatment})_i + \mu_m + \varepsilon_{ij,t}$, where $Y$ is the outcome of interest (weekly hours, living alone, etc.), indexed by individual $i$, household $j$, and year $t$; treatment indicator $\mathbb{1}(\text{Treatment})_i$ is randomized at the locality level; year indicators are included with 1997 as the omitted baseline; municipality fixed effects $\mu_m$ control for time-invariant differences; and standard errors are clustered at the locality level. Coefficients $\delta_1$ and $\delta_2$ capture the treatment effect in 1998 and 1999 relative to the control group in 1997 (the baseline). Because treatment was randomized before outcome realization, the specification requires no additional controls, and any non-zero treatment effects would represent the causal impact of early \textit{Progresa} enrollment on elderly household members' behavior.} In 1997, treatment and control localities were randomly assigned before any program transfers were made. By comparing outcomes between treatment and control elderly individuals in 1998 and 1999—the first two rounds of the survey panel—we obtain unconfounded estimates of short-run behavioral responses. The null results in Table~\ref{t:combined_elderly} therefore rule out the possibility that elderly labor supply or household composition shifted in response to program enrollment, at least within the experimental window and eligible-household subsample.
+
+\p Complementing the experimental evidence, we examine the income and nutrition channels using the National Household Income and Expenditure Survey (ENIGH), drawing on the mechanisms framework of \cite{Menares2026JHR} for the \textit{70 y Más} pension program. We estimate the effects of \textit{Progresa} intensity on elderly households' labor income, food consumption by category, and out-of-pocket health spending.\footnote{We estimate difference-in-differences models using ENIGH waves from 1992 to 2006, exploiting variation in \textit{Progresa} enrollment intensity across municipalities, following the same two-phase interaction design as in equation~(\ref{eq:did}). Outcome variables include individual labor income, household food expenditure by category (cereals, meat and dairy, vegetables, sugar and fats), and health spending (outpatient visits, medications, inpatient care).} All estimated coefficients are imprecise with large standard errors that preclude meaningful inference. These null ENIGH results do not contradict the experimental null from Table~\ref{t:combined_elderly}—they reinforce it, providing convergent evidence from two independent data sources that the income, nutrition, and caregiving channels through which \textit{Progresa} might have reached elderly members were not activated in ways large enough to reduce mortality.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%             CONCLUSION              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Conclusion}\label{s:conclusion}
+
+\p This paper re-examines the medium-term effect of Mexico's \textit{Progresa} conditional cash transfer program on elderly mortality. Using fifteen years of vital statistics and administrative enrollment records, we find no evidence that \textit{Progresa} significantly reduced mortality among adults aged 65 and older during its first ten years of operation.
+
+\p These null results emerge coherently from the evidence on mechanisms. As described in Section~\ref{s:mechanisms}, a CCT targeting women with children can plausibly reach the elderly through three channels: the annual health checkup conditionality, household income and nutrition effects, and changes in co-residence and informal care. The evidence suggests the first channel was partially activated at the utilization level—\cite{BehrmanParker2013Demography} document improved health utilization for elderly women and \cite{aguila2024conditional} find higher hypertension diagnosis and treatment uptake—yet \cite{aguila2024conditional} also show that these gains did not translate into improved biomarkers, and, as we show, did not reduce mortality. The second and third channels show no activation at all: Table~\ref{t:combined_elderly} finds no significant effects on elderly labor supply or living arrangements, and our ENIGH-based income and nutrition analysis is too imprecise to detect behavioral responses, likely because the survey was not designed to capture elderly subgroups in small rural municipalities. Taken together, the picture is of a program that nudges elderly household members toward the healthcare system once a year but does not produce the sustained changes in income, nutrition, or caregiving that would be needed to reduce mortality over a decade. The health checkup conditionality—one annual visit—is simply too minimal a clinical intervention to drive the mortality reductions that a pension transferring resources directly to older adults can achieve \citep{Menares2026JHR}.
+
+\p We further show that the key prior finding of \cite{BarhamRowberry2013JDE} is sensitive to specification. Their result attenuates by 50\% with population weighting and shrinks further with alternative lag structures, losing statistical significance. Combined with our own estimates, we conclude that the evidence for large mortality effects of conditional cash transfers on older adults is not strong. In contrast, \cite{Menares2026JHR} find that Mexico's \textit{70 y Más} non-contributory pension—which transferred resources directly and unconditionally to adults aged 70 and older—did reduce elderly women elderly mortality in rural areas by 5.5\%, and \cite{MiglinoNavarrete2023AEJP} document a 2.7 percentage-point reduction in four-year mortality from Chile's non-contributory basic solidarity pension for the elderly. These contrasting findings point to a fundamental difference in how program benefits reach older adults.
+
+\p When income arrives via a child-focused CCT, any gain to the elderly depends on the household's willingness and ability to redistribute resources across generations—resources that are in the first instance conditioned on children attending school. When income arrives as a direct, unconditional pension to the older adult, none of that intermediation is needed. The evidence suggests that households receiving \textit{Progresa} did not systematically redirect income toward elderly members' food, healthcare, or living arrangements, at least not enough to produce detectably lower mortality.
+
+%TC:ignore
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%             REFERENCES              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setcounter{secnumdepth}{0}
+\bigskip
+\singlespace
+\renewcommand{\bibname}{References}
+{\linespread{1.0}\selectfont\bibliography{bibliography}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%              FIGURES                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\input{figures.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%              TABLES                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\input{tables.tex}
+
+\appendix
+
+\newpage
+\setcounter{page}{1}
+\section*{Online Appendix}\label{appOnline}
+\vspace{2cm}
+\begin{center}
+{\Large \it Do CCT Programs (Really) Reduce Mortality: Ten-Year Evidence from Mexico} \\[.4cm]
+Emma Aguila, William H.\ Dow, Felipe Menares, Susan Parker, Jorge Peniche, and Soomin Ryu
+\end{center}
+\listoffigures
+\listoftables
+
+\newpage
+\section*{Appendix A: Additional Figures and Tables}\label{appA}
+\setcounter{table}{0}
+\renewcommand{\thetable}{A.\arabic{table}}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A.\arabic{figure}}
+\addtocontents{toc}{\noexpand\setcounter{tocdepth}{1}}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+
+\input{figures_app}
+
+\input{tables_app}
+
+\end{document}
