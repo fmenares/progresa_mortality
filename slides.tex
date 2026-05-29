@@ -72,11 +72,10 @@
 % ------------------------------------------------
 % Bibliography
 % ------------------------------------------------
-\usepackage[style=authoryear, backend=biber, maxcitenames=2]{biblatex}
-\addbibresource{bibliography.bib}
+\usepackage[round, authoryear]{natbib}
+\bibliographystyle{chicago}
 
-\newcommand{\smallcite}[1]{{\footnotesize\parencite{#1}}}
-\renewcommand*{\finalnamedelim}{\addspace\&\space}
+\newcommand{\smallcite}[1]{{\footnotesize\textcolor{Blue}{\citep{#1}}}}
 
 % ------------------------------------------------
 % Hyperref
@@ -88,8 +87,6 @@
     linkcolor=Blue,
     urlcolor=Blue
 }
-
-\AtEveryCitekey{\color{Blue}}
 
 % ------------------------------------------------
 % Beamer colors
@@ -774,6 +771,8 @@
 \end{frame}
 
 \note{To summarize: we find no evidence that Progresa reduced elderly mortality over ten years. The earlier short-run positive finding is sensitive to specification choices that are equally defensible. The behavioral channels that would produce a mortality effect were not activated. The policy lesson is that if you want to reduce elderly mortality, you need programs that put money directly in the hands of older adults — not child-focused CCTs that rely on intergenerational redistribution.}
+
+{\tiny\bibliography{bibliography}}
 
 \begin{frame}[noframenumbering, plain]
 \begin{center}
