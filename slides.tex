@@ -150,7 +150,7 @@
   {Emma Aguila, William H. Dow, Felipe Menares, Susan W. Parker, Jorge Peniche, Soomin Ryu}
 }
 
-\date{May 2026}
+\date{June 2026}
 
 % ------------------------------------------------
 % DOCUMENT
@@ -183,7 +183,7 @@
     \begin{itemize}
       \item Some studies find important health benefits \smallcite{Case2004PerspectivesAging, Aguila2015PNAS}
       \item Others find no effects \smallcite{LloydSherlockAgrawal2014JDS}
-      \item Some identify unintended adverse consequences (diet change, obesity) \smallcite{FernaldGertlerHou2008JN}
+      \item Some identify unintended adverse consequences \smallcite{FernaldGertlerHou2008JN}
     \end{itemize}
   \vspace{4pt}
   \item[$\circ$] Most existing evidence focuses on \textbf{short-run} rather than long-run \textbf{mortality} effects
@@ -192,13 +192,12 @@
     \begin{itemize}
       \item \smallcite{BehrmanParker2013Demography}: improved health-service utilization for elderly women
       \item \smallcite{aguila2024conditional}: higher hypertension diagnosis, but no improvement in biomarkers
-      \item \smallcite{BarhamRowberry2013JDE}: \textit{short-run} reductions in elderly mortality over first 5 years
+      \item \smallcite{BarhamRowberry2013JDE}: \textit{short-run} reductions in elderly mortality over first years
     \end{itemize}
   \vspace{4pt}
   \item[$\circ$] \textbf{Direct} pension programs for older adults show larger effects
     \begin{itemize}
-      \item Mexico's \textit{70 y Más}: $-5.5\%$ elderly women mortality \smallcite{menares}
-      \item Chile's basic pension: $-2.7$ pp four-year mortality \smallcite{MiglinoNavarrete2023AEJP}
+      \item Mexico's \textit{70 y Más}: $-5.5\%$ elderly women mortality \smallcite{Menares2026JHR}
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -264,13 +263,6 @@
           \item Most are grandparents --- not direct transfer recipients
           \item Any benefit must come through household income sharing or indirect pathways
         \end{itemize}
-      \vspace{8pt}
-      \item[$\circ$] \textbf{Why would we expect an effect on the elderly?}
-        \begin{itemize}
-          \item Annual clinic visit could enable early detection of diabetes, hypertension, infections
-          \item Household income increase could improve nutrition and healthcare access
-          \item Changed co-residence $\to$ more informal caregiving
-        \end{itemize}
     \end{itemize}
   \end{column}
 \end{columns}
@@ -321,16 +313,15 @@
 \begin{frame}{Data Sources}\label{data}
 \small
 \begin{itemize}
-  \item \textbf{Mortality data} $\rightarrow$ primary outcome
+  \item \textbf{Mortality data} $\rightarrow$ primary outcome publicly available from INEGI
     \begin{itemize}
-      \item Individual-level death registries from death certificates, 1991--2006 ($>3$ million records)
+      \item Individual-level death registries from death certificates, 1991--2006 
       \item Includes cause of death, birth year, sex, municipality of residence
-      \item Publicly available from INEGI
     \end{itemize}
   \vspace{4pt}
   \item \textbf{Population data} $\rightarrow$ mortality rate denominators
     \begin{itemize}
-      \item INEGI census counts by sex, age, municipality; linearly interpolated between census years
+      \item INEGI census counts by sex, age, municipality; linearly interpolated between census
     \end{itemize}
   \vspace{4pt}
   \item \textbf{\textit{Progresa} administrative data} $\rightarrow$ treatment variable
@@ -349,10 +340,7 @@
       \item Labor supply, household composition, income for elderly $65+$ in eligible households
     \end{itemize}
   \vspace{4pt}
-  \item \textbf{ENIGH (1992--2006)} $\rightarrow$ income and nutrition mechanisms
-    \begin{itemize}
-      \item National Household Expenditure Survey: food consumption, labor income, health spending
-    \end{itemize}
+  \item \textbf{ENIGH (1992--2006)} $\rightarrow$ income and nutrition mechanisms (Household Survey)
 \end{itemize}
 \end{frame}
 
@@ -362,10 +350,8 @@
 \vspace{-3mm}
 \begin{figure}
   \centering
-  \includegraphics[width=0.82\textwidth, keepaspectratio]{Figure_1a_marg.pdf}
+  \includegraphics[width=0.89\textwidth, keepaspectratio]{Figure_1a_marg.pdf}
 \end{figure}
-\vspace{-3mm}
-{\footnotesize Mortality rate for adults $65+$ and Progresa penetration, highly marginalized municipalities, 1991--2006. Vertical dashed line = 1997 (program rollout). Sample: municipalities with high (grade 4) or very high (grade 5) 1990 CONAPO Marginalization.}
 \end{frame}
 
 \note{This figure shows the key trends. The mortality rate for adults 65 and older in highly marginalized municipalities is on the left axis, and Progresa penetration is on the right. The vertical line marks 1997 when the program started. We can see that mortality was declining before the program, and enrollment grew rapidly after 1997. The identification challenge is separating the program's effect from the pre-existing trend.}
@@ -386,8 +372,8 @@
     \includegraphics[width=\textwidth, keepaspectratio]{Figure_1c_inten2005.pdf}
   \end{column}
 \end{columns}
-\vspace{2mm}
-{\footnotesize Municipality-level Progresa intensity (share of beneficiary households) among highly marginalized municipalities. Darker shading = higher intensity. Substantial variation across municipalities in both phases motivates the two-phase DiD design.}
+% \vspace{2mm}
+% {\footnotesize Municipality-level Progresa intensity (share of beneficiary households) among highly marginalized municipalities. Darker shading = higher intensity. Substantial variation across municipalities in both phases motivates the two-phase DiD design.}
 \end{frame}
 
 \note{These maps show the geographic distribution of Progresa intensity in 1999 and 2005. There is substantial variation across municipalities in both phases, and the geographic pattern shifts between early and late enrollment. This variation is what we exploit in the analysis.}
@@ -400,7 +386,7 @@
 \begin{frame}{Empirical Strategy: Difference-in-Differences}\label{empirics}
 \small
 
-\textbf{Sources of variation:} following \smallcite{parker2023conditional}
+
 
 \begin{itemize}
   \item \textbf{Early phase} (1997--1999): $\textit{Intensity}_{m,1999}$ --- share of households enrolled by 1999
@@ -425,8 +411,7 @@
 
 \begin{itemize}
   \item $\text{MR}_{m,t}$: deaths per 1,000 inhabitants aged $65+$, municipality $m$, year $t$
-  \item $\textit{Post}_{t}$: $= 1$ for years $1997$--$2006$
-  \item $\delta_m$, $\gamma_t$: municipality and year fixed effects
+  \item $\textit{Post}_{t}$: $= 1$ for years $1997$--$2006$; $\delta_m$, $\gamma_t$: municipality and year fixed effects
   \item $\chi_{m,t}$: Seguro Popular enrollment intensity (controls for confounding health insurance rollout)
   \item \textbf{Coefficient of interest}: $\beta_0$ --- effect of early-phase enrollment intensity on elderly mortality
   \item SE clustered at the municipality level; weighted by elderly population
@@ -438,8 +423,6 @@
 
 \begin{frame}{Event Study Specification}\label{eventstudy_spec}
 \small
-
-\textbf{Event study} to trace dynamic effects and test pre-trends:
 
 \vspace{2pt}
 \begin{equation*}
@@ -471,6 +454,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 
+\begin{frame}{Event Study: Effect on Elderly Mortality by Sex}\label{es_main}
+\vspace{-3mm}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.85\textwidth, keepaspectratio]{Figure_2_w.pdf}
+\end{figure}
+% \vspace{-3mm}
+% {\footnotesize Event study for early-phase Progresa intensity. Weighted by elderly population; includes Seguro Popular controls. Reference year: 1996. Sample: highly marginalized municipalities. 95\% CI shown.}
+\end{frame}
+
+\note{The event study shows the year-by-year coefficients. For females, the pre-period is relatively flat and the post-period coefficients hover around zero. For males, we see some individually significant negative coefficients in the post-period, but they are not consistent with a clean break at 1997, and they are not persistent. The average DiD estimate in the table is null for both sexes.}
+
 \begin{frame}[shrink=15]{Main Results: Effect on Elderly Mortality Rate}\label{main_results}
 \vspace{0.3cm}
 \begin{center}
@@ -490,22 +485,12 @@
 
 \note{Across all four columns, the effect of early-phase Progresa intensity on elderly mortality is small and statistically insignificant. This holds for the pooled sample, for females, and for males. Adding Seguro Popular controls doesn't change the result. Weighting doesn't change the result. The null finding is consistent across specifications.}
 
-\begin{frame}{Event Study: Effect on Elderly Mortality by Sex}\label{es_main}
-\vspace{-3mm}
-\begin{figure}
-  \centering
-  \includegraphics[width=0.85\textwidth, keepaspectratio]{Figure_2_w.pdf}
-\end{figure}
-\vspace{-3mm}
-{\footnotesize Event study for early-phase Progresa intensity. Weighted by elderly population; includes Seguro Popular controls. Reference year: 1996. Sample: highly marginalized municipalities. 95\% CI shown.}
-\end{frame}
 
-\note{The event study shows the year-by-year coefficients. For females, the pre-period is relatively flat and the post-period coefficients hover around zero. For males, we see some individually significant negative coefficients in the post-period, but they are not consistent with a clean break at 1997, and they are not persistent. The average DiD estimate in the table is null for both sexes.}
 
 \begin{frame}{Cause-of-Death Analysis}\label{cod}
 \small
 \begin{itemize}
-  \item[$\circ$] \textbf{Motivation:} prior work suggests mortality reductions through \textit{specific} causes (diabetes, infectious disease) \smallcite{BarhamRowberry2013JDE}
+  \item[$\circ$] Prior work suggests mortality reductions through \textit{specific} causes (diabetes, CVD, Infect.)
   \vspace{4pt}
   \item[$\circ$] We decompose into 9 causes: cancer, cardiovascular, respiratory, infectious disease, diabetes, nutritional, ill-defined, accidents, other
   \vspace{4pt}
@@ -543,7 +528,7 @@
     \begin{enumerate}
       \item \textbf{Log mortality rate} --- similar coefficients, avoids large-municipality dominance
       \vspace{4pt}
-      \item \textbf{Poisson PPML with raw death counts} --- handles zero-mortality municipality-year cells; addresses \smallcite{ChenRoth2024QJE} concerns about log with zeros
+      \item \textbf{Poisson with raw death counts} --- handles zero-mortality municipality-year cells; addresses \smallcite{ChenRoth2024QJE} concerns about log with zeros
       \vspace{4pt}
       \item \textbf{Age-Adjusted Mortality Rate (AAMR)} --- directly standardizes for municipal age structure
     \end{enumerate}
