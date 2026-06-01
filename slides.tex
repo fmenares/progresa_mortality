@@ -624,9 +624,19 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 \section{Mechanisms}
 
 \begin{frame}[shrink=15]{Mechanisms: Labor Supply and Living Arrangements}\label{mechanisms_lab}
-\vspace{0.3cm}
+\vspace{0.2cm}
 \small
 \textbf{Data:} Progresa experimental evaluation (ENCASEH 1997; ENCEL 1998--2000). Sample: elderly $65+$ in eligible households in 506 treatment and 320 control localities.
+
+\vspace{4pt}
+
+\textbf{Specification:}
+\vspace{-4pt}
+\begin{equation*}
+Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t\,\mathbbm{1}[\text{Treatment}]_i + \mu_m + \varepsilon_{ij,t}
+\end{equation*}
+\vspace{-6pt}
+{\footnotesize $\delta_t$: treatment effect in year $t$ relative to control at 1997 baseline. Treatment randomized at locality level $\Rightarrow$ no additional controls needed. SE clustered at locality level.}
 
 \vspace{4pt}
 \begin{center}
