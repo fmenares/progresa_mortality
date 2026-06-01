@@ -458,20 +458,28 @@
 
 \note{The event study shows the year-by-year coefficients. For females, the pre-period is relatively flat and the post-period coefficients hover around zero. For males, we see some individually significant negative coefficients in the post-period, but they are not consistent with a clean break at 1997, and they are not persistent. The average DiD estimate in the table is null for both sexes.}
 
-\begin{frame}[shrink=15]{Main Results: Effect on Elderly Mortality Rate}\label{main_results}
-\vspace{0.3cm}
+\begin{frame}{Main Results: Effect on Elderly Mortality Rate}\label{main_results}
+\vspace{0.4cm}
 \begin{center}
-\begin{table}
-  \centering
-  \scriptsize
-  \begin{threeparttable}
-    \input{tables/T2_mortality}
-    \begin{tablenotes}
-      \tiny
-      \item \textit{Notes:} Outcome: deaths per 1,000 inhabitants aged $65+$. Columns (1)--(2): unweighted; columns (3)--(4): weighted by elderly population. ``SP'' = Seguro Popular intensity control. Municipality and year FEs in all columns. SE clustered at municipality level. $^{*}p<0.1$, $^{**}p<0.05$, $^{***}p<0.01$.
-    \end{tablenotes}
-  \end{threeparttable}
-\end{table}
+\small
+\begin{tabular}{lccc}
+\toprule\toprule
+ & Pooled & Females & Males \\
+ & (1) & (2) & (3) \\
+\midrule
+\textit{Intensity 1999 $\times$ post} & $-0.719$ & $0.620$ & $-2.206$ \\
+ & $(1.464)$ & $(1.824)$ & $(1.735)$ \\[4pt]
+\textit{Intensity 2005 $\times$ post} & $-2.796$ & $-5.641^{**}$ & $0.201$ \\
+ & $(1.803)$ & $(2.205)$ & $(1.994)$ \\[4pt]
+Mean dep.\ var.\ (1991--1996) & $46.47$ & $46.11$ & $47.26$ \\
+Observations & $17{,}904$ & $17{,}904$ & $17{,}904$ \\
+No.\ Municipalities & $1{,}119$ & $1{,}119$ & $1{,}119$ \\
+\midrule
+Seguro Popular & Y & Y & Y \\
+Weights & Y & Y & Y \\
+Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
+\bottomrule\bottomrule
+\end{tabular}
 \end{center}
 \end{frame}
 
