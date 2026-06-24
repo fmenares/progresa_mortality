@@ -68,7 +68,7 @@
 \usepackage{comment}
 \usepackage{caption}
 \usepackage{color}
-
+\usepackage{pdfpages}
 % ------------------------------------------------
 % Bibliography
 % ------------------------------------------------
@@ -162,6 +162,7 @@
 
 \setlength{\abovedisplayskip}{3pt}
 \setlength{\belowdisplayskip}{3pt}
+\includepdf[pages={1},noautoscale=false,fitpaper=false]{ppt_iadb/Half-baked_Lunch_Backdrop.pdf}
 
 {
 \setbeamertemplate{footline}{}
@@ -801,5 +802,5 @@ Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t
 \end{frame}
 
 {\tiny\bibliography{bibliography}}
-
+\includepdf[pages={2},noautoscale=false,fitpaper=false]{ppt_iadb/Half-baked_Lunch_Backdrop.pdf}
 \end{document}
