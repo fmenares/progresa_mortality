@@ -2140,6 +2140,114 @@ di "  $tables/appendix/AT4_BR_robustness_aamr65.tex"
 
 
 *============================================================
+* APPENDIX TABLE 5: BR Trimming — Municipality Size
+* Tests whether the BR unweighted result is driven by smallest
+* municipalities. Progressively drops municipalities below
+* the 10th, 25th, and 50th percentile of older-adult population.
+* Pooled only; same unweighted lag-2 spec as AT3 Panel B.
+* Output: $tables/appendix/AT5_BR_trimming.tex
+*============================================================
+
+* Step 1: Compute municipality-level mean older-adult population
+*         across the BR sample period (used as size proxy for trimming)
+capture drop _pop_br_tmp pop_mun_br
+bys cve_ent_mun_super: egen _pop_br_tmp = mean(popover65_) ///
+    if inrange(year, 1992, 2002) & $sample_br
+bys cve_ent_mun_super: egen pop_mun_br = mean(_pop_br_tmp)
+drop _pop_br_tmp
+
+* Step 2: Get p10/p25/p50 cutoffs at the municipality level
+preserve
+    keep if $sample_br & inrange(year, 1992, 2002)
+    collapse (mean) pop_mean = popover65_, by(cve_ent_mun_super)
+    _pctile pop_mean, p(10 25 50)
+    local p10_br = r(r1)
+    local p25_br = r(r2)
+    local p50_br = r(r3)
+restore
+
+di "BR size cutoffs (older adults 65+): p10=`p10_br', p25=`p25_br', p50=`p50_br'"
+
+* Step 3: Run regressions — same unweighted lag-2 BR spec, pooled only
+
+* Column 2: Drop bottom decile (municipalities with pop_mun_br <= p10)
+reghdfe emr65 lag2_intensity_new ///
+    if inrange(year,1992,2002) & $sample_br & pop_mun_br > `p10_br', ///
+    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[lag2_intensity_new]
+local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+if      `t' >= 2.576 local bAT5_2 = "`aux'***"
+else if `t' >= 1.96  local bAT5_2 = "`aux'**"
+else if `t' >= 1.645 local bAT5_2 = "`aux'*"
+else                  local bAT5_2 = "`aux'"
+local seAT5_2:   di %12.3f _se[lag2_intensity_new]
+sum emr65 if e(sample) & year == 1996
+local meanAT5_2: di %12.2fc `r(mean)'
+local NAT5_2:    di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local NmunAT5_2: di %12.0fc `r(ndistinct)'
+
+* Column 3: Drop bottom quartile (municipalities with pop_mun_br <= p25)
+reghdfe emr65 lag2_intensity_new ///
+    if inrange(year,1992,2002) & $sample_br & pop_mun_br > `p25_br', ///
+    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[lag2_intensity_new]
+local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+if      `t' >= 2.576 local bAT5_3 = "`aux'***"
+else if `t' >= 1.96  local bAT5_3 = "`aux'**"
+else if `t' >= 1.645 local bAT5_3 = "`aux'*"
+else                  local bAT5_3 = "`aux'"
+local seAT5_3:   di %12.3f _se[lag2_intensity_new]
+sum emr65 if e(sample) & year == 1996
+local meanAT5_3: di %12.2fc `r(mean)'
+local NAT5_3:    di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local NmunAT5_3: di %12.0fc `r(ndistinct)'
+
+* Column 4: Drop bottom half (municipalities with pop_mun_br <= p50)
+reghdfe emr65 lag2_intensity_new ///
+    if inrange(year,1992,2002) & $sample_br & pop_mun_br > `p50_br', ///
+    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[lag2_intensity_new]
+local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+if      `t' >= 2.576 local bAT5_4 = "`aux'***"
+else if `t' >= 1.96  local bAT5_4 = "`aux'**"
+else if `t' >= 1.645 local bAT5_4 = "`aux'*"
+else                  local bAT5_4 = "`aux'"
+local seAT5_4:   di %12.3f _se[lag2_intensity_new]
+sum emr65 if e(sample) & year == 1996
+local meanAT5_4: di %12.2fc `r(mean)'
+local NAT5_4:    di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local NmunAT5_4: di %12.0fc `r(ndistinct)'
+
+* Step 4: Write table
+{
+    cap file close sm
+    file open sm using "$tables/appendix/AT5_BR_trimming.tex", write replace
+    file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+    file write sm "& \multicolumn{4}{c}{\textit{Pooled --- BR Specification (Unweighted, 2-yr Lag)}} \\ \cmidrule(lr){2-5}" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ " _n
+    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Ex.\ bottom 50\%} \\ \toprule " _n
+    file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bAT5_2' & `bAT5_3' & `bAT5_4' \\ " _n
+    file write sm " & (1.040) & (`seAT5_2') & (`seAT5_3') & (`seAT5_4') \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "Mean 1996 & 47.5 & `meanAT5_2' & `meanAT5_3' & `meanAT5_4' \\ " _n
+    file write sm "Obs & 21,571 & `NAT5_2' & `NAT5_3' & `NAT5_4' \\ " _n
+    file write sm "No.\ Mun & 1,961 & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_4' \\ " _n
+    file write sm "\bottomrule" _n
+    file write sm "\multicolumn{5}{l}{\footnotesize \textit{Notes:} Column (1) reproduces Panel A of Appendix Table~3 (BR 2013 original).} \\ " _n
+    file write sm "\multicolumn{5}{l}{\footnotesize Columns (2)--(4) re-estimate the unweighted lag-2 BR specification excluding municipalities} \\ " _n
+    file write sm "\multicolumn{5}{l}{\footnotesize below the 10th, 25th, and 50th percentile of mean older-adult population (ages 65+).} \\ " _n
+    file write sm "\end{tabular}"
+    file close sm
+}
+
+drop pop_mun_br
+di "Table exported to: $tables/appendix/AT5_BR_trimming.tex"
+
+
+*============================================================
 * APPENDIX TABLE 5B: Causes of Death (BR Sample, 1992-2002)
 * AT5_cod_br_mortality.tex -- Pooled, Female, Male panels
 *============================================================
