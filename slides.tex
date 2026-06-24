@@ -136,13 +136,16 @@
 % ------------------------------------------------
 % TITLE
 % ------------------------------------------------
+% ------------------------------------------------
+% TITLE
+% ------------------------------------------------
 \title[W]{\LARGE{Do CCT Programs (Really) Reduce Mortality?\\Ten-Year Evidence from Mexico}}
 
 \author[]{%
   \texorpdfstring{%
     \begin{tabular}{c c c}
       Emma Aguila & William H.\ Dow & Felipe Menares$^{*}$ \\
-      \textcolor{gray}{USC} & \textcolor{gray}{UC Berkeley} & \textcolor{gray}{IDB} \\[4pt]
+      \textcolor{gray}{USC} & \textcolor{gray}{UC Berkeley} & \textcolor{gray}{Inter-American Development Bank} \\[4pt]
       Susan W.\ Parker & Jorge Peniche & Soomin Ryu \\
       \textcolor{gray}{University of Maryland} & \textcolor{gray}{USC} & \textcolor{gray}{University of Missouri} \\
     \end{tabular}
@@ -164,11 +167,10 @@
 \setbeamertemplate{footline}{}
 \begin{frame}
   \titlepage
-  \footnotetext{$^{*}$\scriptsize The opinions expressed in this paper are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent, nor of INEGI.}
-\vfill
+  \vfill
+  {\tiny $^{*}$The opinions expressed in this paper are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent, nor of INEGI.}
 \end{frame}
 }
-
 \note{Hello everyone. Today I'm presenting joint work on whether Mexico's Progresa conditional cash transfer program reduced elderly mortality. Our paper asks whether a program primarily designed to invest in children's education and health produced meaningful mortality benefits for the elderly over a longer time horizon.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,24 +178,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
 
-\begin{frame}{Motivation}\label{motivation}
+\begin{frame}{Motivation: Older adults are the fastest-growing population group}\label{motivation}
 \vspace{2pt}
 \small
 \begin{itemize}
+  \item[$\circ$] In LAC, 10\% is 65+, and is expected to double by 2050 (20\%  in poverty) \smallcite{UN2024WPP} 
   \item[$\circ$] Income support programs and health: evidence is mixed
     \begin{itemize}
-      \item Some studies find important health benefits \smallcite{Case2004PerspectivesAging, Aguila2015PNAS}
-      \item Others find no effects \smallcite{LloydSherlockAgrawal2014JDS}
-      \item Some identify unintended adverse consequences \smallcite{FernaldGertlerHou2008JN}
+      \item Some studies find important health benefits \smallcite{Case2004PerspectivesAging, Aguila2015PNAS}, others find no effects \smallcite{LloydSherlockAgrawal2014JDS}, and some identify unintended adverse consequences \smallcite{FernaldGertlerHou2008JN}
     \end{itemize}
   \vspace{4pt}
   \item[$\circ$] Most existing evidence focuses on \textbf{short-run} rather than long-run \textbf{mortality} effects
   \vspace{4pt}
   \item[$\circ$] CCTs have been widely studied for children, but \textbf{elderly} has been overlooked
     \begin{itemize}
-      \item \smallcite{BehrmanParker2013Demography}: improved health-service utilization for elderly women
-      \item \smallcite{aguila2024conditional}: higher hypertension diagnosis, but no improvement in biomarkers
-      \item \smallcite{BarhamRowberry2013JDE}: \textit{short-run} reductions in elderly mortality over first years
+      \item improved health-service utilization for elderly women \smallcite{BehrmanParker2013Demography}
+      \item higher hypertension diagnosis, but no improvement in biomarkers \smallcite{aguila2024conditional}
+      \item
+      \textit{short-run} reductions in elderly mortality over first years \smallcite{BarhamRowberry2013JDE}
     \end{itemize}
   \vspace{4pt}
   \item[$\circ$] \textbf{Direct} pension programs for older adults show larger effects
@@ -215,12 +217,12 @@
   \vspace{6pt}
   \item[$\circ$] \textbf{Main finding:} \textcolor{redUT}{No evidence of medium- or long-run mortality effects}
     \begin{itemize}
-      \item Result is robust to functional form, weighting, and Seguro Popular controls
+      \item Result is robust to functional form, weighting, and health insurance coverage
     \end{itemize}
   \vspace{6pt}
-  \item[$\circ$] \textbf{Revisiting prior evidence:} Short-run estimates of \smallcite{BarhamRowberry2013JDE} are sensitive to weighting and lag structure
+  \item[$\circ$] \textbf{Revisiting prior evidence:} Short-run estimates of \cite{BarhamRowberry2013JDE} are sensitive to weighting and lag structure
     \begin{itemize}
-      \item Minor, defensible specification changes attenuate estimates by $\geq 50\%$
+      \item Minor changes attenuate estimates by $\geq 50\%$
     \end{itemize}
   \vspace{6pt}
   \item[$\circ$] \textbf{Mechanisms:} No significant effects on elderly labor supply, household composition, income, or nutrition
@@ -237,10 +239,11 @@
 \begin{frame}{Mexico's \textit{Progresa}: Programme Overview}\label{progresa}
 \small
 \begin{itemize}
-  \item[$\circ$] Launched 1997 in small rural communities; later renamed Oportunidades, then Prospera
+  \item[$\circ$] Launched 1997 in small rural communities and targeted poor households with children under 18 or pregnant women (marginality index and a household-level proxy means test)
   \vspace{4pt}
-  \item[$\circ$] \textbf{Scale:} 6 million families covered ($\frac{1}{4}$ of all Mexican families); $\frac{2}{3}$ in communities $<$2,500 inhabitants
+  \item[$\circ$] \textbf{Scale:} 6 million families covered ($\frac{1}{4}$ of all Mexican families); $\frac{2}{3}$ in rurality
   \vspace{4pt}
+  
   \item[$\circ$] \textbf{Transfer:} $\approx$ MXN\$800/month ($>25\%$ income increase); paid to female household head
   \vspace{4pt}
   \item[$\circ$] \textbf{Conditionalities:}
@@ -250,7 +253,7 @@
       \item For adults $17+$ (incl.\ elderly): \textbf{one annual visit only}
     \end{itemize}
   \vspace{4pt}
-  \item[$\circ$] \textbf{In 2006:} pension for adults $70+$ added --- we end analysis in 2006 to focus on original CCT design
+  \item[$\circ$] \textbf{In 2006:} pension for adults $70+$ added --- we end analysis early to focus on original CCT
   \vspace{4pt}
   \item[$\circ$] \textbf{Elderly in eligible households:}
     \begin{itemize}
@@ -284,14 +287,12 @@
     \textbf{Why each channel may not work}
     \vspace{4pt}
     \begin{itemize}
-      \item[$\circ$] \textit{Health conditionality:} one annual visit is a minimal intervention; \smallcite{aguila2024conditional} find increased utilization but no improvement in blood pressure biomarkers
+      \item[$\circ$] \textit{Health conditionality:} one annual visit is a minimal intervention; \cite{aguila2024conditional} find increased utilization but no improvement in blood pressure biomarkers
       \vspace{4pt}
       \item[$\circ$] \textit{Income:} transfers go to female head; elderly household members may not capture redistribution
       \vspace{4pt}
-      \item[$\circ$] \textit{Caregiving:} \smallcite{BehrmanParker2013Demography} find physical-presence requirement for cash collection may actually \textit{increase} time demands on younger members
+      \item[$\circ$] \textit{Caregiving:} \cite{BehrmanParker2013Demography} find physical-presence requirement for cash collection may actually \textit{increase} time demands on younger members
     \end{itemize}
-    \vspace{8pt}
-    \textbf{$\Rightarrow$ Whether channels are activated is an empirical question}
   \end{column}
 \end{columns}
 \end{frame}
@@ -560,11 +561,11 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
     \vspace{4pt}
     \begin{itemize}
       \item[\textbf{(A)}] BR original: $-6.37$ deaths/1,000 ($p<0.01$)
-      \item[\textbf{(B)}] Our close replication: $-7.06$ deaths/1,000
+      \item[\textbf{(B)}] Our close replication: $-7.06$ deaths/1,000 ($p<0.01$)
       \vspace{4pt}
-      \item[\textbf{(C)}] Add \textit{population weights}: attenuates $\approx$\textbf{47\%} to $-3.74$ deaths/1,000
+      \item[\textbf{(C)}] Add \textit{population weights}: attenuates $\approx$\textbf{47\%} to $-3.74$ deaths/1,000 ($p<0.01$)
       \vspace{4pt}
-      \item[\textbf{(D)}] 1-year lag $+$ weights: $-3.46$ deaths/1,000
+      \item[\textbf{(D)}] 1-year lag $+$ weights: $-3.46$ deaths/1,000 ($p<0.01$)
       \vspace{4pt}
       \item[\textbf{(E)}] 3-year lag $+$ weights: $-2.07$ deaths/1,000 ($p<0.01$)
     \end{itemize}
@@ -577,13 +578,12 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
       \item[$\circ$] These have highest intensity \textit{and} most volatile mortality rates (small populations)
       \item[$\circ$] Unweighted: excess influence to smallest municipalities
       \item[$\circ$] Weighting by elderly population: each municipality weighted proportional to its contribution to total deaths
-      \item[$\circ$] Population weighting is equally or more defensible
     \end{itemize}
   \end{column}
 \end{columns}
 
 \vspace{6pt}
-\textit{Key takeaway: the short-run result is sensitive to choices that are not driven by the data.}
+% \textit{Key takeaway: the short-run result is sensitive to choices that are not driven by the data.}
 
 \end{frame}
 
@@ -601,26 +601,25 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 
 \begin{itemize}
   \item[$\circ$] \textbf{Advantage:} enables pre-trends test (BR's design did not allow this)
-  \item[$\circ$] \textbf{BR sample, unweighted:} estimate $\approx -4.0$ deaths/1,000 (similar magnitude to BR)
+  \item[$\circ$] \textbf{BR sample, unweighted:} estimate $\approx -4.0$ deaths/1,000 ($p<0.01$)
   \item[$\circ$] \textbf{BR sample, with population weights:} $-1.66$ deaths/1,000 ($p<0.05$) $\to$ attenuates $\approx$58\% relative to unweighted
   \item[$\circ$] \textbf{Full highly marginalized sample:} not statistically significant in any specification
   \vspace{6pt}
-  \item[$\circ$] \textbf{Event study reveals additional concern for BR sample:}
-    \begin{itemize}
-      \item Males in BR sample: \textcolor{redUT}{clear pre-trend violations} before 1997
-      \item Females in BR sample: post-program coefficients do not show consistent break from pre-period
-      \item Neither sex supports the $-3.97$ pooled estimate
-    \end{itemize}
+  \item[$\circ$] \textbf{Event study reveals additional concern for BR sample}
+    % \begin{itemize}
+    %   \item Males in BR sample: \textcolor{redUT}{clear pre-trend violations} before 1997
+    %   \item Females in BR sample: post-program coefficients do not show consistent break from pre-period
+    % \end{itemize}
   \vspace{6pt}
   \item[$\circ$] \textbf{Conclusion:} short-run effect sensitive to sample and design; full HM sample shows no significant effect
 \end{itemize}
 
 \end{frame}
 
-\note{When we apply our pre/post framework to the BR sample, we can now run the event study they couldn't. For males in their sample, there are clear pre-trends — the identification assumption is likely violated. For females, the post-period doesn't show a consistent break. The weighted estimate is -1.66, significant at 5% but 58% smaller than the unweighted counterpart. In the full highly marginalized sample there is no significant effect at all.}
+\note{When we apply our pre/post framework to the BR sample, we can now run the event study they couldn't. For males in their sample, there are clear pre-trends — the identification assumption is likely violated. For females, the post-period doesn't show a consistent break. The weighted estimate is -1.66, significant at 5\% but 58\% smaller than the unweighted counterpart. In the full highly marginalized sample there is no significant effect at all.}
 
-\begin{frame}{Figure A.6 --- Event Study by Sex and Sample, 1992--2002}\label{fig_a6}
-\vskip -2mm
+\begin{frame}{Event Study by Sex and Sample, 1992--2002}\label{fig_a6}
+\vskip 2mm
 \begin{figure}
   \centering
   \begin{columns}
@@ -667,20 +666,12 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 \begin{equation*}
 Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t\,\mathbbm{1}[\text{Treatment}]_i + \mu_m + \varepsilon_{ij,t}
 \end{equation*}
-\vspace{-6pt}
-{\footnotesize $\delta_t$: treatment effect in year $t$ relative to control at 1997 baseline. Treatment randomized at locality level $\Rightarrow$ no additional controls needed. SE clustered at locality level.}
-
-\vspace{4pt}
 \begin{center}
 \begin{table}
   \centering
   \scriptsize
   \begin{threeparttable}
     \input{tables/T3_experimental}
-    \begin{tablenotes}
-      \tiny
-      \item \textit{Notes:} DiD estimates. Col.\ (1): weekly hours worked. Cols.\ (2)--(4): probability of living alone, with children, or with elderly only. Baseline: 1997. SE clustered at municipality level. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$.
-    \end{tablenotes}
   \end{threeparttable}
 \end{table}
 \end{center}
@@ -716,48 +707,48 @@ Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t
 
 \note{Slide 17 showed the experimental results — no changes in labor supply or living arrangements. Here we add the ENIGH findings: no significant effects on income, food consumption, or health spending either. The two data sources tell the same story. The null mortality result is not surprising given that none of the mechanisms were activated.}
 
-\begin{frame}{Mechanisms: Summary}\label{mechanisms_summary}
-\small
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    \textbf{Three channels tested}
-    \vspace{6pt}
-    \begin{enumerate}
-      \item \textbf{Health conditionality} \\
-        One annual clinic visit \\[4pt]
-        {\footnotesize $\to$ \smallcite{BehrmanParker2013Demography}: increased utilization \\
-        $\to$ \smallcite{aguila2024conditional}: \textcolor{redUT}{no improvement in biomarkers} \\
-        $\to$ Cause-of-death analysis: no significant reduction in cardiovascular or infectious disease \\
-        \textbf{Conclusion: partially activated, clinically ineffective}}
-      \vspace{8pt}
-      \item \textbf{Income and nutrition} \\
-        {\footnotesize ENIGH analysis: \textcolor{redUT}{no detectable response} \\
-        \textbf{Conclusion: not activated}}
-      \vspace{8pt}
-      \item \textbf{Living arrangements} \\
-        {\footnotesize Experimental data: \textcolor{redUT}{no change in co-residence} \\
-        \textbf{Conclusion: not activated}}
-    \end{enumerate}
-  \end{column}
-  \begin{column}{0.48\textwidth}
-    \textbf{The bigger picture}
-    \vspace{6pt}
-    \begin{itemize}
-      \item[$\circ$] The null is \textbf{interpretable}, not just a power issue
-      \vspace{4pt}
-      \item[$\circ$] Contrast with \textbf{direct pension programs}:
-        \begin{itemize}
-          \item \textit{70 y Más} (direct, unconditional pension to $70+$): $-5.5\%$ elderly women mortality \smallcite{jeon2025short}
-          \item Chile's basic solidarity pension: $-2.7$ pp four-year mortality \smallcite{MiglinoNavarrete2023AEJP}
-        \end{itemize}
-      \vspace{4pt}
-      \item[$\circ$] Key difference: when income goes \textbf{directly to the elderly}, no need for intergenerational redistribution within the household
-      \vspace{4pt}
-      \item[$\circ$] When income goes to mothers via a child-focused CCT, elderly members depend on household redistribution that may not occur
-    \end{itemize}
-  \end{column}
-\end{columns}
-\end{frame}
+% \begin{frame}{Mechanisms: Summary}\label{mechanisms_summary}
+% \small
+% \begin{columns}[T]
+%   \begin{column}{0.48\textwidth}
+%     \textbf{Three channels tested}
+%     \vspace{6pt}
+%     \begin{enumerate}
+%       \item \textbf{Health conditionality} \\
+%         One annual clinic visit \\[4pt]
+%         {\footnotesize $\to$ \smallcite{BehrmanParker2013Demography}: increased utilization \\
+%         $\to$ \smallcite{aguila2024conditional}: \textcolor{redUT}{no improvement in biomarkers} \\
+%         $\to$ Cause-of-death analysis: no significant reduction in cardiovascular or infectious disease \\
+%         \textbf{Conclusion: partially activated, clinically ineffective}}
+%       \vspace{8pt}
+%       \item \textbf{Income and nutrition} \\
+%         {\footnotesize ENIGH analysis: \textcolor{redUT}{no detectable response} \\
+%         \textbf{Conclusion: not activated}}
+%       \vspace{8pt}
+%       \item \textbf{Living arrangements} \\
+%         {\footnotesize Experimental data: \textcolor{redUT}{no change in co-residence} \\
+%         \textbf{Conclusion: not activated}}
+%     \end{enumerate}
+%   \end{column}
+%   \begin{column}{0.48\textwidth}
+%     \textbf{The bigger picture}
+%     \vspace{6pt}
+%     \begin{itemize}
+%       \item[$\circ$] The null is \textbf{interpretable}, not just a power issue
+%       \vspace{4pt}
+%       \item[$\circ$] Contrast with \textbf{direct pension programs}:
+%         \begin{itemize}
+%           \item \textit{70 y Más} (direct, unconditional pension to $70+$): $-5.5\%$ elderly women mortality \smallcite{jeon2025short}
+%           \item Chile's basic solidarity pension: $-2.7$ pp four-year mortality \smallcite{MiglinoNavarrete2023AEJP}
+%         \end{itemize}
+%       \vspace{4pt}
+%       \item[$\circ$] Key difference: when income goes \textbf{directly to the elderly}, no need for intergenerational redistribution within the household
+%       \vspace{4pt}
+%       \item[$\circ$] When income goes to mothers via a child-focused CCT, elderly members depend on household redistribution that may not occur
+%     \end{itemize}
+%   \end{column}
+% \end{columns}
+% \end{frame}
 
 \note{Here's the bottom line on mechanisms. The health conditionality reached elderly people in terms of clinic visits, but didn't improve biomarkers or cause-specific mortality. Income and living arrangements were not changed. The null is coherent and interpretable. And it stands in stark contrast to direct pension programs, where income goes straight to the elderly and mortality effects are found. The intermediation through the household is what makes the CCT different.}
 
@@ -789,18 +780,14 @@ Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t
   \vspace{4pt}
   \item[$\circ$] \textbf{Policy implication:} CCTs structured around children's education do not reliably deliver mortality benefits to elderly household members
     \begin{itemize}
-      \item Programs transferring resources \textit{directly} to the elderly are more effective for reducing elderly mortality \smallcite{jeon2025short, MiglinoNavarrete2023AEJP}
+      \item Programs transferring resources \textit{directly} to the elderly are more effective for reducing elderly mortality \smallcite{Menares2026JHR, MiglinoNavarrete2023AEJP}
     \end{itemize}
-  \vspace{4pt}
-  \item[$\circ$] \textbf{Future work:} examine effects on elderly health outcomes with panel microdata; explore whether more recent program expansions (post-2006 pension component) changed these conclusions
 \end{itemize}
 \end{frame}
 
 \note{To summarize: we find no evidence that Progresa reduced elderly mortality over ten years. The earlier short-run positive finding is sensitive to specification choices that are equally defensible. The behavioral channels that would produce a mortality effect were not activated. The policy lesson is that if you want to reduce elderly mortality, you need programs that put money directly in the hands of older adults — not child-focused CCTs that rely on intergenerational redistribution.}
 
-\begin{frame}<0|handout:0>[noframenumbering, plain, allowframebreaks]{}
-{\tiny\bibliography{bibliography}}
-\end{frame}
+
 
 \begin{frame}[noframenumbering, plain]
 \begin{center}
@@ -812,5 +799,7 @@ Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t
 }
 \end{center}
 \end{frame}
+
+{\tiny\bibliography{bibliography}}
 
 \end{document}
