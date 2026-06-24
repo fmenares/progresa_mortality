@@ -254,12 +254,16 @@ foreach grp in w f m {
 
 	forval pos = 1/16 {
 		if `pos' == 6 {
-			local b_`grp'_6  = 0
-			local se_`grp'_6 = 0
+			local b_`grp'_6    = 0
+			local se_`grp'_6   = 0
+			local th_`grp'_6   = 0
+			local seth_`grp'_6 = 0
 		}
 		else {
-			local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local b_`grp'_`pos'    = _b[`pos'.year_1995#c.inten1999]
+			local se_`grp'_`pos'   = _se[`pos'.year_1995#c.inten1999]
+			local th_`grp'_`pos'   = _b[`pos'.year_1995#c.inten2005]
+			local seth_`grp'_`pos' = _se[`pos'.year_1995#c.inten2005]
 		}
 	}
 }
@@ -314,6 +318,65 @@ twoway ///
 graph export "$figures/Figure_2_w.pdf", as(pdf) replace
 restore
 
+}
+
+*============================================================
+* APPENDIX FIGURE: AF_beta1_sex
+* Event study for theta_k (Intensity_2005 x year) — weighted + SP
+* Pooled / Female / Male — mirrors Figure 2 structure
+* Output: $figures/appendix/AF_beta1_sex.pdf
+*============================================================
+
+{
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_w = yr_pos - 0.18
+gen xpos_f = yr_pos
+gen xpos_m = yr_pos + 0.18
+foreach grp in w f m {
+	gen th_`grp'  = .
+	gen thi_`grp' = .
+	gen tlo_`grp' = .
+}
+forval pos = 1/16 {
+	foreach grp in w f m {
+		replace th_`grp'  = `th_`grp'_`pos''                              if yr_pos == `pos'
+		replace thi_`grp' = `th_`grp'_`pos'' + 1.96 * `seth_`grp'_`pos'' if yr_pos == `pos'
+		replace tlo_`grp' = `th_`grp'_`pos'' - 1.96 * `seth_`grp'_`pos'' if yr_pos == `pos'
+	}
+}
+twoway ///
+	(rcap thi_w tlo_w xpos_w, ///
+		lcolor(black%60) lwidth(vthin)) ///
+	(scatter th_w xpos_w, ///
+		mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(rcap thi_f tlo_f xpos_f, ///
+		lcolor(red%60) lwidth(vthin)) ///
+	(scatter th_f xpos_f, ///
+		mcolor(red) msymbol(square) msize(vsmall)) ///
+	(rcap thi_m tlo_m xpos_m, ///
+		lcolor(blue%60) lwidth(vthin)) ///
+	(scatter th_m xpos_m, ///
+		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+	(line th_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+	(line th_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+	(line th_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+		cols(3) size(medsmall) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_beta1_sex.pdf", as(pdf) replace
+restore
 }
 
 *============================================================
@@ -771,12 +834,16 @@ foreach grp in w f m {
 
 	forval pos = 1/16 {
 		if `pos' == 6 {
-			local b_`grp'_6  = 0
-			local se_`grp'_6 = 0
+			local b_`grp'_6     = 0
+			local se_`grp'_6    = 0
+			local thuw_`grp'_6   = 0
+			local sethuw_`grp'_6 = 0
 		}
 		else {
-			local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local b_`grp'_`pos'     = _b[`pos'.year_1995#c.inten1999]
+			local se_`grp'_`pos'    = _se[`pos'.year_1995#c.inten1999]
+			local thuw_`grp'_`pos'   = _b[`pos'.year_1995#c.inten2005]
+			local sethuw_`grp'_`pos' = _se[`pos'.year_1995#c.inten2005]
 		}
 	}
 }
@@ -829,6 +896,60 @@ twoway ///
 	graphregion(color(white)) ///
 	plotregion(margin(l=1 r=1))
 graph export "$figures/appendix/Figure_5a_uw.pdf", as(pdf) replace
+restore
+}
+
+*============================================================
+* APPENDIX FIGURE: AF_beta1_wuw
+* Event study for theta_k (Intensity_2005 x year) — Pooled only
+* Weighted (black circles) vs. Unweighted (blue triangles)
+* Output: $figures/appendix/AF_beta1_wuw.pdf
+*============================================================
+
+{
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_wt = yr_pos - 0.18
+gen xpos_uw = yr_pos + 0.18
+foreach pfx in wt uw {
+	gen th_`pfx'  = .
+	gen thi_`pfx' = .
+	gen tlo_`pfx' = .
+}
+forval pos = 1/16 {
+	replace th_wt  = `th_w_`pos''                              if yr_pos == `pos'
+	replace thi_wt = `th_w_`pos'' + 1.96 * `seth_w_`pos''     if yr_pos == `pos'
+	replace tlo_wt = `th_w_`pos'' - 1.96 * `seth_w_`pos''     if yr_pos == `pos'
+	replace th_uw  = `thuw_w_`pos''                            if yr_pos == `pos'
+	replace thi_uw = `thuw_w_`pos'' + 1.96 * `sethuw_w_`pos'' if yr_pos == `pos'
+	replace tlo_uw = `thuw_w_`pos'' - 1.96 * `sethuw_w_`pos'' if yr_pos == `pos'
+}
+twoway ///
+	(rcap thi_wt tlo_wt xpos_wt, ///
+		lcolor(black%60) lwidth(vthin)) ///
+	(scatter th_wt xpos_wt, ///
+		mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(rcap thi_uw tlo_uw xpos_uw, ///
+		lcolor(blue%60) lwidth(vthin)) ///
+	(scatter th_uw xpos_uw, ///
+		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+	(line th_wt xpos_wt if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+	(line th_uw xpos_uw if 1==0, lcolor(blue%80) lpattern(dash) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(5 "Weighted" 6 "Unweighted") ///
+		cols(2) size(medsmall) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_beta1_wuw.pdf", as(pdf) replace
 restore
 }
 
