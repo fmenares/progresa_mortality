@@ -34,16 +34,20 @@ if _rc {
 // set root:
 
 if "`c(username)'" == "swparker" {
-	local root "/Users/swparker/Dropbox/PROJECTS_CURRENT/Aging_Progresa"
+	global dataFolder "/Users/swparker/Dropbox/PROJECTS_CURRENT/Aging_Progresa/ENCASEH_ENCEL_PROGRESA/"
+	global tables     "/Users/swparker/Dropbox/PROJECTS_CURRENT/Aging_Progresa/Results"
+	global tempFolder "/Users/swparker/Dropbox/PROJECTS_CURRENT/Aging_Progresa/Temp"
 }
-else if "`c(username)'" == "FELIPEME" {
-	local root "C:/Users/FELIPEME/Dropbox/2026/progresa_mortality"
+if "`c(username)'" == "FELIPEME" {
+	global dataFolder "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\ENCASEH_ENCEL_PROGRESA"
+	global tables     "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
+	global tempFolder "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data"
 }
-
-global data "`root'"
-global dataFolder "$data/data/ENCASEH_ENCEL_PROGRESA/"
-global tables "$data/data/Tables"
-global tempFolder "$data/data/Temp_data"
+if "`c(username)'" == "root" {
+	global dataFolder "/home/user/progresa_mortality/data/ENCASEH_ENCEL_PROGRESA"
+	global tables     "/home/user/progresa_mortality/tables"
+	global tempFolder "/home/user/progresa_mortality/data/Temp_data"
+}
 
 cap mkdir "$tables"
 cap mkdir "$tempFolder"
@@ -429,8 +433,9 @@ local indiv_outcomes work days_week hours_day weekly_hours
 local living live_alone with_children only_elderly
 
 *men*
+local g m
 preserve
-keep if gender==1 & age97>=65 
+keep if gender==1 & age97>=65
 * Run DiD/event-study: year FE interacted with treatment
 foreach yvar of local indiv_outcomes {
 
@@ -457,27 +462,24 @@ foreach yvar of local indiv_outcomes {
         vce(cluster claveofi)
     estadd scalar cmean97 = `cmean97_elig'
     eststo `yvar'_elig
+
+    * Extract locals for T3 (weekly_hours only from this loop)
+    if "`yvar'" == "weekly_hours" {
+        foreach yr in 98 99 {
+            local aux : di %9.3f _b[`yr'.year#1.contba]
+            local tstat = abs(_b[`yr'.year#1.contba] / _se[`yr'.year#1.contba])
+            if `tstat' >= 2.576      local b`yr'_`g'_wh = trim("`aux'") + "***"
+            else if `tstat' >= 1.960 local b`yr'_`g'_wh = trim("`aux'") + "**"
+            else if `tstat' >= 1.645 local b`yr'_`g'_wh = trim("`aux'") + "*"
+            else                     local b`yr'_`g'_wh = trim("`aux'")
+            local se`yr'_`g'_wh : di %9.3f _se[`yr'.year#1.contba]
+        }
+        local N_`g'_wh   : di %12.0fc e(N)
+        local cmn_`g'_wh : di %9.3f `cmean97_elig'
+    }
 }
 
 
-* Export (RTF opens nicely in Word)
-* Keep only Progresa treatment effects in 1998 and 1999 relative to 1997
-esttab work_all work_elig ///
-      days_week_all days_week_elig ///
-	   hours_day_all hours_day_elig ///
-       weekly_hours_all weekly_hours_elig ///
-       using "$tables/progresa_elderly_individual_outcomes_male.rtf", replace ///
-    title("Progresa impacts on male elderly individuals (age 65+ in 1997)") ///
-    keep(98.year#1.contba 99.year#1.contba) ///
-    order(98.year#1.contba 99.year#1.contba) ///
-    coeflabels(98.year#1.contba "Treatment x 1998" ///
-               99.year#1.contba "Treatment x 1999") ///
-    b(%9.3f) se(%9.3f) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1997)")) ///
-    compress
-	
-	
 	foreach yvar of local living {
 
     * Control mean in 1997 (control localities), matching the estimation sample
@@ -503,27 +505,30 @@ esttab work_all work_elig ///
         vce(cluster claveofi)
     estadd scalar cmean97 = `cmean97_elig'
     eststo `yvar'_elig
+
+    * Extract locals for T3 (living arrangement outcomes)
+    local col ""
+    if "`yvar'" == "live_alone"    local col la
+    if "`yvar'" == "with_children" local col wc
+    if "`yvar'" == "only_elderly"  local col oe
+    if "`col'" != "" {
+        foreach yr in 98 99 {
+            local aux : di %9.3f _b[`yr'.year#1.contba]
+            local tstat = abs(_b[`yr'.year#1.contba] / _se[`yr'.year#1.contba])
+            if `tstat' >= 2.576      local b`yr'_`g'_`col' = trim("`aux'") + "***"
+            else if `tstat' >= 1.960 local b`yr'_`g'_`col' = trim("`aux'") + "**"
+            else if `tstat' >= 1.645 local b`yr'_`g'_`col' = trim("`aux'") + "*"
+            else                     local b`yr'_`g'_`col' = trim("`aux'")
+            local se`yr'_`g'_`col' : di %9.3f _se[`yr'.year#1.contba]
+        }
+        local N_`g'_`col'   : di %12.0fc e(N)
+        local cmn_`g'_`col' : di %9.3f `cmean97_elig'
+    }
 }
-
-
-* Export (RTF opens nicely in Word)
-* Keep only Progresa treatment effects in 1998 and 1999 relative to 1997
-esttab live_alone_all live_alone_elig ///
-	   with_children_all with_children_elig ///
-       only_elderly_all only_elderly_elig ///
-       using "$resultsFolder/progresa_elderly_living_outcomes_male.rtf", replace ///
-    title("Progresa impacts on male elderly individuals (age 65+ in 1997)") ///
-    keep(98.year#1.contba 99.year#1.contba) ///
-    order(98.year#1.contba 99.year#1.contba) ///
-    coeflabels(98.year#1.contba "Treatment x 1998" ///
-               99.year#1.contba "Treatment x 1999") ///
-    b(%9.3f) se(%9.3f) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1997)")) ///
-    compress
 	
 	
 *women*
+local g f
 restore
 preserve
 keep if gender==2 & age97>=65
@@ -553,27 +558,24 @@ foreach yvar of local indiv_outcomes {
         vce(cluster claveofi)
     estadd scalar cmean97 = `cmean97_elig'
     eststo `yvar'_elig
+
+    * Extract locals for T3 (weekly_hours only from this loop)
+    if "`yvar'" == "weekly_hours" {
+        foreach yr in 98 99 {
+            local aux : di %9.3f _b[`yr'.year#1.contba]
+            local tstat = abs(_b[`yr'.year#1.contba] / _se[`yr'.year#1.contba])
+            if `tstat' >= 2.576      local b`yr'_`g'_wh = trim("`aux'") + "***"
+            else if `tstat' >= 1.960 local b`yr'_`g'_wh = trim("`aux'") + "**"
+            else if `tstat' >= 1.645 local b`yr'_`g'_wh = trim("`aux'") + "*"
+            else                     local b`yr'_`g'_wh = trim("`aux'")
+            local se`yr'_`g'_wh : di %9.3f _se[`yr'.year#1.contba]
+        }
+        local N_`g'_wh   : di %12.0fc e(N)
+        local cmn_`g'_wh : di %9.3f `cmean97_elig'
+    }
 }
 
 
-* Export
-* Keep only Progresa treatment effects in 1998 and 1999 relative to 1997
-esttab work_all work_elig ///
-      days_week_all days_week_elig ///
-	   hours_day_all hours_day_elig ///
-     weekly_hours_all weekly_hours_elig ///
-       using "$tables/progresa_elderly_individual_outcomes_female.rtf", replace ///
-    title("Progresa impacts on female elderly individuals (age 65+ in 1997)") ///
-    keep(98.year#1.contba 99.year#1.contba) ///
-    order(98.year#1.contba 99.year#1.contba) ///
-    coeflabels(98.year#1.contba "Treatment x 1998" ///
-               99.year#1.contba "Treatment x 1999") ///
-    b(%9.3f) se(%9.3f) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1997)")) ///
-    compress
-	
-	
 	foreach yvar of local living {
 
     * Control mean in 1997 (control localities), matching the estimation sample
@@ -599,28 +601,60 @@ esttab work_all work_elig ///
         vce(cluster claveofi)
     estadd scalar cmean97 = `cmean97_elig'
     eststo `yvar'_elig
+
+    * Extract locals for T3 (living arrangement outcomes)
+    local col ""
+    if "`yvar'" == "live_alone"    local col la
+    if "`yvar'" == "with_children" local col wc
+    if "`yvar'" == "only_elderly"  local col oe
+    if "`col'" != "" {
+        foreach yr in 98 99 {
+            local aux : di %9.3f _b[`yr'.year#1.contba]
+            local tstat = abs(_b[`yr'.year#1.contba] / _se[`yr'.year#1.contba])
+            if `tstat' >= 2.576      local b`yr'_`g'_`col' = trim("`aux'") + "***"
+            else if `tstat' >= 1.960 local b`yr'_`g'_`col' = trim("`aux'") + "**"
+            else if `tstat' >= 1.645 local b`yr'_`g'_`col' = trim("`aux'") + "*"
+            else                     local b`yr'_`g'_`col' = trim("`aux'")
+            local se`yr'_`g'_`col' : di %9.3f _se[`yr'.year#1.contba]
+        }
+        local N_`g'_`col'   : di %12.0fc e(N)
+        local cmn_`g'_`col' : di %9.3f `cmean97_elig'
+    }
 }
-
-
-* Export (RTF opens nicely in Word)
-* Keep only Progresa treatment effects in 1998 and 1999 relative to 1997
-esttab live_alone_all live_alone_elig ///
-    	   with_children_all with_children_elig ///
-      only_elderly_all only_elderly_elig ///
-       using "$tables/progresa_elderly_living_outcomes_female.rtf", replace ///
-    title("Progresa impacts on female elderly individuals (age 65+ in 1997)") ///
-    keep(98.year#1.contba 99.year#1.contba) ///
-    order(98.year#1.contba 99.year#1.contba) ///
-    coeflabels(98.year#1.contba "Treatment x 1998" ///
-               99.year#1.contba "Treatment x 1999") ///
-    b(%9.3f) se(%9.3f) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1997)")) ///
-    compress
 	
 	
 
 restore
+
+*============================================================
+* TABLE 3: Experimental results — Labor Supply and Living Arrangements
+* Eligible households only; Panel A: Females, Panel B: Males
+* Output: $tables/T3_experimental.tex
+*============================================================
+
+{
+    cap file close sm
+    file open sm using "$tables/T3_experimental.tex", write replace
+    file write sm "\begin{tabular}{lcccc} \toprule" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ " _n
+    file write sm "& Weekly Hours & Live Alone & With Children & Only Elderly \\ \midrule" _n
+    file write sm "\multicolumn{5}{l}{\textbf{Panel A: Females}} \\ \midrule" _n
+    file write sm "Treat \$\times\$ 1998 & `b98_f_wh' & `b98_f_la' & `b98_f_wc' & `b98_f_oe' \\ " _n
+    file write sm " & (`se98_f_wh') & (`se98_f_la') & (`se98_f_wc') & (`se98_f_oe') \\[4pt]" _n
+    file write sm "Treat \$\times\$ 1999 & `b99_f_wh' & `b99_f_la' & `b99_f_wc' & `b99_f_oe' \\ " _n
+    file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') \\[4pt]" _n
+    file write sm "Observations & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' \\ " _n
+    file write sm "Control Mean (1997) & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' \\ \midrule" _n
+    file write sm "\multicolumn{5}{l}{\textbf{Panel B: Males}} \\ \midrule" _n
+    file write sm "Treat \$\times\$ 1998 & `b98_m_wh' & `b98_m_la' & `b98_m_wc' & `b98_m_oe' \\ " _n
+    file write sm " & (`se98_m_wh') & (`se98_m_la') & (`se98_m_wc') & (`se98_m_oe') \\[4pt]" _n
+    file write sm "Treat \$\times\$ 1999 & `b99_m_wh' & `b99_m_la' & `b99_m_wc' & `b99_m_oe' \\ " _n
+    file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') \\[4pt]" _n
+    file write sm "Observations & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' \\ " _n
+    file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' \\ \bottomrule" _n
+    file write sm "\end{tabular}"
+    file close sm
+}
 
 **Household level analysis**
 **collapse to household level**
@@ -740,36 +774,55 @@ foreach yvar of local hh_outcomes {
         vce(cluster claveofi)
     estadd scalar cmean97 = `cmean97_hetelig'
     eststo `yvar'_hetelig
+
+    * Extract locals for AT6 table
+    local col ""
+    if "`yvar'" == "food"      local col food
+    if "`yvar'" == "porc_food" local col pf
+    if "`yvar'" == "medicine"  local col med
+    if "`yvar'" == "porc_med"  local col pm
+    if "`col'" != "" {
+        * Treatment × 1999 for non-elderly HH (base = 1998, elderly97=0)
+        local aux : di %9.3f _b[99.year#1.contba]
+        local tstat = abs(_b[99.year#1.contba] / _se[99.year#1.contba])
+        if `tstat' >= 2.576      local b99_`col' = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b99_`col' = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b99_`col' = trim("`aux'") + "*"
+        else                     local b99_`col' = trim("`aux'")
+        local se99_`col' : di %9.3f _se[99.year#1.contba]
+        * Differential for elderly HH (triple interaction)
+        local aux : di %9.3f _b[99.year#1.contba#1.elderly97]
+        local tstat = abs(_b[99.year#1.contba#1.elderly97] / _se[99.year#1.contba#1.elderly97])
+        if `tstat' >= 2.576      local b99e_`col' = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b99e_`col' = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b99e_`col' = trim("`aux'") + "*"
+        else                     local b99e_`col' = trim("`aux'")
+        local se99e_`col' : di %9.3f _se[99.year#1.contba#1.elderly97]
+        local N_at6_`col'  : di %12.0fc e(N)
+        local cmn98_`col'  : di %9.3f `cmean97_hetelig'
+    }
 }
 
+*============================================================
+* APPENDIX TABLE A.6: HH Expenditures by Elderly Presence, Eligible Households
+* Output: $tables/appendix/AT6_expenditures_elderly.tex
+*============================================================
 
-* Table 3: main effects (eligible sample only) - for main paper Table 3
-esttab live_alone_elig with_children_elig only_elderly_elig weekly_hours_elig ///
-    using "$tables/T3_experimental.tex", replace ///
-    title("Progresa impacts on elderly individuals: Living arrangements and work hours") ///
-    keep(98.year#1.contba 99.year#1.contba) ///
-    order(98.year#1.contba 99.year#1.contba) ///
-    coeflabels(98.year#1.contba "Treatment x 1998" ///
-               99.year#1.contba "Treatment x 1999") ///
-    b(%9.3f) se(%9.3f) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1997)")) ///
-    compress
-
-* Appendix Table A.6: Household expenditures analysis (elderly households)
-* Main effects (full vs eligible)
-esttab food_all food_elig medicine_all medicine_elig ///
-       porc_food_all porc_food_elig porc_med_all porc_med_elig ///
-    using "$tables/appendix/AT6_expenditures_elderly.tex", replace ///
-    title("Progresa impacts on household expenditures (elderly households)") ///
-    keep(98.year#1.contba 99.year#1.contba) ///
-    order(98.year#1.contba 99.year#1.contba) ///
-    coeflabels(98.year#1.contba "Treatment x 1998" ///
-               99.year#1.contba "Treatment x 1999") ///
-    b(%9.3f) se(%9.3f) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    stats(N cmean97, fmt(%9.0g %9.3f) labels("Observations" "Control mean (1998)")) ///
-    compress
+{
+    cap file close sm
+    file open sm using "$tables/appendix/AT6_expenditures_elderly.tex", write replace
+    file write sm "\begin{tabular}{lcccc} \toprule" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ " _n
+    file write sm "& Food (log) & Food Share & Health (log) & Health Share \\ \midrule" _n
+    file write sm "Treatment \$\times\$ 1999 (no elderly) & `b99_food' & `b99_pf' & `b99_med' & `b99_pm' \\ " _n
+    file write sm " & (`se99_food') & (`se99_pf') & (`se99_med') & (`se99_pm') \\[4pt]" _n
+    file write sm "Differential (elderly HH) & `b99e_food' & `b99e_pf' & `b99e_med' & `b99e_pm' \\ " _n
+    file write sm " & (`se99e_food') & (`se99e_pf') & (`se99e_med') & (`se99e_pm') \\[4pt]" _n
+    file write sm "Observations & `N_at6_food' & `N_at6_pf' & `N_at6_med' & `N_at6_pm' \\ " _n
+    file write sm "Control Mean (1998) & `cmn98_food' & `cmn98_pf' & `cmn98_med' & `cmn98_pm' \\ \bottomrule" _n
+    file write sm "\end{tabular}"
+    file close sm
+}
 
 
 
