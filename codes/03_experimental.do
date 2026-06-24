@@ -376,6 +376,14 @@ foreach var of varlist act_vig act_mode enf6_4se {
     replace `var' = . if `var' == 9
 }
 
+* Total health facility visits (past 4 weeks): sum of binary indicators
+* for hospital, public clinic, and private doctor. Available in 1999 only.
+foreach var of varlist cons_hosp centr_sal med_parti {
+    replace `var' = . if `var' >= 9
+}
+gen total_visits = cons_hosp + centr_sal + med_parti
+label variable total_visits "Total health facility visits (past 4 weeks)"
+
 gen post=1 if year==98 | year==99
 replace post=0 if year==97
 
@@ -679,6 +687,34 @@ foreach yvar of local indiv_outcomes {
 
 restore
 
+*------------------------------------------------------------
+* Total visits: 1999 cross-section only (no 1997/1998 baseline)
+* Run separately for pooled, male, female; store locals for T3 col 5
+*------------------------------------------------------------
+foreach ggrp in p m f {
+    if "`ggrp'" == "p"      local gcond "age97>=65"
+    else if "`ggrp'" == "m" local gcond "gender==1 & age97>=65"
+    else                     local gcond "gender==2 & age97>=65"
+
+    quietly sum total_visits if year==99 & contba==0 & eligible==1 ///
+        & `gcond' & !missing(total_visits, contba, claveofi)
+    local cmn_`ggrp'_tv : di %9.3f `r(mean)'
+
+    quietly reghdfe total_visits contba ///
+        if year==99 & eligible==1 & `gcond' ///
+        & !missing(total_visits, contba, claveofi), ///
+        absorb(clavemun) vce(cluster claveofi)
+
+    local aux : di %9.3f _b[contba]
+    local tstat = abs(_b[contba] / _se[contba])
+    if      `tstat' >= 2.576 local b99_`ggrp'_tv = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local b99_`ggrp'_tv = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local b99_`ggrp'_tv = trim("`aux'") + "*"
+    else                     local b99_`ggrp'_tv = trim("`aux'")
+    local se99_`ggrp'_tv : di %9.3f _se[contba]
+    local N_`ggrp'_tv    : di %12.0fc e(N)
+}
+
 *============================================================
 * TABLE 3: Experimental results — Labor Supply and Living Arrangements
 * Eligible households only; Panel A: Pooled, Panel B: Females, Panel C: Males
@@ -688,95 +724,39 @@ restore
 {
     cap file close sm
     file open sm using "$tables/T3_experimental.tex", write replace
-    file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ " _n
-    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} \\ \toprule" _n
+    file write sm "\begin{tabular}{lccccc} \hline \hline" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
+    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Total Visits\textsuperscript{$\dagger$}} \\ \toprule" _n
     * Panel A: Pooled
-    file write sm "\multicolumn{5}{l}{\textbf{Panel A: Pooled}} \\ \midrule" _n
-    file write sm "Treat \$\times\$ 1998 & `b98_p_wh' & `b98_p_la' & `b98_p_wc' & `b98_p_oe' \\ " _n
-    file write sm " & (`se98_p_wh') & (`se98_p_la') & (`se98_p_wc') & (`se98_p_oe') \\[4pt]" _n
-    file write sm "Treat \$\times\$ 1999 & `b99_p_wh' & `b99_p_la' & `b99_p_wc' & `b99_p_oe' \\ " _n
-    file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') \\[4pt]" _n
-    file write sm "Observations & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' \\ " _n
-    file write sm "Control Mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' \\ \midrule" _n
+    file write sm "\multicolumn{6}{l}{\textbf{Panel A: Pooled}} \\ \midrule" _n
+    file write sm "Treat \$\times\$ 1998 & `b98_p_wh' & `b98_p_la' & `b98_p_wc' & `b98_p_oe' & \\ " _n
+    file write sm " & (`se98_p_wh') & (`se98_p_la') & (`se98_p_wc') & (`se98_p_oe') & \\[4pt]" _n
+    file write sm "Treat \$\times\$ 1999 & `b99_p_wh' & `b99_p_la' & `b99_p_wc' & `b99_p_oe' & `b99_p_tv' \\ " _n
+    file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') \\[4pt]" _n
+    file write sm "Observations & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' \\ " _n
+    file write sm "Control Mean & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & `cmn_p_tv' \\ \midrule" _n
     * Panel B: Females
-    file write sm "\multicolumn{5}{l}{\textbf{Panel B: Females}} \\ \midrule" _n
-    file write sm "Treat \$\times\$ 1998 & `b98_f_wh' & `b98_f_la' & `b98_f_wc' & `b98_f_oe' \\ " _n
-    file write sm " & (`se98_f_wh') & (`se98_f_la') & (`se98_f_wc') & (`se98_f_oe') \\[4pt]" _n
-    file write sm "Treat \$\times\$ 1999 & `b99_f_wh' & `b99_f_la' & `b99_f_wc' & `b99_f_oe' \\ " _n
-    file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') \\[4pt]" _n
-    file write sm "Observations & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' \\ " _n
-    file write sm "Control Mean (1997) & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' \\ \midrule" _n
+    file write sm "\multicolumn{6}{l}{\textbf{Panel B: Females}} \\ \midrule" _n
+    file write sm "Treat \$\times\$ 1998 & `b98_f_wh' & `b98_f_la' & `b98_f_wc' & `b98_f_oe' & \\ " _n
+    file write sm " & (`se98_f_wh') & (`se98_f_la') & (`se98_f_wc') & (`se98_f_oe') & \\[4pt]" _n
+    file write sm "Treat \$\times\$ 1999 & `b99_f_wh' & `b99_f_la' & `b99_f_wc' & `b99_f_oe' & `b99_f_tv' \\ " _n
+    file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') & (`se99_f_tv') \\[4pt]" _n
+    file write sm "Observations & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' & `N_f_tv' \\ " _n
+    file write sm "Control Mean & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & `cmn_f_tv' \\ \midrule" _n
     * Panel C: Males
-    file write sm "\multicolumn{5}{l}{\textbf{Panel C: Males}} \\ \midrule" _n
-    file write sm "Treat \$\times\$ 1998 & `b98_m_wh' & `b98_m_la' & `b98_m_wc' & `b98_m_oe' \\ " _n
-    file write sm " & (`se98_m_wh') & (`se98_m_la') & (`se98_m_wc') & (`se98_m_oe') \\[4pt]" _n
-    file write sm "Treat \$\times\$ 1999 & `b99_m_wh' & `b99_m_la' & `b99_m_wc' & `b99_m_oe' \\ " _n
-    file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') \\[4pt]" _n
-    file write sm "Observations & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' \\ " _n
-    file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' \\ \bottomrule" _n
+    file write sm "\multicolumn{6}{l}{\textbf{Panel C: Males}} \\ \midrule" _n
+    file write sm "Treat \$\times\$ 1998 & `b98_m_wh' & `b98_m_la' & `b98_m_wc' & `b98_m_oe' & \\ " _n
+    file write sm " & (`se98_m_wh') & (`se98_m_la') & (`se98_m_wc') & (`se98_m_oe') & \\[4pt]" _n
+    file write sm "Treat \$\times\$ 1999 & `b99_m_wh' & `b99_m_la' & `b99_m_wc' & `b99_m_oe' & `b99_m_tv' \\ " _n
+    file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') & (`se99_m_tv') \\[4pt]" _n
+    file write sm "Observations & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' \\ " _n
+    file write sm "Control Mean & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & `cmn_m_tv' \\ \bottomrule" _n
+    file write sm "\multicolumn{6}{l}{\footnotesize \textsuperscript{\$\dagger\$} Total visits = \texttt{cons\_hosp} + \texttt{centr\_sal} + \texttt{med\_parti} (visits to hospital,} \\" _n
+    file write sm "\multicolumn{6}{l}{\footnotesize public clinic, or private doctor in the past 4 weeks). Data available in 1999 only;} \\" _n
+    file write sm "\multicolumn{6}{l}{\footnotesize Treat \$\times\$ 1998 not estimable. Specification: cross-section 1999, municipality FE.} \\" _n
     file write sm "\end{tabular}"
     file close sm
 }
-
-*============================================================
-* APPENDIX TABLE: Health Utilization — 1999 Cross-Section
-* Replicates Gertler (2004) Table 6 health visits for ages 51+
-* and extends to ages 65+ to match our mortality sample.
-* Data limitation: health care usage module only collected in 1999
-* (ronda==5, two years post-program). Outcomes are:
-*   enf6_4se = sick in the past 4 weeks (binary)
-*   rec_ate  = received medical care in the past month (binary)
-* Both are cross-sectional comparisons treatment vs. control
-* localities, 1999 only. State FE; cluster at locality level.
-* Output: $tables/appendix/AT_health_visits.tex
-*============================================================
-
-* Four regressions: 2 outcomes × 2 age groups
-* Loop over age cutoffs and outcomes; store locals with suffix _age_out
-
-foreach agegrp in 51 65 {
-    foreach out in enf6_4se rec_ate {
-
-        * Control mean in 1999, control localities, eligible HH
-        quietly summarize `out' if year==99 & contba==0 & eligible==1 ///
-            & age97>=`agegrp' & !missing(`out', contba, claveofi)
-        local cmn99_`agegrp'_`out' : di %9.3f `r(mean)'
-
-        * Treatment effect: cross-section 1999, eligible HH, state FE
-        quietly reghdfe `out' contba ///
-            if year==99 & eligible==1 & age97>=`agegrp' ///
-            & !missing(`out', contba, claveofi), ///
-            absorb(cve_ent) vce(cluster claveofi)
-
-        local aux : di %9.3f _b[contba]
-        local tstat = abs(_b[contba] / _se[contba])
-        if      `tstat' >= 2.576 local b_`agegrp'_`out' = trim("`aux'") + "***"
-        else if `tstat' >= 1.960 local b_`agegrp'_`out' = trim("`aux'") + "**"
-        else if `tstat' >= 1.645 local b_`agegrp'_`out' = trim("`aux'") + "*"
-        else                     local b_`agegrp'_`out' = trim("`aux'")
-        local se_`agegrp'_`out' : di %9.3f _se[contba]
-        local N_`agegrp'_`out'  : di %12.0fc e(N)
-    }
-}
-
-{
-    cap file close sm
-    file open sm using "$tables/appendix/AT_health_visits.tex", write replace
-    file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-    file write sm "& \multicolumn{2}{c}{Sick in Past 4 Weeks} & \multicolumn{2}{c}{Received Medical Care} \\ " _n
-    file write sm "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
-    file write sm "& \multicolumn{1}{c}{Ages 51+} & \multicolumn{1}{c}{Ages 65+} & \multicolumn{1}{c}{Ages 51+} & \multicolumn{1}{c}{Ages 65+} \\ " _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
-    file write sm "Treatment & `b_51_enf6_4se' & `b_65_enf6_4se' & `b_51_rec_ate' & `b_65_rec_ate' \\ " _n
-    file write sm " & (`se_51_enf6_4se') & (`se_65_enf6_4se') & (`se_51_rec_ate') & (`se_65_rec_ate') \\[4pt]" _n
-    file write sm "Observations & `N_51_enf6_4se' & `N_65_enf6_4se' & `N_51_rec_ate' & `N_65_rec_ate' \\ " _n
-    file write sm "Control Mean (1999) & `cmn99_51_enf6_4se' & `cmn99_65_enf6_4se' & `cmn99_51_rec_ate' & `cmn99_65_rec_ate' \\ \bottomrule" _n
-    file write sm "\end{tabular}"
-    file close sm
-}
-
-di "Table exported to: $tables/appendix/AT_health_visits.tex"
 
 **Household level analysis**
 **collapse to household level**
