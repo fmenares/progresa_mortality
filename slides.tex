@@ -68,6 +68,7 @@
 \usepackage{comment}
 \usepackage{caption}
 \usepackage{color}
+\usepackage{pdfpages}
 
 % ------------------------------------------------
 % Bibliography
@@ -163,50 +164,7 @@
 \setlength{\abovedisplayskip}{3pt}
 \setlength{\belowdisplayskip}{3pt}
 
-{
-\setbeamertemplate{footline}{}
-\setbeamertemplate{background}{%
-  \includegraphics[width=\paperwidth,height=\paperheight]{ppt/bg}%
-}
-\begin{frame}[plain,noframenumbering]
-\begin{tikzpicture}[remember picture,overlay]
-  % Half-Baked Lunch Series logo (top right)
-  \node[anchor=north west] at ($(current page.north west)+(134.4mm,-3.98mm)$)
-    {\includegraphics[width=22.2mm]{ppt/hbl_logo}};
-  % Blue arrow accent (left)
-  \node[anchor=north west] at ($(current page.north west)+(0mm,-19.65mm)$)
-    {\includegraphics[width=10.2mm]{ppt/arrow}};
-  % Paper title and authors
-  \node[anchor=north west, text width=128mm, align=left]
-    at ($(current page.north west)+(12.55mm,-24.36mm)$){%
-    {\color{white}\fontsize{16}{20}\selectfont\bfseries
-      Do CCT Programs (Really) Reduce Mortality:\\Ten-Year Evidence from Mexico}\\[8pt]
-    {\color[HTML]{009ADE}\fontsize{9}{11}\selectfont
-      Emma Aguila \textbullet{} William H.\ Dow \textbullet{} \underline{Felipe Menares}$^{*}$\\
-      Susan W.\ Parker \textbullet{} Jorge Peniche \textbullet{} Soomin Ryu}\\[4pt]
-    {\color{white}\fontsize{8}{10}\selectfont June 2026}%
-  };
-  % IDB disclaimer
-  \node[anchor=south west, text width=128mm, align=left]
-    at ($(current page.south west)+(12.55mm,17mm)$){%
-    {\color{white}\fontsize{5}{6}\selectfont
-      $^{*}$The opinions expressed in this paper are those of the authors and do not necessarily
-      reflect the views of the Inter-American Development Bank, its Board of Directors,
-      or the countries they represent, nor of INEGI.}%
-  };
-  % Footer
-  \node[anchor=south west]
-    at ($(current page.south west)+(11.25mm,10mm)$){%
-    {\color{white}\fontsize{6}{7.5}\selectfont
-      Office of Strategic Planning and Development Effectiveness}%
-  };
-  % IDB logo (bottom right)
-  \node[anchor=south east]
-    at ($(current page.south east)+(-1mm,9mm)$)
-    {\includegraphics[width=19mm]{ppt/idb_logo}};
-\end{tikzpicture}
-\end{frame}
-}
+\includepdf[pages={1},noautoscale=false,fitpaper=false]{Half-baked_Lunch_Backdrop.pdf}
 \note{Hello everyone. Today I'm presenting joint work on whether Mexico's Progresa conditional cash transfer program reduced elderly mortality. Our paper asks whether a program primarily designed to invest in children's education and health produced meaningful mortality benefits for the elderly over a longer time horizon.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -829,46 +787,6 @@ Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t
 {\tiny\bibliography{bibliography}}
 \end{frame}
 
-{
-\setbeamertemplate{footline}{}
-\setbeamertemplate{background}{%
-  \includegraphics[width=\paperwidth,height=\paperheight]{ppt/bg}%
-}
-\begin{frame}[plain,noframenumbering]
-\begin{tikzpicture}[remember picture,overlay]
-  % Half-Baked Lunch Series logo (top right)
-  \node[anchor=north west] at ($(current page.north west)+(134.4mm,-3.98mm)$)
-    {\includegraphics[width=22.2mm]{ppt/hbl_logo}};
-  % Blue arrow accent (left, slightly lower than title slide)
-  \node[anchor=north west] at ($(current page.north west)+(0mm,-31.65mm)$)
-    {\includegraphics[width=10.2mm]{ppt/arrow}};
-  % White rounded rectangle for QR code (right side)
-  \draw[fill=white, draw=none, rounded corners=4mm]
-    ($(current page.north west)+(96.1mm,-21.43mm)$) rectangle
-    ($(current page.north west)+(143.4mm,-69.0mm)$);
-  % QR code inside white box
-  \node[anchor=north west] at ($(current page.north west)+(99.0mm,-24.47mm)$)
-    {\includegraphics[width=41.4mm]{ppt/qr}};
-  % Main heading text (left side)
-  \node[anchor=north west, text width=82mm, align=left]
-    at ($(current page.north west)+(12.55mm,-32.63mm)$){%
-    {\color[HTML]{66CCFF}\fontsize{15}{19}\selectfont\bfseries
-      We'd love your feedback on today's Half-Baked Lunch}\\[10pt]
-    {\color{white}\fontsize{10}{13}\selectfont
-      Scan the QR code and answer a quick survey}%
-  };
-  % Footer
-  \node[anchor=south west]
-    at ($(current page.south west)+(11.25mm,10mm)$){%
-    {\color{white}\fontsize{6}{7.5}\selectfont
-      Office of Strategic Planning and Development Effectiveness}%
-  };
-  % IDB logo (bottom right)
-  \node[anchor=south east]
-    at ($(current page.south east)+(-1mm,9mm)$)
-    {\includegraphics[width=19mm]{ppt/idb_logo}};
-\end{tikzpicture}
-\end{frame}
-}
+\includepdf[pages={2},noautoscale=false,fitpaper=false]{Half-baked_Lunch_Backdrop.pdf}
 
 \end{document}
