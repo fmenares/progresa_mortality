@@ -734,7 +734,8 @@ foreach ggrp in p m f {
     file write sm "Treat \$\times\$ 1999 & `b99_p_wh' & `b99_p_la' & `b99_p_wc' & `b99_p_oe' & `b99_p_tv' \\ " _n
     file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') \\[4pt]" _n
     file write sm "Observations & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' \\ " _n
-    file write sm "Control Mean & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & `cmn_p_tv' \\ \midrule" _n
+    file write sm "Control Mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & \\ " _n
+    file write sm "Control Mean (1999) & & & & & `cmn_p_tv' \\ \midrule" _n
     * Panel B: Females
     file write sm "\multicolumn{6}{l}{\textbf{Panel B: Females}} \\ \midrule" _n
     file write sm "Treat \$\times\$ 1998 & `b98_f_wh' & `b98_f_la' & `b98_f_wc' & `b98_f_oe' & \\ " _n
@@ -742,7 +743,8 @@ foreach ggrp in p m f {
     file write sm "Treat \$\times\$ 1999 & `b99_f_wh' & `b99_f_la' & `b99_f_wc' & `b99_f_oe' & `b99_f_tv' \\ " _n
     file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') & (`se99_f_tv') \\[4pt]" _n
     file write sm "Observations & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' & `N_f_tv' \\ " _n
-    file write sm "Control Mean & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & `cmn_f_tv' \\ \midrule" _n
+    file write sm "Control Mean (1997) & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & \\ " _n
+    file write sm "Control Mean (1999) & & & & & `cmn_f_tv' \\ \midrule" _n
     * Panel C: Males
     file write sm "\multicolumn{6}{l}{\textbf{Panel C: Males}} \\ \midrule" _n
     file write sm "Treat \$\times\$ 1998 & `b98_m_wh' & `b98_m_la' & `b98_m_wc' & `b98_m_oe' & \\ " _n
@@ -750,7 +752,8 @@ foreach ggrp in p m f {
     file write sm "Treat \$\times\$ 1999 & `b99_m_wh' & `b99_m_la' & `b99_m_wc' & `b99_m_oe' & `b99_m_tv' \\ " _n
     file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') & (`se99_m_tv') \\[4pt]" _n
     file write sm "Observations & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' \\ " _n
-    file write sm "Control Mean & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & `cmn_m_tv' \\ \bottomrule" _n
+    file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & \\ " _n
+    file write sm "Control Mean (1999) & & & & & `cmn_m_tv' \\ \bottomrule" _n
     file write sm "\multicolumn{6}{l}{\footnotesize \textsuperscript{\$\dagger\$} Total visits = \texttt{cons\_hosp} + \texttt{centr\_sal} + \texttt{med\_parti} (visits to hospital,} \\" _n
     file write sm "\multicolumn{6}{l}{\footnotesize public clinic, or private doctor in the past 4 weeks). Data available in 1999 only;} \\" _n
     file write sm "\multicolumn{6}{l}{\footnotesize Treat \$\times\$ 1998 not estimable. Specification: cross-section 1999, municipality FE.} \\" _n
