@@ -719,6 +719,65 @@ restore
     file close sm
 }
 
+*============================================================
+* APPENDIX TABLE: Health Utilization — 1999 Cross-Section
+* Replicates Gertler (2004) Table 6 health visits for ages 51+
+* and extends to ages 65+ to match our mortality sample.
+* Data limitation: health care usage module only collected in 1999
+* (ronda==5, two years post-program). Outcomes are:
+*   enf6_4se = sick in the past 4 weeks (binary)
+*   rec_ate  = received medical care in the past month (binary)
+* Both are cross-sectional comparisons treatment vs. control
+* localities, 1999 only. State FE; cluster at locality level.
+* Output: $tables/appendix/AT_health_visits.tex
+*============================================================
+
+* Four regressions: 2 outcomes × 2 age groups
+* Loop over age cutoffs and outcomes; store locals with suffix _age_out
+
+foreach agegrp in 51 65 {
+    foreach out in enf6_4se rec_ate {
+
+        * Control mean in 1999, control localities, eligible HH
+        quietly summarize `out' if year==99 & contba==0 & eligible==1 ///
+            & age97>=`agegrp' & !missing(`out', contba, claveofi)
+        local cmn99_`agegrp'_`out' : di %9.3f `r(mean)'
+
+        * Treatment effect: cross-section 1999, eligible HH, state FE
+        quietly reghdfe `out' contba ///
+            if year==99 & eligible==1 & age97>=`agegrp' ///
+            & !missing(`out', contba, claveofi), ///
+            absorb(cve_ent) vce(cluster claveofi)
+
+        local aux : di %9.3f _b[contba]
+        local tstat = abs(_b[contba] / _se[contba])
+        if      `tstat' >= 2.576 local b_`agegrp'_`out' = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b_`agegrp'_`out' = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b_`agegrp'_`out' = trim("`aux'") + "*"
+        else                     local b_`agegrp'_`out' = trim("`aux'")
+        local se_`agegrp'_`out' : di %9.3f _se[contba]
+        local N_`agegrp'_`out'  : di %12.0fc e(N)
+    }
+}
+
+{
+    cap file close sm
+    file open sm using "$tables/appendix/AT_health_visits.tex", write replace
+    file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+    file write sm "& \multicolumn{2}{c}{Sick in Past 4 Weeks} & \multicolumn{2}{c}{Received Medical Care} \\ " _n
+    file write sm "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+    file write sm "& \multicolumn{1}{c}{Ages 51+} & \multicolumn{1}{c}{Ages 65+} & \multicolumn{1}{c}{Ages 51+} & \multicolumn{1}{c}{Ages 65+} \\ " _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+    file write sm "Treatment & `b_51_enf6_4se' & `b_65_enf6_4se' & `b_51_rec_ate' & `b_65_rec_ate' \\ " _n
+    file write sm " & (`se_51_enf6_4se') & (`se_65_enf6_4se') & (`se_51_rec_ate') & (`se_65_rec_ate') \\[4pt]" _n
+    file write sm "Observations & `N_51_enf6_4se' & `N_65_enf6_4se' & `N_51_rec_ate' & `N_65_rec_ate' \\ " _n
+    file write sm "Control Mean (1999) & `cmn99_51_enf6_4se' & `cmn99_65_enf6_4se' & `cmn99_51_rec_ate' & `cmn99_65_rec_ate' \\ \bottomrule" _n
+    file write sm "\end{tabular}"
+    file close sm
+}
+
+di "Table exported to: $tables/appendix/AT_health_visits.tex"
+
 **Household level analysis**
 **collapse to household level**
 ** distinguish between households with aging members and households without**
