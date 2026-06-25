@@ -56,9 +56,96 @@ set more off
 	merge 1:1 cve_ent_mun_super year using "$data/SP_2001_2018.dta"
 	drop _merge
 	order year cve_ent_mun_super inten1999 post sp_intensity
-	
+
+*============================================================
+* TABLE 1: Descriptives
+* T1_descriptives_b.tex
+* Panel A: Progresa enrollment intensity (inten1999, inten2005)
+* Panel B: Socioeconomic characteristics — pulled at year==1990
+*   (actual census values, not interpolated midpoints)
+* Columns: (1) Marginalized (gm_mun_1990=4|5), (2) Non-Marginalized
+*============================================================
+
+preserve
+keep if year == 1990   // 1990 census cross-section; inten1999/2005 are cross-sectional constants
+
+* Panel A: intensity measures (multiply by 100 to display as %)
+foreach var in inten1999 inten2005 {
+	sum `var' if gm_mun_1990==4 | gm_mun_1990==5
+	local m_`var'_hm:  di %6.1f `r(mean)' * 100
+	local sd_`var'_hm: di %6.1f `r(sd)'   * 100
+	sum `var' if gm_mun_1990 != 4 & gm_mun_1990 != 5 & gm_mun_1990 != .
+	local m_`var'_nm:  di %6.1f `r(mean)' * 100
+	local sd_`var'_nm: di %6.1f `r(sd)'   * 100
+}
+
+* Panel B: socioeconomic characteristics (1990 census values)
+foreach var in analf sprim ovsee ovsae vhac ovpt ovsde pl5000 po2sm {
+	sum `var' if gm_mun_1990==4 | gm_mun_1990==5
+	local m_`var'_hm:  di %6.1f `r(mean)'
+	local sd_`var'_hm: di %6.1f `r(sd)'
+	sum `var' if gm_mun_1990 != 4 & gm_mun_1990 != 5 & gm_mun_1990 != .
+	local m_`var'_nm:  di %6.1f `r(mean)'
+	local sd_`var'_nm: di %6.1f `r(sd)'
+}
+
+count if gm_mun_1990==4 | gm_mun_1990==5
+local N_hm = r(N)
+count if gm_mun_1990 != 4 & gm_mun_1990 != 5 & gm_mun_1990 != .
+local N_nm = r(N)
+
+{
+	cap file close sm
+	file open sm using "$tables/T1_descriptives_b.tex", write replace
+	file write sm "\begin{tabular}{lcc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Progresa Enrollment Intensity (\%)}} \\ " _n
+	file write sm "Intensity in 1999 & `m_inten1999_hm' & `m_inten1999_nm' \\ " _n
+	file write sm "  & (`sd_inten1999_hm') & (`sd_inten1999_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "Intensity in 2005 & `m_inten2005_hm' & `m_inten2005_nm' \\ " _n
+	file write sm "  & (`sd_inten2005_hm') & (`sd_inten2005_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\underline{\textit{Panel B: Socioeconomic Characteristics (\%)}} \\ " _n
+	file write sm "\% illiterate & `m_analf_hm' & `m_analf_nm' \\ " _n
+	file write sm "  & (`sd_analf_hm') & (`sd_analf_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\% without completed primary & `m_sprim_hm' & `m_sprim_nm' \\ " _n
+	file write sm "  & (`sd_sprim_hm') & (`sd_sprim_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\% without electricity & `m_ovsee_hm' & `m_ovsee_nm' \\ " _n
+	file write sm "  & (`sd_ovsee_hm') & (`sd_ovsee_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\% without piped water & `m_ovsae_hm' & `m_ovsae_nm' \\ " _n
+	file write sm "  & (`sd_ovsae_hm') & (`sd_ovsae_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "With crowding & `m_vhac_hm' & `m_vhac_nm' \\ " _n
+	file write sm "  & (`sd_vhac_hm') & (`sd_vhac_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\% with dirt floors & `m_ovpt_hm' & `m_ovpt_nm' \\ " _n
+	file write sm "  & (`sd_ovpt_hm') & (`sd_ovpt_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\% without drainage & `m_ovsde_hm' & `m_ovsde_nm' \\ " _n
+	file write sm "  & (`sd_ovsde_hm') & (`sd_ovsde_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\% in localities \$<\$5,000 & `m_pl5000_hm' & `m_pl5000_nm' \\ " _n
+	file write sm "  & (`sd_pl5000_hm') & (`sd_pl5000_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\% in 2+ person households & `m_po2sm_hm' & `m_po2sm_nm' \\ " _n
+	file write sm "  & (`sd_po2sm_hm') & (`sd_po2sm_nm') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "Municipalities & `N_hm' & `N_nm' \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+restore
+
 *	Restriction (year)
 	keep if year >1990 & year <2007
+
 	
 	tab post 
 	global sample_marg = "gm_mun_1990==4|gm_mun_1990==5"
@@ -378,91 +465,6 @@ twoway ///
 graph export "$figures/appendix/AF_beta1_sex.pdf", as(pdf) replace
 restore
 }
-
-*============================================================
-* TABLE 1: Descriptives
-* T1_descriptives.tex
-* Panel A: Progresa enrollment intensity (inten1999, inten2005)
-* Panel B: Socioeconomic characteristics (1990 census)
-* Columns: (1) Marginalized (gm_mun_1990=4|5), (2) Non-Marginalized
-*============================================================
-
-preserve
-keep if year == 1996   // one observation per municipality; all desc vars are time-invariant
-
-* Panel A: intensity measures (multiply by 100 to display as %)
-foreach var in inten1999 inten2005 {
-	sum `var' if gm_mun_1990==4 | gm_mun_1990==5
-	local m_`var'_hm:  di %6.1f `r(mean)' * 100
-	local sd_`var'_hm: di %6.1f `r(sd)'   * 100
-	sum `var' if gm_mun_1990 != 4 & gm_mun_1990 != 5 & gm_mun_1990 != .
-	local m_`var'_nm:  di %6.1f `r(mean)' * 100
-	local sd_`var'_nm: di %6.1f `r(sd)'   * 100
-}
-
-* Panel B: socioeconomic characteristics
-foreach var in analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
-	sum `var' if gm_mun_1990==4 | gm_mun_1990==5
-	local m_`var'_hm:  di %6.1f `r(mean)'
-	local sd_`var'_hm: di %6.1f `r(sd)'
-	sum `var' if gm_mun_1990 != 4 & gm_mun_1990 != 5 & gm_mun_1990 != .
-	local m_`var'_nm:  di %6.1f `r(mean)'
-	local sd_`var'_nm: di %6.1f `r(sd)'
-}
-
-count if gm_mun_1990==4 | gm_mun_1990==5
-local N_hm = r(N)
-count if gm_mun_1990 != 4 & gm_mun_1990 != 5 & gm_mun_1990 != .
-local N_nm = r(N)
-
-{
-	cap file close sm
-	file open sm using "$tables/T1_descriptives_b.tex", write replace
-	file write sm "\begin{tabular}{lcc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
-	file write sm "\underline{\textit{Panel A: Progresa Enrollment Intensity (\%)}} \\ " _n
-	file write sm "Intensity in 1999 & `m_inten1999_hm' & `m_inten1999_nm' \\ " _n
-	file write sm "  & (`sd_inten1999_hm') & (`sd_inten1999_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "Intensity in 2005 & `m_inten2005_hm' & `m_inten2005_nm' \\ " _n
-	file write sm "  & (`sd_inten2005_hm') & (`sd_inten2005_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "\underline{\textit{Panel B: Socioeconomic Characteristics (\%)}} \\ " _n
-	file write sm "\% illiterate & `m_analf_hm' & `m_analf_nm' \\ " _n
-	file write sm "  & (`sd_analf_hm') & (`sd_analf_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "\% without completed primary & `m_sprim_hm' & `m_sprim_nm' \\ " _n
-	file write sm "  & (`sd_sprim_hm') & (`sd_sprim_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "\% without electricity & `m_ovsee_hm' & `m_ovsee_nm' \\ " _n
-	file write sm "  & (`sd_ovsee_hm') & (`sd_ovsee_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "\% without piped water & `m_ovsae_hm' & `m_ovsae_nm' \\ " _n
-	file write sm "  & (`sd_ovsae_hm') & (`sd_ovsae_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "With crowding & `m_vhac_hm' & `m_vhac_nm' \\ " _n
-	file write sm "  & (`sd_vhac_hm') & (`sd_vhac_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "\% with dirt floors & `m_ovpt_hm' & `m_ovpt_nm' \\ " _n
-	file write sm "  & (`sd_ovpt_hm') & (`sd_ovpt_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "\% without drainage & `m_ovsde_hm' & `m_ovsde_nm' \\ " _n
-	file write sm "  & (`sd_ovsde_hm') & (`sd_ovsde_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "\% in localities \$<\$5,000 & `m_pl5000_hm' & `m_pl5000_nm' \\ " _n
-	file write sm "  & (`sd_pl5000_hm') & (`sd_pl5000_nm') \\ " _n
-	file write sm "  & & \\ " _n
-	file write sm "Municipalities & `N_hm' & `N_nm' \\ " _n
-	file write sm "\bottomrule" _n
-	file write sm "\end{tabular}"
-	file close sm
-}
-restore
-
-
-
 
 *============================================================
 * TABLE 2: Main DiD Mortality Results
