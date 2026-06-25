@@ -2895,4 +2895,244 @@ foreach pnl in p m f {
 
 
 
+*============================================================
+* APPENDIX TABLE: SES Trend Robustness (Comment 4 — P&V spec 3)
+* Weighted + SP baseline; adds municipality-specific linear trends
+* interacted with 1990 baseline SES.
+* Col 1: Baseline (W+SP, same as T2 col 4)
+* Col 2: + Trend × im_mun_1990 (continuous marginalization index)
+* Col 3: + Trend × SES components (8 census variables, 1990 values)
+* Output: $tables/appendix/AT_ses_trend.tex
+*============================================================
+
+* Generate time-invariant 1990 values per municipality for SES components
+foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
+	cap drop `v'_90
+	bys cve_ent_mun_super: gen _tmp = `v' if year == 1990
+	bys cve_ent_mun_super: egen `v'_90 = max(_tmp)
+	drop _tmp
+}
+
+* --- Col 1: Baseline (Weighted + Seguro Popular) ---
+reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+	[aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[1.post#c.inten1999]
+local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+if      `t' >= 2.576 local b99_ses_1 = "`aux'***"
+else if `t' >= 1.96  local b99_ses_1 = "`aux'**"
+else if `t' >= 1.645 local b99_ses_1 = "`aux'*"
+else                  local b99_ses_1 = "`aux'"
+local se99_ses_1: di %12.3f _se[1.post#c.inten1999]
+local aux: di %12.3f _b[1.post#c.inten2005]
+local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+if      `t' >= 2.576 local b05_ses_1 = "`aux'***"
+else if `t' >= 1.96  local b05_ses_1 = "`aux'**"
+else if `t' >= 1.645 local b05_ses_1 = "`aux'*"
+else                  local b05_ses_1 = "`aux'"
+local se05_ses_1: di %12.3f _se[1.post#c.inten2005]
+sum emr65 if e(sample) & post == 2
+local mean_ses_1: di %12.2fc `r(mean)'
+local N_ses_1:    di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local Nmun_ses_1: di %12.0fc `r(ndistinct)'
+
+* --- Col 2: Baseline + Trend × im_mun_1990 ---
+reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+	c.im_mun_1990#c.year ///
+	[aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[1.post#c.inten1999]
+local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+if      `t' >= 2.576 local b99_ses_2 = "`aux'***"
+else if `t' >= 1.96  local b99_ses_2 = "`aux'**"
+else if `t' >= 1.645 local b99_ses_2 = "`aux'*"
+else                  local b99_ses_2 = "`aux'"
+local se99_ses_2: di %12.3f _se[1.post#c.inten1999]
+local aux: di %12.3f _b[1.post#c.inten2005]
+local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+if      `t' >= 2.576 local b05_ses_2 = "`aux'***"
+else if `t' >= 1.96  local b05_ses_2 = "`aux'**"
+else if `t' >= 1.645 local b05_ses_2 = "`aux'*"
+else                  local b05_ses_2 = "`aux'"
+local se05_ses_2: di %12.3f _se[1.post#c.inten2005]
+sum emr65 if e(sample) & post == 2
+local mean_ses_2: di %12.2fc `r(mean)'
+local N_ses_2:    di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local Nmun_ses_2: di %12.0fc `r(ndistinct)'
+
+* --- Col 3: Baseline + Trend × SES components (8 variables, 1990 baseline) ---
+reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+	c.analf_90#c.year c.sprim_90#c.year c.ovsee_90#c.year c.ovsae_90#c.year ///
+	c.vhac_90#c.year c.ovpt_90#c.year c.ovsde_90#c.year c.pl5000_90#c.year ///
+	[aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+local aux: di %12.3f _b[1.post#c.inten1999]
+local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+if      `t' >= 2.576 local b99_ses_3 = "`aux'***"
+else if `t' >= 1.96  local b99_ses_3 = "`aux'**"
+else if `t' >= 1.645 local b99_ses_3 = "`aux'*"
+else                  local b99_ses_3 = "`aux'"
+local se99_ses_3: di %12.3f _se[1.post#c.inten1999]
+local aux: di %12.3f _b[1.post#c.inten2005]
+local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+if      `t' >= 2.576 local b05_ses_3 = "`aux'***"
+else if `t' >= 1.96  local b05_ses_3 = "`aux'**"
+else if `t' >= 1.645 local b05_ses_3 = "`aux'*"
+else                  local b05_ses_3 = "`aux'"
+local se05_ses_3: di %12.3f _se[1.post#c.inten2005]
+sum emr65 if e(sample) & post == 2
+local mean_ses_3: di %12.2fc `r(mean)'
+local N_ses_3:    di %12.0fc `e(N)'
+distinct cve_ent_mun_super if e(sample)
+local Nmun_ses_3: di %12.0fc `r(ndistinct)'
+
+* --- Write table ---
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_ses_trend.tex", write replace
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_ses_1' & `b99_ses_2' & `b99_ses_3' \\ " _n
+	file write sm " & (`se99_ses_1') & (`se99_ses_2') & (`se99_ses_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_ses_1' & `b05_ses_2' & `b05_ses_3' \\ " _n
+	file write sm " & (`se05_ses_1') & (`se05_ses_2') & (`se05_ses_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_ses_1' & `mean_ses_2' & `mean_ses_3' \\ " _n
+	file write sm "Obs & `N_ses_1' & `N_ses_2' & `N_ses_3' \\ " _n
+	file write sm "No.\ Mun & `Nmun_ses_1' & `Nmun_ses_2' & `Nmun_ses_3' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Seguro Popular & Y & Y & Y \\ " _n
+	file write sm "Weights & Y & Y & Y \\ " _n
+	file write sm "Trend x Marg.\ Index (1990) & N & Y & N \\ " _n
+	file write sm "Trend x SES Components (1990) & N & N & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\multicolumn{4}{l}{\footnotesize \textit{Notes:} All columns weighted by older-adult (65+) population and include} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize municipality and year fixed effects. Column (2) adds the interaction of the} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize 1990 CONAPO continuous marginalization index with a linear year trend.} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize Column (3) replaces it with 8 individual 1990 census SES variables} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize (\% illiterate, \% without primary, \% no electricity, \% no piped water,} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize \% overcrowding, \% dirt floors, \% no drainage, \% in localities <5,000)} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize each interacted with a linear year trend. Standard errors clustered at} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize the municipality level.} \\ " _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/appendix/AT_ses_trend.tex"
+
+
+*============================================================
+* APPENDIX FIGURE: AF_ses_trend
+* Pooled event study (beta_k) across 3 SES trend specifications
+* Series 1 (black circles):    Baseline (W+SP)
+* Series 2 (red squares):      + Trend × im_mun_1990
+* Series 3 (blue triangles):   + Trend × SES components
+* Output: $figures/appendix/AF_ses_trend.pdf
+*============================================================
+
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+{
+* Spec 1: Baseline event study (W+SP) — pooled
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+	vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local bes1_`pos'  = 0
+		local sees1_`pos' = 0
+	}
+	else {
+		local bes1_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sees1_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+* Spec 2: + Trend × im_mun_1990
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	c.sp_intensity c.im_mun_1990#c.year [aw=popover65_] if $sample_marg, ///
+	a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local bes2_`pos'  = 0
+		local sees2_`pos' = 0
+	}
+	else {
+		local bes2_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sees2_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+* Spec 3: + Trend × SES components (8 variables, 1990 baseline)
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	c.sp_intensity ///
+	c.analf_90#c.year c.sprim_90#c.year c.ovsee_90#c.year c.ovsae_90#c.year ///
+	c.vhac_90#c.year c.ovpt_90#c.year c.ovsde_90#c.year c.pl5000_90#c.year ///
+	[aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+	vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local bes3_`pos'  = 0
+		local sees3_`pos' = 0
+	}
+	else {
+		local bes3_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sees3_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+* --- Plot ---
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_1 = yr_pos - 0.18
+gen xpos_2 = yr_pos
+gen xpos_3 = yr_pos + 0.18
+foreach s in 1 2 3 {
+	gen b_s`s'  = .
+	gen hi_s`s' = .
+	gen lo_s`s' = .
+}
+forval pos = 1/16 {
+	replace b_s1  = `bes1_`pos''                            if yr_pos == `pos'
+	replace hi_s1 = `bes1_`pos'' + 1.96 * `sees1_`pos''    if yr_pos == `pos'
+	replace lo_s1 = `bes1_`pos'' - 1.96 * `sees1_`pos''    if yr_pos == `pos'
+	replace b_s2  = `bes2_`pos''                            if yr_pos == `pos'
+	replace hi_s2 = `bes2_`pos'' + 1.96 * `sees2_`pos''    if yr_pos == `pos'
+	replace lo_s2 = `bes2_`pos'' - 1.96 * `sees2_`pos''    if yr_pos == `pos'
+	replace b_s3  = `bes3_`pos''                            if yr_pos == `pos'
+	replace hi_s3 = `bes3_`pos'' + 1.96 * `sees3_`pos''    if yr_pos == `pos'
+	replace lo_s3 = `bes3_`pos'' - 1.96 * `sees3_`pos''    if yr_pos == `pos'
+}
+twoway ///
+	(rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin)) ///
+	(scatter b_s1 xpos_1, mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(rcap hi_s2 lo_s2 xpos_2, lcolor(red%60) lwidth(vthin)) ///
+	(scatter b_s2 xpos_2, mcolor(red) msymbol(square) msize(vsmall)) ///
+	(rcap hi_s3 lo_s3 xpos_3, lcolor(blue%60) lwidth(vthin)) ///
+	(scatter b_s3 xpos_3, mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+	(line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+	(line b_s2 xpos_2 if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+	(line b_s3 xpos_3 if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(7 "Baseline (W+SP)" 8 "+ Trend x Marg. Index" 9 "+ Trend x SES Components") ///
+		cols(1) size(medsmall) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_ses_trend.pdf", as(pdf) replace
+restore
+}
+
+* Clean up generated SES baseline variables
+foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
+	cap drop `v'_90
+}
 
