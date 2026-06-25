@@ -3136,3 +3136,136 @@ foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
 	cap drop `v'_90
 }
 
+
+*============================================================
+* APPENDIX TABLE: Age Sub-Group Mortality (Minor Comment 7)
+* T2 col 4 specification: Weighted + Seguro Popular
+* Columns: (1) 50-64, (2) 65+, (3) 65-69, (4) 70+
+* Panels: Pooled, Females, Males
+* Output: $tables/appendix/AT_age_subgroups.tex
+*============================================================
+
+* Construct 50-64 mortality rate and population weight
+foreach sfx in "" "f" "m" {
+	cap drop death5064`sfx' pop5064_`sfx' emr5064`sfx'
+	gen death5064`sfx' = death50`sfx' - death65`sfx'
+	gen pop5064_`sfx'  = popover50_`sfx' - popover65_`sfx'
+	gen emr5064`sfx'   = death5064`sfx' * 1000 / pop5064_`sfx' if pop5064_`sfx' > 0
+}
+
+* Loop over panels and age groups
+foreach pnl in p f m {
+	if "`pnl'" == "p" local gsufx ""
+	if "`pnl'" == "f" local gsufx "f"
+	if "`pnl'" == "m" local gsufx "m"
+
+	* Define outcome and weight for each age group
+	local outcome_a5064 emr5064`gsufx'
+	local outcome_a65   emr65`gsufx'
+	local outcome_a6569 asr6569`gsufx'
+	local outcome_a70   asrover70`gsufx'
+
+	if "`pnl'" == "p" {
+		local wvar_a5064 pop5064_
+		local wvar_a65   popover65_
+		local wvar_a6569 pop6569_
+		local wvar_a70   popover70_
+	}
+	else {
+		local wvar_a5064 pop5064_`gsufx'
+		local wvar_a65   popover65_`gsufx'
+		local wvar_a6569 pop6569_`gsufx'
+		local wvar_a70   popover70_`gsufx'
+	}
+
+	foreach age in a5064 a65 a6569 a70 {
+		reghdfe `outcome_`age'' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+			[aw=`wvar_`age''] if $sample_marg, ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local b99_`pnl'_`age' = "`aux'***"
+		else if `t' >= 1.96  local b99_`pnl'_`age' = "`aux'**"
+		else if `t' >= 1.645 local b99_`pnl'_`age' = "`aux'*"
+		else                  local b99_`pnl'_`age' = "`aux'"
+		local se99_`pnl'_`age': di %12.3f _se[1.post#c.inten1999]
+
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local b05_`pnl'_`age' = "`aux'***"
+		else if `t' >= 1.96  local b05_`pnl'_`age' = "`aux'**"
+		else if `t' >= 1.645 local b05_`pnl'_`age' = "`aux'*"
+		else                  local b05_`pnl'_`age' = "`aux'"
+		local se05_`pnl'_`age': di %12.3f _se[1.post#c.inten2005]
+
+		sum `outcome_`age'' if e(sample) & post == 2
+		local mean_`pnl'_`age': di %12.2fc `r(mean)'
+		local N_`pnl'_`age':    di %12.0fc `e(N)'
+	}
+}
+
+* No. Mun from pooled 65+ regression (same sample across cols 2-4; col 1 may differ slightly)
+* No. Mun from pooled 65+ regression
+reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+	[aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+distinct cve_ent_mun_super if e(sample)
+local Nmun_AT_age: di %12.0fc `r(ndistinct)'
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_age_subgroups.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ " _n
+	file write sm "& \multicolumn{1}{c}{Ages 50--64} & \multicolumn{1}{c}{Ages 65+} & \multicolumn{1}{c}{Ages 65--69} & \multicolumn{1}{c}{Ages 70+} \\ \toprule" _n
+
+	file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_p_a5064' & `b99_p_a65' & `b99_p_a6569' & `b99_p_a70' \\ " _n
+	file write sm " & (`se99_p_a5064') & (`se99_p_a65') & (`se99_p_a6569') & (`se99_p_a70') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_p_a5064' & `b05_p_a65' & `b05_p_a6569' & `b05_p_a70' \\ " _n
+	file write sm " & (`se05_p_a5064') & (`se05_p_a65') & (`se05_p_a6569') & (`se05_p_a70') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_p_a5064' & `mean_p_a65' & `mean_p_a6569' & `mean_p_a70' \\ " _n
+	file write sm "Obs & `N_p_a5064' & `N_p_a65' & `N_p_a6569' & `N_p_a70' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel B: Females}} \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_f_a5064' & `b99_f_a65' & `b99_f_a6569' & `b99_f_a70' \\ " _n
+	file write sm " & (`se99_f_a5064') & (`se99_f_a65') & (`se99_f_a6569') & (`se99_f_a70') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_f_a5064' & `b05_f_a65' & `b05_f_a6569' & `b05_f_a70' \\ " _n
+	file write sm " & (`se05_f_a5064') & (`se05_f_a65') & (`se05_f_a6569') & (`se05_f_a70') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_f_a5064' & `mean_f_a65' & `mean_f_a6569' & `mean_f_a70' \\ " _n
+	file write sm "Obs & `N_f_a5064' & `N_f_a65' & `N_f_a6569' & `N_f_a70' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel C: Males}} \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_m_a5064' & `b99_m_a65' & `b99_m_a6569' & `b99_m_a70' \\ " _n
+	file write sm " & (`se99_m_a5064') & (`se99_m_a65') & (`se99_m_a6569') & (`se99_m_a70') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_m_a5064' & `b05_m_a65' & `b05_m_a6569' & `b05_m_a70' \\ " _n
+	file write sm " & (`se05_m_a5064') & (`se05_m_a65') & (`se05_m_a6569') & (`se05_m_a70') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_m_a5064' & `mean_m_a65' & `mean_m_a6569' & `mean_m_a70' \\ " _n
+	file write sm "Obs & `N_m_a5064' & `N_m_a65' & `N_m_a6569' & `N_m_a70' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "No.\ Mun & \multicolumn{4}{c}{`Nmun_AT_age'} \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Seguro Popular & Y & Y & Y & Y \\ " _n
+	file write sm "Weights & Y & Y & Y & Y \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\multicolumn{5}{l}{\footnotesize \textit{Notes:} T2 col.\ (4) specification throughout: weighted by age-group population,} \\ " _n
+	file write sm "\multicolumn{5}{l}{\footnotesize Seguro Popular controls, municipality and year fixed effects, standard errors} \\ " _n
+	file write sm "\multicolumn{5}{l}{\footnotesize clustered at the municipality level. Column (1) outcome is constructed as} \\ " _n
+	file write sm "\multicolumn{5}{l}{\footnotesize (deaths 50--64) / (population 50--64) x 1,000. Columns (3)--(4) decompose} \\ " _n
+	file write sm "\multicolumn{5}{l}{\footnotesize the 65+ result into the two age sub-groups available in the vital statistics.} \\ " _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/appendix/AT_age_subgroups.tex"
+
+cap drop death5064 death5064f death5064m pop5064_ pop5064_f pop5064_m emr5064 emr5064f emr5064m
+
