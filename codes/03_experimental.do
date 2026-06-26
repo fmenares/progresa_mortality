@@ -396,88 +396,54 @@ label variable total_visits "Total health facility visits (past 4 weeks)"
 *------------------------------------------------------------
 * Merge 1999 health visit counts from original ENCEL round
 * Source: socioec_encel_99n.sav — household-level, wide format
-* nl390Xk = renglon of k-th person who visited service X
-* nl410Xk = visits for that person; X: 1=hosp pub, 2=clinic, 3=hosp priv, 4=med particular
+* nl390Xk = renglon (person line #) of k-th person who used service X
+* nl410Xk = visit count; X: 1=pub hospital, 2=clinic, 3=priv hospital, 4=private doctor
 *------------------------------------------------------------
-cap confirm file "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav"
+local spss99 "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav"
+cap confirm file "`spss99'"
 if _rc == 0 {
-    tempfile visits99
-    preserve
 
-    import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
+    * --- Step 1: import SPSS once, keep only relevant vars, save to disk ---
+    tempfile spss_wide tv_acc visits99
+    import spss using "`spss99'", clear
+    keep folio nl390* nl410*
+    save `spss_wide'
+    di as txt "NOTE: SPSS file loaded — `c(N)' households, `c(k)' variables kept"
 
-    * Check that at least some nl390*/nl410* variables exist — use wildcards to
-    * avoid failing if not all service types or slots are present in the file
-    cap keep folio nl390* nl410*
-    if _rc {
-        di as err "ERROR: folio or nl390*/nl410* variables not found in socioec_encel_99n.sav — run describe to check names"
-        restore
-    }
-    else {
-        * Build long person-level dataset: one row per (folio, renglon, service, slot)
-        * then collapse to (folio, renglon) summing across services
-        tempfile tv_long
-        clear
-        set obs 0
-        gen long   folio    = .
-        gen int    renglon  = .
-        gen float  v_hosp   = .
-        gen float  v_centr  = .
-        gen float  v_priv   = .
-        gen float  v_medc   = .
-        save `tv_long'
+    * --- Step 2: stack person-visits from each (service × slot) into long format ---
+    clear
+    set obs 0
+    gen long folio    = .
+    gen int  renglon  = .
+    gen int  n_visits = .
+    save `tv_acc'
 
-        import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
-        cap keep folio nl3901? nl4101? nl3902? nl4102? nl3903? nl4103? nl3904? nl4104?
-
-        * For each service type and slot, extract (folio, renglon, visits)
-        local svc_list  1 2 3 4
-        local name_list hosp centr priv medc
-
-        local i = 0
-        foreach sn of local svc_list {
-            local i = `i' + 1
-            local sname : word `i' of `name_list'
-            foreach k in a b c {
-                preserve
-                cap keep folio nl390`sn'`k' nl410`sn'`k'
-                if _rc { restore; continue }
-                cap rename nl390`sn'`k' renglon
-                cap rename nl410`sn'`k' v_`sname'
-                if _rc { restore; continue }
-                * Drop non-person rows (missing renglon, code 9=NR, 0=no one)
-                drop if missing(renglon) | renglon <= 0 | renglon == 9
-                * Cap visit count at 98 (99 = NR)
-                replace v_`sname' = . if v_`sname' >= 99
-                * Fill other service columns with 0 for this slice
-                foreach other of local name_list {
-                    if "`other'" != "`sname'" {
-                        cap gen float v_`other' = 0
-                    }
-                }
-                append using `tv_long'
-                save `tv_long', replace
-                restore
-            }
+    foreach sn in 1 2 3 4 {
+        foreach k in a b c {
+            cap use folio nl390`sn'`k' nl410`sn'`k' using `spss_wide', clear
+            if _rc continue                     // variable absent for this slot — skip
+            rename nl390`sn'`k' renglon
+            rename nl410`sn'`k' n_visits
+            drop if missing(renglon) | renglon <= 0 | renglon == 9
+            replace n_visits = . if n_visits >= 99
+            append using `tv_acc'
+            save `tv_acc', replace
         }
-
-        * Collapse to one row per person, summing visits across all services
-        use `tv_long', clear
-        drop if missing(folio) | missing(renglon)
-        collapse (sum) v_hosp v_centr v_priv v_medc, by(folio renglon)
-        gen total_visits = v_hosp + v_centr + v_priv + v_medc
-        keep folio renglon total_visits
-        label var total_visits "Total health facility visits, 1999 (past 4 weeks)"
-        save `visits99'
-
-        restore
-
-        * Update the all-missing total_visits in the panel for year==99
-        merge m:1 folio renglon using `visits99', ///
-            keepusing(total_visits) update replace nogenerate
-        count if !missing(total_visits) & year==99
-        di as txt "NOTE: 1999 visit counts merged — `r(N)' obs with non-missing total_visits in year==99"
     }
+
+    * --- Step 3: collapse to one row per person, sum visits across services ---
+    use `tv_acc', clear
+    drop if missing(folio) | missing(renglon)
+    replace n_visits = 0 if missing(n_visits)
+    collapse (sum) total_visits=n_visits, by(folio renglon)
+    label var total_visits "Total health facility visits, 1999 (past 4 weeks)"
+    di as txt "NOTE: `c(N)' person-records with visit data before merge"
+    save `visits99'
+
+    * --- Step 4: merge into panel ---
+    merge m:1 folio renglon using `visits99', keepusing(total_visits) update replace nogenerate
+    count if !missing(total_visits) & year==99
+    di as txt "NOTE: `r(N)' obs in year==99 have non-missing total_visits after merge"
 }
 else {
     di as txt "NOTE: socioec_encel_99n.sav not found — total_visits remains missing for 1999"
@@ -544,9 +510,9 @@ local g p
 preserve
 keep if age97>=65
 foreach yvar of local indiv_outcomes {
-    quietly summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
     local cmean97_elig = r(mean)
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if eligible==1 & !missing(`yvar', year, contba, claveofi), ///
         absorb(clavemun) ///
         vce(cluster claveofi)
@@ -566,9 +532,9 @@ foreach yvar of local indiv_outcomes {
     }
 }
 foreach yvar of local living {
-    quietly summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
     local cmean97_elig = r(mean)
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if eligible==1 & !missing(`yvar', year, contba, claveofi), ///
         absorb(clavemun) ///
         vce(cluster claveofi)
@@ -600,11 +566,11 @@ keep if gender==1 & age97>=65
 foreach yvar of local indiv_outcomes {
 
     * Control mean in 1997 (control localities), matching the estimation sample
-    quietly summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
     local cmean97_all = r(mean)
 
     * Full sample
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if !missing(`yvar', year, contba, claveofi), ///
         absorb(pid) ///
         vce(cluster clavemun)
@@ -612,11 +578,11 @@ foreach yvar of local indiv_outcomes {
     eststo `yvar'_all
 
     * Control mean in 1997 for eligible households
-    quietly summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
     local cmean97_elig = r(mean)
 
     * Eligible households only
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if eligible==1 & !missing(`yvar', year, contba, claveofi), ///
         absorb(clavemun) ///
         vce(cluster claveofi)
@@ -643,11 +609,11 @@ foreach yvar of local indiv_outcomes {
 	foreach yvar of local living {
 
     * Control mean in 1997 (control localities), matching the estimation sample
-    quietly summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
     local cmean97_all = r(mean)
 
     * Full sample
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if !missing(`yvar', year, contba, claveofi), ///
         absorb(pid) ///
         vce(cluster clavemun)
@@ -655,11 +621,11 @@ foreach yvar of local indiv_outcomes {
     eststo `yvar'_all
 
     * Control mean in 1997 for eligible households
-    quietly summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
     local cmean97_elig = r(mean)
 
     * Eligible households only
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if eligible==1 & !missing(`yvar', year, contba, claveofi), ///
         absorb(clavemun) ///
         vce(cluster claveofi)
@@ -696,11 +662,11 @@ keep if gender==2 & age97>=65
 foreach yvar of local indiv_outcomes {
 
     * Control mean in 1997 (control localities), matching the estimation sample
-    quietly summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
     local cmean97_all = r(mean)
 
     * Full sample
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if !missing(`yvar', year, contba, claveofi), ///
         absorb(pid) ///
         vce(cluster clavemun)
@@ -708,11 +674,11 @@ foreach yvar of local indiv_outcomes {
     eststo `yvar'_all
 
     * Control mean in 1997 for eligible households
-    quietly summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
     local cmean97_elig = r(mean)
 
     * Eligible households only
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if eligible==1 & !missing(`yvar', year, contba, claveofi), ///
         absorb(clavemun) ///
         vce(cluster claveofi)
@@ -739,11 +705,11 @@ foreach yvar of local indiv_outcomes {
 	foreach yvar of local living {
 
     * Control mean in 1997 (control localities), matching the estimation sample
-    quietly summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & !missing(`yvar', year, contba, claveofi)
     local cmean97_all = r(mean)
 
     * Full sample
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if !missing(`yvar', year, contba, claveofi), ///
         absorb(pid) ///
         vce(cluster clavemun)
@@ -751,11 +717,11 @@ foreach yvar of local indiv_outcomes {
     eststo `yvar'_all
 
     * Control mean in 1997 for eligible households
-    quietly summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
+    summarize `yvar' if year==97 & contba==0 & eligible==1 & !missing(`yvar', year, contba, claveofi)
     local cmean97_elig = r(mean)
 
     * Eligible households only
-    quietly reghdfe `yvar' i.year##i.contba ///
+    reghdfe `yvar' i.year##i.contba ///
         if eligible==1 & !missing(`yvar', year, contba, claveofi), ///
         absorb(clavemun) ///
         vce(cluster claveofi)
@@ -801,7 +767,7 @@ if r(N) > 0 {
             & `gcond' & !missing(total_visits, contba, claveofi)
         local cmn_`ggrp'_tv : di %9.3f `r(mean)'
 
-        capture quietly reghdfe total_visits contba ///
+        reghdfe total_visits contba ///
             if year==99 & eligible==1 & `gcond' ///
             & !missing(total_visits, contba, claveofi), ///
             absorb(clavemun) vce(cluster claveofi)
