@@ -406,13 +406,11 @@ if _rc == 0 {
 
     import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
 
-    * Keep only the renglon-id and visit-count vars for 4 service types × 3 slots
-    cap keep folio nl3901a nl3901b nl3901c nl4101a nl4101b nl4101c ///
-                   nl3902a nl3902b nl3902c nl4102a nl4102b nl4102c ///
-                   nl3903a nl3903b nl3903c nl4103a nl4103b nl4103c ///
-                   nl3904a nl3904b nl3904c nl4104a nl4104b nl4104c
+    * Check that at least some nl390*/nl410* variables exist — use wildcards to
+    * avoid failing if not all service types or slots are present in the file
+    cap keep folio nl390* nl410*
     if _rc {
-        di as err "ERROR: expected nl390X/nl410X variables not found in socioec_encel_99n.sav — run describe to check names"
+        di as err "ERROR: folio or nl390*/nl410* variables not found in socioec_encel_99n.sav — run describe to check names"
         restore
     }
     else {
@@ -477,7 +475,8 @@ if _rc == 0 {
         * Update the all-missing total_visits in the panel for year==99
         merge m:1 folio renglon using `visits99', ///
             keepusing(total_visits) update replace nogenerate
-        di as txt "NOTE: 1999 visit counts merged from socioec_encel_99n.sav"
+        count if !missing(total_visits) & year==99
+        di as txt "NOTE: 1999 visit counts merged — `r(N)' obs with non-missing total_visits in year==99"
     }
 }
 else {
