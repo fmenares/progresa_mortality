@@ -402,6 +402,7 @@ label variable total_visits "Total health facility visits (past 4 weeks)"
 local spss99 "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav"
 cap confirm file "`spss99'"
 if _rc == 0 {
+    preserve                               // save the panel before SPSS operations
 
     * --- Step 1: import SPSS once, keep only relevant vars, save to disk ---
     tempfile spss_wide tv_acc visits99
@@ -440,7 +441,8 @@ if _rc == 0 {
     di as txt "NOTE: `c(N)' person-records with visit data before merge"
     save `visits99'
 
-    * --- Step 4: merge into panel ---
+    * --- Step 4: restore panel and merge visits data ---
+    restore                                // restore the panel dataset
     merge m:1 folio renglon using `visits99', keepusing(total_visits) update replace nogenerate
     count if !missing(total_visits) & year==99
     di as txt "NOTE: `r(N)' obs in year==99 have non-missing total_visits after merge"
