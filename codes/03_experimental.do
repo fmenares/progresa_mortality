@@ -387,7 +387,7 @@ label var total_visits "Total health facility visits (past 4 weeks)"
 di "--- Step 1: loading SPSS file ---"
 preserve
 import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
-keep folio nl390* nl410*
+keep folio n1390* n1410*
 tempfile spss_wide
 save `spss_wide'
 di "`c(N)' households loaded from SPSS, `c(k)' vars kept"
@@ -403,11 +403,11 @@ save `tv_acc'
 
 foreach sn in 1 2 3 4 {
     foreach k in a b c {
-        cap use folio nl390`sn'`k' nl410`sn'`k' using `spss_wide', clear
+        cap use folio n1390`sn'`k' n1410`sn'`k' using `spss_wide', clear
         if _rc { continue }
         di "  slot `sn'`k': `c(N)' rows"
-        rename nl390`sn'`k' renglon
-        rename nl410`sn'`k' n_visits
+        rename n1390`sn'`k' renglon
+        rename n1410`sn'`k' n_visits
         recast long folio renglon
         drop if missing(renglon) | renglon <= 0 | renglon == 9
         replace n_visits = . if n_visits >= 99
