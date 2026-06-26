@@ -378,11 +378,111 @@ foreach var of varlist act_vig act_mode enf6_4se {
 
 * Total health facility visits (past 4 weeks): sum of binary indicators
 * for hospital, public clinic, and private doctor. Available in 1999 only.
-foreach var of varlist cons_hosp centr_sal med_parti {
-    replace `var' = . if `var' >= 9
+* cons_hosp/centr_sal/med_parti may be absent if missings dropvars dropped them
+* (all-missing in the panel) — in that case total_visits is left as missing.
+cap confirm variable cons_hosp centr_sal med_parti
+if _rc == 0 {
+    foreach var of varlist cons_hosp centr_sal med_parti {
+        replace `var' = . if `var' >= 9
+    }
+    gen total_visits = cons_hosp + centr_sal + med_parti
 }
-gen total_visits = cons_hosp + centr_sal + med_parti
+else {
+    gen total_visits = .
+    di as txt "NOTE: cons_hosp/centr_sal/med_parti not found in panel — total_visits set to missing."
+}
 label variable total_visits "Total health facility visits (past 4 weeks)"
+
+*------------------------------------------------------------
+* Merge 1999 health visit counts from original ENCEL round
+* Source: socioec_encel_99n.sav — household-level, wide format
+* nl390Xk = renglon of k-th person who visited service X
+* nl410Xk = visits for that person; X: 1=hosp pub, 2=clinic, 3=hosp priv, 4=med particular
+*------------------------------------------------------------
+cap confirm file "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav"
+if _rc == 0 {
+    tempfile visits99
+    preserve
+
+    import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
+
+    * Keep only the renglon-id and visit-count vars for 4 service types × 3 slots
+    cap keep folio nl3901a nl3901b nl3901c nl4101a nl4101b nl4101c ///
+                   nl3902a nl3902b nl3902c nl4102a nl4102b nl4102c ///
+                   nl3903a nl3903b nl3903c nl4103a nl4103b nl4103c ///
+                   nl3904a nl3904b nl3904c nl4104a nl4104b nl4104c
+    if _rc {
+        di as err "ERROR: expected nl390X/nl410X variables not found in socioec_encel_99n.sav — run describe to check names"
+        restore
+    }
+    else {
+        * Build long person-level dataset: one row per (folio, renglon, service, slot)
+        * then collapse to (folio, renglon) summing across services
+        tempfile tv_long
+        clear
+        set obs 0
+        gen long   folio    = .
+        gen int    renglon  = .
+        gen float  v_hosp   = .
+        gen float  v_centr  = .
+        gen float  v_priv   = .
+        gen float  v_medc   = .
+        save `tv_long'
+
+        import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
+        cap keep folio nl3901? nl4101? nl3902? nl4102? nl3903? nl4103? nl3904? nl4104?
+
+        * For each service type and slot, extract (folio, renglon, visits)
+        local svc_list  1 2 3 4
+        local name_list hosp centr priv medc
+
+        local i = 0
+        foreach sn of local svc_list {
+            local i = `i' + 1
+            local sname : word `i' of `name_list'
+            foreach k in a b c {
+                preserve
+                cap keep folio nl390`sn'`k' nl410`sn'`k'
+                if _rc { restore; continue }
+                cap rename nl390`sn'`k' renglon
+                cap rename nl410`sn'`k' v_`sname'
+                if _rc { restore; continue }
+                * Drop non-person rows (missing renglon, code 9=NR, 0=no one)
+                drop if missing(renglon) | renglon <= 0 | renglon == 9
+                * Cap visit count at 98 (99 = NR)
+                replace v_`sname' = . if v_`sname' >= 99
+                * Fill other service columns with 0 for this slice
+                foreach other of local name_list {
+                    if "`other'" != "`sname'" {
+                        cap gen float v_`other' = 0
+                    }
+                }
+                append using `tv_long'
+                save `tv_long', replace
+                restore
+            }
+        }
+
+        * Collapse to one row per person, summing visits across all services
+        use `tv_long', clear
+        drop if missing(folio) | missing(renglon)
+        collapse (sum) v_hosp v_centr v_priv v_medc, by(folio renglon)
+        gen total_visits = v_hosp + v_centr + v_priv + v_medc
+        keep folio renglon total_visits
+        label var total_visits "Total health facility visits, 1999 (past 4 weeks)"
+        save `visits99'
+
+        restore
+
+        * Update the all-missing total_visits in the panel for year==99
+        merge m:1 folio renglon using `visits99', ///
+            keepusing(total_visits) update replace nogenerate
+        di as txt "NOTE: 1999 visit counts merged from socioec_encel_99n.sav"
+    }
+}
+else {
+    di as txt "NOTE: socioec_encel_99n.sav not found — total_visits remains missing for 1999"
+}
 
 gen post=1 if year==98 | year==99
 replace post=0 if year==97
@@ -691,28 +791,48 @@ restore
 * Total visits: 1999 cross-section only (no 1997/1998 baseline)
 * Run separately for pooled, male, female; store locals for T3 col 5
 *------------------------------------------------------------
-foreach ggrp in p m f {
-    if "`ggrp'" == "p"      local gcond "age97>=65"
-    else if "`ggrp'" == "m" local gcond "gender==1 & age97>=65"
-    else                     local gcond "gender==2 & age97>=65"
+count if !missing(total_visits) & year==99 & eligible==1
+if r(N) > 0 {
+    foreach ggrp in p m f {
+        if "`ggrp'" == "p"      local gcond "age97>=65"
+        else if "`ggrp'" == "m" local gcond "gender==1 & age97>=65"
+        else                     local gcond "gender==2 & age97>=65"
 
-    quietly sum total_visits if year==99 & contba==0 & eligible==1 ///
-        & `gcond' & !missing(total_visits, contba, claveofi)
-    local cmn_`ggrp'_tv : di %9.3f `r(mean)'
+        quietly sum total_visits if year==99 & contba==0 & eligible==1 ///
+            & `gcond' & !missing(total_visits, contba, claveofi)
+        local cmn_`ggrp'_tv : di %9.3f `r(mean)'
 
-    quietly reghdfe total_visits contba ///
-        if year==99 & eligible==1 & `gcond' ///
-        & !missing(total_visits, contba, claveofi), ///
-        absorb(clavemun) vce(cluster claveofi)
+        capture quietly reghdfe total_visits contba ///
+            if year==99 & eligible==1 & `gcond' ///
+            & !missing(total_visits, contba, claveofi), ///
+            absorb(clavemun) vce(cluster claveofi)
 
-    local aux : di %9.3f _b[contba]
-    local tstat = abs(_b[contba] / _se[contba])
-    if      `tstat' >= 2.576 local b99_`ggrp'_tv = trim("`aux'") + "***"
-    else if `tstat' >= 1.960 local b99_`ggrp'_tv = trim("`aux'") + "**"
-    else if `tstat' >= 1.645 local b99_`ggrp'_tv = trim("`aux'") + "*"
-    else                     local b99_`ggrp'_tv = trim("`aux'")
-    local se99_`ggrp'_tv : di %9.3f _se[contba]
-    local N_`ggrp'_tv    : di %12.0fc e(N)
+        if _rc == 0 {
+            local aux : di %9.3f _b[contba]
+            local tstat = abs(_b[contba] / _se[contba])
+            if      `tstat' >= 2.576 local b99_`ggrp'_tv = trim("`aux'") + "***"
+            else if `tstat' >= 1.960 local b99_`ggrp'_tv = trim("`aux'") + "**"
+            else if `tstat' >= 1.645 local b99_`ggrp'_tv = trim("`aux'") + "*"
+            else                     local b99_`ggrp'_tv = trim("`aux'")
+            local se99_`ggrp'_tv : di %9.3f _se[contba]
+            local N_`ggrp'_tv    : di %12.0fc e(N)
+        }
+        else {
+            local b99_`ggrp'_tv  ""
+            local se99_`ggrp'_tv ""
+            local N_`ggrp'_tv    ""
+            local cmn_`ggrp'_tv  ""
+        }
+    }
+}
+else {
+    di as txt "NOTE: total_visits unavailable — skipping col 5 regressions; T3 col 5 will be blank"
+    foreach ggrp in p m f {
+        local b99_`ggrp'_tv  ""
+        local se99_`ggrp'_tv ""
+        local N_`ggrp'_tv    ""
+        local cmn_`ggrp'_tv  ""
+    }
 }
 
 *============================================================
