@@ -376,80 +376,61 @@ foreach var of varlist act_vig act_mode enf6_4se {
     replace `var' = . if `var' == 9
 }
 
-* Total health facility visits (past 4 weeks): sum of binary indicators
-* for hospital, public clinic, and private doctor. Available in 1999 only.
-* cons_hosp/centr_sal/med_parti may be absent if missings dropvars dropped them
-* (all-missing in the panel) — in that case total_visits is left as missing.
-cap confirm variable cons_hosp centr_sal med_parti
-if _rc == 0 {
-    foreach var of varlist cons_hosp centr_sal med_parti {
-        replace `var' = . if `var' >= 9
-    }
-    gen total_visits = cons_hosp + centr_sal + med_parti
-}
-else {
-    gen total_visits = .
-    di as txt "NOTE: cons_hosp/centr_sal/med_parti not found in panel — total_visits set to missing."
-}
-label variable total_visits "Total health facility visits (past 4 weeks)"
-
 *------------------------------------------------------------
-* Merge 1999 health visit counts from original ENCEL round
-* Source: socioec_encel_99n.sav — household-level, wide format
-* nl390Xk = renglon (person line #) of k-th person who used service X
-* nl410Xk = visit count; X: 1=pub hospital, 2=clinic, 3=priv hospital, 4=private doctor
+* Populate total_visits from 1999 ENCEL socioeconomic file
+* nl390Xk = renglon of k-th person who used service X (X=1..4, k=a/b/c)
+* nl410Xk = visit count for that person
 *------------------------------------------------------------
-local spss99 "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav"
-cap confirm file "`spss99'"
-if _rc == 0 {
-    preserve                               // save the panel before SPSS operations
+gen total_visits = .
+label var total_visits "Total health facility visits (past 4 weeks)"
 
-    * --- Step 1: import SPSS once, keep only relevant vars, save to disk ---
-    tempfile spss_wide tv_acc visits99
-    import spss using "`spss99'", clear
-    keep folio nl390* nl410*
-    save `spss_wide'
-    di as txt "NOTE: SPSS file loaded — `c(N)' households, `c(k)' variables kept"
+di "--- Step 1: loading SPSS file ---"
+preserve
+import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
+keep folio nl390* nl410*
+tempfile spss_wide
+save `spss_wide'
+di "`c(N)' households loaded from SPSS, `c(k)' vars kept"
 
-    * --- Step 2: stack person-visits from each (service × slot) into long format ---
-    clear
-    set obs 0
-    gen long folio    = .
-    gen int  renglon  = .
-    gen int  n_visits = .
-    save `tv_acc'
+di "--- Step 2: building person-level visit records ---"
+tempfile tv_acc
+clear
+set obs 0
+gen long folio    = .
+gen long renglon  = .
+gen int  n_visits = .
+save `tv_acc'
 
-    foreach sn in 1 2 3 4 {
-        foreach k in a b c {
-            cap use folio nl390`sn'`k' nl410`sn'`k' using `spss_wide', clear
-            if _rc continue                     // variable absent for this slot — skip
-            rename nl390`sn'`k' renglon
-            rename nl410`sn'`k' n_visits
-            drop if missing(renglon) | renglon <= 0 | renglon == 9
-            replace n_visits = . if n_visits >= 99
-            append using `tv_acc'
-            save `tv_acc', replace
-        }
+foreach sn in 1 2 3 4 {
+    foreach k in a b c {
+        cap use folio nl390`sn'`k' nl410`sn'`k' using `spss_wide', clear
+        if _rc { continue }
+        di "  slot `sn'`k': `c(N)' rows"
+        rename nl390`sn'`k' renglon
+        rename nl410`sn'`k' n_visits
+        recast long folio renglon
+        drop if missing(renglon) | renglon <= 0 | renglon == 9
+        replace n_visits = . if n_visits >= 99
+        append using `tv_acc'
+        save `tv_acc', replace
     }
-
-    * --- Step 3: collapse to one row per person, sum visits across services ---
-    use `tv_acc', clear
-    drop if missing(folio) | missing(renglon)
-    replace n_visits = 0 if missing(n_visits)
-    collapse (sum) total_visits=n_visits, by(folio renglon)
-    label var total_visits "Total health facility visits, 1999 (past 4 weeks)"
-    di as txt "NOTE: `c(N)' person-records with visit data before merge"
-    save `visits99'
-
-    * --- Step 4: restore panel and merge visits data ---
-    restore                                // restore the panel dataset
-    merge m:1 folio renglon using `visits99', keepusing(total_visits) update replace nogenerate
-    count if !missing(total_visits) & year==99
-    di as txt "NOTE: `r(N)' obs in year==99 have non-missing total_visits after merge"
 }
-else {
-    di as txt "NOTE: socioec_encel_99n.sav not found — total_visits remains missing for 1999"
-}
+
+di "--- Step 3: collapsing to one row per person ---"
+use `tv_acc', clear
+di "`c(N)' raw person-slot records"
+drop if missing(folio) | missing(renglon)
+replace n_visits = 0 if missing(n_visits)
+collapse (sum) total_visits=n_visits, by(folio renglon)
+di "`c(N)' unique persons with visit data"
+tempfile visits99
+save `visits99'
+
+di "--- Step 4: merging into panel ---"
+restore
+merge m:1 folio renglon using `visits99', keepusing(total_visits) update replace nogenerate
+count if !missing(total_visits) & year==99
+di "`r(N)' obs in year==99 have non-missing total_visits"
 
 gen post=1 if year==98 | year==99
 replace post=0 if year==97
