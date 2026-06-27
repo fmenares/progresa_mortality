@@ -841,32 +841,42 @@ di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
     file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\ddagger\$}} \\ " _n
     file write sm "& \multicolumn{5}{c}{\textit{Sample: age 65+}} & \multicolumn{1}{c}{\textit{age 51+}} \\ \toprule" _n
     * Panel A: Pooled
-    file write sm "\multicolumn{7}{l}{\textbf{Panel A: Pooled}} \\ \midrule" _n
+    file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
     file write sm "Treat \$\times\$ 1998 & `b98_p_wh' & `b98_p_la' & `b98_p_wc' & `b98_p_oe' & & \\ " _n
-    file write sm " & (`se98_p_wh') & (`se98_p_la') & (`se98_p_wc') & (`se98_p_oe') & & \\[4pt]" _n
+    file write sm " & (`se98_p_wh') & (`se98_p_la') & (`se98_p_wc') & (`se98_p_oe') & & \\ " _n
+    file write sm "  & & & & & & \\ " _n
     file write sm "Treat \$\times\$ 1999 & `b99_p_wh' & `b99_p_la' & `b99_p_wc' & `b99_p_oe' & `b99_p_tv' & `b99_p_tv51' \\ " _n
-    file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') & (`se99_p_tv51') \\[4pt]" _n
+    file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') & (`se99_p_tv51') \\ " _n
+    file write sm "  & & & & & & \\ " _n
     file write sm "Observations & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_tv51' \\ " _n
     file write sm "Control Mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & & \\ " _n
-    file write sm "Control Mean (1999) & & & & & `cmn_p_tv' & `cmn_p_tv51' \\ \midrule" _n
+    file write sm "Control Mean (1999) & & & & & `cmn_p_tv' & `cmn_p_tv51' \\ " _n
+    file write sm "  & & & & & & \\ " _n
     * Panel B: Females
-    file write sm "\multicolumn{7}{l}{\textbf{Panel B: Females}} \\ \midrule" _n
+    file write sm "\underline{\textit{Panel B: Females}} \\ " _n
     file write sm "Treat \$\times\$ 1998 & `b98_f_wh' & `b98_f_la' & `b98_f_wc' & `b98_f_oe' & & \\ " _n
-    file write sm " & (`se98_f_wh') & (`se98_f_la') & (`se98_f_wc') & (`se98_f_oe') & & \\[4pt]" _n
+    file write sm " & (`se98_f_wh') & (`se98_f_la') & (`se98_f_wc') & (`se98_f_oe') & & \\ " _n
+    file write sm "  & & & & & & \\ " _n
     file write sm "Treat \$\times\$ 1999 & `b99_f_wh' & `b99_f_la' & `b99_f_wc' & `b99_f_oe' & `b99_f_tv' & `b99_f_tv51' \\ " _n
-    file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') & (`se99_f_tv') & (`se99_f_tv51') \\[4pt]" _n
+    file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') & (`se99_f_tv') & (`se99_f_tv51') \\ " _n
+    file write sm "  & & & & & & \\ " _n
     file write sm "Observations & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' & `N_f_tv' & `N_f_tv51' \\ " _n
     file write sm "Control Mean (1997) & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & & \\ " _n
-    file write sm "Control Mean (1999) & & & & & `cmn_f_tv' & `cmn_f_tv51' \\ \midrule" _n
+    file write sm "Control Mean (1999) & & & & & `cmn_f_tv' & `cmn_f_tv51' \\ " _n
+    file write sm "  & & & & & & \\ " _n
     * Panel C: Males
-    file write sm "\multicolumn{7}{l}{\textbf{Panel C: Males}} \\ \midrule" _n
+    file write sm "\underline{\textit{Panel C: Males}} \\ " _n
     file write sm "Treat \$\times\$ 1998 & `b98_m_wh' & `b98_m_la' & `b98_m_wc' & `b98_m_oe' & & \\ " _n
-    file write sm " & (`se98_m_wh') & (`se98_m_la') & (`se98_m_wc') & (`se98_m_oe') & & \\[4pt]" _n
+    file write sm " & (`se98_m_wh') & (`se98_m_la') & (`se98_m_wc') & (`se98_m_oe') & & \\ " _n
+    file write sm "  & & & & & & \\ " _n
     file write sm "Treat \$\times\$ 1999 & `b99_m_wh' & `b99_m_la' & `b99_m_wc' & `b99_m_oe' & `b99_m_tv' & `b99_m_tv51' \\ " _n
-    file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') & (`se99_m_tv') & (`se99_m_tv51') \\[4pt]" _n
+    file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') & (`se99_m_tv') & (`se99_m_tv51') \\ " _n
+    file write sm "  & & & & & & \\ " _n
     file write sm "Observations & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' & `N_m_tv51' \\ " _n
     file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & & \\ " _n
-    file write sm "Control Mean (1999) & & & & & `cmn_m_tv' & `cmn_m_tv51' \\ \bottomrule" _n
+    file write sm "Control Mean (1999) & & & & & `cmn_m_tv' & `cmn_m_tv51' \\ " _n
+    file write sm "  & & & & & & \\ " _n
+    file write sm "\bottomrule" _n
     file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\dagger\$} Total visits (hospital, public clinic, private doctor, past 4 weeks). 1999 only; cross-section, municipality FE.} \\" _n
     file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\ddagger\$} Same specification, sample age 51+. Comparable to Gertler (2000), Table 6.} \\" _n
     file write sm "\end{tabular}"
