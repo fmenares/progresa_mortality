@@ -19,10 +19,23 @@
 
 if "$window" == "" global window "full"      // default when caller sets nothing
 
-if      "$window" == "full" { global yr_start 1990 ; global yr_end 2017 }
-else if "$window" == "prog" { global yr_start 1990 ; global yr_end 2006 }
-else if "$window" == "br"   { global yr_start 1992 ; global yr_end 2002 }
-else {
+* Independent if-blocks (no else) so this runs correctly whether the file is
+* `do`-ne or pasted line-by-line into the console.
+global yr_start
+global yr_end
+if "$window" == "full" {
+    global yr_start 1990
+    global yr_end   2017
+}
+if "$window" == "prog" {
+    global yr_start 1990
+    global yr_end   2006
+}
+if "$window" == "br" {
+    global yr_start 1992
+    global yr_end   2002
+}
+if "$yr_start" == "" {
     di as error "Unknown window '$window' — use full | prog | br"
     error 198
 }
