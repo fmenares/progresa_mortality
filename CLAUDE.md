@@ -305,7 +305,7 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 
 | # | Comment | Type | Status | Notes |
 |---|---------|------|--------|-------|
-| 2 | Healthcare utilization (1999 ENCEL data) | Implementation | **In Progress** | SPSS import simplified; col 5 `if _rc==0` bug fixed; zero-fill non-visitors added |
+| 2 | Healthcare utilization (1999 ENCEL data) | Implementation | **In Progress** | SPSS import simplified; col 5 `if _rc==0` bug fixed; zero-fill non-visitors added. Appendix `AT_elderly_only_hours.tex` — weekly hours for elderly-only households (no children), 3 panels as columns |
 | 3 | SES footnote: municipality intensity function | Text | **Not Started** | Cite Parker & Vogl (2023) Figs 2–3 |
 | 4 | Pre-program SES trends robustness | Implementation | **Done** | Table: `AT_ses_trend.tex`; Figure: `AF_ses_trend.pdf` |
 | 5 | θk event study appendix figures | Implementation | **Done** | Figures: `AF_beta1_sex.pdf`, `AF_beta1_wuw.pdf` |
