@@ -2903,7 +2903,7 @@ foreach pnl in p m f {
 * interacted with 1990 baseline SES.
 * Col 1: Baseline (W+SP, same as T2 col 4)
 * Col 2: + Trend × im_mun_1990 (continuous marginalization index)
-* Col 3: + Trend × SES components (8 census variables, 1990 values)
+* Col 3: + Trend × 1990 marginalization-index quintile bins (P&V 2023 style)
 * Output: $tables/appendix/AT_ses_trend.tex
 *============================================================
 
@@ -2914,6 +2914,21 @@ foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
 	bys cve_ent_mun_super: egen `v'_90 = max(_tmp)
 	drop _tmp
 }
+
+* P&V (2023)-style flexible baseline-SES trend: bin municipalities into
+* quintiles of the 1990 marginalization index and interact the bins with a
+* year trend. Robust to missing/sparse individual census components (col 3
+* previously interacted 8 raw 1990 components, 1-2 of which are mostly null).
+* Cutpoints computed on the municipality cross-section (one obs per mun) so
+* they are not weighted by panel length.
+local nq_ses 5
+cap drop im90_bin
+egen _mun_tag = tag(cve_ent_mun_super)
+xtile im90_bin = im_mun_1990 if _mun_tag, nq(`nq_ses')
+bys cve_ent_mun_super: egen _im90_bin = max(im90_bin)
+replace im90_bin = _im90_bin
+drop _mun_tag _im90_bin
+label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
 
 * --- Col 1: Baseline (Weighted + Seguro Popular) ---
 reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
@@ -2962,10 +2977,9 @@ local N_ses_2:    di %12.0fc `e(N)'
 distinct cve_ent_mun_super if e(sample)
 local Nmun_ses_2: di %12.0fc `r(ndistinct)'
 
-* --- Col 3: Baseline + Trend × SES components (8 variables, 1990 baseline) ---
+* --- Col 3: Baseline + Trend × 1990 marginalization-index quintile (P&V 2023) ---
 reghdfe emr65 c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-	c.analf_90#c.year c.sprim_90#c.year c.ovsee_90#c.year c.ovsae_90#c.year ///
-	c.vhac_90#c.year c.ovpt_90#c.year c.ovsde_90#c.year c.pl5000_90#c.year ///
+	i.im90_bin#c.year ///
 	[aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[1.post#c.inten1999]
 local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
@@ -3007,16 +3021,15 @@ local Nmun_ses_3: di %12.0fc `r(ndistinct)'
 	file write sm "Seguro Popular & Y & Y & Y \\ " _n
 	file write sm "Weights & Y & Y & Y \\ " _n
 	file write sm "Trend x Marg.\ Index (1990) & N & Y & N \\ " _n
-	file write sm "Trend x SES Components (1990) & N & N & Y \\ " _n
+	file write sm "Trend x Marg.\ Index Quintile (1990) & N & N & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\multicolumn{4}{l}{\footnotesize \textit{Notes:} All columns weighted by older-adult (65+) population and include} \\ " _n
 	file write sm "\multicolumn{4}{l}{\footnotesize municipality and year fixed effects. Column (2) adds the interaction of the} \\ " _n
 	file write sm "\multicolumn{4}{l}{\footnotesize 1990 CONAPO continuous marginalization index with a linear year trend.} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize Column (3) replaces it with 8 individual 1990 census SES variables} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize (\% illiterate, \% without primary, \% no electricity, \% no piped water,} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize \% overcrowding, \% dirt floors, \% no drainage, \% in localities <5,000)} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize each interacted with a linear year trend. Standard errors clustered at} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize the municipality level.} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize Following Parker \& Vogl (2023), column (3) replaces it with quintile bins of} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize the 1990 marginalization index, each interacted with a linear year trend,} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize allowing baseline-SES trends to vary flexibly (robust to sparse individual} \\ " _n
+	file write sm "\multicolumn{4}{l}{\footnotesize census components). Standard errors clustered at the municipality level.} \\ " _n
 	file write sm "\end{tabular}"
 	file close sm
 }
@@ -3028,7 +3041,7 @@ di "Table exported to: $tables/appendix/AT_ses_trend.tex"
 * Pooled event study (beta_k) across 3 SES trend specifications
 * Series 1 (black circles):    Baseline (W+SP)
 * Series 2 (red squares):      + Trend × im_mun_1990
-* Series 3 (blue triangles):   + Trend × SES components
+* Series 3 (blue triangles):   + Trend × 1990 marg.-index quintile (P&V 2023)
 * Output: $figures/appendix/AF_ses_trend.pdf
 *============================================================
 
@@ -3065,11 +3078,10 @@ forval pos = 1/16 {
 	}
 }
 
-* Spec 3: + Trend × SES components (8 variables, 1990 baseline)
+* Spec 3: + Trend × 1990 marginalization-index quintile (P&V 2023)
 reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
 	c.sp_intensity ///
-	c.analf_90#c.year c.sprim_90#c.year c.ovsee_90#c.year c.ovsae_90#c.year ///
-	c.vhac_90#c.year c.ovpt_90#c.year c.ovsde_90#c.year c.pl5000_90#c.year ///
+	i.im90_bin#c.year ///
 	[aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
 	vce(cluster cve_ent_mun_super)
 forval pos = 1/16 {
@@ -3124,7 +3136,7 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(7 "Baseline (W+SP)" 8 "+ Trend x Marg. Index" 9 "+ Trend x SES Components") ///
+	legend(order(7 "Baseline (W+SP)" 8 "+ Trend x Marg. Index" 9 "+ Trend x Marg. Index Quintile") ///
 		cols(1) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -3137,6 +3149,7 @@ restore
 foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
 	cap drop `v'_90
 }
+cap drop im90_bin
 
 
 *============================================================

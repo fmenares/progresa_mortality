@@ -286,6 +286,53 @@ Bold starting codes for `drugs_overcounter` indicate the corrected lower bound (
 
 ---
 
+## Conference Discussant Comments — Status Tracker
+
+Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico*
+
+### Major Comments
+
+| # | Issue | Status | Output / Notes |
+|---|-------|--------|----------------|
+| 1 | Weighting: BR unweighted result driven by small municipalities (SHW 2015, JHR) | **Done** | `AT5_BR_trimming.tex` — progressive trimming of bottom decile/quartile/half shows attenuation |
+| 2 | Health channel: ENCEL health visit data not exploited (healthcare utilization, 1999 ENCEL) | **In Progress** | `T3_experimental.tex` — total_visits col 5 (65+) and col 6 (51+, Gertler 2000 comparison). SPSS import simplified; col 5 `if _rc==0` bug fixed; non-visitors zero-filled. Appendix `AT_elderly_only_hours.tex` — weekly hours for elderly-only households (no children), 3 panels as columns |
+| 3 | Municipality intensity as function of locality composition (SES footnote) | **Pending (text only)** | Expand footnote citing Parker & Vogl (2023) Figs 2–3 on poverty-score targeting |
+| 4 | Differential pre-trends by baseline SES (P&V spec 3) | **Done** | `AT_ses_trend.tex` + `AF_ses_trend.pdf` — 3 specs: baseline, +trend×im_mun_1990 (continuous), +trend×1990 marg.-index **quintile bins** (P&V 2023 style). Col 3 switched from 8 raw census components (1–2 mostly null → unstable) to flexible quintile×trend |
+| 5 | β₁ (Intensity_2005) / θk event study not shown | **Done** | `AF_beta1_sex.pdf` — θk pooled/female/male; `AF_beta1_wuw.pdf` — pooled weighted vs. unweighted |
+| 6 | Minimum detectable effect / null result analysis | **Assessment Done** | Awaiting user confirmation to implement CI bounds in Stata |
+| 7 | Direct vs. indirect transfer framing | **In Progress** | Reframe mortality effect: direct transfer (apoyo alimentario — fixed base grant, NOT conditional on kids, paid to household *titular*/head) vs. indirect (apoyo educativo — child-school-conditional grants). PROGRESA receipt is a single line in all data (ENIGH `P046`/`P059`; admin records) — NOT decomposable into the two components. **Identification trick:** elderly-headed households with **no children** receive *only* the apoyo alimentario → total transfer = direct transfer by construction; elderly head (`renglon==1`) receives it directly. `AT_elderly_only_hours.tex` isolates this subsample's labor-supply response. **Direct-transfer elasticity: FEASIBLE (not blocked). No transfer-amount microdata exists, so IMPUTE the apoyo alimentario from the published program schedule.** Early-phase apoyo alimentario (the direct, non-kid-conditional grant paid to the *titular*/head): **≈90 pesos/month per household in 2nd-half-1997/1998 (≈US$7), flat per household, conditional on health-clinic compliance, NOT a function of # children; inflation-adjusted semiannually → ~115–125 pesos/month nominal by 1999** (real value held ~constant at 1997 level). Indirect part = apoyo educativo/becas (60–135 primary, ~190–305 secondary, kid- and grade-conditional); household *tope*/cap ≈695–750 pesos/mo (1998–99). Imputed direct transfer for elderly-headed/no-children eligible HHs = apoyo alimentario schedule amount, deflated to project's real-2025-USD base. **VERIFY exact per-semester pesos against Skoufias (2005, IFPRI RR139) Table 2.1 and Schultz (2004, JDE) before hard-coding.** |
+
+### Minor Comments
+
+> Comments 2–6 were duplicates of Major Comments 2–6 and have been merged there. Minor comments begin at 7.
+
+| # | Comment | Type | Status | Notes |
+|---|---------|------|--------|-------|
+| 7 | Age sub-groups (50–64, 65+, 65–69, 70+) | Implementation | **Done** | Table: `AT_age_subgroups.tex` |
+| 8 | Cancer/ICD coding tension (text) | Text | **Not Started** | 1–2 sentences after Romano-Wolf paragraph |
+| 9 | Life expectancy motivation (intro) | Text | **Not Started** | 1–2 sentences; cite Einav & Finkelstein (NBER 2026) |
+| 10 | Table 1 consistency: 1990 SES, add po2sm | Implementation | **Done** | Match archive file; use 1990 census for SES variables; add po2sm column |
+| 11 | Progresa enrollment/take-up rates | Text | **Not Started** | Brief footnote |
+
+> **Instructions for Claude:** Update both tables whenever a comment is resolved. Mark status as **Done** and record the output filename or text change. Always update CLAUDE.md and commit before ending a session.
+
+### Detailed approaches (so they survive context compression)
+
+**Comment 6 — MDE / null-result analysis (full assessment).** Based on T2 col 4 SE ≈ **1.464**. Four options:
+
+| Option | What | Result | Code |
+|--------|------|--------|------|
+| 1. MDE | Min. effect detectable at 80% power | **≈4.1 deaths/1,000** — larger than BR's *weighted* −3.74, smaller than BR's *original* −6.37 → "powered to detect BR's original magnitude, not their weighted estimate" | Stata (shares regression call w/ opt 2) |
+| 2. CI as credibility interval | Use estimate's CI as the argument | CI lower bound ≈ **−3.6**: rules out BR original −6.37, does *not* fully rule out weighted −3.74 | No code — text |
+| 3. *70 y Más* structural bound | Benchmark vs. direct-elderly-transfer program | Progresa's *indirect* elderly channel ⊂ household transfer ⇒ smaller than *70 y Más* direct ≈**2.5 deaths/1,000**. MDE > structurally-expected effect ⇒ non-detection is **expected, a positive framing**. Cites Menares (JHR) | No code — text |
+| 4. TOST equivalence | Formal equivalence test | With δ=2 **likely fails** (CI LB −3.6 outside [−2,+2]); needs δ≈3.6 to pass — hard to motivate | Stata, fragile |
+
+**Recommendation:** implement **1+2** in Stata (one regression call), add **3** as a text paragraph, **skip 4** unless discussant demanded formal equivalence. *Awaiting user go-ahead to implement.*
+
+**Intensity_1999 vs. Intensity_2005 correlation (identification of the two-phase design; relevant to comments 4 & 5).** Discussant concern: the two intensity measures are collinear, so can β₀ (1999) and β₁ (2005) be separately identified? **P&V (2023), footnote 18:** *"In sample municipalities, enrol2005 accounts for 65% of the variance of enrol1999."* Answer the discussant wanted: **report the shared-variance number (high but not fatal), then show the coefficient is stable after adding the trend controls** (the comment-4 `AT_ses_trend.tex` table is that stability evidence). TODO: also compute the in-sample analog (`correlate inten1999 inten2005` / R² of `reg inten1999 inten2005`) to compare against P&V's 65%.
+
+---
+
 ## Notes for Contributors
 
 - All paths to external data are hardcoded in each `.do` file — update the `global` or `local` path macros at the top of each script before running.

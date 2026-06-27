@@ -873,6 +873,68 @@ di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
     file close sm
 }
 
+*============================================================
+* APPENDIX TABLE: Effect of PROGRESA on Weekly Hours Worked
+* Sample: elderly-only households (only_elderly==1, no children present)
+* Isolates the labor-supply response of households where the elderly
+* receive the transfer directly (no working-age members to relabor).
+* Spec = T3 col 1: DiD (year x treat), municipality FE, eligible, age 65+.
+* Panels (pooled/female/male) arranged as COLUMNS.
+* Output: $tables/AT_elderly_only_hours.tex
+*============================================================
+foreach grp in p f m {
+    if "`grp'" == "p"      local gcond_eoh "age97>=65"
+    else if "`grp'" == "f" local gcond_eoh "gender==2 & age97>=65"
+    else                   local gcond_eoh "gender==1 & age97>=65"
+
+    preserve
+    keep if `gcond_eoh' & only_elderly==1
+
+    summarize weekly_hours if year==97 & contba==0 & eligible==1 ///
+        & !missing(weekly_hours, year, contba, claveofi)
+    local cmean97_eoh = r(mean)
+
+    reghdfe weekly_hours i.year##i.contba ///
+        if eligible==1 & !missing(weekly_hours, year, contba, claveofi), ///
+        absorb(clavemun) vce(cluster claveofi)
+
+    di "  [weekly_hours EOH, g=`grp'] b98 = " _b[98.year#1.contba] "  b99 = " _b[99.year#1.contba] "  N=" e(N)
+
+    foreach yr in 98 99 {
+        local aux : di %9.3f _b[`yr'.year#1.contba]
+        local tstat = abs(_b[`yr'.year#1.contba] / _se[`yr'.year#1.contba])
+        if      `tstat' >= 2.576 local b`yr'_`grp'_eoh = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b`yr'_`grp'_eoh = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b`yr'_`grp'_eoh = trim("`aux'") + "*"
+        else                     local b`yr'_`grp'_eoh = trim("`aux'")
+        local se`yr'_`grp'_eoh : di %9.3f _se[`yr'.year#1.contba]
+    }
+    local N_`grp'_eoh   : di %12.0fc e(N)
+    local cmn_`grp'_eoh : di %9.3f `cmean97_eoh'
+    restore
+}
+
+{
+    cap file close eoh
+    file open eoh using "$tables/AT_elderly_only_hours.tex", write replace
+    file write eoh "\begin{tabular}{lccc} \hline \hline" _n
+    file write eoh "& \multicolumn{3}{c}{Weekly Hours Worked} \\ \cmidrule(lr){2-4}" _n
+    file write eoh "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\" _n
+    file write eoh "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ \toprule" _n
+    file write eoh "Treat \$\times\$ 1998 & `b98_p_eoh' & `b98_f_eoh' & `b98_m_eoh' \\" _n
+    file write eoh " & (`se98_p_eoh') & (`se98_f_eoh') & (`se98_m_eoh') \\[4pt]" _n
+    file write eoh "Treat \$\times\$ 1999 & `b99_p_eoh' & `b99_f_eoh' & `b99_m_eoh' \\" _n
+    file write eoh " & (`se99_p_eoh') & (`se99_f_eoh') & (`se99_m_eoh') \\[4pt]" _n
+    file write eoh "\midrule" _n
+    file write eoh "Observations & `N_p_eoh' & `N_f_eoh' & `N_m_eoh' \\" _n
+    file write eoh "Control Mean (1997) & `cmn_p_eoh' & `cmn_f_eoh' & `cmn_m_eoh' \\" _n
+    file write eoh "Municipality FE & Yes & Yes & Yes \\ \bottomrule" _n
+    file write eoh "\multicolumn{4}{l}{\footnotesize Sample: age 65+, eligible, elderly-only households (no children present).} \\" _n
+    file write eoh "\multicolumn{4}{l}{\footnotesize Std. errors clustered at locality level in parentheses. *** p\$<\$0.01, ** p\$<\$0.05, * p\$<\$0.10.} \\" _n
+    file write eoh "\end{tabular}"
+    file close eoh
+}
+
 **Household level analysis**
 **collapse to household level**
 ** distinguish between households with aging members and households without**
