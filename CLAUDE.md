@@ -313,7 +313,7 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 | 7 | Age sub-groups (50–64, 65+, 65–69, 70+) | Implementation | **Done** | Table: `AT_age_subgroups.tex` |
 | 8 | Cancer/ICD coding tension (text) | Text | **Not Started** | 1–2 sentences after Romano-Wolf paragraph |
 | 9 | Life expectancy motivation (intro) | Text | **Not Started** | 1–2 sentences; cite Einav & Finkelstein (NBER 2026) |
-| 10 | Table 1 consistency: 1990 SES, add po2sm | Implementation | **Done** | Fixed: moved T1 before year restriction |
+| 10 | Table 1 consistency: 1990 SES, add po2sm | Implementation | **Done** | Match archive file; use 1990 census for SES variables; add po2sm column |
 | 11 | Progresa enrollment/take-up rates | Text | **Not Started** | Brief footnote |
 
 > **Instructions for Claude:** Update both tables whenever a comment is resolved. Mark status as **Done** and record the output filename or text change. Always update CLAUDE.md and commit before ending a session.
