@@ -26,6 +26,34 @@ progresa_mortality/
 
 ---
 
+## Analysis Window Switch (`00_config.do`)
+
+`codes/00_config.do` defines a global `$window` that controls the analytic time
+span in **both** `01_mortality_data.do` (the balanced-panel completeness screen,
+which determines how many municipalities survive) and `02_mortality.do` (the BR
+replication regression windows in AT3/AT5). Set `$window` before running either
+script; default is `full`.
+
+| `$window` | Span | Use |
+|---|---|---|
+| `full` | 1990–2017 | Current baseline (full vital-stats span) |
+| `prog` | 1990–2006 | Program decade (preferred analytic window) |
+| `br`   | 1992–2002 | Barham & Rowberry (2013) replication window |
+
+A **shorter** window requires panel completeness over fewer years, so **more
+municipalities** are retained — this is why the BR replication recovers
+municipalities toward BR's reported 1,961 as the window narrows (the full-span
+1990–2017 balance is what drops the count to ~1,422). `01_` saves a window-suffixed
+master (`aamr_regression_municipality_gender_tb_<window>.dta`) plus the canonical
+name under `full`; `02_` loads the matching windowed file (falling back to the
+canonical file if it hasn't been rebuilt). To compare windows, set `$window` and
+re-run `01_` then `02_` for each of `full`/`prog`/`br`.
+
+> **Caveat:** running `02_` under `prog`/`br` truncates *all* tables to that span,
+> not just the BR ones; for the municipality-count comparison the relevant outputs
+> are AT3/AT5. The AT4 robustness matrices and BR event-study figures remain pinned
+> to 1992–2002 (their axis labels are hard-coded to that span).
+
 ## Analysis Scripts (run in order)
 
 ### 1. `aamr_011326.do` — Data Construction

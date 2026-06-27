@@ -9,9 +9,18 @@ set more off
 
 
  *	MAC
- 
+
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	
+	global codes "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/codes/"
+
+ if c(username)=="root" {
+	global data  "/home/user/progresa_mortality/data/"
+	global codes "/home/user/progresa_mortality/codes/"
+ }
+
+*** Analysis window switch (set $window to full|prog|br before running; default full)
+	do "$codes/00_config.do"
+
 
 
 *** ====================================================================================
@@ -596,12 +605,12 @@ set more off
 	lab var pop`i'_f "Population age group `i', female"
 	}
 	
-	bysort cve_ent_mun_super: gen num=1
-	bysort cve_ent_mun_super: gen num_cum=sum(num)
-	bysort cve_ent_mun_super: gen num_total= num_cum[_N]
-	tab num_total
-	keep if num_total==29
-	drop num*
+	* Require complete population coverage WITHIN the analytic window only
+	* (window-driven; replaces the old hard "num_total==29" full-span screen).
+	bysort cve_ent_mun_super: egen _nyr_w = total(inrange(year, $yr_start, $yr_end))
+	tab _nyr_w
+	keep if _nyr_w == $nyears
+	drop _nyr_w
 	save "$data/Temp_data/Pop_agegrp_mun_recoded.dta", replace
 
 
@@ -764,9 +773,10 @@ set more off
 	lab var aamr65f "AAMR 65+ per 1,000, female (1995 standard)"
 
 
-***	Drop year==2018 as we use lead intensity and value for 2018 is missing
-	drop if year==2018 
-	
+***	Restrict to the analytic window (window-driven; replaces hard "drop year==2018").
+***	2018 is excluded under every window because lead intensity is missing there.
+	keep if inrange(year, $yr_start, $yr_end)
+
 	
 *** Marginalized areas
 	gen margin_1990=.
@@ -780,18 +790,18 @@ set more off
 	global control "hospital_p assist_p im_mun"
 	global control2 "ovsae ovsee ovpt sprim po2sm ovsde pl5000 vhac"
 	
-*** Make balanced panel
-	drop num*
-	
-	bysort cve_ent_mun_super: gen num=1
-	bysort cve_ent_mun_super: gen num_cum=sum(num)
-	bysort cve_ent_mun_super: gen num_total= num_cum[_N]
+*** Make balanced panel WITHIN the chosen window
+	capture drop num*
+	bysort cve_ent_mun_super year: gen byte _yr1 = (_n==1)
+	bysort cve_ent_mun_super: egen num_total = total(_yr1)
 	tab num_total
-	keep if num_total==28
-	drop num*
+	keep if num_total == $nyears
+	drop _yr1 num_total
 	
+	* Baseline older-adult population at the window's first year (1990 under
+	* full/prog; 1992 under the BR window, where 1990-91 are out of sample).
 	gen pop_over50_1990=.
-	replace pop_over50_1990=pop_over50_ if year==1990
+	replace pop_over50_1990=pop_over50_ if year==$yr_start
 	bysort cve_ent_mun_super (pop_over50_1990): replace pop_over50_1990 =pop_over50_1990[1]
 	order year cve_ent_mun_super intensity_new lag_intensity_new lag2_intensity_new lag3_intensity_new lag4_intensity_new lag5_intensity_new
 	
@@ -801,4 +811,9 @@ set more off
 	lab def margin_1990_grp 1"Marginalized areas" 0"Non-marginalized areas"
 	lab val margin_1990_grp margin_1990_grp
 	
-	save "$data/aamr_regression_municipality_gender_tb.dta", replace
+	* Save a window-specific master; also keep the canonical name under the
+	* default "full" window so other scripts are unaffected unless a window is chosen.
+	save "$data/aamr_regression_municipality_gender_tb${master_suffix}.dta", replace
+	if "$window" == "full" {
+		save "$data/aamr_regression_municipality_gender_tb.dta", replace
+	}
