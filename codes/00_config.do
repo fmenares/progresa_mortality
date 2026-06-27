@@ -8,11 +8,13 @@
 ***
 *** Defines: $yr_start $yr_end $nyears $master_suffix
 ***
-*** The window governs BOTH (i) the balanced-panel completeness screen in
-*** 01_mortality_data.do — which determines how many municipalities survive —
-*** and (ii) the BR replication regression windows in 02_mortality.do. A shorter
-*** window requires completeness over fewer years, so MORE municipalities are
-*** retained (this is what moves the BR municipality count toward 1,961).
+*** The window governs the balanced-panel completeness screen in
+*** 01_mortality_data.do — i.e. how many municipalities survive. A shorter window
+*** requires completeness over fewer years, so MORE municipalities are retained
+*** (this is what moves the BR municipality count toward 1,961). The BR replication
+*** regressions in 02_mortality.do (AT3/AT5) are ALWAYS run over 1992-2002; the
+*** window only changes the municipality sample they operate on. "full" reproduces
+*** the original pre-switch behavior exactly.
 *** ============================================================================
 
 if "$window" == "" global window "full"      // default when caller sets nothing

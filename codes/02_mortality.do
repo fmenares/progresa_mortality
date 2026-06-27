@@ -1973,8 +1973,9 @@ foreach pnl in p m f {
 		local outcome emr65f
 		local wvar   popover65_f
 	}
-	* panel  b: lag2, UW  (window-driven: br=1992-2002, prog=1990-2006, full=1990-2017)
-	reghdfe `outcome' lag2_intensity_new if inrange(year, $yr_start, $yr_end) & $sample_br, ///
+	* panel  b: lag2, UW  (BR regression window held fixed at 1992-2002; the
+	*           $window switch changes only the balanced-panel sample via 01_)
+	reghdfe `outcome' lag2_intensity_new if inrange(year, 1992, 2002) & $sample_br, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[lag2_intensity_new]
 	local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
@@ -1989,7 +1990,7 @@ foreach pnl in p m f {
 	distinct cve_ent_mun_super if e(sample)
 	local NmunBR_2_`pnl': di %12.0fc `r(ndistinct)'
 	* panel c: lag2, W
-	reghdfe `outcome' lag2_intensity_new [aw=`wvar'] if inrange(year, $yr_start, $yr_end) & $sample_br, ///
+	reghdfe `outcome' lag2_intensity_new [aw=`wvar'] if inrange(year, 1992, 2002) & $sample_br, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[lag2_intensity_new]
 	local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
@@ -2003,8 +2004,8 @@ foreach pnl in p m f {
 	local NBR_3_`pnl': di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunBR_3_`pnl': di %12.0fc `r(ndistinct)'
-	* panel d: lag1, W  (window shifted -1 to keep the same post coverage as lag2)
-	reghdfe `outcome' lag_intensity_new [aw=`wvar'] if inrange(year, $yr_start-1, $yr_end-1) & $sample_br, ///
+	* panel d: lag1, W
+	reghdfe `outcome' lag_intensity_new [aw=`wvar'] if inrange(year, 1991, 2001) & $sample_br, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[lag_intensity_new]
 	local t = abs(_b[lag_intensity_new] / _se[lag_intensity_new])
@@ -2018,8 +2019,8 @@ foreach pnl in p m f {
 	local NBR_4_`pnl': di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunBR_4_`pnl': di %12.0fc `r(ndistinct)'
-	* Col 5: lag3, W  (window shifted +1 to keep the same post coverage as lag2)
-	reghdfe `outcome' lag3_intensity_new [aw=`wvar'] if inrange(year, $yr_start+1, $yr_end+1) & $sample_br, ///
+	* Col 5: lag3, W
+	reghdfe `outcome' lag3_intensity_new [aw=`wvar'] if inrange(year, 1993, 2003) & $sample_br, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[lag3_intensity_new]
 	local t = abs(_b[lag3_intensity_new] / _se[lag3_intensity_new])
@@ -2289,24 +2290,24 @@ di "  $tables/appendix/AT4_BR_robustness_aamr65.tex"
 *         across the BR sample period (used as size proxy for trimming)
 capture drop _pop_br_tmp pop_mun_br
 bys cve_ent_mun_super: egen _pop_br_tmp = mean(popover65_) ///
-    if inrange(year, $yr_start, $yr_end) & $sample_br
+    if inrange(year, 1992, 2002) & $sample_br
 bys cve_ent_mun_super: egen pop_mun_br = mean(_pop_br_tmp)
 drop _pop_br_tmp
 
 * Step 2: Get p10/p25/p50 cutoffs at the municipality level
 preserve
-    keep if $sample_br & inrange(year, $yr_start, $yr_end)
+    keep if $sample_br & inrange(year, 1992, 2002)
     collapse (mean) pop_mean = popover65_, by(cve_ent_mun_super)
     _pctile pop_mean, p(10 25)
     local p10_br = r(r1)
     local p25_br = r(r2)
 restore
 
-di "BR size cutoffs (older adults 65+): p10=`p10_br', p25=`p25_br' (window $window, $yr_start-$yr_end)"
+di "BR size cutoffs (older adults 65+): p10=`p10_br', p25=`p25_br' (sample: window $window, BR regression 1992-2002)"
 
 * Cols 2-3: pooled UW and W replication — self-contained so AT5 does not
 *           depend on AT3 locals (mirrors AT3 Panel B and Panel C, pooled)
-reghdfe emr65 lag2_intensity_new if inrange(year, $yr_start, $yr_end) & $sample_br, ///
+reghdfe emr65 lag2_intensity_new if inrange(year, 1992, 2002) & $sample_br, ///
     a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[lag2_intensity_new]
 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
@@ -2321,7 +2322,7 @@ local NBR_2_p:    di %12.0fc `e(N)'
 distinct cve_ent_mun_super if e(sample)
 local NmunBR_2_p: di %12.0fc `r(ndistinct)'
 
-reghdfe emr65 lag2_intensity_new [aw=popover65_] if inrange(year, $yr_start, $yr_end) & $sample_br, ///
+reghdfe emr65 lag2_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
     a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[lag2_intensity_new]
 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
@@ -2340,7 +2341,7 @@ local NmunBR_3_p: di %12.0fc `r(ndistinct)'
 
 * Column 2: Drop bottom decile (municipalities with pop_mun_br <= p10)
 reghdfe emr65 lag2_intensity_new ///
-    if inrange(year, $yr_start, $yr_end) & $sample_br & pop_mun_br > `p10_br', ///
+    if inrange(year, 1992, 2002) & $sample_br & pop_mun_br > `p10_br', ///
     a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[lag2_intensity_new]
 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
@@ -2357,7 +2358,7 @@ local NmunAT5_2: di %12.0fc `r(ndistinct)'
 
 * Column 3: Drop bottom quartile (municipalities with pop_mun_br <= p25)
 reghdfe emr65 lag2_intensity_new ///
-    if inrange(year, $yr_start, $yr_end) & $sample_br & pop_mun_br > `p25_br', ///
+    if inrange(year, 1992, 2002) & $sample_br & pop_mun_br > `p25_br', ///
     a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[lag2_intensity_new]
 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])

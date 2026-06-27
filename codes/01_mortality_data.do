@@ -605,12 +605,24 @@ set more off
 	lab var pop`i'_f "Population age group `i', female"
 	}
 	
-	* Require complete population coverage WITHIN the analytic window only
-	* (window-driven; replaces the old hard "num_total==29" full-span screen).
-	bysort cve_ent_mun_super: egen _nyr_w = total(inrange(year, $yr_start, $yr_end))
-	tab _nyr_w
-	keep if _nyr_w == $nyears
-	drop _nyr_w
+	* Population completeness screen.
+	*   full : original behavior — require all 29 years (1990-2018) present.
+	*   prog/br : require complete coverage only WITHIN the analytic window,
+	*             which retains more municipalities (recovers the BR sample).
+	if "$window" == "full" {
+		bysort cve_ent_mun_super: gen num=1
+		bysort cve_ent_mun_super: gen num_cum=sum(num)
+		bysort cve_ent_mun_super: gen num_total= num_cum[_N]
+		tab num_total
+		keep if num_total==29
+		drop num*
+	}
+	else {
+		bysort cve_ent_mun_super: egen _nyr_w = total(inrange(year, $yr_start, $yr_end))
+		tab _nyr_w
+		keep if _nyr_w == $nyears
+		drop _nyr_w
+	}
 	save "$data/Temp_data/Pop_agegrp_mun_recoded.dta", replace
 
 
@@ -773,9 +785,15 @@ set more off
 	lab var aamr65f "AAMR 65+ per 1,000, female (1995 standard)"
 
 
-***	Restrict to the analytic window (window-driven; replaces hard "drop year==2018").
-***	2018 is excluded under every window because lead intensity is missing there.
-	keep if inrange(year, $yr_start, $yr_end)
+***	Restrict to the analytic window.
+***	full : original behavior — drop only 2018 (lead intensity missing there).
+***	prog/br : keep only the chosen window.
+	if "$window" == "full" {
+		drop if year==2018
+	}
+	else {
+		keep if inrange(year, $yr_start, $yr_end)
+	}
 
 	
 *** Marginalized areas
@@ -790,13 +808,25 @@ set more off
 	global control "hospital_p assist_p im_mun"
 	global control2 "ovsae ovsee ovpt sprim po2sm ovsde pl5000 vhac"
 	
-*** Make balanced panel WITHIN the chosen window
+*** Make balanced panel
+***	full : original behavior — require all 28 years (1990-2017).
+***	prog/br : require a complete panel within the chosen window.
 	capture drop num*
-	bysort cve_ent_mun_super year: gen byte _yr1 = (_n==1)
-	bysort cve_ent_mun_super: egen num_total = total(_yr1)
-	tab num_total
-	keep if num_total == $nyears
-	drop _yr1 num_total
+	if "$window" == "full" {
+		bysort cve_ent_mun_super: gen num=1
+		bysort cve_ent_mun_super: gen num_cum=sum(num)
+		bysort cve_ent_mun_super: gen num_total= num_cum[_N]
+		tab num_total
+		keep if num_total==28
+		drop num*
+	}
+	else {
+		bysort cve_ent_mun_super year: gen byte _yr1 = (_n==1)
+		bysort cve_ent_mun_super: egen num_total = total(_yr1)
+		tab num_total
+		keep if num_total == $nyears
+		drop _yr1 num_total
+	}
 	
 	* Baseline older-adult population at the window's first year (1990 under
 	* full/prog; 1992 under the BR window, where 1990-91 are out of sample).

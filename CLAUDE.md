@@ -28,31 +28,35 @@ progresa_mortality/
 
 ## Analysis Window Switch (`00_config.do`)
 
-`codes/00_config.do` defines a global `$window` that controls the analytic time
-span in **both** `01_mortality_data.do` (the balanced-panel completeness screen,
-which determines how many municipalities survive) and `02_mortality.do` (the BR
-replication regression windows in AT3/AT5). Set `$window` before running either
-script; default is `full`.
+`codes/00_config.do` defines a global `$window` that controls the **balanced-panel
+completeness screen** in `01_mortality_data.do` — i.e., how many municipalities
+survive. Set `$window` before running; default is `full`.
 
 | `$window` | Span | Use |
 |---|---|---|
-| `full` | 1990–2017 | Current baseline (full vital-stats span) |
+| `full` | 1990–2017 | **Original baseline — byte-identical to pre-switch behavior** |
 | `prog` | 1990–2006 | Program decade (preferred analytic window) |
 | `br`   | 1992–2002 | Barham & Rowberry (2013) replication window |
 
-A **shorter** window requires panel completeness over fewer years, so **more
-municipalities** are retained — this is why the BR replication recovers
-municipalities toward BR's reported 1,961 as the window narrows (the full-span
-1990–2017 balance is what drops the count to ~1,422). `01_` saves a window-suffixed
-master (`aamr_regression_municipality_gender_tb_<window>.dta`) plus the canonical
-name under `full`; `02_` loads the matching windowed file (falling back to the
-canonical file if it hasn't been rebuilt). To compare windows, set `$window` and
-re-run `01_` then `02_` for each of `full`/`prog`/`br`.
+**Design:** the BR replication regression in AT3/AT5 is **always run over 1992–2002**
+(BR's own window). `$window` changes *only* the panel-completeness screen, hence the
+municipality sample. A **shorter** window requires completeness over fewer years, so
+**more municipalities** are retained — this is why `br` recovers the count toward BR's
+reported 1,961, while the full 1990–2017 balance drops it to ~1,422. This isolates the
+pure sample-composition effect (same regression window, different municipality set).
 
-> **Caveat:** running `02_` under `prog`/`br` truncates *all* tables to that span,
-> not just the BR ones; for the municipality-count comparison the relevant outputs
-> are AT3/AT5. The AT4 robustness matrices and BR event-study figures remain pinned
-> to 1992–2002 (their axis labels are hard-coded to that span).
+- `full` preserves the **original** panel screens exactly (require all 29 pop-years
+  1990–2018, then balanced 1990–2017); `prog`/`br` require completeness only within
+  the chosen window.
+- `01_` saves `aamr_regression_municipality_gender_tb_<window>.dta` plus the canonical
+  name under `full`; `02_` loads the matching windowed file (falling back to the
+  canonical file if it hasn't been rebuilt). To compare, set `$window` and re-run
+  `01_` then `02_` for each of `full`/`prog`/`br`.
+
+> **Caveat:** running `02_` under `prog`/`br` also truncates the *non-BR* tables
+> (e.g. T2, mechanisms) to that span, since the whole master file is restricted. For
+> the municipality-count comparison the relevant outputs are AT3/AT5. The AT4
+> robustness matrices and BR event-study figures are pinned to 1992–2002.
 
 ## Analysis Scripts (run in order)
 
