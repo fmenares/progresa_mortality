@@ -11,8 +11,9 @@ set more off
  *	MAC
 
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global codes "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/codes/"
+	global codes "C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\"
 
+	
  if c(username)=="root" {
 	global data  "/home/user/progresa_mortality/data/"
 	global codes "/home/user/progresa_mortality/codes/"

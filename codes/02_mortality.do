@@ -20,7 +20,7 @@ set more off
  if c(username)=="FELIPEME" {
     global deaths "/hdir/0/fmenares/Dropbox/R01_MHAS\Mortality_VitalStatistics_Project\RawData_Mortality_VitalStatistics\"
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
-	global codes "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/codes/"
+	global codes "C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\"
 	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
 	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
@@ -1640,7 +1640,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 } // end foreach cod
 } // end Marg short block
 
-
+/*
 *============================================================
 * APPENDIX TABLE 1: Causes of Death (Weighted + SP spec)
 * AT1_cod_mortality.tex -- Pooled, Female, Male panels
@@ -1784,7 +1784,7 @@ foreach grp in w f m {
 	file write sm "\end{tabular}"
 	file close sm
 }
-
+*/
 *============================================================
 * APPENDIX TABLE 2: Functional Form Robustness
 *============================================================
