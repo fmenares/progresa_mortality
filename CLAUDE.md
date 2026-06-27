@@ -316,6 +316,21 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 
 > **Instructions for Claude:** Update both tables whenever a comment is resolved. Mark status as **Done** and record the output filename or text change. Always update CLAUDE.md and commit before ending a session.
 
+### Detailed approaches (so they survive context compression)
+
+**Comment 6 — MDE / null-result analysis (full assessment).** Based on T2 col 4 SE ≈ **1.464**. Four options:
+
+| Option | What | Result | Code |
+|--------|------|--------|------|
+| 1. MDE | Min. effect detectable at 80% power | **≈4.1 deaths/1,000** — larger than BR's *weighted* −3.74, smaller than BR's *original* −6.37 → "powered to detect BR's original magnitude, not their weighted estimate" | Stata (shares regression call w/ opt 2) |
+| 2. CI as credibility interval | Use estimate's CI as the argument | CI lower bound ≈ **−3.6**: rules out BR original −6.37, does *not* fully rule out weighted −3.74 | No code — text |
+| 3. *70 y Más* structural bound | Benchmark vs. direct-elderly-transfer program | Progresa's *indirect* elderly channel ⊂ household transfer ⇒ smaller than *70 y Más* direct ≈**2.5 deaths/1,000**. MDE > structurally-expected effect ⇒ non-detection is **expected, a positive framing**. Cites Menares (JHR) | No code — text |
+| 4. TOST equivalence | Formal equivalence test | With δ=2 **likely fails** (CI LB −3.6 outside [−2,+2]); needs δ≈3.6 to pass — hard to motivate | Stata, fragile |
+
+**Recommendation:** implement **1+2** in Stata (one regression call), add **3** as a text paragraph, **skip 4** unless discussant demanded formal equivalence. *Awaiting user go-ahead to implement.*
+
+**Intensity_1999 vs. Intensity_2005 correlation (identification of the two-phase design; relevant to comments 4 & 5).** Discussant concern: the two intensity measures are collinear, so can β₀ (1999) and β₁ (2005) be separately identified? **P&V (2023), footnote 18:** *"In sample municipalities, enrol2005 accounts for 65% of the variance of enrol1999."* Answer the discussant wanted: **report the shared-variance number (high but not fatal), then show the coefficient is stable after adding the trend controls** (the comment-4 `AT_ses_trend.tex` table is that stability evidence). TODO: also compute the in-sample analog (`correlate inten1999 inten2005` / R² of `reg inten1999 inten2005`) to compare against P&V's 65%.
+
 ---
 
 ## Notes for Contributors
