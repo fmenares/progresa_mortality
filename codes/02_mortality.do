@@ -48,12 +48,28 @@ set more off
 	* same $window). Fall back to the canonical file if it has not been rebuilt yet.
 	capture confirm file "$data/aamr_regression_municipality_gender_tb${master_suffix}.dta"
 	if _rc {
-		di as txt "Windowed master not found for window '$window' — using canonical file."
+		di as error "!!! WINDOWED MASTER NOT FOUND for window '$window' !!!"
+		di as error "!!! File aamr_regression_municipality_gender_tb${master_suffix}.dta does not exist."
+		di as error "!!! You must re-run 01_mortality_data.do with this window FIRST."
+		di as error "!!! Falling back to the canonical (full) file — results will NOT reflect '$window'."
 		use "$data/aamr_regression_municipality_gender_tb.dta", clear
 	}
 	else {
+		di as txt "Loaded windowed master: aamr_regression_municipality_gender_tb${master_suffix}.dta"
 		use "$data/aamr_regression_municipality_gender_tb${master_suffix}.dta", clear
 	}
+*** DIAGNOSTIC: confirm the window actually changed the loaded sample.
+*** Prints the window, total municipalities, and the BR-sample (1998/1999
+*** phase-in) municipality count. If this count is identical across windows,
+*** the window is NOT changing the sample (see notes below).
+	di as result _n "==================== WINDOW DIAGNOSTIC ===================="
+	di as result "Window = $window   ($yr_start-$yr_end)"
+	distinct cve_ent_mun_super
+	di as result "Total municipalities in master: " r(ndistinct)
+	distinct cve_ent_mun_super if (inten_start_year==1998 | inten_start_year==1999)
+	di as result "BR-sample (1998/1999 phase-in) municipalities: " r(ndistinct)
+	di as result "==========================================================" _n
+
 	merge m:1 cve_ent_mun_super using "$data/inten1999.dta"
 	drop _merge
 	merge m:1 cve_ent_mun_super using "$data/inten2005.dta"
