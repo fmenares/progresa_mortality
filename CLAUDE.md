@@ -290,21 +290,33 @@ Bold starting codes for `drugs_overcounter` indicate the corrected lower bound (
 
 Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico*
 
+### Major Comments
+
 | # | Issue | Status | Output / Notes |
 |---|-------|--------|----------------|
 | 1 | Weighting: BR unweighted result driven by small municipalities (SHW 2015, JHR) | **Done** | `AT5_BR_trimming.tex` — progressive trimming of bottom decile/quartile/half shows attenuation |
-| 2 | Health channel: ENCEL health visit data not exploited | **Done** | `T3_experimental.tex` — total_visits column (1999 cross-section, mun FE) across pooled/female/male panels; cols 5 (65+) and 6 (51+, Gertler 2000 comparison) |
+| 2 | Health channel: ENCEL health visit data not exploited | **In Progress** | `T3_experimental.tex` — total_visits col 5 (65+) and col 6 (51+, Gertler 2000 comparison); SPSS import fixed |
 | 3 | Municipality intensity as function of locality composition | **Pending (text only)** | Expand footnote citing Parker & Vogl (2023) Figs 2–3 on poverty-score targeting |
 | 4 | Differential pre-trends by baseline SES (P&V spec 3) | **Done** | `AT_ses_trend.tex` + `AF_ses_trend.pdf` — 3 specs: baseline, +trend×im_mun_1990, +trend×8 SES components |
 | 5 | β₁ (Intensity_2005) event study not shown | **Done** | `AF_beta1_sex.pdf` — θk pooled/female/male; `AF_beta1_wuw.pdf` — pooled weighted vs. unweighted |
-| 6 | Minimum detectable effect | **Pending** | Assess power/MDE given panel structure; add CI bounds |
-| 7 | *(details not yet recorded)* | **Unknown** | — |
-| 8 | Cancer/ICD coding tension | **Pending (text only)** | 1–2 sentences after Romano-Wolf paragraph on ICD-9/10 crosswalk limitations |
-| 9 | Life expectancy motivation in intro | **Pending (text only)** | 1–2 sentences citing Einav & Finkelstein (NBER 2026) |
-| 10 | *(details not yet recorded)* | **Unknown** | — |
-| 11 | PROGRESA enrollment/take-up rates | **Pending (text only)** | Brief footnote on enrollment and take-up statistics |
+| 6 | Minimum detectable effect | **Assessment Done** | Awaiting user confirmation to implement CI bounds in Stata |
 
-> **Instructions for Claude:** Update this table whenever a comment is resolved. Mark status as **Done** and fill the Output column with the filename or text change made. Comments 7 and 10 are placeholders — fill in when the user provides the full list.
+### Minor Comments
+
+| # | Comment | Type | Status | Notes |
+|---|---------|------|--------|-------|
+| 2 | Healthcare utilization (1999 ENCEL data) | Implementation | **In Progress** | SPSS import simplified; col 5 `if _rc==0` bug fixed; zero-fill non-visitors added |
+| 3 | SES footnote: municipality intensity function | Text | **Not Started** | Cite Parker & Vogl (2023) Figs 2–3 |
+| 4 | Pre-program SES trends robustness | Implementation | **Done** | Table: `AT_ses_trend.tex`; Figure: `AF_ses_trend.pdf` |
+| 5 | θk event study appendix figures | Implementation | **Done** | Figures: `AF_beta1_sex.pdf`, `AF_beta1_wuw.pdf` |
+| 6 | MDE / null result analysis | Implementation | **Assessment Done** | Awaiting user confirmation to implement |
+| 7 | Age sub-groups (50–64, 65+, 65–69, 70+) | Implementation | **Done** | Table: `AT_age_subgroups.tex` |
+| 8 | Cancer/ICD coding tension (text) | Text | **Not Started** | 1–2 sentences after Romano-Wolf paragraph |
+| 9 | Life expectancy motivation (intro) | Text | **Not Started** | 1–2 sentences; cite Einav & Finkelstein (NBER 2026) |
+| 10 | Table 1 consistency: 1990 SES, add po2sm | Implementation | **Done** | Fixed: moved T1 before year restriction |
+| 11 | Progresa enrollment/take-up rates | Text | **Not Started** | Brief footnote |
+
+> **Instructions for Claude:** Update both tables whenever a comment is resolved. Mark status as **Done** and record the output filename or text change. Always update CLAUDE.md and commit before ending a session.
 
 ---
 
