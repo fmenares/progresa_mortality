@@ -295,22 +295,19 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 | # | Issue | Status | Output / Notes |
 |---|-------|--------|----------------|
 | 1 | Weighting: BR unweighted result driven by small municipalities (SHW 2015, JHR) | **Done** | `AT5_BR_trimming.tex` — progressive trimming of bottom decile/quartile/half shows attenuation |
-| 2 | Health channel: ENCEL health visit data not exploited | **In Progress** | `T3_experimental.tex` — total_visits col 5 (65+) and col 6 (51+, Gertler 2000 comparison); SPSS import fixed |
-| 3 | Municipality intensity as function of locality composition | **Pending (text only)** | Expand footnote citing Parker & Vogl (2023) Figs 2–3 on poverty-score targeting |
+| 2 | Health channel: ENCEL health visit data not exploited (healthcare utilization, 1999 ENCEL) | **In Progress** | `T3_experimental.tex` — total_visits col 5 (65+) and col 6 (51+, Gertler 2000 comparison). SPSS import simplified; col 5 `if _rc==0` bug fixed; non-visitors zero-filled. Appendix `AT_elderly_only_hours.tex` — weekly hours for elderly-only households (no children), 3 panels as columns |
+| 3 | Municipality intensity as function of locality composition (SES footnote) | **Pending (text only)** | Expand footnote citing Parker & Vogl (2023) Figs 2–3 on poverty-score targeting |
 | 4 | Differential pre-trends by baseline SES (P&V spec 3) | **Done** | `AT_ses_trend.tex` + `AF_ses_trend.pdf` — 3 specs: baseline, +trend×im_mun_1990, +trend×8 SES components |
-| 5 | β₁ (Intensity_2005) event study not shown | **Done** | `AF_beta1_sex.pdf` — θk pooled/female/male; `AF_beta1_wuw.pdf` — pooled weighted vs. unweighted |
-| 6 | Minimum detectable effect | **Assessment Done** | Awaiting user confirmation to implement CI bounds in Stata |
+| 5 | β₁ (Intensity_2005) / θk event study not shown | **Done** | `AF_beta1_sex.pdf` — θk pooled/female/male; `AF_beta1_wuw.pdf` — pooled weighted vs. unweighted |
+| 6 | Minimum detectable effect / null result analysis | **Assessment Done** | Awaiting user confirmation to implement CI bounds in Stata |
 | 7 | Direct vs. indirect transfer framing | **In Progress** | Reframe mortality effect: direct transfer (apoyo alimentario — fixed base grant, NOT conditional on kids, paid to household *titular*/head) vs. indirect (apoyo educativo — child-school-conditional grants). PROGRESA receipt is a single line in all data (ENIGH `P046`/`P059`; admin records) — NOT decomposable into the two components. **Identification trick:** elderly-headed households with **no children** receive *only* the apoyo alimentario → total transfer = direct transfer by construction; elderly head (`renglon==1`) receives it directly. `AT_elderly_only_hours.tex` isolates this subsample's labor-supply response. **Direct-transfer elasticity: FEASIBLE (not blocked). No transfer-amount microdata exists, so IMPUTE the apoyo alimentario from the published program schedule.** Early-phase apoyo alimentario (the direct, non-kid-conditional grant paid to the *titular*/head): **≈90 pesos/month per household in 2nd-half-1997/1998 (≈US$7), flat per household, conditional on health-clinic compliance, NOT a function of # children; inflation-adjusted semiannually → ~115–125 pesos/month nominal by 1999** (real value held ~constant at 1997 level). Indirect part = apoyo educativo/becas (60–135 primary, ~190–305 secondary, kid- and grade-conditional); household *tope*/cap ≈695–750 pesos/mo (1998–99). Imputed direct transfer for elderly-headed/no-children eligible HHs = apoyo alimentario schedule amount, deflated to project's real-2025-USD base. **VERIFY exact per-semester pesos against Skoufias (2005, IFPRI RR139) Table 2.1 and Schultz (2004, JDE) before hard-coding.** |
 
 ### Minor Comments
 
+> Comments 2–6 were duplicates of Major Comments 2–6 and have been merged there. Minor comments begin at 7.
+
 | # | Comment | Type | Status | Notes |
 |---|---------|------|--------|-------|
-| 2 | Healthcare utilization (1999 ENCEL data) | Implementation | **In Progress** | SPSS import simplified; col 5 `if _rc==0` bug fixed; zero-fill non-visitors added. Appendix `AT_elderly_only_hours.tex` — weekly hours for elderly-only households (no children), 3 panels as columns |
-| 3 | SES footnote: municipality intensity function | Text | **Not Started** | Cite Parker & Vogl (2023) Figs 2–3 |
-| 4 | Pre-program SES trends robustness | Implementation | **Done** | Table: `AT_ses_trend.tex`; Figure: `AF_ses_trend.pdf` |
-| 5 | θk event study appendix figures | Implementation | **Done** | Figures: `AF_beta1_sex.pdf`, `AF_beta1_wuw.pdf` |
-| 6 | MDE / null result analysis | Implementation | **Assessment Done** | Awaiting user confirmation to implement |
 | 7 | Age sub-groups (50–64, 65+, 65–69, 70+) | Implementation | **Done** | Table: `AT_age_subgroups.tex` |
 | 8 | Cancer/ICD coding tension (text) | Text | **Not Started** | 1–2 sentences after Romano-Wolf paragraph |
 | 9 | Life expectancy motivation (intro) | Text | **Not Started** | 1–2 sentences; cite Einav & Finkelstein (NBER 2026) |
