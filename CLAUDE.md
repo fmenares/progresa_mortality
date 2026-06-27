@@ -286,6 +286,28 @@ Bold starting codes for `drugs_overcounter` indicate the corrected lower bound (
 
 ---
 
+## Conference Discussant Comments — Status Tracker
+
+Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico*
+
+| # | Issue | Status | Output / Notes |
+|---|-------|--------|----------------|
+| 1 | Weighting: BR unweighted result driven by small municipalities (SHW 2015, JHR) | **Done** | `AT5_BR_trimming.tex` — progressive trimming of bottom decile/quartile/half shows attenuation |
+| 2 | Health channel: ENCEL health visit data not exploited | **Done** | `T3_experimental.tex` — total_visits column (1999 cross-section, mun FE) across pooled/female/male panels; cols 5 (65+) and 6 (51+, Gertler 2000 comparison) |
+| 3 | Municipality intensity as function of locality composition | **Pending (text only)** | Expand footnote citing Parker & Vogl (2023) Figs 2–3 on poverty-score targeting |
+| 4 | Differential pre-trends by baseline SES (P&V spec 3) | **Done** | `AT_ses_trend.tex` + `AF_ses_trend.pdf` — 3 specs: baseline, +trend×im_mun_1990, +trend×8 SES components |
+| 5 | β₁ (Intensity_2005) event study not shown | **Done** | `AF_beta1_sex.pdf` — θk pooled/female/male; `AF_beta1_wuw.pdf` — pooled weighted vs. unweighted |
+| 6 | Minimum detectable effect | **Pending** | Assess power/MDE given panel structure; add CI bounds |
+| 7 | *(details not yet recorded)* | **Unknown** | — |
+| 8 | Cancer/ICD coding tension | **Pending (text only)** | 1–2 sentences after Romano-Wolf paragraph on ICD-9/10 crosswalk limitations |
+| 9 | Life expectancy motivation in intro | **Pending (text only)** | 1–2 sentences citing Einav & Finkelstein (NBER 2026) |
+| 10 | *(details not yet recorded)* | **Unknown** | — |
+| 11 | PROGRESA enrollment/take-up rates | **Pending (text only)** | Brief footnote on enrollment and take-up statistics |
+
+> **Instructions for Claude:** Update this table whenever a comment is resolved. Mark status as **Done** and fill the Output column with the filename or text change made. Comments 7 and 10 are placeholders — fill in when the user provides the full list.
+
+---
+
 ## Notes for Contributors
 
 - All paths to external data are hardcoded in each `.do` file — update the `global` or `local` path macros at the top of each script before running.
