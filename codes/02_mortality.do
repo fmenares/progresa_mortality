@@ -2283,10 +2283,9 @@ drop _pop_br_tmp
 preserve
     keep if $sample_br & inrange(year, 1992, 2002)
     collapse (mean) pop_mean = popover65_, by(cve_ent_mun_super)
-    _pctile pop_mean, p(10 25 50)
+    _pctile pop_mean, p(10 25)
     local p10_br = r(r1)
     local p25_br = r(r2)
-    local p50_br = r(r3)
 restore
 
 di "BR size cutoffs (older adults 65+): p10=`p10_br', p25=`p25_br', p50=`p50_br'"
@@ -2327,44 +2326,28 @@ local NAT5_3:    di %12.0fc `e(N)'
 distinct cve_ent_mun_super if e(sample)
 local NmunAT5_3: di %12.0fc `r(ndistinct)'
 
-* Column 4: Drop bottom half (municipalities with pop_mun_br <= p50)
-reghdfe emr65 lag2_intensity_new ///
-    if inrange(year,1992,2002) & $sample_br & pop_mun_br > `p50_br', ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-local aux: di %12.3f _b[lag2_intensity_new]
-local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
-if      `t' >= 2.576 local bAT5_4 = "`aux'***"
-else if `t' >= 1.96  local bAT5_4 = "`aux'**"
-else if `t' >= 1.645 local bAT5_4 = "`aux'*"
-else                  local bAT5_4 = "`aux'"
-local seAT5_4:   di %12.3f _se[lag2_intensity_new]
-sum emr65 if e(sample) & year == 1996
-local meanAT5_4: di %12.2fc `r(mean)'
-local NAT5_4:    di %12.0fc `e(N)'
-distinct cve_ent_mun_super if e(sample)
-local NmunAT5_4: di %12.0fc `r(ndistinct)'
-
 * Step 4: Write table
-* Column 2 (Our Replication) reuses locals set in the AT3 block above:
-*   bBR2_2_p, seBR2_2_p, meanBR_2_p, NBR_2_p, NmunBR_2_p
+* Cols 2-3 reuse locals from the AT3 block:
+*   Col 2 (UW replication):  bBR2_2_p, seBR2_2_p, meanBR_2_p, NBR_2_p, NmunBR_2_p
+*   Col 3 (W replication):   bBR2_3_p, seBR2_3_p, meanBR_3_p, NBR_3_p, NmunBR_3_p
 {
     cap file close sm
     file open sm using "$tables/appendix/AT5_BR_trimming.tex", write replace
     file write sm "\begin{tabular}{lccccc} \hline \hline" _n
-    file write sm "& \multicolumn{5}{c}{\textit{Pooled --- BR Specification (Unweighted, 2-yr Lag)}} \\ \cmidrule(lr){2-6}" _n
+    file write sm "& \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Full Sample}} & \multicolumn{2}{c}{\textit{Progressive Trimming}} \\ \cmidrule(lr){3-4} \cmidrule(lr){5-6}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
-    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Our Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Ex.\ bottom 50\%} \\ \toprule " _n
-    file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_4' \\ " _n
-    file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_4') \\ " _n
+    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication (UW)} & \multicolumn{1}{c}{Replication (W)} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} \\ \toprule " _n
+    file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bBR2_3_p' & `bAT5_2' & `bAT5_3' \\ " _n
+    file write sm " & (1.040) & (`seBR2_2_p') & (`seBR2_3_p') & (`seAT5_2') & (`seAT5_3') \\ " _n
     file write sm "  & & & & & \\ " _n
-    file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_4' \\ " _n
-    file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_4' \\ " _n
-    file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_4' \\ " _n
+    file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanBR_3_p' & `meanAT5_2' & `meanAT5_3' \\ " _n
+    file write sm "Obs & 21,571 & `NBR_2_p' & `NBR_3_p' & `NAT5_2' & `NAT5_3' \\ " _n
+    file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunBR_3_p' & `NmunAT5_2' & `NmunAT5_3' \\ " _n
     file write sm "\bottomrule" _n
-    file write sm "\multicolumn{6}{l}{\footnotesize \textit{Notes:} Column (1) reproduces Panel A of Appendix Table~3 (BR 2013 original).} \\ " _n
-    file write sm "\multicolumn{6}{l}{\footnotesize Column (2) is our close replication on the same sample (Panel B of Appendix Table~3).} \\ " _n
-    file write sm "\multicolumn{6}{l}{\footnotesize Columns (3)--(5) re-estimate column (2) excluding municipalities below the 10th, 25th,} \\ " _n
-    file write sm "\multicolumn{6}{l}{\footnotesize and 50th percentile of mean older-adult population (ages 65+), respectively.} \\ " _n
+    file write sm "\multicolumn{6}{l}{\footnotesize \textit{Notes:} Column (1) reproduces the BR (2013) original. Column (2) is our close replication} \\ " _n
+    file write sm "\multicolumn{6}{l}{\footnotesize (unweighted, AT3 Panel B). Column (3) adds population weights (AT3 Panel C).} \\ " _n
+    file write sm "\multicolumn{6}{l}{\footnotesize Columns (4)--(5) re-estimate column (2) excluding municipalities below the 10th and 25th} \\ " _n
+    file write sm "\multicolumn{6}{l}{\footnotesize percentile of mean older-adult population (ages 65+), respectively.} \\ " _n
     file write sm "\end{tabular}"
     file close sm
 }
