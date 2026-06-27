@@ -300,6 +300,7 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 | 4 | Differential pre-trends by baseline SES (P&V spec 3) | **Done** | `AT_ses_trend.tex` + `AF_ses_trend.pdf` — 3 specs: baseline, +trend×im_mun_1990, +trend×8 SES components |
 | 5 | β₁ (Intensity_2005) event study not shown | **Done** | `AF_beta1_sex.pdf` — θk pooled/female/male; `AF_beta1_wuw.pdf` — pooled weighted vs. unweighted |
 | 6 | Minimum detectable effect | **Assessment Done** | Awaiting user confirmation to implement CI bounds in Stata |
+| 7 | Direct vs. indirect transfer framing | **In Progress** | Reframe mortality effect: direct transfer to elderly vs. indirect (household income-pooling) channel. `AT_elderly_only_hours.tex` isolates labor-supply response in elderly-only households (indirect channel). **Elasticity using only the direct-transfer component: BLOCKED — direct elderly transfer not separately measured in early phase (1997–2000); PROGRESA had no direct-to-elderly arm until *Adultos Mayores/70 y más* (2006+). Early-phase `progresa_d` is a proxy/imputation, not a clean direct amount.** |
 
 ### Minor Comments
 
