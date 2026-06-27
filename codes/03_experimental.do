@@ -392,6 +392,14 @@ tempfile spss_wide
 save `spss_wide'
 di "`c(N)' households loaded from SPSS, `c(k)' vars kept"
 
+* Save unique folio list so we can zero-fill non-visitors after restoring panel
+keep folio
+duplicates drop folio, force
+gen byte in_spss99 = 1
+tempfile spss_folios
+save `spss_folios'
+di "`c(N)' unique folios in SPSS file"
+
 di "--- Step 2: building person-level visit records ---"
 tempfile tv_acc
 clear
@@ -423,7 +431,7 @@ di "`c(N)' raw person-slot records"
 drop if missing(folio) | missing(renglon)
 replace n_visits = 0 if missing(n_visits)
 collapse (sum) total_visits=n_visits, by(folio renglon)
-di "`c(N)' unique persons with visit data"
+di "`c(N)' unique persons with visit data (visitors only)"
 tempfile visits99
 save `visits99'
 
@@ -431,7 +439,14 @@ di "--- Step 4: merging into panel ---"
 restore
 merge m:1 folio renglon using `visits99', keepusing(total_visits) update replace nogenerate
 count if !missing(total_visits) & year==99
-di "`r(N)' obs in year==99 have non-missing total_visits"
+di "`r(N)' obs in year==99 have non-missing total_visits (visitors only)"
+
+* Zero-fill non-visitors: household in SPSS file but no recorded health visit -> 0 visits
+merge m:1 folio using `spss_folios', keepusing(in_spss99) nogenerate
+replace total_visits = 0 if missing(total_visits) & year==99 & in_spss99==1
+drop in_spss99
+count if !missing(total_visits) & year==99
+di "`r(N)' obs in year==99 have non-missing total_visits (after zero-filling non-visitors)"
 
 gen post=1 if year==98 | year==99
 replace post=0 if year==97
@@ -748,47 +763,32 @@ restore
 * Run separately for pooled, male, female; store locals for T3 col 5
 *------------------------------------------------------------
 count if !missing(total_visits) & year==99 & eligible==1
-if r(N) > 0 {
-    foreach ggrp in p m f {
-        if "`ggrp'" == "p"      local gcond "age97>=65"
-        else if "`ggrp'" == "m" local gcond "gender==1 & age97>=65"
-        else                     local gcond "gender==2 & age97>=65"
+di "`r(N)' eligible obs with total_visits in year==99 (col 5 sample before age restriction)"
 
-        quietly sum total_visits if year==99 & contba==0 & eligible==1 ///
-            & `gcond' & !missing(total_visits, contba, claveofi)
-        local cmn_`ggrp'_tv : di %9.3f `r(mean)'
+foreach ggrp in p m f {
+    if "`ggrp'" == "p"      local gcond "age97>=65"
+    else if "`ggrp'" == "m" local gcond "gender==1 & age97>=65"
+    else                     local gcond "gender==2 & age97>=65"
 
-        reghdfe total_visits contba ///
-            if year==99 & eligible==1 & `gcond' ///
-            & !missing(total_visits, contba, claveofi), ///
-            absorb(clavemun) vce(cluster claveofi)
+    quietly sum total_visits if year==99 & contba==0 & eligible==1 ///
+        & `gcond' & !missing(total_visits, contba, claveofi)
+    local cmn_`ggrp'_tv : di %9.3f `r(mean)'
 
-        if _rc == 0 {
-            local aux : di %9.3f _b[contba]
-            local tstat = abs(_b[contba] / _se[contba])
-            if      `tstat' >= 2.576 local b99_`ggrp'_tv = trim("`aux'") + "***"
-            else if `tstat' >= 1.960 local b99_`ggrp'_tv = trim("`aux'") + "**"
-            else if `tstat' >= 1.645 local b99_`ggrp'_tv = trim("`aux'") + "*"
-            else                     local b99_`ggrp'_tv = trim("`aux'")
-            local se99_`ggrp'_tv : di %9.3f _se[contba]
-            local N_`ggrp'_tv    : di %12.0fc e(N)
-        }
-        else {
-            local b99_`ggrp'_tv  ""
-            local se99_`ggrp'_tv ""
-            local N_`ggrp'_tv    ""
-            local cmn_`ggrp'_tv  ""
-        }
-    }
-}
-else {
-    di as txt "NOTE: total_visits unavailable — skipping col 5 regressions; T3 col 5 will be blank"
-    foreach ggrp in p m f {
-        local b99_`ggrp'_tv  ""
-        local se99_`ggrp'_tv ""
-        local N_`ggrp'_tv    ""
-        local cmn_`ggrp'_tv  ""
-    }
+    reghdfe total_visits contba ///
+        if year==99 & eligible==1 & `gcond' ///
+        & !missing(total_visits, contba, claveofi), ///
+        absorb(clavemun) vce(cluster claveofi)
+
+    di "  [total_visits 65+, g=`ggrp'] _b[contba] = " _b[contba] "  N=" e(N)
+
+    local aux : di %9.3f _b[contba]
+    local tstat = abs(_b[contba] / _se[contba])
+    if      `tstat' >= 2.576 local b99_`ggrp'_tv = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local b99_`ggrp'_tv = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local b99_`ggrp'_tv = trim("`aux'") + "*"
+    else                     local b99_`ggrp'_tv = trim("`aux'")
+    local se99_`ggrp'_tv : di %9.3f _se[contba]
+    local N_`ggrp'_tv    : di %12.0fc e(N)
 }
 
 *------------------------------------------------------------
