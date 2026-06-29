@@ -2621,14 +2621,20 @@ foreach col in 1 2 3 4 {
 	local Nmun_ses_`col'_m: di %12.0fc `r(ndistinct)'
 }
 
-* --- Write table ---
+* --- Write tables (one per gender group) ---
+local footer_ses ""
+local footer_ses "`footer_ses'Seguro Popular & Y & Y & Y & Y \\ "
+local footer_ses "`footer_ses'Weights & Y & Y & Y & Y \\ "
+local footer_ses "`footer_ses'Intensity 2005 x post & Y & Y & Y & N \\ "
+local footer_ses "`footer_ses'Trend x Marg.\ Index (1990) & N & Y & N & N \\ "
+local footer_ses "`footer_ses'Trend x Marg.\ Index Quintile (1990) & N & N & Y & Y \\ "
+
+* Pooled
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT_ses_trend.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
-	* Panel A: Pooled
-	file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_ses_1' & `b99_ses_2' & `b99_ses_3' & `b99_ses_4' \\ " _n
 	file write sm " & (`se99_ses_1') & (`se99_ses_2') & (`se99_ses_3') & (`se99_ses_4') \\ " _n
 	file write sm "  & & & & \\ " _n
@@ -2638,9 +2644,19 @@ foreach col in 1 2 3 4 {
 	file write sm "Mean (1991-1996) & `mean_ses_1' & `mean_ses_2' & `mean_ses_3' & `mean_ses_4' \\ " _n
 	file write sm "Obs & `N_ses_1' & `N_ses_2' & `N_ses_3' & `N_ses_4' \\ " _n
 	file write sm "No.\ Mun & `Nmun_ses_1' & `Nmun_ses_2' & `Nmun_ses_3' & `Nmun_ses_4' \\ " _n
-	file write sm "  & & & & \\ \midrule" _n
-	* Panel B: Females
-	file write sm "\underline{\textit{Panel B: Females}} \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "`footer_ses'" _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+* Females
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_ses_trend_f.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_ses_1_f' & `b99_ses_2_f' & `b99_ses_3_f' & `b99_ses_4_f' \\ " _n
 	file write sm " & (`se99_ses_1_f') & (`se99_ses_2_f') & (`se99_ses_3_f') & (`se99_ses_4_f') \\ " _n
 	file write sm "  & & & & \\ " _n
@@ -2650,9 +2666,19 @@ foreach col in 1 2 3 4 {
 	file write sm "Mean (1991-1996) & `mean_ses_1_f' & `mean_ses_2_f' & `mean_ses_3_f' & `mean_ses_4_f' \\ " _n
 	file write sm "Obs & `N_ses_1_f' & `N_ses_2_f' & `N_ses_3_f' & `N_ses_4_f' \\ " _n
 	file write sm "No.\ Mun & `Nmun_ses_1_f' & `Nmun_ses_2_f' & `Nmun_ses_3_f' & `Nmun_ses_4_f' \\ " _n
-	file write sm "  & & & & \\ \midrule" _n
-	* Panel C: Males
-	file write sm "\underline{\textit{Panel C: Males}} \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "`footer_ses'" _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+
+* Males
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_ses_trend_m.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_ses_1_m' & `b99_ses_2_m' & `b99_ses_3_m' & `b99_ses_4_m' \\ " _n
 	file write sm " & (`se99_ses_1_m') & (`se99_ses_2_m') & (`se99_ses_3_m') & (`se99_ses_4_m') \\ " _n
 	file write sm "  & & & & \\ " _n
@@ -2663,18 +2689,12 @@ foreach col in 1 2 3 4 {
 	file write sm "Obs & `N_ses_1_m' & `N_ses_2_m' & `N_ses_3_m' & `N_ses_4_m' \\ " _n
 	file write sm "No.\ Mun & `Nmun_ses_1_m' & `Nmun_ses_2_m' & `Nmun_ses_3_m' & `Nmun_ses_4_m' \\ " _n
 	file write sm "  & & & & \\ " _n
-	* Footer controls rows
-	file write sm "Seguro Popular & Y & Y & Y & Y \\ " _n
-	file write sm "Weights & Y & Y & Y & Y \\ " _n
-	file write sm "Intensity 2005 x post & Y & Y & Y & N \\ " _n
-	file write sm "Trend x Marg.\ Index (1990) & N & Y & N & N \\ " _n
-	file write sm "Trend x Marg.\ Index Quintile (1990) & N & N & Y & Y \\ " _n
+	file write sm "`footer_ses'" _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
-	
 }
-di "Table exported to: $tables/appendix/AT_ses_trend.tex"
+di "Tables exported: AT_ses_trend.tex / AT_ses_trend_f.tex / AT_ses_trend_m.tex"
 
 
 *============================================================
