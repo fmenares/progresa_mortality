@@ -1949,7 +1949,6 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 	file write sm "Obs & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' & `NAAMR_f' \\ " _n
 	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
 	file write sm "  & & & & \\ " _n
-	file write sm "Seguro Popular & Y & Y & Y & Y \\ " _n
 	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
