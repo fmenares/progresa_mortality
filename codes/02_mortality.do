@@ -1813,8 +1813,8 @@ foreach pnl in p m f {
 		local wvar     popover65_f
 	}
 	
-	* col 4: levels, weighted
-	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+	* col 4: levels, weighted + Seguro Popular
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
 		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.3f _b[1.post#c.inten1999]
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
@@ -1835,8 +1835,8 @@ foreach pnl in p m f {
 	local NFF_`pnl'_4:    di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunFF_`pnl'_4: di %12.0fc `r(ndistinct)'
-	* col 5: log mortality rate, weighted; coef x100 = approx % change in mortality rate
-	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
+	* col 5: log mortality rate, weighted + Seguro Popular; coef x100 = approx % change in mortality rate
+	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
 		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	local aux: di %12.2f _b[1.post#c.inten1999] * 100
 	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
@@ -1857,8 +1857,8 @@ foreach pnl in p m f {
 	local NFF_`pnl'_5:    di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunFF_`pnl'_5: di %12.0fc `r(ndistinct)'
-	* col 6: Poisson, weighted; coef = (exp(b)-1)*100 = % change in death counts
-	ppmlhdfe `doutcome' c.inten1999#i.post c.inten2005#i.post ///
+	* col 6: Poisson, weighted + Seguro Popular; coef = (exp(b)-1)*100 = % change in death counts
+	ppmlhdfe `doutcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
 		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) offset(`offset') vce(cluster cve_ent_mun_super)
 	local aux: di %12.2f (exp(_b[1.post#c.inten1999])-1)*100
 	local seFF99_`pnl'_6 : di %12.2f exp(_b[1.post#c.inten1999])*_se[1.post#c.inten1999]*100
@@ -1949,7 +1949,7 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 	file write sm "Obs & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' & `NAAMR_f' \\ " _n
 	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
 	file write sm "  & & & & \\ " _n
-	file write sm "Seguro Popular & N & N & N & Y \\ " _n
+	file write sm "Seguro Popular & Y & Y & Y & Y \\ " _n
 	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
