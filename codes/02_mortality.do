@@ -2622,8 +2622,6 @@ foreach col in 1 2 3 4 {
 
 * --- Write tables (one per gender group) ---
 local footer_ses ""
-local footer_ses "`footer_ses'Seguro Popular & Y & Y & Y & Y \\ "
-local footer_ses "`footer_ses'Weights & Y & Y & Y & Y \\ "
 local footer_ses "`footer_ses'Intensity 2005 x post & Y & Y & Y & N \\ "
 local footer_ses "`footer_ses'Trend x Marg.\ Index (1990) & N & Y & N & N \\ "
 local footer_ses "`footer_ses'Trend x Marg.\ Index Quintile (1990) & N & N & Y & Y \\ "
@@ -2928,9 +2926,6 @@ local Nmun_AT_age: di %12.0fc `r(ndistinct)'
 	file write sm "  & & & & \\ " _n
 
 	file write sm "No.\ Mun & \multicolumn{4}{c}{`Nmun_AT_age'} \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Seguro Popular & Y & Y & Y & Y \\ " _n
-	file write sm "Weights & Y & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
