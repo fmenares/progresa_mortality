@@ -451,19 +451,16 @@ forval pos = 1/16 {
 twoway ///
 	(rcap thi_w tlo_w xpos_w, ///
 		lcolor(black%60) lwidth(vthin)) ///
-	(scatter th_w xpos_w, ///
-		mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(connected th_w xpos_w, ///
+		lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap thi_f tlo_f xpos_f, ///
 		lcolor(red%60) lwidth(vthin)) ///
-	(scatter th_f xpos_f, ///
-		mcolor(red) msymbol(square) msize(vsmall)) ///
+	(connected th_f xpos_f, ///
+		lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
 	(rcap thi_m tlo_m xpos_m, ///
 		lcolor(blue%60) lwidth(vthin)) ///
-	(scatter th_m xpos_m, ///
-		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-	(line th_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
-	(line th_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
-	(line th_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+	(connected th_m xpos_m, ///
+		lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -471,7 +468,7 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -945,14 +942,12 @@ forval pos = 1/16 {
 twoway ///
 	(rcap thi_wt tlo_wt xpos_wt, ///
 		lcolor(black%60) lwidth(vthin)) ///
-	(scatter th_wt xpos_wt, ///
-		mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(connected th_wt xpos_wt, ///
+		lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap thi_uw tlo_uw xpos_uw, ///
 		lcolor(blue%60) lwidth(vthin)) ///
-	(scatter th_uw xpos_uw, ///
-		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-	(line th_wt xpos_wt if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
-	(line th_uw xpos_uw if 1==0, lcolor(blue%80) lpattern(dash) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+	(connected th_uw xpos_uw, ///
+		lcolor(blue%80) lpattern(dash) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -960,7 +955,7 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(5 "Weighted" 6 "Unweighted") ///
+	legend(order(2 "Weighted" 4 "Unweighted") ///
 		cols(2) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -2695,112 +2690,145 @@ di "Tables exported: AT_ses_trend.tex / AT_ses_trend_f.tex / AT_ses_trend_m.tex"
 
 
 *============================================================
-* APPENDIX FIGURE: AF_ses_trend
-* Pooled event study (beta_k) across 3 SES trend specifications
-* Series 1 (black circles):    Baseline (W+SP)
-* Series 2 (red squares):      + Trend × im_mun_1990
-* Series 3 (blue triangles):   + Trend × 1990 marg.-index quintile (P&V 2023)
-* Output: $figures/appendix/AF_ses_trend.pdf
+* APPENDIX FIGURE: AF_ses_trend (pooled / female / male)
+* Event study (beta_k = Intensity_1999 x year) across 4 SES trend specs:
+*   Series 1 (black,  solid):         Baseline (W+SP)
+*   Series 2 (red,    dash):          + Trend × im_mun_1990
+*   Series 3 (blue,   shortdash_dot): + Trend × 1990 marg.-index quintile (P&V 2023)
+*   Series 4 (green,  longdash):      + Quintile trend, EXCLUDING Intensity_2005
+* Output: AF_ses_trend.pdf / AF_ses_trend_f.pdf / AF_ses_trend_m.pdf
 *============================================================
 
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 
-{
-* Spec 1: Baseline event study (W+SP) — pooled
-reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-	c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
-	vce(cluster cve_ent_mun_super)
-forval pos = 1/16 {
-	if `pos' == 6 {
-		local bes1_`pos'  = 0
-		local sees1_`pos' = 0
+foreach grp in p f m {
+	if "`grp'" == "p" {
+		local yout emr65
+		local ywt  popover65_
+		local gsuf ""
+	}
+	else if "`grp'" == "f" {
+		local yout emr65f
+		local ywt  popover65_f
+		local gsuf "_f"
 	}
 	else {
-		local bes1_`pos'  = _b[`pos'.year_1995#c.inten1999]
-		local sees1_`pos' = _se[`pos'.year_1995#c.inten1999]
+		local yout emr65m
+		local ywt  popover65_m
+		local gsuf "_m"
 	}
-}
 
-* Spec 2: + Trend × im_mun_1990
-reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-	c.sp_intensity c.im_mun_1990#c.year [aw=popover65_] if $sample_marg, ///
-	a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-forval pos = 1/16 {
-	if `pos' == 6 {
-		local bes2_`pos'  = 0
-		local sees2_`pos' = 0
+	* Spec 1: Baseline (W+SP)
+	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity [aw=`ywt'] if $sample_marg, a(cve_ent_mun_super) ///
+		vce(cluster cve_ent_mun_super)
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local bes1_`pos'  = 0
+			local sees1_`pos' = 0
+		}
+		else {
+			local bes1_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local sees1_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
 	}
-	else {
-		local bes2_`pos'  = _b[`pos'.year_1995#c.inten1999]
-		local sees2_`pos' = _se[`pos'.year_1995#c.inten1999]
-	}
-}
 
-* Spec 3: + Trend × 1990 marginalization-index quintile (P&V 2023)
-reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-	c.sp_intensity ///
-	i.im90_bin#c.year ///
-	[aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
-	vce(cluster cve_ent_mun_super)
-forval pos = 1/16 {
-	if `pos' == 6 {
-		local bes3_`pos'  = 0
-		local sees3_`pos' = 0
+	* Spec 2: + Trend × im_mun_1990
+	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity c.im_mun_1990#c.year [aw=`ywt'] if $sample_marg, ///
+		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local bes2_`pos'  = 0
+			local sees2_`pos' = 0
+		}
+		else {
+			local bes2_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local sees2_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
 	}
-	else {
-		local bes3_`pos'  = _b[`pos'.year_1995#c.inten1999]
-		local sees3_`pos' = _se[`pos'.year_1995#c.inten1999]
-	}
-}
 
-* --- Plot ---
-preserve
-clear
-set obs 16
-gen yr_pos = _n
-gen xpos_1 = yr_pos - 0.18
-gen xpos_2 = yr_pos
-gen xpos_3 = yr_pos + 0.18
-foreach s in 1 2 3 {
-	gen b_s`s'  = .
-	gen hi_s`s' = .
-	gen lo_s`s' = .
-}
-forval pos = 1/16 {
-	replace b_s1  = `bes1_`pos''                            if yr_pos == `pos'
-	replace hi_s1 = `bes1_`pos'' + 1.96 * `sees1_`pos''    if yr_pos == `pos'
-	replace lo_s1 = `bes1_`pos'' - 1.96 * `sees1_`pos''    if yr_pos == `pos'
-	replace b_s2  = `bes2_`pos''                            if yr_pos == `pos'
-	replace hi_s2 = `bes2_`pos'' + 1.96 * `sees2_`pos''    if yr_pos == `pos'
-	replace lo_s2 = `bes2_`pos'' - 1.96 * `sees2_`pos''    if yr_pos == `pos'
-	replace b_s3  = `bes3_`pos''                            if yr_pos == `pos'
-	replace hi_s3 = `bes3_`pos'' + 1.96 * `sees3_`pos''    if yr_pos == `pos'
-	replace lo_s3 = `bes3_`pos'' - 1.96 * `sees3_`pos''    if yr_pos == `pos'
-}
-twoway ///
-	(rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin)) ///
-	(scatter b_s1 xpos_1, mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(rcap hi_s2 lo_s2 xpos_2, lcolor(red%60) lwidth(vthin)) ///
-	(scatter b_s2 xpos_2, mcolor(red) msymbol(square) msize(vsmall)) ///
-	(rcap hi_s3 lo_s3 xpos_3, lcolor(blue%60) lwidth(vthin)) ///
-	(scatter b_s3 xpos_3, mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-	(line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
-	(line b_s2 xpos_2 if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
-	(line b_s3 xpos_3 if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
-	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-	xscale(range(0.5 16.5)) ///
-	xtitle("") ///
-	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(7 "Baseline (W+SP)" 8 "+ Trend x Marg. Index" 9 "+ Trend x Marg. Index Quintile") ///
-		cols(1) size(medsmall) position(6) ring(1) ///
-		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-	graphregion(color(white)) ///
-	plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_ses_trend.pdf", as(pdf) replace
-restore
+	* Spec 3: + Trend × 1990 marginalization-index quintile (P&V 2023)
+	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity i.im90_bin#c.year [aw=`ywt'] if $sample_marg, ///
+		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local bes3_`pos'  = 0
+			local sees3_`pos' = 0
+		}
+		else {
+			local bes3_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local sees3_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
+	}
+
+	* Spec 4: Quintile trend, EXCLUDING Intensity_2005
+	reghdfe `yout' c.inten1999##ib6.year_1995 ///
+		c.sp_intensity i.im90_bin#c.year [aw=`ywt'] if $sample_marg, ///
+		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local bes4_`pos'  = 0
+			local sees4_`pos' = 0
+		}
+		else {
+			local bes4_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local sees4_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
+	}
+
+	* --- Plot ---
+	preserve
+	clear
+	set obs 16
+	gen yr_pos = _n
+	gen xpos_1 = yr_pos - 0.27
+	gen xpos_2 = yr_pos - 0.09
+	gen xpos_3 = yr_pos + 0.09
+	gen xpos_4 = yr_pos + 0.27
+	foreach s in 1 2 3 4 {
+		gen b_s`s'  = .
+		gen hi_s`s' = .
+		gen lo_s`s' = .
+	}
+	forval pos = 1/16 {
+		replace b_s1  = `bes1_`pos''                            if yr_pos == `pos'
+		replace hi_s1 = `bes1_`pos'' + 1.96 * `sees1_`pos''    if yr_pos == `pos'
+		replace lo_s1 = `bes1_`pos'' - 1.96 * `sees1_`pos''    if yr_pos == `pos'
+		replace b_s2  = `bes2_`pos''                            if yr_pos == `pos'
+		replace hi_s2 = `bes2_`pos'' + 1.96 * `sees2_`pos''    if yr_pos == `pos'
+		replace lo_s2 = `bes2_`pos'' - 1.96 * `sees2_`pos''    if yr_pos == `pos'
+		replace b_s3  = `bes3_`pos''                            if yr_pos == `pos'
+		replace hi_s3 = `bes3_`pos'' + 1.96 * `sees3_`pos''    if yr_pos == `pos'
+		replace lo_s3 = `bes3_`pos'' - 1.96 * `sees3_`pos''    if yr_pos == `pos'
+		replace b_s4  = `bes4_`pos''                            if yr_pos == `pos'
+		replace hi_s4 = `bes4_`pos'' + 1.96 * `sees4_`pos''    if yr_pos == `pos'
+		replace lo_s4 = `bes4_`pos'' - 1.96 * `sees4_`pos''    if yr_pos == `pos'
+	}
+	twoway ///
+		(rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin)) ///
+		(connected b_s1 xpos_1, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+		(rcap hi_s2 lo_s2 xpos_2, lcolor(red%60) lwidth(vthin)) ///
+		(connected b_s2 xpos_2, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+		(rcap hi_s3 lo_s3 xpos_3, lcolor(blue%60) lwidth(vthin)) ///
+		(connected b_s3 xpos_3, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+		(rcap hi_s4 lo_s4 xpos_4, lcolor(forest_green%60) lwidth(vthin)) ///
+		(connected b_s4 xpos_4, lcolor(forest_green) lpattern(longdash) lwidth(thin) mcolor(forest_green) msymbol(diamond) msize(vsmall)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+		xscale(range(0.5 16.5)) ///
+		xtitle("") ///
+		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+		legend(order(2 "Baseline (W+SP)" 4 "+ Trend x Marg. Index" 6 "+ Trend x Quintile" 8 "+ Quintile, excl. Int. 2005") ///
+			cols(2) size(small) position(6) ring(1) ///
+			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+	graph export "$figures/appendix/AF_ses_trend`gsuf'.pdf", as(pdf) replace
+	restore
 }
 
 * Clean up generated SES baseline variables
