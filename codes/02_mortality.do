@@ -450,17 +450,20 @@ forval pos = 1/16 {
 }
 twoway ///
 	(rcap thi_w tlo_w xpos_w, ///
-		lcolor(black%60) lwidth(vthin)) ///
-	(connected th_w xpos_w, ///
-		lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+		lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+	(scatter th_w xpos_w, ///
+		mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap thi_f tlo_f xpos_f, ///
-		lcolor(red%60) lwidth(vthin)) ///
-	(connected th_f xpos_f, ///
-		lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+		lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+	(scatter th_f xpos_f, ///
+		mcolor(red) msymbol(square) msize(vsmall)) ///
 	(rcap thi_m tlo_m xpos_m, ///
-		lcolor(blue%60) lwidth(vthin)) ///
-	(connected th_m xpos_m, ///
-		lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
+		lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+	(scatter th_m xpos_m, ///
+		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+	(line th_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(line th_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+	(line th_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -468,7 +471,7 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Pooled" 4 "Female" 6 "Male") ///
+	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -941,13 +944,15 @@ forval pos = 1/16 {
 }
 twoway ///
 	(rcap thi_wt tlo_wt xpos_wt, ///
-		lcolor(black%60) lwidth(vthin)) ///
-	(connected th_wt xpos_wt, ///
-		lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+		lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+	(scatter th_wt xpos_wt, ///
+		mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap thi_uw tlo_uw xpos_uw, ///
-		lcolor(blue%60) lwidth(vthin)) ///
-	(connected th_uw xpos_uw, ///
-		lcolor(blue%80) lpattern(dash) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
+		lcolor(blue%60) lwidth(vthin) lpattern(dash)) ///
+	(scatter th_uw xpos_uw, ///
+		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+	(line th_wt xpos_wt if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(line th_uw xpos_uw if 1==0, lcolor(blue%80) lpattern(dash) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -955,7 +960,7 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Weighted" 4 "Unweighted") ///
+	legend(order(5 "Weighted" 6 "Unweighted") ///
 		cols(2) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
@@ -2807,14 +2812,18 @@ foreach grp in p f m {
 		replace lo_s4 = `bes4_`pos'' - 1.96 * `sees4_`pos''    if yr_pos == `pos'
 	}
 	twoway ///
-		(rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin)) ///
-		(connected b_s1 xpos_1, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
-		(rcap hi_s2 lo_s2 xpos_2, lcolor(red%60) lwidth(vthin)) ///
-		(connected b_s2 xpos_2, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
-		(rcap hi_s3 lo_s3 xpos_3, lcolor(blue%60) lwidth(vthin)) ///
-		(connected b_s3 xpos_3, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-		(rcap hi_s4 lo_s4 xpos_4, lcolor(forest_green%60) lwidth(vthin)) ///
-		(connected b_s4 xpos_4, lcolor(forest_green) lpattern(longdash) lwidth(thin) mcolor(forest_green) msymbol(diamond) msize(vsmall)), ///
+		(rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+		(scatter b_s1 xpos_1, mcolor(black) msymbol(circle) msize(vsmall)) ///
+		(rcap hi_s2 lo_s2 xpos_2, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+		(scatter b_s2 xpos_2, mcolor(red) msymbol(square) msize(vsmall)) ///
+		(rcap hi_s3 lo_s3 xpos_3, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+		(scatter b_s3 xpos_3, mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+		(rcap hi_s4 lo_s4 xpos_4, lcolor(forest_green%60) lwidth(vthin) lpattern(longdash)) ///
+		(scatter b_s4 xpos_4, mcolor(forest_green) msymbol(diamond) msize(vsmall)) ///
+		(line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+		(line b_s2 xpos_2 if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+		(line b_s3 xpos_3 if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+		(line b_s4 xpos_4 if 1==0, lcolor(forest_green) lpattern(longdash) lwidth(thin) mcolor(forest_green) msymbol(diamond) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -2822,7 +2831,7 @@ foreach grp in p f m {
 		xtitle("") ///
 		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 		ylabel(, grid gmin gmax labsize(small)) ///
-		legend(order(2 "Baseline (W+SP)" 4 "+ Trend x Marg. Index" 6 "+ Trend x Quintile" 8 "+ Quintile, excl. Int. 2005") ///
+		legend(order(9 "Baseline (W+SP)" 10 "+ Trend x Marg. Index" 11 "+ Trend x Quintile" 12 "+ Quintile, excl. Int. 2005") ///
 			cols(2) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
