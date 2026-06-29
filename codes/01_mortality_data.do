@@ -19,8 +19,17 @@ set more off
 	global codes "/home/user/progresa_mortality/codes/"
  }
 
-*** Analysis window switch (set $window to full|prog|br before running; default full)
-	do "$codes/00_config.do"
+*** Analysis window: hardcoded to prog (1990-2006)
+	global window   "prog"
+	global yr_start 1990
+	global yr_end   2006
+	global nyears   17
+	global master_suffix "_prog"
+
+*** BR phase-in sample: which start-year municipalities count as BR?
+***   "1998_1999" : strict — only 1998 and 1999 entrants (current default, ~1,422 mun)
+***   "1997_1999" : inclusive — adds 1997 entrants (~1,961 mun, matches BR reported N)
+	global br_phase "1998_1999"
 
 
 

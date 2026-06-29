@@ -39,8 +39,23 @@ set more off
 	global SP "/home/user/progresa_mortality/data/"
 }
 
-*** Analysis window switch (set $window to full|prog|br before running; default full)
-	do "$codes/00_config.do"
+*** Analysis window: hardcoded to prog (1990-2006)
+	global window   "prog"
+	global yr_start 1990
+	global yr_end   2006
+	global nyears   17
+	global master_suffix "_prog"
+
+*** BR phase-in sample: which start-year municipalities count as BR?
+***   "1998_1999" : strict — only 1998 and 1999 entrants (current default, ~1,422 mun)
+***   "1997_1999" : inclusive — adds 1997 entrants (~1,961 mun, matches BR reported N)
+	global br_phase "1998_1999"
+	if "$br_phase" == "1997_1999" {
+		global sample_br = "inrange(inten_start_year,1997,1999)"
+	}
+	else {
+		global sample_br = "(inten_start_year==1998|inten_start_year==1999)"
+	}
 
 
  *	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]  
@@ -66,8 +81,11 @@ set more off
 	di as result "Window = $window   ($yr_start-$yr_end)"
 	distinct cve_ent_mun_super
 	di as result "Total municipalities in master: " r(ndistinct)
+	distinct cve_ent_mun_super if inrange(inten_start_year,1997,1999)
+	di as result "BR-eligible (1997-1999 entrants): " r(ndistinct)
 	distinct cve_ent_mun_super if (inten_start_year==1998 | inten_start_year==1999)
-	di as result "BR-sample (1998/1999 phase-in) municipalities: " r(ndistinct)
+	di as result "BR-strict (1998/1999 only): " r(ndistinct)
+	di as result "Active br_phase = $br_phase  =>  sample_br = $sample_br"
 	di as result "==========================================================" _n
 
 	merge m:1 cve_ent_mun_super using "$data/inten1999.dta"
@@ -179,7 +197,6 @@ restore
 	
 	tab post 
 	global sample_marg = "gm_mun_1990==4|gm_mun_1990==5"
-	global sample_br   = "(inten_start_year==1998|inten_start_year==1999)"
 	
 	
 	
@@ -1715,7 +1732,7 @@ cap drop rw_treat99 rw_treat05 _hm _br
 gen rw_treat99 = inten1999 * (post == 1)
 gen rw_treat05 = inten2005 * (post == 1)
 gen _hm        = (gm_mun_1990 == 4 | gm_mun_1990 == 5)
-gen _br        = (inten_start_year == 1998 | inten_start_year == 1999)
+gen _br        = ($sample_br)
 
 local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other"
 local wy_pval_col = 5   /* verify with: matrix list r(table) after first run */
