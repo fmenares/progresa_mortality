@@ -39,13 +39,6 @@ set more off
 	global SP "/home/user/progresa_mortality/data/"
 }
 
-*** Analysis window: hardcoded to prog (1990-2006)
-	global window   "prog"
-	global yr_start 1990
-	global yr_end   2006
-	global nyears   17
-	global master_suffix "_prog"
-
 *** BR phase-in sample: which start-year municipalities count as BR?
 ***   "1998_1999" : strict — only 1998 and 1999 entrants (current default, ~1,422 mun)
 ***   "1997_1999" : inclusive — adds 1997 entrants (~1,961 mun, matches BR reported N)
@@ -58,35 +51,8 @@ set more off
 	}
 
 
- *	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]  
-	* Load the window-specific master (built by 01_mortality_data.do under the
-	* same $window). Fall back to the canonical file if it has not been rebuilt yet.
-	capture confirm file "$data/aamr_regression_municipality_gender_tb${master_suffix}.dta"
-	if _rc {
-		di as error "!!! WINDOWED MASTER NOT FOUND for window '$window' !!!"
-		di as error "!!! File aamr_regression_municipality_gender_tb${master_suffix}.dta does not exist."
-		di as error "!!! You must re-run 01_mortality_data.do with this window FIRST."
-		di as error "!!! Falling back to the canonical (full) file — results will NOT reflect '$window'."
-		use "$data/aamr_regression_municipality_gender_tb.dta", clear
-	}
-	else {
-		di as txt "Loaded windowed master: aamr_regression_municipality_gender_tb${master_suffix}.dta"
-		use "$data/aamr_regression_municipality_gender_tb${master_suffix}.dta", clear
-	}
-*** DIAGNOSTIC: confirm the window actually changed the loaded sample.
-*** Prints the window, total municipalities, and the BR-sample (1998/1999
-*** phase-in) municipality count. If this count is identical across windows,
-*** the window is NOT changing the sample (see notes below).
-	di as result _n "==================== WINDOW DIAGNOSTIC ===================="
-	di as result "Window = $window   ($yr_start-$yr_end)"
-	distinct cve_ent_mun_super
-	di as result "Total municipalities in master: " r(ndistinct)
-	distinct cve_ent_mun_super if inrange(inten_start_year,1997,1999)
-	di as result "BR-eligible (1997-1999 entrants): " r(ndistinct)
-	distinct cve_ent_mun_super if (inten_start_year==1998 | inten_start_year==1999)
-	di as result "BR-strict (1998/1999 only): " r(ndistinct)
-	di as result "Active br_phase = $br_phase  =>  sample_br = $sample_br"
-	di as result "==========================================================" _n
+ *	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]
+	use "$data/aamr_regression_municipality_gender_tb.dta", clear
 
 	merge m:1 cve_ent_mun_super using "$data/inten1999.dta"
 	drop _merge
