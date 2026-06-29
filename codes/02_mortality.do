@@ -43,6 +43,7 @@ set more off
 ***   "1998_1999" : strict — only 1998 and 1999 entrants (current default, ~1,422 mun)
 ***   "1997_1999" : inclusive — adds 1997 entrants (~1,961 mun, matches BR reported N)
 	global br_phase "1998_1999"
+	*global br_phase "1997_1999"
 	if "$br_phase" == "1997_1999" {
 		global sample_br = "inrange(inten_start_year,1997,1999)"
 	}
@@ -110,7 +111,7 @@ local N_nm = r(N)
 
 {
 	cap file close sm
-	file open sm using "$tables/T1_descriptives_b.tex", write replace
+	file open sm using "$tables/T1_descriptives.tex", write replace
 	file write sm "\begin{tabular}{lcc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
@@ -2390,10 +2391,6 @@ local NmunAT5_3: di %12.0fc `r(ndistinct)'
     file write sm "Obs & 21,571 & `NBR_2_p' & `NBR_3_p' & `NAT5_2' & `NAT5_3' \\ " _n
     file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunBR_3_p' & `NmunAT5_2' & `NmunAT5_3' \\ " _n
     file write sm "\bottomrule" _n
-    file write sm "\multicolumn{6}{l}{\footnotesize \textit{Notes:} Column (1) reproduces the BR (2013) original. Column (2) is our close replication} \\ " _n
-    file write sm "\multicolumn{6}{l}{\footnotesize (unweighted, AT3 Panel B). Column (3) adds population weights (AT3 Panel C).} \\ " _n
-    file write sm "\multicolumn{6}{l}{\footnotesize Columns (4)--(5) re-estimate column (2) excluding municipalities below the 10th and 25th} \\ " _n
-    file write sm "\multicolumn{6}{l}{\footnotesize percentile of mean older-adult population (ages 65+), respectively.} \\ " _n
     file write sm "\end{tabular}"
     file close sm
 }
@@ -2630,15 +2627,9 @@ foreach col in 1 2 3 {
 	file write sm "Trend x Marg.\ Index (1990) & N & Y & N \\ " _n
 	file write sm "Trend x Marg.\ Index Quintile (1990) & N & N & Y \\ " _n
 	file write sm "\bottomrule" _n
-	file write sm "\multicolumn{4}{l}{\footnotesize \textit{Notes:} All columns weighted by older-adult (65+) population and include} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize municipality and year fixed effects. Column (2) adds the interaction of the} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize 1990 CONAPO continuous marginalization index with a linear year trend.} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize Following Parker \& Vogl (2023), column (3) replaces it with quintile bins of} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize the 1990 marginalization index, each interacted with a linear year trend,} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize allowing baseline-SES trends to vary flexibly (robust to sparse individual} \\ " _n
-	file write sm "\multicolumn{4}{l}{\footnotesize census components). Standard errors clustered at the municipality level.} \\ " _n
 	file write sm "\end{tabular}"
 	file close sm
+	
 }
 di "Table exported to: $tables/appendix/AT_ses_trend.tex"
 
@@ -2879,11 +2870,6 @@ local Nmun_AT_age: di %12.0fc `r(ndistinct)'
 	file write sm "Seguro Popular & Y & Y & Y & Y \\ " _n
 	file write sm "Weights & Y & Y & Y & Y \\ " _n
 	file write sm "\bottomrule" _n
-	file write sm "\multicolumn{5}{l}{\footnotesize \textit{Notes:} T2 col.\ (4) specification throughout: weighted by age-group population,} \\ " _n
-	file write sm "\multicolumn{5}{l}{\footnotesize Seguro Popular controls, municipality and year fixed effects, standard errors} \\ " _n
-	file write sm "\multicolumn{5}{l}{\footnotesize clustered at the municipality level. Column (1) outcome is constructed as} \\ " _n
-	file write sm "\multicolumn{5}{l}{\footnotesize (deaths 50--64) / (population 50--64) x 1,000. Columns (3)--(4) decompose} \\ " _n
-	file write sm "\multicolumn{5}{l}{\footnotesize the 65+ result into the two age sub-groups available in the vital statistics.} \\ " _n
 	file write sm "\end{tabular}"
 	file close sm
 }
