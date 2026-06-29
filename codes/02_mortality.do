@@ -2376,6 +2376,15 @@ local NmunAT5_3: di %12.0fc `r(ndistinct)'
 * Cols 2-3 reuse locals from the AT3 block:
 *   Col 2 (UW replication):  bBR2_2_p, seBR2_2_p, meanBR_2_p, NBR_2_p, NmunBR_2_p
 *   Col 3 (W replication):   bBR2_3_p, seBR2_3_p, meanBR_3_p, NBR_3_p, NmunBR_3_p
+
+* Mean Intensity 1999 by sample (one obs per mun at year==1996)
+quietly sum inten1999 if $sample_br & year == 1996
+local meanI99_AT5_full: di %6.1f r(mean) * 100
+quietly sum inten1999 if $sample_br & year == 1996 & pop_mun_br > `p10_br'
+local meanI99_AT5_2: di %6.1f r(mean) * 100
+quietly sum inten1999 if $sample_br & year == 1996 & pop_mun_br > `p25_br'
+local meanI99_AT5_3: di %6.1f r(mean) * 100
+
 {
     cap file close sm
     file open sm using "$tables/appendix/AT5_BR_trimming.tex", write replace
@@ -2389,6 +2398,7 @@ local NmunAT5_3: di %12.0fc `r(ndistinct)'
     file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanBR_3_p' & `meanAT5_2' & `meanAT5_3' \\ " _n
     file write sm "Obs & 21,571 & `NBR_2_p' & `NBR_3_p' & `NAT5_2' & `NAT5_3' \\ " _n
     file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunBR_3_p' & `NmunAT5_2' & `NmunAT5_3' \\ " _n
+    file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' \\ " _n
     file write sm "\bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
