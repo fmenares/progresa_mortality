@@ -734,25 +734,45 @@ di "Table exported to: $tables/T2_b_mortality.tex"
 
 *============================================================
 * FIGURE 1 (Appendix): Elder Mortality Trends + PROGRESA penetration
-*   — All Municipalities (companion to Figure 1a, which restricts to
-*     highly marginalized municipalities)
+*   — Highly Marginalized (solid) vs Non-Marginalized (dashed)
+*   Mortality colored: All=black, Female=red, Male=blue
+*   Intensity (right axis): marg solid, non-marg dashed
 *============================================================
 
 {
-* All municipalities: elder mortality trends + PROGRESA penetration (right axis)
+* Collapse marginalized into tempfile
+tempfile marg_trend
 preserve
-drop if gm_mun_1990==.
-collapse (mean) emr65 emr65f emr65m intensity_new_per [aw=popover65_], by(year)
+keep if $sample_marg
+collapse (mean) emr65_marg=emr65 emr65f_marg=emr65f emr65m_marg=emr65m ///
+	inten_marg=intensity_new_per [aw=popover65_], by(year)
+save `marg_trend'
+restore
 
-twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxis(1)) ///
-       (line emr65f year, lcolor(red)   lpattern(dash)          yaxis(1)) ///
-       (line emr65m year, lcolor(blue)  lpattern(shortdash_dot) yaxis(1)) ///
-       (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
+* Collapse non-marginalized, merge, and plot
+preserve
+keep if !(gm_mun_1990==4 | gm_mun_1990==5)
+drop if gm_mun_1990==.
+collapse (mean) emr65_nm=emr65 emr65f_nm=emr65f emr65m_nm=emr65m ///
+	inten_nm=intensity_new_per [aw=popover65_], by(year)
+
+merge 1:1 year using `marg_trend', nogen
+
+twoway (line emr65_marg  year, lcolor(black) lpattern(solid) yaxis(1)) ///
+       (line emr65f_marg year, lcolor(red)   lpattern(solid) yaxis(1)) ///
+       (line emr65m_marg year, lcolor(blue)  lpattern(solid) yaxis(1)) ///
+       (line emr65_nm    year, lcolor(black) lpattern(dash)  yaxis(1)) ///
+       (line emr65f_nm   year, lcolor(red)   lpattern(dash)  yaxis(1)) ///
+       (line emr65m_nm   year, lcolor(blue)  lpattern(dash)  yaxis(1)) ///
+       (line inten_marg  year, lcolor(orange) lpattern(solid) yaxis(2)) ///
+       (line inten_nm    year, lcolor(orange) lpattern(dash)  yaxis(2)), ///
 	ytitle("Mortality Rate (65+ per 1,000)", axis(1)) ///
 	ytitle("Progresa Penetration (%)", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (right axis)") ///
-	cols(4) size(medsmall) position(6) ring(1)) ///
+	legend(order(1 "Marg: All" 2 "Marg: Female" 3 "Marg: Male" ///
+	             4 "Non-Marg: All" 5 "Non-Marg: Female" 6 "Non-Marg: Male" ///
+	             7 "Intensity, Marg (right axis)" 8 "Intensity, Non-Marg (right axis)") ///
+	cols(3) size(small) position(6) ring(1)) ///
 	graphregion(fcolor(white))
 graph export "$figures/appendix/Figure_1_all.pdf", as(pdf) replace
 restore
