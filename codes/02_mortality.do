@@ -229,15 +229,15 @@ g intensity_new_per = intensity_new * 100
 preserve
 keep if $sample_marg
 collapse (mean) emr65 emr65m emr65f intensity_new_per [aw=popover65_], by(year)
-twoway (line emr65  year, lcolor(navy)        lpattern(solid)    yaxis(1)) ///
-       (line emr65m year, lcolor(maroon)       lpattern(dash)     yaxis(1)) ///
-       (line emr65f year, lcolor(forest_green) lpattern(dot)      yaxis(1)) ///
+twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxis(1)) ///
+       (line emr65f year, lcolor(red)   lpattern(dash)          yaxis(1)) ///
+       (line emr65m year, lcolor(blue)  lpattern(shortdash_dot) yaxis(1)) ///
        (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
 	ytitle("Mortality Rate (65+ per 1000)", axis(1)) ///
 	ytitle("Progresa Penetration (%)", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "All" 2 "Male" 3 "Female" 4 "Intensity (right axis)") ///
-	cols(4) size(medsmall) position(6) ring(1)) ///	
+	legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (right axis)") ///
+	cols(4) size(medsmall) position(6) ring(1)) ///
 	graphregion(fcolor(white))
 graph export "$figures/Figure_1a_marg.pdf", as(pdf) replace
 restore
@@ -454,23 +454,23 @@ twoway ///
 	(scatter th_w xpos_w, ///
 		mcolor(black) msymbol(circle) msize(vsmall)) ///
 	(rcap thi_f tlo_f xpos_f, ///
-		lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+		lcolor(red%60) lwidth(vthin) lpattern(solid)) ///
 	(scatter th_f xpos_f, ///
 		mcolor(red) msymbol(square) msize(vsmall)) ///
 	(rcap thi_m tlo_m xpos_m, ///
-		lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+		lcolor(blue%60) lwidth(vthin) lpattern(solid)) ///
 	(scatter th_m xpos_m, ///
 		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
 	(line th_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(line th_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
-	(line th_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
+	(line th_f xpos_f if 1==0, lcolor(red) lpattern(solid) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+	(line th_m xpos_m if 1==0, lcolor(blue%80) lpattern(solid) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 	xscale(range(0.5 16.5)) ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	ylabel(, grid gmin gmax labsize(small)) ///
+	ylabel(-30(5)-20, grid gmin gmax labsize(small)) ///
 	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
@@ -680,7 +680,7 @@ local meanI99_2b: di %6.1f r(mean) * 100
 	cap file close sm
 	file open sm using "$tables/T2_b_mortality.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-	file write sm "& \multicolumn{2}{c}{\textit{Ages 65+}} & \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ \cmidrule(lr){2-3}" _n
+	file write sm "& \multicolumn{2}{c}{\textit{Ages 65+}} & \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
@@ -733,40 +733,26 @@ di "Table exported to: $tables/T2_b_mortality.tex"
 
 
 *============================================================
-* FIGURE 1 (Appendix): Elder Mortality Trends — Highly Marginalized
-*   vs Non-Marginalized Municipalities
+* FIGURE 1 (Appendix): Elder Mortality Trends + PROGRESA penetration
+*   — All Municipalities (companion to Figure 1a, which restricts to
+*     highly marginalized municipalities)
 *============================================================
 
 {
-* Collapse marginalized into tempfile
-tempfile marg_trend
+* All municipalities: elder mortality trends + PROGRESA penetration (right axis)
 preserve
-keep if $sample_marg
-collapse (mean) emr65_marg=emr65 emr65m_marg=emr65m emr65f_marg=emr65f ///
-	[aw=popover65_], by(year)
-save `marg_trend'
-restore
-
-* Collapse non-marginalized, merge, and plot
-preserve
-keep if !(gm_mun_1990==4 | gm_mun_1990==5)
 drop if gm_mun_1990==.
-collapse (mean) emr65_nm=emr65 emr65m_nm=emr65m emr65f_nm=emr65f ///
-	[aw=popover65_], by(year)
+collapse (mean) emr65 emr65f emr65m intensity_new_per [aw=popover65_], by(year)
 
-merge 1:1 year using `marg_trend', nogen
-
-twoway (line emr65_marg  year, lcolor(navy)   lpattern(solid)) ///
-       (line emr65m_marg year, lcolor(navy)   lpattern(dash)) ///
-       (line emr65f_marg year, lcolor(navy)   lpattern(dot)) ///
-       (line emr65_nm    year, lcolor(maroon) lpattern(solid)) ///
-       (line emr65m_nm   year, lcolor(maroon) lpattern(dash)) ///
-       (line emr65f_nm   year, lcolor(maroon) lpattern(dot)), ///
-	ytitle("Mortality Rate (65+ per 1,000)") ///
+twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxis(1)) ///
+       (line emr65f year, lcolor(red)   lpattern(dash)          yaxis(1)) ///
+       (line emr65m year, lcolor(blue)  lpattern(shortdash_dot) yaxis(1)) ///
+       (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
+	ytitle("Mortality Rate (65+ per 1,000)", axis(1)) ///
+	ytitle("Progresa Penetration (%)", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "Marg: All" 2 "Marg: Male" 3 "Marg: Female" ///
-	             4 "Non-Marg: All" 5 "Non-Marg: Male" 6 "Non-Marg: Female") ///
-	cols(3) size(medsmall) position(6) ring(1)) ///
+	legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (right axis)") ///
+	cols(4) size(medsmall) position(6) ring(1)) ///
 	graphregion(fcolor(white))
 graph export "$figures/appendix/Figure_1_all.pdf", as(pdf) replace
 restore
@@ -959,7 +945,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 		local legend_nums "`legend_nums' `plot_count'"
 		local legend_labels "`legend_labels' label(`plot_count' Male)"
 	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000): `cod'", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
+	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 	`twoway_cmd'
 	graph export "$figures/appendix/Figure_3_`cod'_Marg.pdf", as(pdf) replace
 	restore
@@ -2897,16 +2883,19 @@ foreach grp in p f m {
 		local yout emr65
 		local ywt  popover65_
 		local gsuf ""
+		local scol black
 	}
 	else if "`grp'" == "f" {
 		local yout emr65f
 		local ywt  popover65_f
 		local gsuf "_f"
+		local scol red
 	}
 	else {
 		local yout emr65m
 		local ywt  popover65_m
 		local gsuf "_m"
+		local scol blue
 	}
 
 	* Spec 1: Baseline (W+SP)
@@ -2998,25 +2987,25 @@ foreach grp in p f m {
 		replace lo_s4 = `bes4_`pos'' - 1.96 * `sees4_`pos''    if yr_pos == `pos'
 	}
 	twoway ///
-		(rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
-		(scatter b_s1 xpos_1, mcolor(black) msymbol(circle) msize(vsmall)) ///
-		(rcap hi_s2 lo_s2 xpos_2, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
-		(scatter b_s2 xpos_2, mcolor(red) msymbol(square) msize(vsmall)) ///
-		(rcap hi_s3 lo_s3 xpos_3, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
-		(scatter b_s3 xpos_3, mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-		(rcap hi_s4 lo_s4 xpos_4, lcolor(forest_green%60) lwidth(vthin) lpattern(longdash)) ///
-		(scatter b_s4 xpos_4, mcolor(forest_green) msymbol(diamond) msize(vsmall)) ///
-		(line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
-		(line b_s2 xpos_2 if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
-		(line b_s3 xpos_3 if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-		(line b_s4 xpos_4 if 1==0, lcolor(forest_green) lpattern(longdash) lwidth(thin) mcolor(forest_green) msymbol(diamond) msize(vsmall)), ///
+		(rcap hi_s1 lo_s1 xpos_1, lcolor(`scol'%60) lwidth(vthin) lpattern(solid)) ///
+		(scatter b_s1 xpos_1, mcolor(`scol') msymbol(circle) msize(vsmall)) ///
+		(rcap hi_s2 lo_s2 xpos_2, lcolor(`scol'%60) lwidth(vthin) lpattern(dash)) ///
+		(scatter b_s2 xpos_2, mcolor(`scol') msymbol(square) msize(vsmall)) ///
+		(rcap hi_s3 lo_s3 xpos_3, lcolor(`scol'%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+		(scatter b_s3 xpos_3, mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
+		(rcap hi_s4 lo_s4 xpos_4, lcolor(`scol'%60) lwidth(vthin) lpattern(longdash)) ///
+		(scatter b_s4 xpos_4, mcolor(`scol') msymbol(diamond) msize(vsmall)) ///
+		(line b_s1 xpos_1 if 1==0, lcolor(`scol') lpattern(solid) lwidth(thin) mcolor(`scol') msymbol(circle) msize(vsmall)) ///
+		(line b_s2 xpos_2 if 1==0, lcolor(`scol') lpattern(dash) lwidth(thin) mcolor(`scol') msymbol(square) msize(vsmall)) ///
+		(line b_s3 xpos_3 if 1==0, lcolor(`scol') lpattern(shortdash_dot) lwidth(thin) mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
+		(line b_s4 xpos_4 if 1==0, lcolor(`scol') lpattern(longdash) lwidth(thin) mcolor(`scol') msymbol(diamond) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-		ylabel(, grid gmin gmax labsize(small)) ///
+		ylabel(-15(5)15, grid gmin gmax labsize(small)) ///
 		legend(order(9 "Baseline (W+SP)" 10 "+ Trend x Marg. Index" 11 "+ Trend x Quintile" 12 "+ Quintile, excl. Int. 2005") ///
 			cols(2) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
