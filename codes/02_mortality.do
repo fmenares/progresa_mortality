@@ -163,7 +163,7 @@ restore
 
 	
 	tab post 
-	global sample_marg = "gm_mun_1990==4|gm_mun_1990==5"
+	global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 	
 	
 	
