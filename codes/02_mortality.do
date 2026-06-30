@@ -726,6 +726,38 @@ local meanI99_2b: di %6.1f r(mean) * 100
 }
 di "Table exported to: $tables/T2_b_mortality.tex"
 
+*============================================================
+* SLIDE TABLE: T2_b_mortality — Pooled, Ages 65-69 and 70+ only
+* Same as T2_b but Panel A (Pooled) and cols 3-4 (Ages 65-69 and 70+).
+* Output: $tables/T2_slide_age.tex
+*============================================================
+{
+	cap file close sm
+	file open sm using "$tables/T2_slide_age.tex", write replace
+	file write sm "\begin{tabular}{lcc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2b_p_3' & `b99_2b_p_4' \\ " _n
+	file write sm " & (`se99_2b_p_3') & (`se99_2b_p_4') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_2b_p_3' & `b05_2b_p_4' \\ " _n
+	file write sm " & (`se05_2b_p_3') & (`se05_2b_p_4') \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2b_p_3' & `mean_2b_p_4' \\ " _n
+	file write sm "Obs & `N_2b_p_3' & `N_2b_p_4' \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "No.\ Mun & `Nmun_2b_p_3' & `Nmun_2b_p_4' \\ " _n
+	file write sm "  & & \\ " _n
+	file write sm "SES Trend (Cont.\ Index) & N & N \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_2b' & `meanI99_2b' \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/T2_slide_age.tex"
+
 
 *============================================================
 * APPENDIX FIGURES:
