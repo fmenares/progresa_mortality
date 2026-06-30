@@ -1105,6 +1105,7 @@ foreach yvar of local hh_outcomes {
     file write sm "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
     file write sm "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
     file write sm "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
+    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
     file write sm "\textit{Treatment \$\times\$ 1999 (no elderly)} & `b99_food' & `b99_pf' & `b99_med' & `b99_pm' \\ " _n
     file write sm " & (`se99_food') & (`se99_pf') & (`se99_med') & (`se99_pm') \\ " _n
