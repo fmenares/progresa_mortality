@@ -470,7 +470,7 @@ twoway ///
 	xscale(range(0.5 16.5)) ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	ylabel(-30(5)-20, grid gmin gmax labsize(small)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
 	legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
 		cols(3) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
@@ -2365,7 +2365,8 @@ foreach out in emr65 aamr65 {
 	file write tbl "\begin{tabular}{lccccc} \hline \hline" _n
 	file write tbl "& \multicolumn{2}{c}{\textit{BR Sample}} " _n
 	file write tbl "& \multicolumn{2}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
-	file write tbl "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ \cmidrule(lr){2-5}" _n
+	file write tbl "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ " _n
+	file write tbl "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
 	file write tbl "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 
 	foreach pnl in p f m {
@@ -2545,8 +2546,9 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
     file open sm using "$tables/appendix/AT5_BR_trimming.tex", write replace
     file write sm "\begin{tabular}{lccccc} \hline \hline" _n
     file write sm "& \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Full Sample}} & \multicolumn{2}{c}{\textit{Progressive Trimming}} \\ \cmidrule(lr){3-4} \cmidrule(lr){5-6}" _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ " _n
-    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication (UW)} & \multicolumn{1}{c}{Replication (W)} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} \\ \toprule " _n
+    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication (UW)} & \multicolumn{1}{c}{Replication (W)} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} \\ " _n
+    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ \toprule " _n
     file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bBR2_3_p' & `bAT5_2' & `bAT5_3' \\ " _n
     file write sm " & (1.040) & (`seBR2_2_p') & (`seBR2_3_p') & (`seAT5_2') & (`seAT5_3') \\ " _n
     file write sm "  & & & & & \\ " _n
@@ -3035,7 +3037,7 @@ foreach grp in p f m {
 		xscale(range(0.5 16.5)) ///
 		xtitle("") ///
 		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-		ylabel(-15(5)15, grid gmin gmax labsize(small)) ///
+		ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
 		legend(order(9 "Baseline (W+SP)" 10 "+ Trend x Marg. Index" 11 "+ Trend x Quintile" 12 "+ Quintile, excl. Int. 2005") ///
 			cols(2) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
@@ -3134,8 +3136,9 @@ local meanI99_age: di %6.1f r(mean) * 100
 	cap file close sm
 	file open sm using "$tables/appendix/AT_age_subgroups.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ " _n
-	file write sm "& \multicolumn{1}{c}{Ages 50--64} & \multicolumn{1}{c}{Ages 65+} & \multicolumn{1}{c}{Ages 65--69} & \multicolumn{1}{c}{Ages 70+} \\ \toprule" _n
+	file write sm "& \multicolumn{1}{c}{Ages 50--64} & \multicolumn{1}{c}{Ages 65+} & \multicolumn{1}{c}{Ages 65--69} & \multicolumn{1}{c}{Ages 70+} \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 
 	file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_p_a5064' & `b99_p_a65' & `b99_p_a6569' & `b99_p_a70' \\ " _n

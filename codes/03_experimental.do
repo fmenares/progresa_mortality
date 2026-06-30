@@ -837,9 +837,10 @@ di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
     cap file close sm
     file open sm using "$tables/T3_experimental.tex", write replace
     file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ " _n
+    file write sm "& \multicolumn{5}{c}{\textit{Sample: age 65+}} & \multicolumn{1}{c}{\textit{age 51+}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-7}" _n
     file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\ddagger\$}} \\ " _n
-    file write sm "& \multicolumn{5}{c}{\textit{Sample: age 65+}} & \multicolumn{1}{c}{\textit{age 51+}} \\ \toprule" _n
+    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
     * Panel A: Pooled
     file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
     file write sm "\textit{Treat \$\times\$ 1998} & `b98_p_wh' & `b98_p_la' & `b98_p_wc' & `b98_p_oe' & & \\ " _n
@@ -875,7 +876,6 @@ di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
     file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & & \\ " _n
     file write sm "Control Mean (1999) & & & & & `cmn_m_tv' & `cmn_m_tv51' \\ " _n
     file write sm "Obs & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' & `N_m_tv51' \\ " _n
-    file write sm "  & & & & & & \\ " _n
     file write sm "\bottomrule" _n
     file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\dagger\$} Total visits (hospital, public clinic, private doctor, past 4 weeks). 1999 only; cross-section, municipality FE.} \\" _n
     file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\ddagger\$} Same specification, sample age 51+. Comparable to Gertler (2000), Table 6.} \\" _n
