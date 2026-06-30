@@ -589,7 +589,146 @@ local meanI99_T2: di %6.1f r(mean) * 100
 
 
 *============================================================
-* APPENDIX FIGURES: 
+* TABLE T2_b: Baseline + SES Trend Robustness + Age Subgroups
+* Col 1: Baseline (W+SP, emr65)           = T2 col 4
+* Col 2: + SES Trend × im_mun_1990 (cont) = AT_ses_trend col 2
+* Col 3: Ages 65-69 (baseline W+SP spec)  = AT_age_subgroups col 3
+* Col 4: Ages 70+   (baseline W+SP spec)  = AT_age_subgroups col 4
+* Output: $tables/T2_b_mortality.tex
+*============================================================
+
+foreach pnl in p f m {
+	if "`pnl'" == "p" {
+		local out65   emr65
+		local out6569 asr6569
+		local out70   asrover70
+		local wt65    popover65_
+		local wt6569  pop6569_
+		local wt70    popover70_
+	}
+	else if "`pnl'" == "f" {
+		local out65   emr65f
+		local out6569 asr6569f
+		local out70   asrover70f
+		local wt65    popover65_f
+		local wt6569  pop6569_f
+		local wt70    popover70_f
+	}
+	else {
+		local out65   emr65m
+		local out6569 asr6569m
+		local out70   asrover70m
+		local wt65    popover65_m
+		local wt6569  pop6569_m
+		local wt70    popover70_m
+	}
+
+	foreach col in 1 2 3 4 {
+		if `col' == 1 {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 2 {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				c.im_mun_1990#c.year ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 3 {
+			reghdfe `out6569' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt6569'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			reghdfe `out70' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt70'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local b99_2b_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b99_2b_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b99_2b_`pnl'_`col' = "`aux'*"
+		else                  local b99_2b_`pnl'_`col' = "`aux'"
+		local se99_2b_`pnl'_`col': di %12.3f _se[1.post#c.inten1999]
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local b05_2b_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b05_2b_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b05_2b_`pnl'_`col' = "`aux'*"
+		else                  local b05_2b_`pnl'_`col' = "`aux'"
+		local se05_2b_`pnl'_`col': di %12.3f _se[1.post#c.inten2005]
+
+		if `col' <= 2 {
+			sum `out65' if e(sample) & year < 1997
+		}
+		else if `col' == 3 {
+			sum `out6569' if e(sample) & year < 1997
+		}
+		else {
+			sum `out70' if e(sample) & year < 1997
+		}
+		local mean_2b_`pnl'_`col': di %12.2fc `r(mean)'
+		local N_2b_`pnl'_`col':    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local Nmun_2b_`pnl'_`col': di %12.0fc `r(ndistinct)'
+	}
+}
+
+quietly sum inten1999 if $sample_marg & year == 1996
+local meanI99_2b: di %6.1f r(mean) * 100
+
+{
+	cap file close sm
+	file open sm using "$tables/T2_b_mortality.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& \multicolumn{2}{c}{\textit{Ages 65+}} & \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ \cmidrule(lr){2-3}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2b_p_1' & `b99_2b_p_2' & `b99_2b_p_3' & `b99_2b_p_4' \\ " _n
+	file write sm " & (`se99_2b_p_1') & (`se99_2b_p_2') & (`se99_2b_p_3') & (`se99_2b_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_2b_p_1' & `b05_2b_p_2' & `b05_2b_p_3' & `b05_2b_p_4' \\ " _n
+	file write sm " & (`se05_2b_p_1') & (`se05_2b_p_2') & (`se05_2b_p_3') & (`se05_2b_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2b_p_1' & `mean_2b_p_2' & `mean_2b_p_3' & `mean_2b_p_4' \\ " _n
+	file write sm "Obs & `N_2b_p_1' & `N_2b_p_2' & `N_2b_p_3' & `N_2b_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2b_f_1' & `b99_2b_f_2' & `b99_2b_f_3' & `b99_2b_f_4' \\ " _n
+	file write sm " & (`se99_2b_f_1') & (`se99_2b_f_2') & (`se99_2b_f_3') & (`se99_2b_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_2b_f_1' & `b05_2b_f_2' & `b05_2b_f_3' & `b05_2b_f_4' \\ " _n
+	file write sm " & (`se05_2b_f_1') & (`se05_2b_f_2') & (`se05_2b_f_3') & (`se05_2b_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2b_f_1' & `mean_2b_f_2' & `mean_2b_f_3' & `mean_2b_f_4' \\ " _n
+	file write sm "Obs & `N_2b_f_1' & `N_2b_f_2' & `N_2b_f_3' & `N_2b_f_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2b_m_1' & `b99_2b_m_2' & `b99_2b_m_3' & `b99_2b_m_4' \\ " _n
+	file write sm " & (`se99_2b_m_1') & (`se99_2b_m_2') & (`se99_2b_m_3') & (`se99_2b_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_2b_m_1' & `b05_2b_m_2' & `b05_2b_m_3' & `b05_2b_m_4' \\ " _n
+	file write sm " & (`se05_2b_m_1') & (`se05_2b_m_2') & (`se05_2b_m_3') & (`se05_2b_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2b_m_1' & `mean_2b_m_2' & `mean_2b_m_3' & `mean_2b_m_4' \\ " _n
+	file write sm "Obs & `N_2b_m_1' & `N_2b_m_2' & `N_2b_m_3' & `N_2b_m_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "No.\ Mun & `Nmun_2b_p_1' & `Nmun_2b_p_2' & `Nmun_2b_p_3' & `Nmun_2b_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "SES Trend (Cont.\ Index) & N & Y & N & N \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_2b' & `meanI99_2b' & `meanI99_2b' & `meanI99_2b' \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/T2_b_mortality.tex"
+
+
+*============================================================
+* APPENDIX FIGURES:
 *============================================================
 
 
@@ -927,8 +1066,8 @@ preserve
 clear
 set obs 16
 gen yr_pos = _n
-gen xpos_wt = yr_pos - 0.18
-gen xpos_uw = yr_pos + 0.18
+gen xpos_uw = yr_pos - 0.18
+gen xpos_wt = yr_pos + 0.18
 foreach pfx in wt uw {
 	gen th_`pfx'  = .
 	gen thi_`pfx' = .
@@ -943,16 +1082,16 @@ forval pos = 1/16 {
 	replace tlo_uw = `thuw_w_`pos'' - 1.96 * `sethuw_w_`pos'' if yr_pos == `pos'
 }
 twoway ///
+	(rcap thi_uw tlo_uw xpos_uw, ///
+		lcolor(black%60) lwidth(vthin) lpattern(dash)) ///
+	(scatter th_uw xpos_uw, ///
+		mcolor(black) msymbol(triangle) msize(vsmall)) ///
 	(rcap thi_wt tlo_wt xpos_wt, ///
 		lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
 	(scatter th_wt xpos_wt, ///
 		mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(rcap thi_uw tlo_uw xpos_uw, ///
-		lcolor(blue%60) lwidth(vthin) lpattern(dash)) ///
-	(scatter th_uw xpos_uw, ///
-		mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
-	(line th_wt xpos_wt if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(line th_uw xpos_uw if 1==0, lcolor(blue%80) lpattern(dash) lwidth(thin) mcolor(blue%80) msymbol(triangle) msize(vsmall)), ///
+	(line th_uw xpos_uw if 1==0, lcolor(black) lpattern(dash) lwidth(thin) mcolor(black) msymbol(triangle) msize(vsmall)) ///
+	(line th_wt xpos_wt if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)), ///
 	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -960,7 +1099,7 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(5 "Weighted" 6 "Unweighted") ///
+	legend(order(5 "Unweighted" 6 "Weighted") ///
 		cols(2) size(medsmall) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
