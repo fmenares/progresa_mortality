@@ -972,89 +972,6 @@ di "Table exported to: $tables/T3_experimental_slide.tex"
 * sample groups are separated by a spanning header. The former age-51+ visits column
 * was removed. All elderly-only locals are computed before the write block.
 
-*============================================================
-* APPENDIX TABLE: Direct-transfer test in older-adults-only households
-* Sample: age 65+, older-adults-only households (only_elderly_base==1).
-* Compares the treatment effect for ELIGIBLE (transfer-receiving) vs.
-* INELIGIBLE households on the T3 outcomes (weekly hours, total visits).
-* Only eligible households receive the direct food transfer, so the eligible
-* differential isolates its role (analogous to AT6's elderly-presence split).
-* Weekly hours: DiD (year x treat x elig). Total visits: 1999 cross-section
-* (treat x elig). Municipality FE, SEs clustered at locality.
-* NOTE: computed here (before the household collapse) because it uses the
-* individual-level weekly_hours / total_visits / age97 variables.
-* Output: $tables/appendix/AT_elderly_transfer.tex
-*============================================================
-cap drop elig_bin
-gen elig_bin = (eligible==1) if !missing(eligible)
-label var elig_bin "Eligible (poor) household"
-
-* Col 1: Weekly hours — triple interaction year x treat x eligibility
-summarize weekly_hours if year==97 & contba==0 & elig_bin==0 & only_elderly_base==1 & age97>=65 ///
-    & !missing(weekly_hours, year, contba, elig_bin, claveofi)
-local cmn_et_wh : di %9.3f r(mean)
-reghdfe weekly_hours i.year##i.contba##i.elig_bin ///
-    if only_elderly_base==1 & age97>=65 & !missing(weekly_hours, year, contba, elig_bin, claveofi), ///
-    absorb(clavemun) vce(cluster claveofi)
-local aux : di %9.3f _b[99.year#1.contba]
-local tstat = abs(_b[99.year#1.contba] / _se[99.year#1.contba])
-if      `tstat' >= 2.576 local b_et_wh = trim("`aux'") + "***"
-else if `tstat' >= 1.960 local b_et_wh = trim("`aux'") + "**"
-else if `tstat' >= 1.645 local b_et_wh = trim("`aux'") + "*"
-else                     local b_et_wh = trim("`aux'")
-local se_et_wh : di %9.3f _se[99.year#1.contba]
-local aux : di %9.3f _b[99.year#1.contba#1.elig_bin]
-local tstat = abs(_b[99.year#1.contba#1.elig_bin] / _se[99.year#1.contba#1.elig_bin])
-if      `tstat' >= 2.576 local be_et_wh = trim("`aux'") + "***"
-else if `tstat' >= 1.960 local be_et_wh = trim("`aux'") + "**"
-else if `tstat' >= 1.645 local be_et_wh = trim("`aux'") + "*"
-else                     local be_et_wh = trim("`aux'")
-local see_et_wh : di %9.3f _se[99.year#1.contba#1.elig_bin]
-local N_et_wh : di %12.0fc e(N)
-
-* Col 2: Total visits — 1999 cross-section, treat x eligibility
-summarize total_visits if year==99 & contba==0 & elig_bin==0 & only_elderly_base==1 & age97>=65 ///
-    & !missing(total_visits, contba, elig_bin, claveofi)
-local cmn_et_tv : di %9.3f r(mean)
-reghdfe total_visits i.contba##i.elig_bin ///
-    if year==99 & only_elderly_base==1 & age97>=65 & !missing(total_visits, contba, elig_bin, claveofi), ///
-    absorb(clavemun) vce(cluster claveofi)
-local aux : di %9.3f _b[1.contba]
-local tstat = abs(_b[1.contba] / _se[1.contba])
-if      `tstat' >= 2.576 local b_et_tv = trim("`aux'") + "***"
-else if `tstat' >= 1.960 local b_et_tv = trim("`aux'") + "**"
-else if `tstat' >= 1.645 local b_et_tv = trim("`aux'") + "*"
-else                     local b_et_tv = trim("`aux'")
-local se_et_tv : di %9.3f _se[1.contba]
-local aux : di %9.3f _b[1.contba#1.elig_bin]
-local tstat = abs(_b[1.contba#1.elig_bin] / _se[1.contba#1.elig_bin])
-if      `tstat' >= 2.576 local be_et_tv = trim("`aux'") + "***"
-else if `tstat' >= 1.960 local be_et_tv = trim("`aux'") + "**"
-else if `tstat' >= 1.645 local be_et_tv = trim("`aux'") + "*"
-else                     local be_et_tv = trim("`aux'")
-local see_et_tv : di %9.3f _se[1.contba#1.elig_bin]
-local N_et_tv : di %12.0fc e(N)
-
-{
-    cap file close et
-    file open et using "$tables/appendix/AT_elderly_transfer.tex", write replace
-    file write et "\begin{tabular}{lcc} \hline \hline" _n
-    file write et "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} \\ \cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
-    file write et "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
-    file write et "\textit{Treatment \$\times\$ 1999 (ineligible)} & `b_et_wh' & `b_et_tv' \\ " _n
-    file write et " & (`se_et_wh') & (`se_et_tv') \\ " _n
-    file write et "  & & \\ " _n
-    file write et "\textit{Differential (eligible)} & `be_et_wh' & `be_et_tv' \\ " _n
-    file write et " & (`see_et_wh') & (`see_et_tv') \\ " _n
-    file write et "  & & \\ " _n
-    file write et "Control Mean & `cmn_et_wh' & `cmn_et_tv' \\ " _n
-    file write et "Observations & `N_et_wh' & `N_et_tv' \\ " _n
-    file write et "Municipality FE & Yes & Yes \\ \bottomrule" _n
-    file write et "\end{tabular}"
-    file close et
-}
-di "Table exported to: $tables/appendix/AT_elderly_transfer.tex"
-
 **Household level analysis**
 **collapse to household level**
 ** distinguish between households with aging members and households without**
@@ -1097,8 +1014,13 @@ replace hh_elderly=0 if hh_age<=64
 gen elderly97=1 if age97>=65
 replace elderly97=0 if age97<65
 
-collapse (mean) total_gas food food98 food99 porc_food* porc_med* medicine medicine98 medicine99 p_* contba hhsize kid* eligible  clavemun claveofi hh_* (sum) elderly97, by(hhid year)
+collapse (mean) total_gas food food98 food99 porc_food* porc_med* medicine medicine98 medicine99 p_* contba hhsize kid* eligible only_elderly_base clavemun claveofi hh_* (sum) elderly97, by(hhid year)
 replace elderly97=1 if elderly97>1
+
+* Binary eligibility flag for the older-adults-only-household expenditure table
+cap drop elig_bin
+gen elig_bin = (eligible==1) if !missing(eligible)
+label var elig_bin "Eligible (poor) household"
 
 local balvars food porc_food medicine porc_med 
 
@@ -1227,6 +1149,73 @@ foreach yvar of local hh_outcomes {
     file write sm "\end{tabular}"
     file close sm
 }
+
+*============================================================
+* APPENDIX TABLE: Same layout as AT6 (HH food/health expenditures) but on
+* OLDER-ADULTS-ONLY households (only_elderly_base==1), with the differential
+* by ELIGIBILITY (eligible vs. ineligible) instead of elderly presence. Only
+* eligible households receive the direct food transfer, so the eligible
+* differential isolates its role. DiD (year x treat x elig), base 1998,
+* municipality FE, SEs clustered at locality.
+* Output: $tables/appendix/AT_elderly_transfer.tex
+*============================================================
+foreach yvar of local hh_outcomes {
+    local col ""
+    if "`yvar'" == "food"      local col food
+    if "`yvar'" == "porc_food" local col pf
+    if "`yvar'" == "medicine"  local col med
+    if "`yvar'" == "porc_med"  local col pm
+    if "`col'" != "" {
+        * Control mean 1998 for the ineligible control group
+        summarize `yvar' if year==98 & contba==0 & elig_bin==0 & only_elderly_base==1 ///
+            & !missing(`yvar', year, contba, elig_bin, hhid, claveofi)
+        local cmn_et_`col' : di %9.3f r(mean)
+
+        reghdfe `yvar' i.year##i.contba##i.elig_bin ///
+            if only_elderly_base==1 & !missing(`yvar', year, contba, elig_bin, hhid, claveofi), ///
+            absorb(clavemun) vce(cluster claveofi)
+
+        * Treatment × 1999 for ineligible HH (base = 1998, elig_bin=0)
+        local aux : di %9.3f _b[99.year#1.contba]
+        local tstat = abs(_b[99.year#1.contba] / _se[99.year#1.contba])
+        if `tstat' >= 2.576      local b_et_`col' = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b_et_`col' = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b_et_`col' = trim("`aux'") + "*"
+        else                     local b_et_`col' = trim("`aux'")
+        local se_et_`col' : di %9.3f _se[99.year#1.contba]
+        * Differential for eligible HH (triple interaction)
+        local aux : di %9.3f _b[99.year#1.contba#1.elig_bin]
+        local tstat = abs(_b[99.year#1.contba#1.elig_bin] / _se[99.year#1.contba#1.elig_bin])
+        if `tstat' >= 2.576      local be_et_`col' = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local be_et_`col' = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local be_et_`col' = trim("`aux'") + "*"
+        else                     local be_et_`col' = trim("`aux'")
+        local see_et_`col' : di %9.3f _se[99.year#1.contba#1.elig_bin]
+        local N_et_`col'  : di %12.0fc e(N)
+    }
+}
+
+{
+    cap file close et
+    file open et using "$tables/appendix/AT_elderly_transfer.tex", write replace
+    file write et "\begin{tabular}{lcccc} \hline \hline" _n
+    file write et "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
+    file write et "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+    file write et "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
+    file write et "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
+    file write et "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+    file write et "\textit{Treatment \$\times\$ 1999 (ineligible)} & `b_et_food' & `b_et_pf' & `b_et_med' & `b_et_pm' \\ " _n
+    file write et " & (`se_et_food') & (`se_et_pf') & (`se_et_med') & (`se_et_pm') \\ " _n
+    file write et "  & & & & \\ " _n
+    file write et "\textit{Differential (eligible)} & `be_et_food' & `be_et_pf' & `be_et_med' & `be_et_pm' \\ " _n
+    file write et " & (`see_et_food') & (`see_et_pf') & (`see_et_med') & (`see_et_pm') \\ " _n
+    file write et "  & & & & \\ " _n
+    file write et "Control Mean (1998) & `cmn_et_food' & `cmn_et_pf' & `cmn_et_med' & `cmn_et_pm' \\ " _n
+    file write et "Observations & `N_et_food' & `N_et_pf' & `N_et_med' & `N_et_pm' \\ \bottomrule" _n
+    file write et "\end{tabular}"
+    file close et
+}
+di "Table exported to: $tables/appendix/AT_elderly_transfer.tex"
 
 
 
