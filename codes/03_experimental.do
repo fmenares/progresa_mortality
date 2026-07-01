@@ -1014,7 +1014,15 @@ replace hh_elderly=0 if hh_age<=64
 gen elderly97=1 if age97>=65
 replace elderly97=0 if age97<65
 
-collapse (mean) total_gas food food98 food99 porc_food* porc_med* medicine medicine98 medicine99 p_* contba hhsize kid* eligible  clavemun claveofi hh_* (sum) elderly97, by(hhid year)
+* Baseline-fixed elderly presence (AT6 Panel B): whether the household had a 65+
+* member at baseline (year==97), held constant across years. Unlike elderly97 --
+* which is re-summed per hhid-year in the collapse below and so flips if an elderly
+* member moves in/out -- this is immune to program-induced elderly mobility.
+gen _eld_at_base = cond(year==97 & !missing(age97), age97>=65, .)
+bys hhid: egen has_elderly_base = max(_eld_at_base)
+drop _eld_at_base
+
+collapse (mean) total_gas food food98 food99 porc_food* porc_med* medicine medicine98 medicine99 p_* contba hhsize kid* eligible  clavemun claveofi hh_* has_elderly_base (sum) elderly97, by(hhid year)
 replace elderly97=1 if elderly97>1
 
 local balvars food porc_food medicine porc_med 
@@ -1117,6 +1125,38 @@ foreach yvar of local hh_outcomes {
         local N_at6_`col'  : di %12.0fc e(N)
         local cmn98_`col'  : di %9.3f `cmean97_hetelig'
     }
+
+    * -------- Panel B: baseline-fixed elderly presence (has_elderly_base) --------
+    * Same eligible heterogeneity spec as Panel A, but HH elderly-presence frozen
+    * at 1997 so it cannot respond to program-induced elderly mobility.
+    if "`col'" != "" {
+        summarize `yvar' if year==98 & contba==0 & eligible==1 ///
+            & !missing(`yvar', year, contba, has_elderly_base, hhid, claveofi)
+        local cmean98_hb = r(mean)
+
+        reghdfe `yvar' i.year##i.contba##i.has_elderly_base ///
+            if eligible==1 & !missing(`yvar', year, contba, has_elderly_base, hhid, claveofi), ///
+            absorb(clavemun) vce(cluster claveofi)
+
+        local aux : di %9.3f _b[99.year#1.contba]
+        local tstat = abs(_b[99.year#1.contba] / _se[99.year#1.contba])
+        if `tstat' >= 2.576      local b99_`col'_hb = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b99_`col'_hb = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b99_`col'_hb = trim("`aux'") + "*"
+        else                     local b99_`col'_hb = trim("`aux'")
+        local se99_`col'_hb : di %9.3f _se[99.year#1.contba]
+
+        local aux : di %9.3f _b[99.year#1.contba#1.has_elderly_base]
+        local tstat = abs(_b[99.year#1.contba#1.has_elderly_base] / _se[99.year#1.contba#1.has_elderly_base])
+        if `tstat' >= 2.576      local b99e_`col'_hb = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b99e_`col'_hb = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b99e_`col'_hb = trim("`aux'") + "*"
+        else                     local b99e_`col'_hb = trim("`aux'")
+        local se99e_`col'_hb : di %9.3f _se[99.year#1.contba#1.has_elderly_base]
+
+        local N_at6_`col'_hb : di %12.0fc e(N)
+        local cmn98_`col'_hb : di %9.3f `cmean98_hb'
+    }
 }
 
 *============================================================
@@ -1133,6 +1173,7 @@ foreach yvar of local hh_outcomes {
     file write sm "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+    file write sm "\underline{\textit{Panel A: Elderly presence measured each round}} \\ " _n
     file write sm "\textit{Treatment \$\times\$ 1999 (no elderly)} & `b99_food' & `b99_pf' & `b99_med' & `b99_pm' \\ " _n
     file write sm " & (`se99_food') & (`se99_pf') & (`se99_med') & (`se99_pm') \\ " _n
     file write sm "  & & & & \\ " _n
@@ -1140,7 +1181,17 @@ foreach yvar of local hh_outcomes {
     file write sm " & (`se99e_food') & (`se99e_pf') & (`se99e_med') & (`se99e_pm') \\ " _n
     file write sm "  & & & & \\ " _n
     file write sm "Control Mean (1998) & `cmn98_food' & `cmn98_pf' & `cmn98_med' & `cmn98_pm' \\ " _n
-    file write sm "Observations & `N_at6_food' & `N_at6_pf' & `N_at6_med' & `N_at6_pm' \\ \bottomrule" _n
+    file write sm "Observations & `N_at6_food' & `N_at6_pf' & `N_at6_med' & `N_at6_pm' \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "\underline{\textit{Panel B: Elderly presence fixed at baseline (1997)}} \\ " _n
+    file write sm "\textit{Treatment \$\times\$ 1999 (no elderly)} & `b99_food_hb' & `b99_pf_hb' & `b99_med_hb' & `b99_pm_hb' \\ " _n
+    file write sm " & (`se99_food_hb') & (`se99_pf_hb') & (`se99_med_hb') & (`se99_pm_hb') \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "\textit{Differential (elderly HH)} & `b99e_food_hb' & `b99e_pf_hb' & `b99e_med_hb' & `b99e_pm_hb' \\ " _n
+    file write sm " & (`se99e_food_hb') & (`se99e_pf_hb') & (`se99e_med_hb') & (`se99e_pm_hb') \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "Control Mean (1998) & `cmn98_food_hb' & `cmn98_pf_hb' & `cmn98_med_hb' & `cmn98_pm_hb' \\ " _n
+    file write sm "Observations & `N_at6_food_hb' & `N_at6_pf_hb' & `N_at6_med_hb' & `N_at6_pm_hb' \\ \bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
 }
