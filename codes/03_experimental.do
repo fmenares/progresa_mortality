@@ -821,61 +821,105 @@ foreach ggrp in p m f {
     local N_`ggrp'_tv51    : di %12.0fc e(N)
 }
 
+*------------------------------------------------------------
+* T3 col 2: Weekly hours in ELDERLY-ONLY households (only_elderly==1)
+* Identifies the "direct-transfer only" subsample: a household with no
+* children (and no working-age adults) receives ONLY the apoyo alimentario
+* (the fixed, poverty-based food grant paid to the titular), NOT the
+* child-conditional apoyo educativo/becas. Contrast with col 1 (all eligible
+* elderly, whose household transfer is dominated by the indirect becas).
+* Same spec as col 1 (DiD, municipality FE, eligible, age 65+). Pooled/female/male.
+* These are the same locals used by the appendix AT_elderly_only_hours table.
+*------------------------------------------------------------
+foreach grp in p f m {
+    if "`grp'" == "p"      local gcond_eoh "age97>=65"
+    else if "`grp'" == "f" local gcond_eoh "gender==2 & age97>=65"
+    else                   local gcond_eoh "gender==1 & age97>=65"
+
+    preserve
+    keep if `gcond_eoh' & only_elderly==1
+
+    summarize weekly_hours if year==97 & contba==0 & eligible==1 ///
+        & !missing(weekly_hours, year, contba, claveofi)
+    local cmean97_eoh = r(mean)
+
+    reghdfe weekly_hours i.year##i.contba ///
+        if eligible==1 & !missing(weekly_hours, year, contba, claveofi), ///
+        absorb(clavemun) vce(cluster claveofi)
+
+    di "  [weekly_hours EOH, g=`grp'] b98 = " _b[98.year#1.contba] "  b99 = " _b[99.year#1.contba] "  N=" e(N)
+
+    foreach yr in 98 99 {
+        local aux : di %9.3f _b[`yr'.year#1.contba]
+        local tstat = abs(_b[`yr'.year#1.contba] / _se[`yr'.year#1.contba])
+        if      `tstat' >= 2.576 local b`yr'_`grp'_eoh = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b`yr'_`grp'_eoh = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b`yr'_`grp'_eoh = trim("`aux'") + "*"
+        else                     local b`yr'_`grp'_eoh = trim("`aux'")
+        local se`yr'_`grp'_eoh : di %9.3f _se[`yr'.year#1.contba]
+    }
+    local N_`grp'_eoh   : di %12.0fc e(N)
+    local cmn_`grp'_eoh : di %9.3f `cmean97_eoh'
+    restore
+}
+
 * diagnostics before writing table
 di "--- T3 locals check ---"
-di "b98_p_wh = `b98_p_wh'  |  b99_p_wh = `b99_p_wh'  |  N_p_wh = `N_p_wh'"
+di "b98_p_wh  = `b98_p_wh'   |  b99_p_wh  = `b99_p_wh'   |  N_p_wh  = `N_p_wh'"
+di "b98_p_eoh = `b98_p_eoh'  |  b99_p_eoh = `b99_p_eoh'  |  N_p_eoh = `N_p_eoh'"
 di "b98_p_la = `b98_p_la'  |  b99_p_la = `b99_p_la'  |  N_p_la = `N_p_la'"
 di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
 
 *============================================================
 * TABLE 3: Experimental results — Labor Supply and Living Arrangements
-* Main sample: age 65+. Col 6 adds total visits for age 51+ (Gertler 2000 Table 6 comparison).
+* Main sample: age 65+. Col 2 = weekly hours in elderly-only (direct-transfer)
+* households. Col 6 adds total visits for age 51+ (Gertler 2000 Table 6 comparison).
 * Output: $tables/T3_experimental.tex
 *============================================================
 
 {
     cap file close sm
     file open sm using "$tables/T3_experimental.tex", write replace
-    file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
-    file write sm "& \multicolumn{5}{c}{\textit{Sample: age 65+}} & \multicolumn{1}{c}{\textit{age 51+}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-7}" _n
-    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\ddagger\$}} \\ " _n
-    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+    file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
+    file write sm "& \multicolumn{6}{c}{\textit{Sample: age 65+}} & \multicolumn{1}{c}{\textit{age 51+}} \\ \cmidrule(lr){2-7}\cmidrule(lr){8-8}" _n
+    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Weekly Hours\textsuperscript{\$\S\$}} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\ddagger\$}} \\ " _n
+    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule" _n
     * Panel A: Pooled
     file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
-    file write sm "\textit{Treat \$\times\$ 1998} & `b98_p_wh' & `b98_p_la' & `b98_p_wc' & `b98_p_oe' & & \\ " _n
-    file write sm " & (`se98_p_wh') & (`se98_p_la') & (`se98_p_wc') & (`se98_p_oe') & & \\ " _n
-    file write sm "  & & & & & & \\ " _n
-    file write sm "\textit{Treat \$\times\$ 1999} & `b99_p_wh' & `b99_p_la' & `b99_p_wc' & `b99_p_oe' & `b99_p_tv' & `b99_p_tv51' \\ " _n
-    file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') & (`se99_p_tv51') \\ " _n
-    file write sm "  & & & & & & \\ " _n
-    file write sm "Control Mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & & \\ " _n
-    file write sm "Control Mean (1999) & & & & & `cmn_p_tv' & `cmn_p_tv51' \\ " _n
-    file write sm "Obs & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_tv51' \\ " _n
-    file write sm "  & & & & & & \\ " _n
+    file write sm "\textit{Treat \$\times\$ 1998} & `b98_p_wh' & `b98_p_eoh' & `b98_p_la' & `b98_p_wc' & `b98_p_oe' & & \\ " _n
+    file write sm " & (`se98_p_wh') & (`se98_p_eoh') & (`se98_p_la') & (`se98_p_wc') & (`se98_p_oe') & & \\ " _n
+    file write sm "  & & & & & & & \\ " _n
+    file write sm "\textit{Treat \$\times\$ 1999} & `b99_p_wh' & `b99_p_eoh' & `b99_p_la' & `b99_p_wc' & `b99_p_oe' & `b99_p_tv' & `b99_p_tv51' \\ " _n
+    file write sm " & (`se99_p_wh') & (`se99_p_eoh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') & (`se99_p_tv51') \\ " _n
+    file write sm "  & & & & & & & \\ " _n
+    file write sm "Control Mean (1997) & `cmn_p_wh' & `cmn_p_eoh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & & \\ " _n
+    file write sm "Control Mean (1999) & & & & & & `cmn_p_tv' & `cmn_p_tv51' \\ " _n
+    file write sm "Obs & `N_p_wh' & `N_p_eoh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_tv51' \\ " _n
+    file write sm "  & & & & & & & \\ " _n
     * Panel B: Females
     file write sm "\underline{\textit{Panel B: Females}} \\ " _n
-    file write sm "\textit{Treat \$\times\$ 1998} & `b98_f_wh' & `b98_f_la' & `b98_f_wc' & `b98_f_oe' & & \\ " _n
-    file write sm " & (`se98_f_wh') & (`se98_f_la') & (`se98_f_wc') & (`se98_f_oe') & & \\ " _n
-    file write sm "  & & & & & & \\ " _n
-    file write sm "\textit{Treat \$\times\$ 1999} & `b99_f_wh' & `b99_f_la' & `b99_f_wc' & `b99_f_oe' & `b99_f_tv' & `b99_f_tv51' \\ " _n
-    file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') & (`se99_f_tv') & (`se99_f_tv51') \\ " _n
-    file write sm "  & & & & & & \\ " _n
-    file write sm "Control Mean (1997) & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & & \\ " _n
-    file write sm "Control Mean (1999) & & & & & `cmn_f_tv' & `cmn_f_tv51' \\ " _n
-    file write sm "Obs & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' & `N_f_tv' & `N_f_tv51' \\ " _n
-    file write sm "  & & & & & & \\ " _n
+    file write sm "\textit{Treat \$\times\$ 1998} & `b98_f_wh' & `b98_f_eoh' & `b98_f_la' & `b98_f_wc' & `b98_f_oe' & & \\ " _n
+    file write sm " & (`se98_f_wh') & (`se98_f_eoh') & (`se98_f_la') & (`se98_f_wc') & (`se98_f_oe') & & \\ " _n
+    file write sm "  & & & & & & & \\ " _n
+    file write sm "\textit{Treat \$\times\$ 1999} & `b99_f_wh' & `b99_f_eoh' & `b99_f_la' & `b99_f_wc' & `b99_f_oe' & `b99_f_tv' & `b99_f_tv51' \\ " _n
+    file write sm " & (`se99_f_wh') & (`se99_f_eoh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') & (`se99_f_tv') & (`se99_f_tv51') \\ " _n
+    file write sm "  & & & & & & & \\ " _n
+    file write sm "Control Mean (1997) & `cmn_f_wh' & `cmn_f_eoh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & & \\ " _n
+    file write sm "Control Mean (1999) & & & & & & `cmn_f_tv' & `cmn_f_tv51' \\ " _n
+    file write sm "Obs & `N_f_wh' & `N_f_eoh' & `N_f_la' & `N_f_wc' & `N_f_oe' & `N_f_tv' & `N_f_tv51' \\ " _n
+    file write sm "  & & & & & & & \\ " _n
     * Panel C: Males
     file write sm "\underline{\textit{Panel C: Males}} \\ " _n
-    file write sm "\textit{Treat \$\times\$ 1998} & `b98_m_wh' & `b98_m_la' & `b98_m_wc' & `b98_m_oe' & & \\ " _n
-    file write sm " & (`se98_m_wh') & (`se98_m_la') & (`se98_m_wc') & (`se98_m_oe') & & \\ " _n
-    file write sm "  & & & & & & \\ " _n
-    file write sm "\textit{Treat \$\times\$ 1999} & `b99_m_wh' & `b99_m_la' & `b99_m_wc' & `b99_m_oe' & `b99_m_tv' & `b99_m_tv51' \\ " _n
-    file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') & (`se99_m_tv') & (`se99_m_tv51') \\ " _n
-    file write sm "  & & & & & & \\ " _n
-    file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & & \\ " _n
-    file write sm "Control Mean (1999) & & & & & `cmn_m_tv' & `cmn_m_tv51' \\ " _n
-    file write sm "Obs & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' & `N_m_tv51' \\ " _n
+    file write sm "\textit{Treat \$\times\$ 1998} & `b98_m_wh' & `b98_m_eoh' & `b98_m_la' & `b98_m_wc' & `b98_m_oe' & & \\ " _n
+    file write sm " & (`se98_m_wh') & (`se98_m_eoh') & (`se98_m_la') & (`se98_m_wc') & (`se98_m_oe') & & \\ " _n
+    file write sm "  & & & & & & & \\ " _n
+    file write sm "\textit{Treat \$\times\$ 1999} & `b99_m_wh' & `b99_m_eoh' & `b99_m_la' & `b99_m_wc' & `b99_m_oe' & `b99_m_tv' & `b99_m_tv51' \\ " _n
+    file write sm " & (`se99_m_wh') & (`se99_m_eoh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') & (`se99_m_tv') & (`se99_m_tv51') \\ " _n
+    file write sm "  & & & & & & & \\ " _n
+    file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_eoh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & & \\ " _n
+    file write sm "Control Mean (1999) & & & & & & `cmn_m_tv' & `cmn_m_tv51' \\ " _n
+    file write sm "Obs & `N_m_wh' & `N_m_eoh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' & `N_m_tv51' \\ " _n
     file write sm "\bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
@@ -918,37 +962,9 @@ di "Table exported to: $tables/T3_experimental_slide.tex"
 * Panels (pooled/female/male) arranged as COLUMNS.
 * Output: $tables/AT_elderly_only_hours.tex
 *============================================================
-foreach grp in p f m {
-    if "`grp'" == "p"      local gcond_eoh "age97>=65"
-    else if "`grp'" == "f" local gcond_eoh "gender==2 & age97>=65"
-    else                   local gcond_eoh "gender==1 & age97>=65"
-
-    preserve
-    keep if `gcond_eoh' & only_elderly==1
-
-    summarize weekly_hours if year==97 & contba==0 & eligible==1 ///
-        & !missing(weekly_hours, year, contba, claveofi)
-    local cmean97_eoh = r(mean)
-
-    reghdfe weekly_hours i.year##i.contba ///
-        if eligible==1 & !missing(weekly_hours, year, contba, claveofi), ///
-        absorb(clavemun) vce(cluster claveofi)
-
-    di "  [weekly_hours EOH, g=`grp'] b98 = " _b[98.year#1.contba] "  b99 = " _b[99.year#1.contba] "  N=" e(N)
-
-    foreach yr in 98 99 {
-        local aux : di %9.3f _b[`yr'.year#1.contba]
-        local tstat = abs(_b[`yr'.year#1.contba] / _se[`yr'.year#1.contba])
-        if      `tstat' >= 2.576 local b`yr'_`grp'_eoh = trim("`aux'") + "***"
-        else if `tstat' >= 1.960 local b`yr'_`grp'_eoh = trim("`aux'") + "**"
-        else if `tstat' >= 1.645 local b`yr'_`grp'_eoh = trim("`aux'") + "*"
-        else                     local b`yr'_`grp'_eoh = trim("`aux'")
-        local se`yr'_`grp'_eoh : di %9.3f _se[`yr'.year#1.contba]
-    }
-    local N_`grp'_eoh   : di %12.0fc e(N)
-    local cmn_`grp'_eoh : di %9.3f `cmean97_eoh'
-    restore
-}
+* NOTE: the elderly-only weekly-hours locals (b98_`grp'_eoh, se..., N..., cmn...)
+* are now computed earlier, just before the Table 3 write block, so they can be
+* shared as T3 column 2. The write block below reuses those same locals.
 
 {
     cap file close eoh
