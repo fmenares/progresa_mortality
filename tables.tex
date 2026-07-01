@@ -14,19 +14,19 @@
 \end{table}
 
 
-\begin{table}[H]
-\RawCaption%
-  {\caption[]{Effects of Progresa Enrollment Intensity on Mortality Rate by Sex}
-   \label{t:did}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.88}{
-      \input{tables/T2_mortality}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. Columns (1) and (2) report unweighted estimates without and with Seguro Popular intensity, respectively; columns (3) and (4) report estimates weighted by the population aged 65 and older without and with Seguro Popular intensity. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-  }
-\end{table}
+% \begin{table}[H]
+% \RawCaption%
+%   {\caption[]{Effects of Progresa Enrollment Intensity on Mortality Rate by Sex}
+%    \label{t:did}}
+% \floatbox[{\captop}]{table}[\FBwidth]
+%   {}
+%   {\scalebox{0.88}{
+%       \input{tables/T2_mortality}
+%     }
+%     \vspace{-3mm}
+%     \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. Columns (1) and (2) report unweighted estimates without and with Seguro Popular intensity, respectively; columns (3) and (4) report estimates weighted by the population aged 65 and older without and with Seguro Popular intensity. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+%   }
+% \end{table}
 
 \begin{table}[H]
 \RawCaption%
@@ -38,7 +38,7 @@
       \input{tables/T2_b_mortality}
     }
     \vspace{-3mm}
-    \floatfoot{\textcolor{red}{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the mortality rate for older adults per 1,000 inhabitants, disaggregated by age group. Panel~A reports pooled estimates, Panel~B females, and Panel~C males. Columns~(1) and~(2) report estimates for ages 65 and older; column~(2) adds a municipality-specific linear time trend interacted with the continuous 1990 marginalization index (flagged by the \textit{SES Trend (Cont.\ Index)} row). Columns~(3) and~(4) report estimates for ages 65--69 and 70 and older, respectively. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects, Seguro Popular intensity, and are weighted by the population of the relevant age group. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{\textcolor{red}{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the mortality rate for older adults per 1,000 inhabitants, disaggregated by age group. Columns~(1) and~(2) report estimates for ages 65 and older; column~(2) adds a municipality-specific linear time trend interacted with the continuous 1990 marginalization index. Columns~(3) and~(4) report estimates for ages 65--69 and 70 and older, respectively. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities. All regressions include municipality and year fixed effects, Seguro Popular intensity, and are weighted by the population of the relevant age group. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
   }
 \end{table}
 
@@ -49,10 +49,10 @@
    \label{t:combined_elderly}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
-  {\scalebox{0.85}{
+  {\scalebox{0.75}{
       \input{tables/T3_experimental}
     }
     \vspace{-3mm}
-    \floatfoot{\textit{Notes:} This table reports difference-in-differences estimates of the short-run effect of Progresa on labor supply, living arrangements, and health-care utilization for elderly individuals aged 65 and older in eligible households. The sample is restricted to households eligible for Progresa. Column (1) reports weekly hours worked. $^{\S}$ Column (2) reports weekly hours worked restricted to \textit{elderly-only} households (those with no children or working-age adults present), with household composition fixed at its 1997 (pre-treatment) value; these households receive only the direct food transfer (\textit{apoyo alimentario}), not the child-conditional education grants (\textit{apoyo educativo}), and thus isolate the labor-supply response to a direct transfer to the elderly. Columns (3)--(5) report living arrangement outcomes: living alone, living with children, and living only with other elderly members, respectively. Columns (6)--(7) report total health-facility visits in the past four weeks (1999 cross-section, municipality fixed effects) for the age 65+ and age 51+ samples; the latter is comparable to Gertler (2000), Table 6. The baseline year is 1997. Standard errors are clustered at the municipality level and shown in parentheses. $^{*}$ $p < 0.10$, $^{**}$ $p < 0.05$, $^{***}$ $p < 0.01$.}
+    \floatfoot{\textit{Notes:} This table reports difference-in-differences estimates of the short-run effect of Progresa on older adults aged 65 and in eligible households. The sample is restricted to households eligible for Progresa. Column (1) reports weekly hours worked. $^{\S}$ Column (2) reports weekly hours worked restricted to \textit{older adults-only} households. Columns (3)--(5) report living arrangement outcomes: living alone, living with children, and living only with other elderly members, respectively. Columns (6)--(7) report total health-facility visits in the past four weeks (1999 cross-section, municipality fixed effects) for the age 65+ and age 51+ samples; the latter is comparable to Gertler (2000), Table 6. The baseline year is 1997. Standard errors are clustered at the municipality level and shown in parentheses. $^{*}$ $p < 0.10$, $^{**}$ $p < 0.05$, $^{***}$ $p < 0.01$.}
   }
 \end{table}
