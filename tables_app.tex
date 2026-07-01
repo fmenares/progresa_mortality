@@ -27,28 +27,28 @@
 \begin{table}[H]
 \RawCaption%
   {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Alternative Specifications}
-   \label{at:did_robust_br2}}
+   \label{at:ses_trend}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
       \input{tables/appendix/AT_ses_trend}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. Column (1) reports our preferred specification in Table 2 ; columns (2) and (3) report estimates using a linear trend of marginality index at baseline, continuous and by quintiles, respectively. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects,  Seguro Popular intensity, and are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. \textcolor{red}{Column~(1) reports our preferred specification (Table~\ref{t:did}, weighted with Seguro Popular intensity). Columns~(2)--(5) add a municipality-specific linear time trend interacted with baseline (1990) marginalization: column~(2) uses the continuous marginalization index and column~(3) its quintiles (following Parker and Vogl, 2023), both retaining $\textit{Intensity}_{2005}$; columns~(4) and~(5) repeat the quintile- and continuous-trend specifications, respectively, while excluding $\textit{Intensity}_{2005}$. The indicator rows at the foot of the table report which controls enter each column.} $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects,  Seguro Popular intensity, and are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
 
 \begin{table}[H]
 \RawCaption%
   {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality by Age Groups}
-   \label{at:did_robust_br2}}
+   \label{at:age_groups}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.9}{
       \input{tables/appendix/AT_age_subgroups}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects,  Seguro Popular intensity, and are weighted by the population of each age group of interest. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. \textcolor{red}{Columns~(1)--(4) report estimates for ages 50--64, 65 and older, 65--69, and 70 and older, respectively; Panels~A, B, and~C report pooled, female, and male estimates.} $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects,  Seguro Popular intensity, and are weighted by the population of each age group of interest. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
 
@@ -85,14 +85,14 @@
 \begin{table}[H]
 \RawCaption%
   {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Geographic Sensitivity}
-   \label{at:did_robust_br2}}
+   \label{at:br_trimming}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.85}{
       \input{tables/appendix/AT5_BR_trimming}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column (1) reproduces their original unweighted estimate; Column (2) reports our close replication. Column (3) adds population weights, which attenuates the estimate by approximately 50\% and reduces precision. Column (4) and (5) excludes the smallest municipalities in the bottom 10\% and 25\%, respectively. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column (1) reproduces their original unweighted estimate; Column (2) reports our close replication. Column (3) adds population weights, which attenuates the estimate by approximately 50\% and reduces precision. \textcolor{red}{Columns~(4) and~(5) progressively trim the smallest municipalities, dropping those in the bottom 10\% and 25\% of the distribution of average older-adult (65+) population over 1992--2002; both are estimated unweighted, matching the specification of column~(2).} All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
 
