@@ -877,8 +877,6 @@ di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
     file write sm "Control Mean (1999) & & & & & `cmn_m_tv' & `cmn_m_tv51' \\ " _n
     file write sm "Obs & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' & `N_m_tv51' \\ " _n
     file write sm "\bottomrule" _n
-    file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\dagger\$} Total visits (hospital, public clinic, private doctor, past 4 weeks). 1999 only; cross-section, municipality FE.} \\" _n
-    file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\ddagger\$} Same specification, sample age 51+. Comparable to Gertler (2000), Table 6.} \\" _n
     file write sm "\end{tabular}"
     file close sm
 }
@@ -906,8 +904,6 @@ di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
     file write sm "Control Mean (1999) & & & & & `cmn_p_tv' & `cmn_p_tv51' \\ " _n
     file write sm "Obs & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_tv51' \\ " _n
     file write sm "\bottomrule" _n
-    file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\dagger\$} Total visits (hospital, public clinic, private doctor, past 4 weeks). 1999 only; cross-section, municipality FE.} \\" _n
-    file write sm "\multicolumn{7}{l}{\footnotesize \textsuperscript{\$\ddagger\$} Same specification, sample age 51+. Comparable to Gertler (2000), Table 6.} \\" _n
     file write sm "\end{tabular}"
     file close sm
 }
