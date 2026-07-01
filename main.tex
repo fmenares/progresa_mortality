@@ -54,9 +54,9 @@
 }
 
 % Paragraph numbering
-% \newcounter{paragraphnum}
-% \setcounter{paragraphnum}{0}
-% \newcommand{\p}{\refstepcounter{paragraphnum}\textbf{[\theparagraphnum]}\enspace}
+\newcounter{paragraphnum}
+\setcounter{paragraphnum}{0}
+\newcommand{\p}{\refstepcounter{paragraphnum}\textbf{[\theparagraphnum]}\enspace}
 
 \begin{document}
 %TC:ignore
@@ -66,7 +66,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{\Large{Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico}%
-\thanks{This version: June 2026. For their valuable comments and suggestions, we thank Victoria Barone and Pedro Bernal; and participants at the X American - European Health Economics Study Group, 12th IRDES-LIRAES Workshop on Applied Health Economics and Policy Evaluation, and the Half Baked Lunch at Inter-American Development Bank. The opinions expressed in this paper are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent, nor of INEGI. All remaining errors are our own. All data used in this study are publicly available from INEGI.}}
+\thanks{This version: July 2026. For their valuable comments and suggestions, we thank Victoria Barone and Pedro Bernal; and participants at the X American - European Health Economics Study Group, 12th IRDES-LIRAES Workshop on Applied Health Economics and Policy Evaluation, and the Half Baked Lunch at Inter-American Development Bank. The opinions expressed in this paper are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent, nor of INEGI. All remaining errors are our own. All data used in this study are publicly available from INEGI.}}
 
 \author{Emma Aguila\footnote{Sol Price School of Public Policy, University of Southern California.}
 \and William H.\ Dow\footnote{School of Public Health and Department of Demography, University of California, Berkeley.}
@@ -93,7 +93,7 @@ We study the long-term effects of Mexico's \textit{Progresa} conditional cash tr
 \noindent\textbf{JEL Codes:} I13, I14, I15, I18
 \end{abstract}
 
- % \noindent\textbf{Word Count:} \wordcount words (main text, excluding figures, tables, and references)
+ \noindent\textbf{Word Count:} \wordcount words (main text, excluding figures, tables, and references)
 
 \clearpage
 \setcounter{page}{1}
@@ -194,9 +194,11 @@ We adopt the same approach and examine older adults mortality using municipality
 
 \noindent with 1996 as the reference year. The $\beta_{k}$ coefficients trace the effect of early-phase enrollment intensity on mortality in each year relative to 1996.
 
-\p Our interaction design, following \cite{parker2023conditional}, anchors identification to a discrete break in 1997 and explicitly controls for later-phase enrollment, separating the effects of the two rollout phases, and allowing us to include all highly marginalized municipalities without a phase-in restriction. The event study format of equation~(\ref{eq:eventstudy}) additionally allows us to test for differential pre-trends—a test. We also apply population weights because \textit{Progresa} targeted the most isolated and impoverished communities first; unweighted estimates may overstate the average effect by giving excess weight to the highest-intensity, smallest municipalities, whose mortality rates are also more volatile. Weighting by the older adult population gives each municipality influence proportional to its contribution to total older adults deaths.
+\p Our interaction design, following \cite{parker2023conditional}, anchors identification to a discrete break in 1997 and explicitly controls for later-phase enrollment, separating the effects of the two rollout phases. Because early- and late-phase intensity are negatively correlated by construction—municipalities that enrolled heavily in 1997–1999 tended to have less remaining enrollment growth in 2000–2005—omitting the late-phase control would conflate overall program intensity with the timing of exposure that drives our identification. Including $\textit{Intensity}_{2005} \times \textit{Post}$ as a control ensures that $\beta_0$ captures the effect of earlier cumulative exposure specifically, holding constant the later enrollment trajectory. The event study format of equation~(\ref{eq:eventstudy}) additionally allows us to test for differential pre-trends,  providing empirical support for the parallel trends assumption. We also apply population weights because \textit{Progresa} targeted the most isolated and impoverished communities first; unweighted estimates may overstate the average effect by giving excess weight to the highest-intensity, smallest municipalities, whose mortality rates are also more volatile. Weighting by the older adult population gives each municipality influence proportional to its contribution to total older adult deaths.
 
-\p Our difference-in-differences coefficient $\beta_0$ in equation~(\ref{eq:did}) measures the average effect of a one-unit increase in early-phase enrollment intensity on the mortality rate for adults aged 65 and older, and aligns with the population-level policy question: what was the average effect of \textit{Progresa} on mortality among older Mexican adults living in marginalized areas? Identification relies on the assumption that, conditional on municipality and year fixed effects, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends to those with lower intensity in the absence of the program.\footnote{Restricting to highly marginalized municipalities means the coefficient estimates an Intent-to-Treat (ITT) effect: the reduced-form impact of municipal-level program exposure on older adults mortality, regardless of whether individual older adults residents' households directly received transfers. Since Progresa primarily targeted families with school-age children, any effect on older adults' mortality operates through indirect channels — household income spillovers, improved local health access, or caregiver effects. The sample restriction ensures this ITT is estimated within Progresa's intended geographic target population, making it policy-relevant for assessing the program's reach.}
+
+Our difference-in-differences coefficient $\beta_0$ in equation~(\ref{eq:did}) measures the average effect of a one-unit increase in early-phase enrollment intensity on the mortality rate for adults aged 65 and older, conditional on later-phase intensity, and aligns with the population-level policy question: what was the average effect of \textit{Progresa} on mortality among older Mexican adults living in marginalized areas? Identification relies on the assumption that, conditional on municipality and year fixed effects and later-phase enrollment intensity, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends to those with lower intensity in the absence of the program. This assumption would be violated if the timing of early enrollment was systematically related to pre-existing health infrastructure, local state capacity, or other municipality-level factors that independently affected older adult mortality trends. Restricting the sample to highly marginalized municipalities mitigates this concern by limiting variation to communities within \textit{Progresa}'s intended target population, where program assignment was driven primarily by poverty targeting rather than health-system considerations. The pre-program event study coefficients provide further empirical support: the absence of differential pre-trends in the years prior to 1997 is consistent with the parallel trends assumption.
+\footnote{Restricting to highly marginalized municipalities means the coefficient estimates an Intent-to-Treat (ITT) effect: the reduced-form impact of municipal-level program exposure on older adults mortality, regardless of whether individual older adults residents' households directly received transfers. Since Progresa primarily targeted families with school-age children, any effect on older adults' mortality operates through indirect channels — household income spillovers, improved local health access, or caregiver effects. The sample restriction ensures this ITT is estimated within Progresa's intended geographic target population, making it policy-relevant for assessing the program's reach.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
