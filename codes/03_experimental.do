@@ -967,70 +967,10 @@ di "b99_p_tv51 = `b99_p_tv51'  |  N_p_tv51 = `N_p_tv51'"
 }
 di "Table exported to: $tables/T3_experimental_slide.tex"
 
-*============================================================
-* APPENDIX TABLE: Effect of PROGRESA on Weekly Hours Worked
-* Sample: elderly-only households (only_elderly==1, no children present)
-* Isolates the labor-supply response of households where the elderly
-* receive the transfer directly (no working-age members to relabor).
-* Spec = T3 col 1: DiD (year x treat), municipality FE, eligible, age 65+.
-* Panels (pooled/female/male) arranged as COLUMNS.
-* Output: $tables/AT_elderly_only_hours.tex
-*============================================================
-* NOTE: the elderly-only weekly-hours locals (b98_`grp'_eoh, se..., N..., cmn...)
-* are now computed earlier, just before the Table 3 write block, so they can be
-* shared as T3 column 2. The write block below reuses those same locals.
-
-{
-    cap file close eoh
-    file open eoh using "$tables/AT_elderly_only_hours.tex", write replace
-    file write eoh "\begin{tabular}{lccc} \hline \hline" _n
-    file write eoh "& \multicolumn{3}{c}{Weekly Hours Worked} \\ \cmidrule(lr){2-4}" _n
-    file write eoh "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\" _n
-    file write eoh "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ \toprule" _n
-    file write eoh "\textit{Treat \$\times\$ 1998} & `b98_p_eoh' & `b98_f_eoh' & `b98_m_eoh' \\" _n
-    file write eoh " & (`se98_p_eoh') & (`se98_f_eoh') & (`se98_m_eoh') \\" _n
-    file write eoh "  & & & \\" _n
-    file write eoh "\textit{Treat \$\times\$ 1999} & `b99_p_eoh' & `b99_f_eoh' & `b99_m_eoh' \\" _n
-    file write eoh " & (`se99_p_eoh') & (`se99_f_eoh') & (`se99_m_eoh') \\" _n
-    file write eoh "  & & & \\" _n
-    file write eoh "Control Mean (1997) & `cmn_p_eoh' & `cmn_f_eoh' & `cmn_m_eoh' \\" _n
-    file write eoh "Observations & `N_p_eoh' & `N_f_eoh' & `N_m_eoh' \\" _n
-    file write eoh "Municipality FE & Yes & Yes & Yes \\ \bottomrule" _n
-    file write eoh "\multicolumn{4}{l}{\footnotesize Sample: age 65+, eligible, elderly-only households (no children present).} \\" _n
-    file write eoh "\multicolumn{4}{l}{\footnotesize Std. errors clustered at locality level in parentheses. *** p\$<\$0.01, ** p\$<\$0.05, * p\$<\$0.10.} \\" _n
-    file write eoh "\end{tabular}"
-    file close eoh
-}
-
-*============================================================
-* APPENDIX TABLE: Weekly Hours Worked — elderly-only households,
-* composition FIXED AT BASELINE (only_elderly_base==1, 1997 roster).
-* Robustness to the contemporaneous definition in AT_elderly_only_hours:
-* baseline-fixing avoids conditioning on a post-treatment household outcome.
-* Uses the _eob locals computed before the Table 3 write block.
-* Output: $tables/AT_elderly_only_hours_baseline.tex
-*============================================================
-{
-    cap file close eob
-    file open eob using "$tables/AT_elderly_only_hours_baseline.tex", write replace
-    file write eob "\begin{tabular}{lccc} \hline \hline" _n
-    file write eob "& \multicolumn{3}{c}{Weekly Hours Worked} \\ \cmidrule(lr){2-4}" _n
-    file write eob "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\" _n
-    file write eob "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ \toprule" _n
-    file write eob "\textit{Treat \$\times\$ 1998} & `b98_p_eob' & `b98_f_eob' & `b98_m_eob' \\" _n
-    file write eob " & (`se98_p_eob') & (`se98_f_eob') & (`se98_m_eob') \\" _n
-    file write eob "  & & & \\" _n
-    file write eob "\textit{Treat \$\times\$ 1999} & `b99_p_eob' & `b99_f_eob' & `b99_m_eob' \\" _n
-    file write eob " & (`se99_p_eob') & (`se99_f_eob') & (`se99_m_eob') \\" _n
-    file write eob "  & & & \\" _n
-    file write eob "Control Mean (1997) & `cmn_p_eob' & `cmn_f_eob' & `cmn_m_eob' \\" _n
-    file write eob "Observations & `N_p_eob' & `N_f_eob' & `N_m_eob' \\" _n
-    file write eob "Municipality FE & Yes & Yes & Yes \\ \bottomrule" _n
-    file write eob "\multicolumn{4}{l}{\footnotesize Sample: age 65+, eligible, elderly-only households with composition fixed at 1997 (pre-treatment).} \\" _n
-    file write eob "\multicolumn{4}{l}{\footnotesize Std. errors clustered at locality level in parentheses. *** p\$<\$0.01, ** p\$<\$0.05, * p\$<\$0.10.} \\" _n
-    file write eob "\end{tabular}"
-    file close eob
-}
+* NOTE: elderly-only weekly-hours results (contemporaneous _eoh and baseline-fixed
+* _eob, pooled/female/male) are computed in the loop before the Table 3 write block
+* and surfaced as columns (2)-(3) of T3_experimental. No standalone appendix table
+* is produced for them — kept in the main experimental table only.
 
 **Household level analysis**
 **collapse to household level**
