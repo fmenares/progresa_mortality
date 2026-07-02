@@ -1081,7 +1081,7 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
     file open sm using "$tables/T3_experimental.tex", write replace
     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
     file write sm "& \multicolumn{5}{c}{\textit{All Eligible Older Adults (65+)}} & \multicolumn{2}{c}{\textit{Older-Adults-Only Households}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-8}" _n
-    file write sm "& \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{3}{c}{\textit{Living Arrangements}} & \multicolumn{1}{c}{\textit{Health}} & & \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}" _n
+    file write sm "& \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{3}{c}{\textit{Living Arrangements}} & \multicolumn{1}{c}{\textit{Health}} & \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{1}{c}{\textit{Health}} \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
     file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{Live w/ Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{\$\dagger\$}} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule" _n
@@ -1135,7 +1135,7 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
     file open sm using "$tables/T3_experimental_slide.tex", write replace
     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
     file write sm "& \multicolumn{5}{c}{\textit{All Eligible Older Adults (65+)}} & \multicolumn{2}{c}{\textit{Older-Adults-Only Households}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-8}" _n
-    file write sm "& \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{3}{c}{\textit{Living Arrangements}} & \multicolumn{1}{c}{\textit{Health}} & & \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}" _n
+    file write sm "& \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{3}{c}{\textit{Living Arrangements}} & \multicolumn{1}{c}{\textit{Health}} & \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{1}{c}{\textit{Health}} \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
     file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{Live w/ Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{\$\dagger\$}} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule" _n
