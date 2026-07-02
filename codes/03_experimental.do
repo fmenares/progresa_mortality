@@ -455,6 +455,99 @@ drop in_spss99
 count if !missing(total_visits) & year==99
 di "`r(N)' obs in year==99 have non-missing total_visits (after zero-filling non-visitors)"
 
+*------------------------------------------------------------
+* Populate total_visits_june from the JUNE-1999 ENCEL socioeconomic file
+* (ENCEL98M; fieldwork ~June 1999, the wave immediately before the November
+* 1999 file used above). Gertler (2000) Table 6 pools exactly these "third
+* and fourth waves"; this is the second of the two waves needed to approach
+* his N=15,399 (age 51+).
+*
+* m149{XX}{k} = renglon of the k-th household member (k=a/b/c) who used
+*               service type XX (XX=01..07) in the last 4 weeks
+* m151{XX}{k} = visit COUNT for that same person -- confirmed via
+*               `codebook m15106a` (label "...cuantas veces (NOMBRE)
+*               acudio...", small-integer values = genuine visit counts).
+* Structure verified via `codebook m14901 m14901a m14901b m14901c`: obs
+* counts shrink 337->39->9 across person-slots a/b/c (sequential slots,
+* filled in order), and value ranges (1-12, 1-10, 2-9) match household-
+* member renglon, not visit frequency -- i.e. m149/m151 is the same
+* renglon/count PAIR structure as n1390/n1410 in the November file, just
+* with 7 service types (01-07) instead of 4, and different stem names.
+*
+* ASSUMPTIONS carried over from the November block's conventions, not yet
+* independently verified for this file -- sanity-check if pooled N looks
+* off: (i) renglon==9 treated as a NS/NR sentinel and dropped, matching the
+* household-level gate question's 9=NR code; (ii) n_visits>=90 treated as
+* a top-coded/missing sentinel (no confirmed exact cutoff was found in the
+* codebook output shared so far -- only values 1-4 were observed in the
+* m15106a sample, so this is a conservative guess, not a confirmed code).
+*------------------------------------------------------------
+gen total_visits_june = .
+label var total_visits_june "Total health facility visits (past 4 weeks), June 1999 wave"
+
+di "--- June wave Step 1: loading SPSS file ---"
+preserve
+import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_m_socioeconomico_2005-07-06/socioec_encel_99m.sav", clear
+keep folio m149* m151*
+tempfile spss_wide_m
+save `spss_wide_m'
+di "`c(N)' households loaded from SPSS (June), `c(k)' vars kept"
+
+keep folio
+duplicates drop folio, force
+gen byte in_spss99m = 1
+tempfile spss_folios_m
+save `spss_folios_m'
+di "`c(N)' unique folios in SPSS file (June)"
+
+di "--- June wave Step 2: building person-level visit records ---"
+tempfile tv_acc_m
+clear
+set obs 0
+gen long folio    = .
+gen long renglon  = .
+gen int  n_visits = .
+save `tv_acc_m'
+
+foreach sn in 01 02 03 04 05 06 07 {
+    foreach k in a b c {
+        cap use folio m149`sn'`k' m151`sn'`k' using `spss_wide_m', clear
+        if !_rc {
+            di "  slot `sn'`k': `c(N)' rows"
+            rename m149`sn'`k' renglon
+            rename m151`sn'`k' n_visits
+            recast long folio renglon
+            drop if missing(renglon) | renglon <= 0 | renglon == 9
+            replace n_visits = . if n_visits >= 90
+            append using `tv_acc_m'
+            save `tv_acc_m', replace
+        }
+    }
+}
+
+di "--- June wave Step 3: collapsing to one row per person ---"
+use `tv_acc_m', clear
+di "`c(N)' raw person-slot records (June)"
+drop if missing(folio) | missing(renglon)
+replace n_visits = 0 if missing(n_visits)
+collapse (sum) total_visits_june=n_visits, by(folio renglon)
+di "`c(N)' unique persons with visit data, June wave (visitors only)"
+tempfile visits99m
+save `visits99m'
+
+di "--- June wave Step 4: merging into panel ---"
+restore
+merge m:1 folio renglon using `visits99m', keepusing(total_visits_june) update replace nogenerate
+count if !missing(total_visits_june)
+di "`r(N)' obs (across all kept rounds, same value replicated per person) have non-missing total_visits_june before zero-fill"
+
+* Zero-fill non-visitors: household in June SPSS file but no recorded visit -> 0
+merge m:1 folio using `spss_folios_m', keepusing(in_spss99m) nogenerate
+replace total_visits_june = 0 if missing(total_visits_june) & in_spss99m==1
+drop in_spss99m
+count if !missing(total_visits_june)
+di "`r(N)' obs have non-missing total_visits_june after zero-filling non-visitors"
+
 gen post=1 if year==98 | year==99
 replace post=0 if year==97
 
@@ -830,6 +923,100 @@ foreach ggrp in p m f {
 }
 
 *------------------------------------------------------------
+* POOLED 1999 WAVES (June + November): Gertler (2000) Table 6 comparison.
+* Stacks total_visits from both 1999 ENCEL waves -- June (total_visits_june)
+* and November (total_visits, at year==99) -- into one long person-wave file
+* and reruns the cross-sectional treat-vs-control comparison, mirroring
+* Gertler's own pooling of the "third and fourth waves." Age cutoff uses
+* baseline age97 (as in the single-wave columns above); if the resulting N
+* still falls well short of Gertler's reported 15,399 (age 51+), the next
+* lever to try is switching to contemporaneous age at each wave rather than
+* age97, per the prior assessment of why the single-wave column undershoots.
+*------------------------------------------------------------
+preserve
+* Person-level constant for the Nov-wave value (currently only populated on
+* year==99 rows); total_visits_june is already round-invariant per person
+* since it was merged in by folio+renglon with no year condition.
+bys pid: egen total_visits_n99 = max(cond(year==99, total_visits, .))
+bys pid: keep if _n==1
+keep pid folio renglon age97 eligible contba gender clavemun claveofi ///
+    total_visits_n99 total_visits_june
+
+preserve
+    gen total_visits_pooled = total_visits_n99
+    gen wave99 = "n"
+    tempfile wave_n
+    save `wave_n'
+restore
+
+gen total_visits_pooled = total_visits_june
+gen wave99 = "m"
+tempfile wave_m
+save `wave_m'
+
+use `wave_n', clear
+append using `wave_m'
+di "`c(N)' person-wave records after stacking June + November 1999"
+
+count if !missing(total_visits_pooled) & eligible==1 & age97>=51
+di "`r(N)' eligible obs (age97>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
+count if !missing(total_visits_pooled) & eligible==1 & age97>=65
+di "`r(N)' eligible obs (age97>=65, both waves stacked)"
+
+foreach ggrp in p m f {
+    foreach agecut in 65 51 {
+        if "`ggrp'" == "p"      local gcondp "age97>=`agecut'"
+        else if "`ggrp'" == "m" local gcondp "gender==1 & age97>=`agecut'"
+        else                     local gcondp "gender==2 & age97>=`agecut'"
+
+        quietly sum total_visits_pooled if contba==0 & eligible==1 ///
+            & `gcondp' & !missing(total_visits_pooled, contba, claveofi)
+        local cmn_`ggrp'_tvp`agecut' : di %9.3f `r(mean)'
+
+        reghdfe total_visits_pooled contba ///
+            if eligible==1 & `gcondp' & !missing(total_visits_pooled, contba, claveofi), ///
+            absorb(clavemun) vce(cluster claveofi)
+
+        di "  [total_visits POOLED `agecut'+, g=`ggrp'] _b[contba] = " _b[contba] "  N=" e(N)
+
+        local aux : di %9.3f _b[contba]
+        local tstat = abs(_b[contba] / _se[contba])
+        if      `tstat' >= 2.576 local b99_`ggrp'_tvp`agecut' = trim("`aux'") + "***"
+        else if `tstat' >= 1.960 local b99_`ggrp'_tvp`agecut' = trim("`aux'") + "**"
+        else if `tstat' >= 1.645 local b99_`ggrp'_tvp`agecut' = trim("`aux'") + "*"
+        else                     local b99_`ggrp'_tvp`agecut' = trim("`aux'")
+        local se99_`ggrp'_tvp`agecut' : di %9.3f _se[contba]
+        local N_`ggrp'_tvp`agecut'    : di %12.0fc e(N)
+    }
+}
+restore
+
+*============================================================
+* APPENDIX TABLE: Total health-facility visits, POOLED across the two 1999
+* ENCEL waves (June + November), age 65+ and age 51+ -- direct comparison
+* to Gertler (2000), Table 6, which pools the same two survey waves.
+* Output: $tables/appendix/AT_gertler_pooled.tex
+*============================================================
+{
+    cap file close gp
+    file open gp using "$tables/appendix/AT_gertler_pooled.tex", write replace
+    file write gp "\begin{tabular}{lcccccc} \hline \hline" _n
+    file write gp "& \multicolumn{3}{c}{Ages 65+} & \multicolumn{3}{c}{Ages 51+ (Gertler 2000, Table 6)} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}" _n
+    file write gp "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} & \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ " _n
+    file write gp "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
+    file write gp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+    file write gp "\textit{Treatment} & `b99_p_tvp65' & `b99_f_tvp65' & `b99_m_tvp65' & `b99_p_tvp51' & `b99_f_tvp51' & `b99_m_tvp51' \\ " _n
+    file write gp " & (`se99_p_tvp65') & (`se99_f_tvp65') & (`se99_m_tvp65') & (`se99_p_tvp51') & (`se99_f_tvp51') & (`se99_m_tvp51') \\ " _n
+    file write gp "  & & & & & & \\ " _n
+    file write gp "Control Mean & `cmn_p_tvp65' & `cmn_f_tvp65' & `cmn_m_tvp65' & `cmn_p_tvp51' & `cmn_f_tvp51' & `cmn_m_tvp51' \\ " _n
+    file write gp "Observations & `N_p_tvp65' & `N_f_tvp65' & `N_m_tvp65' & `N_p_tvp51' & `N_f_tvp51' & `N_m_tvp51' \\ " _n
+    file write gp "Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes \\ \bottomrule" _n
+    file write gp "\end{tabular}"
+    file close gp
+}
+di "Table exported to: $tables/appendix/AT_gertler_pooled.tex"
+
+*------------------------------------------------------------
 * T3 col 2: Weekly hours in ELDERLY-ONLY households, composition fixed at
 * baseline (only_elderly_base==1, 1997 roster). Identifies the "direct-transfer
 * only" subsample: a household with no children (and no working-age adults)
@@ -894,7 +1081,8 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
     file open sm using "$tables/T3_experimental.tex", write replace
     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
     file write sm "& \multicolumn{5}{c}{\textit{All Eligible Older Adults (65+)}} & \multicolumn{2}{c}{\textit{Older-Adults-Only Households}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-8}" _n
-    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} \\ " _n
+    file write sm "& \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{3}{c}{\textit{Living Arrangements}} & \multicolumn{1}{c}{\textit{Health}} & \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{1}{c}{\textit{Health}} \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
+    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{Live w/ Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{\$\dagger\$}} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule" _n
     * Panel A: Pooled
@@ -947,7 +1135,8 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
     file open sm using "$tables/T3_experimental_slide.tex", write replace
     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
     file write sm "& \multicolumn{5}{c}{\textit{All Eligible Older Adults (65+)}} & \multicolumn{2}{c}{\textit{Older-Adults-Only Households}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-8}" _n
-    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{With Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Total Visits\textsuperscript{\$\dagger\$}} \\ " _n
+    file write sm "& \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{3}{c}{\textit{Living Arrangements}} & \multicolumn{1}{c}{\textit{Health}} & \multicolumn{1}{c}{\textit{Labor}} & \multicolumn{1}{c}{\textit{Health}} \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
+    file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{c}{Live w/ Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{\$\dagger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{\$\dagger\$}} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule" _n
     file write sm "\textit{Treat \$\times\$ 1998} & `b98_p_wh' & `b98_p_la' & `b98_p_wc' & `b98_p_oe' & & `b98_p_eob' & \\ " _n
