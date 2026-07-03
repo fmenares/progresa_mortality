@@ -3372,7 +3372,66 @@ duplicates drop cve_ent_mun_super, force
 gen late_share = (inten2005 - inten1999) / inten2005 if inten2005 > 0
 di "--- Share of eventual (2005) enrollment added AFTER 1999, HM sample ---"
 su late_share, detail
+local flat_mean : di %5.3f r(mean)
+local flat_p50   : di %5.3f r(p50)
+local flat_p75   : di %5.3f r(p75)
+local flat_p90   : di %5.3f r(p90)
 restore
+
+*------------------------------------------------------------
+* Companion TABLE (not a figure/coefplot): the standard Post-interaction
+* beta0 -- not just the year-by-year event-study coefficients above --
+* under each of the same four second-phase-control choices, so the
+* stability claim can be read as numbers, not only inferred visually from
+* AF_beta0_stability. Output: $tables/appendix/AT_beta0_stability.tex
+*------------------------------------------------------------
+local specname1 "Intensity 2005 (baseline)"
+local specname2 "No 2nd-phase control"
+local specname3 "Intensity 2000"
+local specname4 "Intensity 2002"
+local i = 0
+foreach spec in 2005 none 2000 2002 {
+    local ++i
+    if "`spec'" == "none" {
+        reghdfe emr65 c.inten1999#i.post c.sp_intensity ///
+            [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    }
+    else {
+        reghdfe emr65 c.inten1999#i.post c.inten`spec'#i.post c.sp_intensity ///
+            [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    }
+    local aux : di %9.3f _b[1.post#c.inten1999]
+    local tstat = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+    if      `tstat' >= 2.576 local bp_`i' = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local bp_`i' = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local bp_`i' = trim("`aux'") + "*"
+    else                     local bp_`i' = trim("`aux'")
+    local sep_`i' : di %9.3f _se[1.post#c.inten1999]
+    local Np_`i'  : di %12.0fc e(N)
+}
+
+{
+    cap file close bs
+    file open bs using "$tables/appendix/AT_beta0_stability.tex", write replace
+    file write bs "\begin{tabular}{lcc} \hline \hline" _n
+    file write bs "Second-phase control & Intensity 1999 x Post & Obs \\ \toprule" _n
+    file write bs "`specname1' & `bp_1' & `Np_1' \\ " _n
+    file write bs " & (`sep_1') & \\ " _n
+    file write bs "  & & \\ " _n
+    file write bs "`specname2' & `bp_2' & `Np_2' \\ " _n
+    file write bs " & (`sep_2') & \\ " _n
+    file write bs "  & & \\ " _n
+    file write bs "`specname3' & `bp_3' & `Np_3' \\ " _n
+    file write bs " & (`sep_3') & \\ " _n
+    file write bs "  & & \\ " _n
+    file write bs "`specname4' & `bp_4' & `Np_4' \\ " _n
+    file write bs " & (`sep_4') & \\ " _n
+    file write bs "\bottomrule" _n
+    file write bs "\multicolumn{3}{p{9cm}}{\footnotesize Share of eventual (2005) enrollment added after 1999, HM sample: mean=`flat_mean', median=`flat_p50', p75=`flat_p75', p90=`flat_p90'.} \\ " _n
+    file write bs "\end{tabular}"
+    file close bs
+}
+di "Table exported to: $tables/appendix/AT_beta0_stability.tex"
 
 * Spec 1: baseline (current main spec) -- 2nd-phase control = Intensity_2005
 reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
