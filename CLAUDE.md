@@ -563,7 +563,7 @@ Consolidates everything above (Conf. Comments 3/4, IADB-1 through IADB-7, all FO
 | Item | Type | What |
 |---|---|---|
 | **M1** | TEXT | Frame T3 cols 6–7 + `AT_elderly_transfer` ✅ as the partial answer to IADB-1 (Óscar's recipient-identity/intra-HH-allocation critique); state the limitation honestly. |
-| **M2** | CODE ✅ (awaiting run) | ENCEL two-wave pooling (`AT_gertler_pooled`) — built; user needs to run + validate sentinel assumptions and check N vs. Gertler's 15,399. |
+| **M2** | CODE ✅ (ran once, iterating) | ENCEL two-wave pooling (`AT_gertler_pooled`) — first run: pooled age51+ N=11,243 (73% of Gertler's 15,399), all coefficients small/insignificant. **Switched age cutoff from baseline `age97` to contemporaneous age (`age_nov99`, observed at the actual Nov 1999 interview, used as an approximation for June too since the panel doesn't retain a ronda==4 row)** to test whether this closes the remaining N gap — awaiting re-run. |
 | **M3** | TEXT / DATA | Health-supply response (IADB-6) — Seguro-Popular + muni-FE response already in paper; hospital-openings extension is data-blocked pre-2001 (Julio Ramos contact). |
 
 **Bucket 4 — Migration (IADB-7):**

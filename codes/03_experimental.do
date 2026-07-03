@@ -953,19 +953,28 @@ foreach ggrp in p m f {
 * Stacks total_visits from both 1999 ENCEL waves -- June (total_visits_june)
 * and November (total_visits, at year==99) -- into one long person-wave file
 * and reruns the cross-sectional treat-vs-control comparison, mirroring
-* Gertler's own pooling of the "third and fourth waves." Age cutoff uses
-* baseline age97 (as in the single-wave columns above); if the resulting N
-* still falls well short of Gertler's reported 15,399 (age 51+), the next
-* lever to try is switching to contemporaneous age at each wave rather than
-* age97, per the prior assessment of why the single-wave column undershoots.
+* Gertler's own pooling of the "third and fourth waves."
+*
+* AGE CUTOFF: uses CONTEMPORANEOUS age (age_nov99, observed at the actual
+* November 1999 interview) rather than baseline age97, per the prior
+* assessment of why the age97-based version undershoots Gertler's reported
+* N=15,399. CAVEAT: the working panel only keeps ronda==1/3/5 (1997, 1998,
+* Nov 1999) -- ronda==4 (June 1999) rows were deliberately excluded so as
+* not to disturb the rest of the file's year==99-based calculations (see
+* the total_visits_june block above) -- so there is no directly observed
+* "age in June 1999." age_nov99 is used as an approximation for the June-
+* wave records too (June and November 1999 are ~5 months apart, so this
+* only matters for people exactly at the age cutoff in that window).
 *------------------------------------------------------------
 preserve
-* Person-level constant for the Nov-wave value (currently only populated on
-* year==99 rows); total_visits_june is already round-invariant per person
-* since it was merged in by folio+renglon with no year condition.
+* Person-level constants for the Nov-wave value and contemporaneous age
+* (both currently only populated on year==99 rows); total_visits_june is
+* already round-invariant per person since it was merged in by
+* folio+renglon with no year condition.
 bys pid: egen total_visits_n99 = max(cond(year==99, total_visits, .))
+bys pid: egen age_nov99 = max(cond(year==99, age, .))
 bys pid: keep if _n==1
-keep pid folio renglon age97 eligible contba gender clavemun claveofi ///
+keep pid folio renglon age97 age_nov99 eligible contba gender clavemun claveofi ///
     total_visits_n99 total_visits_june
 
 * NOTE: Stata does not allow nested preserve/restore -- we are already
@@ -987,16 +996,16 @@ use `wave_n', clear
 append using `wave_m'
 di "`c(N)' person-wave records after stacking June + November 1999"
 
-count if !missing(total_visits_pooled) & eligible==1 & age97>=51
-di "`r(N)' eligible obs (age97>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
-count if !missing(total_visits_pooled) & eligible==1 & age97>=65
-di "`r(N)' eligible obs (age97>=65, both waves stacked)"
+count if !missing(total_visits_pooled) & eligible==1 & age_nov99>=51
+di "`r(N)' eligible obs (contemporaneous age>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
+count if !missing(total_visits_pooled) & eligible==1 & age_nov99>=65
+di "`r(N)' eligible obs (contemporaneous age>=65, both waves stacked)"
 
 foreach ggrp in p m f {
     foreach agecut in 65 51 {
-        if "`ggrp'" == "p"      local gcondp "age97>=`agecut'"
-        else if "`ggrp'" == "m" local gcondp "gender==1 & age97>=`agecut'"
-        else                     local gcondp "gender==2 & age97>=`agecut'"
+        if "`ggrp'" == "p"      local gcondp "age_nov99>=`agecut'"
+        else if "`ggrp'" == "m" local gcondp "gender==1 & age_nov99>=`agecut'"
+        else                     local gcondp "gender==2 & age_nov99>=`agecut'"
 
         quietly sum total_visits_pooled if contba==0 & eligible==1 ///
             & `gcondp' & !missing(total_visits_pooled, contba, claveofi)
