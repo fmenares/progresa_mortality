@@ -53,6 +53,21 @@ cap mkdir "$tables"
 cap mkdir "$tempFolder"
 cap mkdir "$tables/appendix"
 
+*------------------------------------------------------------
+* CACHE FLAG: rebuild vs. load the pre-built working dataset.
+* The block below (raw Panel import, all recoding/construction, and both
+* the November and June SPSS visit-count imports) is slow to re-run every
+* time this file is opened. Set $rebuild_experimental_data = 1 the FIRST
+* time you run this file, or any time the raw source data / construction
+* logic changes; it will rebuild everything and save a cached .dta. Set it
+* to 0 on subsequent runs to skip straight past the slow imports/recoding
+* and load that cached dataset instead -- only the analysis code below
+* (T3, AT6, etc.) will actually re-run.
+*------------------------------------------------------------
+global rebuild_experimental_data = 1
+
+if $rebuild_experimental_data == 1 {
+
 ****************
 *Read locality level data*
 ****************
@@ -555,7 +570,18 @@ egen claveofi = group(cve_ent cve_mun cve_loc), label
 egen clavemun = group(cve_ent cve_mun), label
 sort folio
 
-merge m:1 folio using "$tempFolder/HH_char" 
+merge m:1 folio using "$tempFolder/HH_char"
+
+* Cache the fully-built dataset so subsequent runs can skip straight to
+* the analysis code below (set $rebuild_experimental_data = 0 above).
+save "$tempFolder/experimental_built.dta", replace
+di "Built dataset cached to: $tempFolder/experimental_built.dta"
+
+}
+else {
+    di "Loading cached dataset (set \$rebuild_experimental_data = 1 above to rebuild from raw source files)"
+    use "$tempFolder/experimental_built.dta", clear
+}
 
 *need descriptive table here on treatment comparisons pre program for elderly individuals*
 ssc install ietoolkit, replace
