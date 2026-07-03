@@ -1,9 +1,6 @@
 # ---- Claude internal files (never commit) ----
 .claude/
 
-# ---- Generated outputs (managed via Dropbox, not Git) ----
-figures/
-tables/
 
 # ---- Generated word count (rebuilt on each compile) ----
 wordcount.tex
