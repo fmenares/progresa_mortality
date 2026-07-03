@@ -521,16 +521,71 @@ Distills the FOLLOW-UP 1–5 methodology thread (all above) into user's 6 improv
 
 **OVERLAP WITH CONFERENCE COMMENTS 3 & 4 (user flagged; they converge — one deliverable closes several).** The identification thread = the same substance as Conf. Comment 3 (locality-composition, "cite P&V Figs 2–3") and Conf. Comment 4 (Intensity_1999/2005 correlation, "cite P&V fn. 18, 65%"). Replicating what our data allows closes both + IADB-2 correlation + W5 simultaneously:
 - **REPLICABLE → new deliverable D0/W-fig:** a **P&V Fig-3 analogue** — municipality enrollment ratio (`inten1999`, `inten2005`) vs municipality marginality-index percentile, split by phase (1997–99 vs 2000–05). Feasible (all municipality-level); NOT currently in the paper (existing appendix figures are `spmap` maps, not this scatter/local-linear plot). Directly answers Conf. Comment 3 and visually motivates the early-vs-late design. Pair with **fn-18 R² rows 1–2** (R² of `inten1999~inten2005`; then + municipality-marginality-percentile) = Phase-0 item 0a extended → Conf. Comment 4.
-- **NOT replicable (data gap, already known):** P&V Fig 2 (locality-level) and fn-18 row 3 (+locality-marginality shares → 75%) — require locality-level enrollment/marginality we don't have (P&V's eq. 4). State as a limitation.
+- **UPDATE — previously "not replicable," now IS: user has locality-level marginality index data.** This unblocks **both** of the items below, which is a materially bigger win than originally scoped:
+  - **P&V Fig 2 analogue** — locality-level enrollment ratio vs. locality marginality percentile, by phase. Requires locality-level enrollment (new beneficiaries by locality by phase), which needs checking/construction alongside the municipal series, but the marginality side is now available.
+  - **P&V eq. (4)-style locality-composition-share control** — the more granular fix for Eduardo's endogeneity concern that `AT_ses_trend` (eq.-3 analogue: municipality-marginality-percentile × trend) does NOT fully address. Construct, for each municipality-year, the share of municipal population living in localities at each percentile of the *locality* marginality distribution (`L^p_m` in P&V), interact with year FE, and re-check β₀ stability + report the R² progression (their fn. 18: 65% → 67% with municipality percentile → 75% with locality shares). This is the single most direct, citable answer to "have you fully netted out locality-level wealth heterogeneity" — previously logged as a real data gap; now buildable. New deliverable: **D0b** (locality-share control, pairs with D0's municipality-level Fig 3/R²).
 
 **β₁ / Intensity_2005 COEFFICIENT & EVENT STUDY (AF_beta1) — is it interpretable? (user unsure; reconciled).** β₁ = partial association of *later-phase* (2000–05) enrollment with mortality, net of early. It is **NOT a clean causal late-enrollment effect** — the late variation is the least-exogenous (saturation-era) dimension by the design's own logic; interpreting θ_k/β₁ causally is the mistake the design avoids. It is a **nuisance-control coefficient, not a result.** Drop the "poorer vs richer" talk framing (the muted-in-HM wealth-absorption story we keep out); the correct framing is timing/total-decomposition (β₁ soaks up the later/total enrollment so β₀ isolates early). **Useful diagnostic role of the θ_k event study:** it locates *where confounding lives* — if θ_k (late) shows pre-1997 trends while β_k (early) does not, that is direct evidence the differential-trend confound sits in the late/total dimension the control absorbs, and the early dimension is clean → an argument *for* the design (checkable on the existing `AF_beta1` plot vs the main event study). **Handle head-on:** β₁ is significantly negative in the *unweighted* T2 specs (pooled −5.5*, female −9.1**), attenuating when weighted (same small-municipality fragility as the BR story). Do NOT read this as "late enrollment reduced mortality"; read it as the control catching a real differential trend correlated with total/late enrollment (= why the control is needed), driven by the small volatile municipalities already distrusted. Action = a small caption/text reframe of `AF_beta1_*`: label it a *confounding-location diagnostic + complement* to the main ES, explicitly not a causal late-phase estimate.
 
 **One-paragraph discussion summary (for quick recall):** We stress-tested the identification against the IADB comments (esp. Óscar's staggered-adoption critique). Conclusions: (a) the design (fixed 1999 intensity × single 1997 break + Intensity_2005 control) is NOT subject to the classic forbidden comparison, *by construction* — no staggered timing; same immunity as P&V (2023), whose cohort-exposure boundary is likewise common across municipalities. (b) BR *does* have the forbidden comparison (time-varying dose + TWFE), so our design has TWO advantages over BR: the pre-trend test AND no forbidden comparison. (c) Intensity_2005 is a nuisance control that isolates the early-vs-late *timing* effect (holds total enrollment fixed); mechanical, not a poverty story (HM restriction handles poverty). (d) Óscar's residual worry (after he dropped csdid and converged on binarize-1999+TWFE) is a *functional-form* question — is two snapshots an adequate summary of the evolving dose? — which is TESTABLE via D1; "mostly flat," not "perfectly flat" (perfectly flat kills β₁ ID). (e) Continuous-treatment dCDH is not needed (headline benefit moot; imports the noisiest saturation-era variation; answers a different question) and likely infeasible (few stayers under saturation); csdid doesn't fit (binary + needs cohort-spread saturation destroys). (f) MDE work shows the design is powered to detect BR's original effect, so the null isn't a power artifact.
 
+### ═══ POST-IADB-PRESENTATION IMPLEMENTATION ROADMAP ═══
+
+Consolidates everything above (Conf. Comments 3/4, IADB-1 through IADB-7, all FOLLOW-UPs) into one executable plan, split code vs. text, in dependency order. **Updated per user: intensity is computable for every year (not just the 1997/1998/1999/2000/2002/2005 snapshots), and locality-level marginality index data is available** — both materially upgrade what's feasible below.
+
+**Legend:** CODE = Stata (Claude writes, user runs) · TEXT = LaTeX draft (Claude writes now) · DATA = blocked on external data · ✅ = already built this session.
+
+**Bucket 1 — Identification defense (IADB-2, IADB-3; Conf. Comments 3, 4) — the core:**
+
+| Item | Type | What | Updated by new data? |
+|---|---|---|---|
+| **D0** | CODE | P&V Fig-3 analogue (municipality enrollment vs. marginality percentile, by phase) + fn-18 R² rows 1–2 | — |
+| **D0b** | CODE | **NEW, unlocked by locality marginality data:** P&V Fig-2 analogue (locality-level) + eq.-(4) locality-composition-share control (`L^p_m` × year FE) + fn-18 R² row 3 (→0.75). The deeper fix for Eduardo's endogeneity concern beyond `AT_ses_trend`. |
+| **D1** | CODE | β₀-stability figure. **Upgraded:** with intensity available every year, this is no longer limited to the five snapshots {1997,1998,1999,2000,2002,2005} — can build a genuine year-by-year stability profile (β₀ recomputed swapping in `Intensity_t` for every t=1997..2006), a much more granular version of "is the two-snapshot design an adequate summary." |
+| **D2** | CODE | Binary high-vs-low single-break event study on `Int1999`, threshold sensitivity grid (Óscar's actual ask). |
+| **D3** | CODE | Saturation diagnostics. **Upgraded from approximate to exact:** with intensity known every year, compute the TRUE year-on-year Δintensity for every municipality-year (not interpolated between sparse snapshots) → an exact stayer count and first-crossing-year distribution. **This resolves the open question in "Overall assessment" below about dCDH feasibility — worth re-running the diagnostic now that precise data exists before concluding dCDH is infeasible.** If stayers turn out to be plentiful (full-year data may reveal more within-year flatness than the 5-snapshot approximation suggested), `did_multiplegt_dyn` becomes a genuinely implementable robustness, not just a footnote discussion. |
+| **W1** | TEXT | Fix line-173 footnote (single break ⇒ no forbidden comparison; explain why P&V's disclaimer doesn't mechanically transfer). |
+| **W2** | TEXT | Cite `AT_ses_trend` in the robustness text (currently unreferenced). |
+| **W3** | TEXT | Add the forbidden-comparison advantage over BR, near line 234. |
+| **W4** | TEXT | Sharpen Intensity_2005 = early-vs-late timing story, not-about-poverty, near line 197. |
+| **W5** | TEXT | Correlation sentence near line 171 (P&V fn. 18 + in-sample R² from D0/D0b). |
+| **W6** | TEXT | Reframe `AF_beta1_*` caption as a confounding-location diagnostic, not a causal late-phase estimate. |
+
+**Bucket 2 — Heterogeneity (IADB-4, IADB-5):**
+
+| Item | Type | What |
+|---|---|---|
+| **H1** | CODE | Size-tercile subsample table (Óscar's non-parametric ask). |
+| **H2** | CODE + lit check | Vulnerability-share heterogeneity (Luis) — needs a literature check first to pre-register the subgroup, so it isn't spec search. |
+
+**Bucket 3 — Mechanisms / health supply (IADB-1, IADB-6; Conf. Comment 2):**
+
+| Item | Type | What |
+|---|---|---|
+| **M1** | TEXT | Frame T3 cols 6–7 + `AT_elderly_transfer` ✅ as the partial answer to IADB-1 (Óscar's recipient-identity/intra-HH-allocation critique); state the limitation honestly. |
+| **M2** | CODE ✅ (awaiting run) | ENCEL two-wave pooling (`AT_gertler_pooled`) — built; user needs to run + validate sentinel assumptions and check N vs. Gertler's 15,399. |
+| **M3** | TEXT / DATA | Health-supply response (IADB-6) — Seguro-Popular + muni-FE response already in paper; hospital-openings extension is data-blocked pre-2001 (Julio Ramos contact). |
+
+**Bucket 4 — Migration (IADB-7):**
+
+| Item | Type | What |
+|---|---|---|
+| **G1** | TEXT | Add the long-run migration sign-flip possibility to the robustness paragraph. |
+| **G2** | TEXT/CODE | Optional: un-comment `AT_migration_robustness*` tables if a direct in-paper test is wanted. |
+
+**Recommended sequence:**
+1. **Bucket 1's code first, as one combined block: D0 + D0b + D1 + D3.** They share estimation setup and the locality-share construction (D0b) is now the single highest-value new addition — it's both a Conf. 3/4 closer and the deepest available answer to Eduardo's endogeneity concern. D3's re-run with exact (not approximated) year-on-year data should happen before finalizing any dCDH-feasibility conclusion in the text.
+2. **Then the text (W1–W6, M1, G1)** — drafted with the real numbers from step 1 plugged in; collapses to ~2–3 paragraphs + several cites + 2 caption tweaks.
+3. **D2** (binary event study) as its own block.
+4. **Bucket 2** (H1, then H2 after the lit check) — cheap, do together.
+5. **Bucket 3/4 remainder** — mostly text (M3, G2 optional) + user's pending M2 run; hospital data stays parked on the Julio Ramos contact.
+
+> **Not yet started — awaiting user's go-ahead on which bucket/item to open first.**
+
 ### Overall assessment / priorities
 
 - **Immediate, near-zero-cost text fixes:** (a) **fix the `main.tex` line-173 footnote** — it cites de Chaisemartin & D'Haultfœuille (`de2020two`) to argue modern estimators "require a binary treatment date," which is backwards since their continuous-treatment DiD is exactly the counterexample. Confirmed this footnote is very likely adapted from P&V (2023)'s own fn. 21 disclaiming the same estimators — but P&V's disclaimer is valid *for their cohort-cross-section design* (no repeated calendar-time panel per unit) and does NOT transfer to our genuine municipality-year panel (see IADB-3 deep dive). The fix needs to explain *why* our setting differs, not just soften the wording. (b) **Cite `AT_ses_trend` in the identification/robustness text** (IADB-2) — the most direct rebuttal to intensity-endogeneity-via-differential-trends currently isn't `\ref`'d in main.tex at all. Note this is only P&V's eq.-(3)-level control; their eq.-(4)-level locality-composition-share control is a further, unimplemented step (IADB-3 deep dive).
-- **Highest-value new estimation: IADB-3 (staggered adoption).** Binarized event study (Option B) is low-cost, uses existing event-study code, gives a clean entry date, and directly answers the most-debated critique. dCDH **continuous**-treatment DiD (`did_multiplegt_dyn`, Option A) is the modern-standard, more-faithful follow-up — feasible at the municipality-year level (estimand = municipal dose-response, same as current β₀), but first check "stayer" availability (year-on-year Δintensity distribution). My earlier claim that continuous-DiD was infeasible/awkward here was wrong.
+- **Highest-value new estimation: IADB-3 (staggered adoption).** Binarized event study (Option B) is low-cost, uses existing event-study code, gives a clean entry date, and directly answers the most-debated critique. dCDH **continuous**-treatment DiD (`did_multiplegt_dyn`, Option A) is the modern-standard, more-faithful follow-up — feasible at the municipality-year level (estimand = municipal dose-response, same as current β₀), but first check "stayer" availability (year-on-year Δintensity distribution). My earlier claim that continuous-DiD was infeasible/awkward here was wrong. **UPDATE: user can now compute intensity for every year (not just sparse snapshots) — re-run the stayer/Δintensity diagnostic (D3, exact this time) before concluding on dCDH feasibility; the earlier "likely infeasible under saturation" verdict was based on interpolating between five snapshots and may understate true within-year flatness.**
 - **Cheap, complementary: IADB-4 + IADB-5** — size-tercile and vulnerability-share subsample tables; do together.
 - **Mostly "point to existing robustness": IADB-7** (and IADB-6's Seguro-Popular part) — largely a writing task, with IADB-7 needing a sentence on the long-run migration sign-flip. IADB-2 is *also* mostly writing but has the specific uncited-table gap above.
 - **Data-blocked / external: IADB-6 hospital data (Julio Ramos contact, pre-2001).**
