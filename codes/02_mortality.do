@@ -3215,3 +3215,227 @@ di "Table exported to: $tables/appendix/AT_age_subgroups.tex"
 
 cap drop death5064 death5064f death5064m pop5064_ pop5064_f pop5064_m emr5064 emr5064f emr5064m
 
+*============================================================
+* POST-IADB IDENTIFICATION-DEFENSE BLOCK (Bucket 1, minus D0b)
+* D0b (locality-marginality-share control) is DEFERRED pending the
+* locality-level marginality index data (user constructing separately).
+* Everything below uses data already in this panel.
+*============================================================
+
+*------------------------------------------------------------
+* PREREQUISITE: extend cumulative-intensity snapshots to every year.
+* inten1997/1998/2000/2002 already existed (built earlier in this file
+* from `intensity_new`, which is itself a genuine year-by-year panel
+* variable -- confirmed via its lag_intensity_new/lag2_.../lead_intensity_new
+* companions in 01_mortality_data.do). Adding the remaining years makes a
+* full year-by-year second-phase snapshot profile possible (D1) with NO
+* new data required.
+*------------------------------------------------------------
+foreach yr in 2001 2003 2004 2006 {
+    cap drop aux
+    g aux = intensity_new if year == `yr'
+    bys cve_ent_mun_super: egen inten`yr' = min(aux)
+    drop aux
+}
+di "Intensity snapshots now available for: 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006"
+
+*============================================================
+* D0: PARKER & VOGL (2023) FIGURE 3 ANALOGUE + FN.18 R² (rows 1-2)
+* Municipality enrollment ratio vs. municipality marginality percentile,
+* split by roll-out phase (1997-99 vs. 2000-05). Answers Conf. Comment 3
+* (locality/municipality composition) and pairs with the R² check below
+* for Conf. Comment 4 / IADB-2. Uses the FULL (unrestricted) municipality
+* cross-section, matching P&V's own Figure 3 (drawn on all municipalities
+* nationwide, not just the HM analysis sample, to show the full targeting
+* gradient -- vertical category cutoffs are the point of that figure).
+* Output: $figures/appendix/AF_pv_fig3_replication.pdf
+*------------------------------------------------------------
+* ASSUMPTION TO VERIFY: inten1999/inten2005 are CUMULATIVE-through-year
+* snapshots (same convention as inten1997/1998/2000/2002 built above from
+* intensity_new). The `phase2_new < 0` diagnostic below checks this: if
+* cumulative, inten2005 >= inten1999 should hold almost everywhere.
+*============================================================
+preserve
+keep if year == 1996
+keep cve_ent_mun_super inten1999 inten2005 im_mun_1990 gm_mun_1990
+duplicates drop cve_ent_mun_super, force
+di "`c(N)' municipalities in the all-Mexico cross-section"
+
+count if missing(inten1999) | missing(inten2005) | missing(im_mun_1990)
+di "`r(N)' municipalities dropped for missing inten1999/inten2005/im_mun_1990"
+drop if missing(inten1999) | missing(inten2005) | missing(im_mun_1990)
+
+* Phase-specific (incremental) enrollment ratios, matching P&V's own
+* construction (their Figs. 2-3 plot NEW enrollment during each phase,
+* not cumulative totals): phase 1 = inten1999 (cumulative through 1999,
+* ~= increment since baseline was ~0 pre-1997); phase 2 = the increment
+* ADDED after 1999, i.e. inten2005 - inten1999 (NOT cumulative inten2005).
+gen phase1_new = inten1999
+gen phase2_new = inten2005 - inten1999
+count if phase2_new < 0
+di "`r(N)' municipalities with inten2005 < inten1999 -- should be ~0 if both are cumulative snapshots of the same process; investigate construction if this count is large"
+replace phase2_new = 0 if phase2_new < 0
+
+* Percentile bins of the municipality marginality index (P&V: "each
+* scatter point represents a 1-point bin")
+xtile marg_pctile = im_mun_1990, nq(100)
+
+collapse (mean) phase1_new phase2_new (count) n_mun = cve_ent_mun_super, by(marg_pctile)
+di "`c(N)' percentile bins with data"
+
+label var phase1_new "1997-99 phase"
+label var phase2_new "2000-05 phase"
+
+twoway ///
+    (connected phase1_new marg_pctile, lcolor(black) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (connected phase2_new marg_pctile, lcolor(red) lwidth(thin) mcolor(red) msymbol(triangle) msize(vsmall)), ///
+    xtitle("Municipality marginality percentile") ///
+    ytitle("New enrollment ratio", size(medsmall)) ///
+    xlabel(0(20)100, labsize(small)) ///
+    ylabel(, grid gmin gmax labsize(small)) ///
+    legend(order(1 "1997-99" 2 "2000-05") cols(2) size(medsmall) position(6) ring(1) ///
+        region(lcolor(none))) ///
+    graphregion(color(white)) ///
+    plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_pv_fig3_replication.pdf", as(pdf) replace
+restore
+di "Figure exported to: $figures/appendix/AF_pv_fig3_replication.pdf"
+
+*------------------------------------------------------------
+* fn.18-style R²: how much of Intensity_1999's variance does Intensity_2005
+* explain, alone and with municipality-marginality-percentile controls
+* added. Run on the HM analysis sample (matches P&V's own "in sample
+* municipalities" wording for their 65%/67%/75% progression).
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999 inten2005 im_mun_1990
+duplicates drop cve_ent_mun_super, force
+di "`c(N)' HM municipalities in the correlation cross-section"
+
+xtile marg_pctile_bin_hm = im_mun_1990, nq(10)
+
+reg inten1999 inten2005
+di "R² of inten1999 ~ inten2005 (HM sample): " %5.3f e(r2) "   [P&V fn.18 benchmark: 0.65]"
+
+reg inten1999 inten2005 i.marg_pctile_bin_hm
+di "R² of inten1999 ~ inten2005 + marg-percentile-decile FE (HM sample): " %5.3f e(r2) "   [P&V fn.18 benchmark + muni percentile: 0.67]"
+di "NOTE: P&V's third row (+ locality-marginality-share, -> 0.75) is DEFERRED pending locality-level marginality data (D0b)."
+restore
+
+*============================================================
+* D1: β0-STABILITY ACROSS EVERY AVAILABLE SECOND-PHASE SNAPSHOT
+* Directly tests the "mostly flat 2000-2005" assumption: does β0 (the
+* Intensity_1999 x Post coefficient) move when the second-phase control
+* is swapped from Intensity_2005 to an earlier/later intermediate
+* snapshot, or dropped entirely? Also reports the "share of eventual
+* enrollment added after 1999" descriptive that quantifies "mostly flat."
+* Output: $figures/appendix/AF_beta0_stability.pdf
+*============================================================
+
+* "Mostly flat" descriptive
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999 inten2005
+duplicates drop cve_ent_mun_super, force
+gen late_share = (inten2005 - inten1999) / inten2005 if inten2005 > 0
+di "--- Share of eventual (2005) enrollment added AFTER 1999, HM sample ---"
+su late_share, detail
+restore
+
+* β0 stability loop: baseline (no 2nd-phase control), then swap in each
+* available intermediate/later snapshot one at a time. (1999 excluded from
+* the swap list -- it's always the early-phase regressor, not the
+* second-phase control being varied.)
+local i = 0
+foreach spec in none 2000 2001 2002 2003 2004 2005 2006 {
+    local ++i
+    if "`spec'" == "none" {
+        reghdfe emr65 c.inten1999#i.post c.sp_intensity ///
+            [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    }
+    else {
+        reghdfe emr65 c.inten1999#i.post c.inten`spec'#i.post c.sp_intensity ///
+            [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    }
+    local b_`i'  = _b[1.post#c.inten1999]
+    local se_`i' = _se[1.post#c.inten1999]
+    di "  [2nd-phase control = `spec'] beta0 = " %6.3f `b_`i'' "   se = " %6.3f `se_`i''
+}
+local nspec = `i'
+
+preserve
+clear
+set obs `nspec'
+gen xpos = _n
+gen b  = .
+gen hi = .
+gen lo = .
+forval j = 1/`nspec' {
+    replace b  = `b_`j''                    in `j'
+    replace hi = `b_`j'' + 1.96 * `se_`j'' in `j'
+    replace lo = `b_`j'' - 1.96 * `se_`j'' in `j'
+}
+
+twoway ///
+    (rcap hi lo xpos, lcolor(black%60) lwidth(vthin)) ///
+    (scatter b xpos, mcolor(black) msymbol(circle) msize(small)), ///
+    yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+    xlabel(1 "None" 2 "2000" 3 "2001" 4 "2002" 5 "2003" 6 "2004" 7 "2005" 8 "2006", angle(45) labsize(small)) ///
+    xtitle("Second-phase control (added to Intensity{sub:1999})") ///
+    ytitle("{&beta}{sub:0}: Intensity{sub:1999} x Post (deaths/1,000)", size(medsmall)) ///
+    legend(off) ///
+    graphregion(color(white)) ///
+    plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_beta0_stability.pdf", as(pdf) replace
+restore
+di "Figure exported to: $figures/appendix/AF_beta0_stability.pdf"
+
+*============================================================
+* D3: EXACT SATURATION DIAGNOSTICS (year-on-year Δintensity, "stayers",
+* first-crossing-15% distribution). With intensity now known for every
+* year (not interpolated between sparse snapshots), this settles whether
+* a continuous-treatment (dCDH-style) estimator has enough stayer/
+* not-yet-treated comparison units to be feasible, and whether a 15%
+* binarization threshold produces meaningful cohort spread.
+*============================================================
+preserve
+keep if $sample_marg & inrange(year, 1997, 2006)
+sort cve_ent_mun_super year
+
+by cve_ent_mun_super: gen delta_intensity = intensity_new - intensity_new[_n-1] if year == year[_n-1] + 1
+gen abs_delta = abs(delta_intensity)
+
+di "--- Year-on-year |Δintensity| distribution, HM sample, 1997-2006 ---"
+su abs_delta, detail
+
+count if abs_delta < 0.01 & !missing(abs_delta)
+local n_stayers = r(N)
+count if !missing(abs_delta)
+local n_total = r(N)
+di "Municipality-years with |Δintensity| < 1pp ('stayers'): `n_stayers' / `n_total' (" %5.1f 100*`n_stayers'/`n_total' "%)"
+
+di "--- |Δintensity| by year ---"
+tabstat abs_delta, by(year) stat(mean p50 p90) format(%6.3f)
+
+* First year each municipality crosses 15% intensity (feeds D2's
+* threshold choice and checks cohort spread for any staggered-timing
+* estimator)
+gen crossed15 = year if intensity_new >= 0.15 & !missing(intensity_new)
+bys cve_ent_mun_super: egen first_cross15 = min(crossed15)
+
+preserve
+duplicates drop cve_ent_mun_super, force
+di "--- Distribution of first year crossing 15% intensity, HM sample ---"
+tab first_cross15
+count if missing(first_cross15)
+di "`r(N)' HM municipalities NEVER cross 15% intensity by 2006"
+restore
+
+* Any HM municipality with near-zero intensity throughout the post period?
+bys cve_ent_mun_super: egen max_intensity_post = max(intensity_new) if inrange(year,1997,2006)
+count if max_intensity_post < 0.05 & inrange(year,1997,2006)
+di "`r(N)' HM municipality-years with max post-1997 intensity below 5% (near-zero penetration throughout)"
+restore
+di "D3 saturation diagnostics complete -- see log above for stayer availability and first-crossing spread."
+
