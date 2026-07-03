@@ -3280,7 +3280,10 @@ replace phase2_new = 0 if phase2_new < 0
 * scatter point represents a 1-point bin")
 xtile marg_pctile = im_mun_1990, nq(100)
 
-collapse (mean) phase1_new phase2_new (count) n_mun = cve_ent_mun_super, by(marg_pctile)
+* collapse (count) does not accept a string variable (cve_ent_mun_super);
+* use a numeric constant instead to count municipalities per bin.
+gen byte _one = 1
+collapse (mean) phase1_new phase2_new (count) n_mun = _one, by(marg_pctile)
 di "`c(N)' percentile bins with data"
 
 label var phase1_new "1997-99 phase"
