@@ -131,6 +131,15 @@
          \floatfoot{Notes: This figure presents event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the older-adult (65+) mortality rate per 1,000 inhabitants, under four choices of the second-phase (later cumulative enrollment) control: the baseline specification controlling for $\textit{Intensity}_{2005}$; a specification with no second-phase control; and specifications controlling for the intermediate cumulative-intensity snapshots $\textit{Intensity}_{2000}$ and $\textit{Intensity}_{2002}$ instead. All specifications include Seguro Popular intensity and municipality fixed effects, and are weighted by the population aged 65 and older. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. Overlapping year-by-year profiles across the four series indicate that the early-phase coefficient is not sensitive to which later-phase snapshot is conditioned on, supporting the assumption that enrollment intensity was approximately flat after 1999. Appendix Table~\ref{at:beta0_stability} reports the corresponding standard difference-in-differences $\textit{Intensity}_{1999}\times\textit{Post}$ coefficient under each of the four control choices. 95\% confidence intervals shown.}
 \end{figure}
 
+\begin{figure}[H]
+    \caption{Event Study: Binary High-vs-Low $\textit{Intensity}_{1999}$, Threshold Sensitivity}
+    \label{af:binary_es}
+
+{\includegraphics[width=0.75\textwidth]{figures/appendix/AF_binary_es.pdf}}
+
+         \floatfoot{Notes: This figure presents event-study estimates from a binarized version of the main specification: municipalities are classified as ``high'' or ``low'' $\textit{Intensity}_{1999}$ using three alternative thresholds (15 percent; the highly-marginalized-sample median; the 75th percentile), and the interaction between this binary indicator and year fixed effects (reference year 1996) is estimated for the older-adult (65+) mortality rate per 1,000 inhabitants. All specifications include Seguro Popular intensity and municipality fixed effects, and are weighted by the population aged 65 and older. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. Because program penetration was near-universal within this sample by 2000, there is no meaningful never-treated group at any threshold; ``low'' should be read as below-threshold $\textit{Intensity}_{1999}$, not as an untreated comparison group. This binarization tests robustness to the dose-response functional form (i.e., linearity in intensity) and does not itself address the forbidden-comparisons concern, which the single 1997 break already rules out irrespective of whether treatment is measured continuously or as a binary indicator. Appendix Table~\ref{at:binary_es} reports the corresponding standard difference-in-differences coefficient and the number of high- and low-intensity municipalities under each threshold. 95\% confidence intervals shown.}
+\end{figure}
+
 
 
 \begin{figure}[H]
