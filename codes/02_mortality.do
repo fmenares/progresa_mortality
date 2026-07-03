@@ -3311,29 +3311,60 @@ preserve
 keep if year == 1996 & $sample_marg
 keep cve_ent_mun_super inten1999 inten2005 im_mun_1990
 duplicates drop cve_ent_mun_super, force
-di "`c(N)' HM municipalities in the correlation cross-section"
+count
+local n_r2_mun = r(N)
+di "`n_r2_mun' HM municipalities in the correlation cross-section"
 
 xtile marg_pctile_bin_hm = im_mun_1990, nq(10)
 
 reg inten1999 inten2005
-di "R² of inten1999 ~ inten2005 (HM sample): " %5.3f e(r2) "   [P&V fn.18 benchmark: 0.65]"
+local r2_1 : di %5.3f e(r2)
+di "R² of inten1999 ~ inten2005 (HM sample): `r2_1'   [P&V fn.18 benchmark: 0.65]"
 
 reg inten1999 inten2005 i.marg_pctile_bin_hm
-di "R² of inten1999 ~ inten2005 + marg-percentile-decile FE (HM sample): " %5.3f e(r2) "   [P&V fn.18 benchmark + muni percentile: 0.67]"
+local r2_2 : di %5.3f e(r2)
+di "R² of inten1999 ~ inten2005 + marg-percentile-decile FE (HM sample): `r2_2'   [P&V fn.18 benchmark + muni percentile: 0.67]"
 di "NOTE: P&V's third row (+ locality-marginality-share, -> 0.75) is DEFERRED pending locality-level marginality data (D0b)."
+
+{
+    cap file close r2
+    file open r2 using "$tables/appendix/AT_pv_fig3_r2.tex", write replace
+    file write r2 "\begin{tabular}{lcc} \hline \hline" _n
+    file write r2 "& \multicolumn{1}{c}{R\textsuperscript{2}} & \multicolumn{1}{c}{P\&V (2023) benchmark} \\ \toprule" _n
+    file write r2 "Intensity 1999 on Intensity 2005 & `r2_1' & 0.65 \\ " _n
+    file write r2 "\quad + municipality marginality-percentile FE & `r2_2' & 0.67 \\ " _n
+    file write r2 "\quad + locality marginality-share FE & -- & 0.75 \\ " _n
+    file write r2 "\bottomrule" _n
+    file write r2 "\multicolumn{3}{p{8cm}}{\footnotesize No.\ HM municipalities: `n_r2_mun'. Locality-share row deferred pending locality-level marginality data.} \\ " _n
+    file write r2 "\end{tabular}"
+    file close r2
+}
+di "Table exported to: $tables/appendix/AT_pv_fig3_r2.tex"
 restore
 
 *============================================================
-* D1: β0-STABILITY ACROSS EVERY AVAILABLE SECOND-PHASE SNAPSHOT
-* Directly tests the "mostly flat 2000-2005" assumption: does β0 (the
-* Intensity_1999 x Post coefficient) move when the second-phase control
-* is swapped from Intensity_2005 to an earlier/later intermediate
-* snapshot, or dropped entirely? Also reports the "share of eventual
-* enrollment added after 1999" descriptive that quantifies "mostly flat."
+* D1: EVENT STUDY (β_k, year-by-year) ON INTENSITY_1999 -- STABILITY
+* ACROSS DIFFERENT SECOND-PHASE CONTROLS.
+* Per user instruction: NOT a coefplot / spec-comparison summary. Reuses
+* the SAME event-study construction already used for AF_ses_trend (four
+* overlaid series, offset x-positions, distinguishing line patterns) --
+* here the four series vary the SECOND-PHASE CONTROL rather than the SES
+* trend. This traces the FULL year-by-year β_k profile on Intensity_1999
+* under each control choice, a more complete "mostly flat" check than a
+* single Post-interaction summary would be: do the four year-by-year
+* profiles overlay closely, or does the choice of second-phase control
+* change the dynamic shape of the early-phase effect?
 * Output: $figures/appendix/AF_beta0_stability.pdf
 *============================================================
 
-* "Mostly flat" descriptive
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+* "Mostly flat" descriptive: share of eventual (2005) enrollment added
+* after 1999. FLAG: this, like the phase2_new construction in D0 above,
+* assumes inten1999/inten2005 are CUMULATIVE-through-year snapshots of
+* the same process (so inten2005 - inten1999 = the phase-2 increment).
+* Proceeding under this assumption per user instruction; revisit if the
+* phase2_new<0 diagnostic in D0 turns up a large count.
 preserve
 keep if year == 1996 & $sample_marg
 keep cve_ent_mun_super inten1999 inten2005
@@ -3343,48 +3374,116 @@ di "--- Share of eventual (2005) enrollment added AFTER 1999, HM sample ---"
 su late_share, detail
 restore
 
-* β0 stability loop: baseline (no 2nd-phase control), then swap in each
-* available intermediate/later snapshot one at a time. (1999 excluded from
-* the swap list -- it's always the early-phase regressor, not the
-* second-phase control being varied.)
-local i = 0
-foreach spec in none 2000 2001 2002 2003 2004 2005 2006 {
-    local ++i
-    if "`spec'" == "none" {
-        reghdfe emr65 c.inten1999#i.post c.sp_intensity ///
-            [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+* Spec 1: baseline (current main spec) -- 2nd-phase control = Intensity_2005
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+    c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+    vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local b1_`pos'  = 0
+        local se1_`pos' = 0
     }
     else {
-        reghdfe emr65 c.inten1999#i.post c.inten`spec'#i.post c.sp_intensity ///
-            [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+        local b1_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se1_`pos' = _se[`pos'.year_1995#c.inten1999]
     }
-    local b_`i'  = _b[1.post#c.inten1999]
-    local se_`i' = _se[1.post#c.inten1999]
-    di "  [2nd-phase control = `spec'] beta0 = " %6.3f `b_`i'' "   se = " %6.3f `se_`i''
 }
-local nspec = `i'
+
+* Spec 2: NO second-phase control at all
+reghdfe emr65 c.inten1999##ib6.year_1995 ///
+    c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+    vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local b2_`pos'  = 0
+        local se2_`pos' = 0
+    }
+    else {
+        local b2_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se2_`pos' = _se[`pos'.year_1995#c.inten1999]
+    }
+}
+
+* Spec 3: 2nd-phase control = Intensity_2000 (early intermediate snapshot)
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2000##ib6.year_1995 ///
+    c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+    vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local b3_`pos'  = 0
+        local se3_`pos' = 0
+    }
+    else {
+        local b3_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se3_`pos' = _se[`pos'.year_1995#c.inten1999]
+    }
+}
+
+* Spec 4: 2nd-phase control = Intensity_2002 (later intermediate snapshot)
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 ///
+    c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+    vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local b4_`pos'  = 0
+        local se4_`pos' = 0
+    }
+    else {
+        local b4_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se4_`pos' = _se[`pos'.year_1995#c.inten1999]
+    }
+}
 
 preserve
 clear
-set obs `nspec'
-gen xpos = _n
-gen b  = .
-gen hi = .
-gen lo = .
-forval j = 1/`nspec' {
-    replace b  = `b_`j''                    in `j'
-    replace hi = `b_`j'' + 1.96 * `se_`j'' in `j'
-    replace lo = `b_`j'' - 1.96 * `se_`j'' in `j'
+set obs 16
+gen yr_pos = _n
+gen xpos_1 = yr_pos - 0.27
+gen xpos_2 = yr_pos - 0.09
+gen xpos_3 = yr_pos + 0.09
+gen xpos_4 = yr_pos + 0.27
+foreach s in 1 2 3 4 {
+    gen b_s`s'  = .
+    gen hi_s`s' = .
+    gen lo_s`s' = .
 }
-
+forval pos = 1/16 {
+    replace b_s1  = `b1_`pos''                          if yr_pos == `pos'
+    replace hi_s1 = `b1_`pos'' + 1.96 * `se1_`pos''    if yr_pos == `pos'
+    replace lo_s1 = `b1_`pos'' - 1.96 * `se1_`pos''    if yr_pos == `pos'
+    replace b_s2  = `b2_`pos''                          if yr_pos == `pos'
+    replace hi_s2 = `b2_`pos'' + 1.96 * `se2_`pos''    if yr_pos == `pos'
+    replace lo_s2 = `b2_`pos'' - 1.96 * `se2_`pos''    if yr_pos == `pos'
+    replace b_s3  = `b3_`pos''                          if yr_pos == `pos'
+    replace hi_s3 = `b3_`pos'' + 1.96 * `se3_`pos''    if yr_pos == `pos'
+    replace lo_s3 = `b3_`pos'' - 1.96 * `se3_`pos''    if yr_pos == `pos'
+    replace b_s4  = `b4_`pos''                          if yr_pos == `pos'
+    replace hi_s4 = `b4_`pos'' + 1.96 * `se4_`pos''    if yr_pos == `pos'
+    replace lo_s4 = `b4_`pos'' - 1.96 * `se4_`pos''    if yr_pos == `pos'
+}
 twoway ///
-    (rcap hi lo xpos, lcolor(black%60) lwidth(vthin)) ///
-    (scatter b xpos, mcolor(black) msymbol(circle) msize(small)), ///
+    (rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+    (scatter b_s1 xpos_1, mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (rcap hi_s2 lo_s2 xpos_2, lcolor(black%60) lwidth(vthin) lpattern(dash)) ///
+    (scatter b_s2 xpos_2, mcolor(black) msymbol(square) msize(vsmall)) ///
+    (rcap hi_s3 lo_s3 xpos_3, lcolor(black%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+    (scatter b_s3 xpos_3, mcolor(black) msymbol(triangle) msize(vsmall)) ///
+    (rcap hi_s4 lo_s4 xpos_4, lcolor(black%60) lwidth(vthin) lpattern(longdash)) ///
+    (scatter b_s4 xpos_4, mcolor(black) msymbol(diamond) msize(vsmall)) ///
+    (line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (line b_s2 xpos_2 if 1==0, lcolor(black) lpattern(dash) lwidth(thin) mcolor(black) msymbol(square) msize(vsmall)) ///
+    (line b_s3 xpos_3 if 1==0, lcolor(black) lpattern(shortdash_dot) lwidth(thin) mcolor(black) msymbol(triangle) msize(vsmall)) ///
+    (line b_s4 xpos_4 if 1==0, lcolor(black) lpattern(longdash) lwidth(thin) mcolor(black) msymbol(diamond) msize(vsmall)), ///
     yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-    xlabel(1 "None" 2 "2000" 3 "2001" 4 "2002" 5 "2003" 6 "2004" 7 "2005" 8 "2006", angle(45) labsize(small)) ///
-    xtitle("Second-phase control (added to Intensity{sub:1999})") ///
-    ytitle("{&beta}{sub:0}: Intensity{sub:1999} x Post (deaths/1,000)", size(medsmall)) ///
-    legend(off) ///
+    xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+    xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+    xscale(range(0.5 16.5)) ///
+    xtitle("") ///
+    ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+    ylabel(, grid gmin gmax labsize(small)) ///
+    legend(order(9 "Control: Intensity 2005 (baseline)" 10 "No 2nd-phase control" 11 "Control: Intensity 2000" 12 "Control: Intensity 2002") ///
+        cols(2) size(small) position(6) ring(1) ///
+        region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
 graph export "$figures/appendix/AF_beta0_stability.pdf", as(pdf) replace
@@ -3408,12 +3507,16 @@ gen abs_delta = abs(delta_intensity)
 
 di "--- Year-on-year |Δintensity| distribution, HM sample, 1997-2006 ---"
 su abs_delta, detail
+local delta_mean : di %6.3f r(mean)
+local delta_p50   : di %6.3f r(p50)
+local delta_p90   : di %6.3f r(p90)
 
 count if abs_delta < 0.01 & !missing(abs_delta)
 local n_stayers = r(N)
 count if !missing(abs_delta)
 local n_total = r(N)
-di "Municipality-years with |Δintensity| < 1pp ('stayers'): `n_stayers' / `n_total' (" %5.1f 100*`n_stayers'/`n_total' "%)"
+local stayer_pct : di %5.1f 100*`n_stayers'/`n_total'
+di "Municipality-years with |Δintensity| < 1pp ('stayers'): `n_stayers' / `n_total' (`stayer_pct'%)"
 
 di "--- |Δintensity| by year ---"
 tabstat abs_delta, by(year) stat(mean p50 p90) format(%6.3f)
@@ -3426,16 +3529,43 @@ bys cve_ent_mun_super: egen first_cross15 = min(crossed15)
 
 preserve
 duplicates drop cve_ent_mun_super, force
+count
+local n_mun_hm = r(N)
 di "--- Distribution of first year crossing 15% intensity, HM sample ---"
 tab first_cross15
+count if first_cross15 <= 1999
+local n_cross_early = r(N)
 count if missing(first_cross15)
-di "`r(N)' HM municipalities NEVER cross 15% intensity by 2006"
+local n_never_cross = r(N)
+di "`n_never_cross' HM municipalities NEVER cross 15% intensity by 2006"
 restore
 
 * Any HM municipality with near-zero intensity throughout the post period?
 bys cve_ent_mun_super: egen max_intensity_post = max(intensity_new) if inrange(year,1997,2006)
 count if max_intensity_post < 0.05 & inrange(year,1997,2006)
-di "`r(N)' HM municipality-years with max post-1997 intensity below 5% (near-zero penetration throughout)"
+local n_near_zero = r(N)
+di "`n_near_zero' HM municipality-years with max post-1997 intensity below 5% (near-zero penetration throughout)"
+
+{
+    cap file close sat
+    file open sat using "$tables/appendix/AT_saturation_diagnostics.tex", write replace
+    file write sat "\begin{tabular}{lc} \hline \hline" _n
+    file write sat "\multicolumn{2}{l}{\textit{Year-on-year \$|\Delta\$Intensity\$|\$, HM sample, 1997--2006}} \\ \toprule" _n
+    file write sat "Mean & `delta_mean' \\ " _n
+    file write sat "Median & `delta_p50' \\ " _n
+    file write sat "90th percentile & `delta_p90' \\ " _n
+    file write sat "Municipality-years, \$|\Delta\$Intensity\$|<\$1pp (\textit{stayers}) & `n_stayers' / `n_total' (`stayer_pct'\%) \\ " _n
+    file write sat "  & \\ " _n
+    file write sat "\multicolumn{2}{l}{\textit{First year crossing 15\% intensity}} \\ " _n
+    file write sat "Municipalities crossing by 1999 & `n_cross_early' / `n_mun_hm' \\ " _n
+    file write sat "Municipalities never crossing by 2006 & `n_never_cross' / `n_mun_hm' \\ " _n
+    file write sat "  & \\ " _n
+    file write sat "Municipality-years with max intensity \$<\$5\% (near-zero penetration) & `n_near_zero' \\ " _n
+    file write sat "\bottomrule" _n
+    file write sat "\end{tabular}"
+    file close sat
+}
+di "Table exported to: $tables/appendix/AT_saturation_diagnostics.tex"
 restore
 di "D3 saturation diagnostics complete -- see log above for stayer availability and first-crossing spread."
 
