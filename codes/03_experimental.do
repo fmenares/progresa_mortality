@@ -968,13 +968,16 @@ bys pid: keep if _n==1
 keep pid folio renglon age97 eligible contba gender clavemun claveofi ///
     total_visits_n99 total_visits_june
 
-preserve
-    gen total_visits_pooled = total_visits_n99
-    gen wave99 = "n"
-    tempfile wave_n
-    save `wave_n'
-restore
+* NOTE: Stata does not allow nested preserve/restore -- we are already
+* inside one preserve block (opened above), so build both wave files by
+* generating/dropping the wave-specific variables in place rather than
+* preserving again.
+gen total_visits_pooled = total_visits_n99
+gen wave99 = "n"
+tempfile wave_n
+save `wave_n'
 
+drop total_visits_pooled wave99
 gen total_visits_pooled = total_visits_june
 gen wave99 = "m"
 tempfile wave_m
