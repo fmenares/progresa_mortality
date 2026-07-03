@@ -3589,7 +3589,13 @@ tabstat abs_delta, by(year) stat(mean p50 p90) format(%6.3f)
 gen crossed15 = year if intensity_new >= 0.15 & !missing(intensity_new)
 bys cve_ent_mun_super: egen first_cross15 = min(crossed15)
 
-preserve
+* Save the full municipality-year panel before collapsing to one row per
+* municipality below -- we are already inside a preserve opened earlier in
+* D3, and Stata does not support a second, nested preserve/restore, so use
+* a tempfile instead to get back to the full panel afterward.
+tempfile d3_panel
+save `d3_panel'
+
 duplicates drop cve_ent_mun_super, force
 count
 local n_mun_hm = r(N)
@@ -3600,7 +3606,8 @@ local n_cross_early = r(N)
 count if missing(first_cross15)
 local n_never_cross = r(N)
 di "`n_never_cross' HM municipalities NEVER cross 15% intensity by 2006"
-restore
+
+use `d3_panel', clear
 
 * Any HM municipality with near-zero intensity throughout the post period?
 bys cve_ent_mun_super: egen max_intensity_post = max(intensity_new) if inrange(year,1997,2006)
