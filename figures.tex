@@ -21,8 +21,15 @@
 \begin{figure}[H]
     \caption[]{Event Study: Effect of Progresa Enrollment Intensity on Mortality Rate  by Sex}
     \label{f:es_dd_sex_no_weight}
-{\includegraphics[width=0.89\textwidth]{figures/Figure_2_w.pdf}}   
+{\includegraphics[width=0.89\textwidth]{figures/Figure_2_w.pdf}}
          \floatfoot{Notes: This figure shows the results obtained from estimating a difference-in-differences event study specification. The outcome is the Mortality Rate for adults aged 65 and older, measured in deaths per 1,000 inhabitants. The plots display the interaction coefficients between Progresa intensity in 1999 and year indicators. The specification includes municipality and year fixed effects and controls for Seguro Popular intensity. Standard errors are clustered at the municipality level. The reference year is 1996. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). Regressions are weighted by the population aged 65 and older. 95\% confidence intervals shown.}
+\end{figure}
+
+\begin{figure}[H]
+    \caption[]{Robustness: Event Study Using a Fixed 1997 Household Denominator (P\&V-Style)}
+    \label{f:es_dd_sex_fixeddenom}
+{\includegraphics[width=0.89\textwidth]{figures/Figure_2_w_fixeddenom.pdf}}
+         \floatfoot{Notes: This figure repeats the event study of Figure~\ref{f:es_dd_sex_no_weight}, but with $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ constructed using a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), following Parker and Vogl (2023), in place of each year's own municipal household count (see Appendix Tables~\ref{t:did_age_fixeddenom} and~\ref{at:pv_fig3_r2_fixeddenom}). The specification, sample, and weighting are otherwise identical. 95\% confidence intervals shown.}
 \end{figure}
 
 

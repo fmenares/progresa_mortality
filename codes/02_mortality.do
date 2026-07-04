@@ -4021,3 +4021,112 @@ foreach pnl in p f m {
 }
 di "Table exported to: $tables/T2_b_mortality_fixeddenom.tex"
 
+*============================================================
+* ROBUSTNESS FIGURE: Figure 2 analogue (f:es_dd_sex_no_weight) using the
+* FIXED-DENOMINATOR (P&V-style) Intensity_1999/2005 in place of the
+* current year-varying-denominator construction. Mirrors the main Figure
+* 2 code exactly (weighted + Seguro Popular event study, pooled/female/
+* male, ib6.year_1995 interactions, reference year 1996) with
+* inten1999_fix/inten2005_fix substituted for inten1999/inten2005.
+* Output: $figures/Figure_2_w_fixeddenom.pdf
+*============================================================
+{
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+foreach grp in w f m {
+    if "`grp'" == "w" {
+        local outcome emr65
+        local wvar   popover65_
+    }
+    else if "`grp'" == "f" {
+        local outcome emr65f
+        local wvar   popover65_f
+    }
+    else {
+        local outcome emr65m
+        local wvar   popover65_m
+    }
+
+    reghdfe `outcome' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
+        c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
+        vce(cluster cve_ent_mun_super)
+
+    forval pos = 1/16 {
+        if `pos' == 6 {
+            local bfd_`grp'_6    = 0
+            local sefd_`grp'_6   = 0
+        }
+        else {
+            local bfd_`grp'_`pos'    = _b[`pos'.year_1995#c.inten1999_fix]
+            local sefd_`grp'_`pos'   = _se[`pos'.year_1995#c.inten1999_fix]
+        }
+    }
+}
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_w = yr_pos - 0.18
+gen xpos_f = yr_pos
+gen xpos_m = yr_pos + 0.18
+foreach grp in w f m {
+    gen b_`grp'  = .
+    gen hi_`grp' = .
+    gen lo_`grp' = .
+}
+forval pos = 1/16 {
+    foreach grp in w f m {
+        replace b_`grp'  = `bfd_`grp'_`pos''                              if yr_pos == `pos'
+        replace hi_`grp' = `bfd_`grp'_`pos'' + 1.96 * `sefd_`grp'_`pos'' if yr_pos == `pos'
+        replace lo_`grp' = `bfd_`grp'_`pos'' - 1.96 * `sefd_`grp'_`pos'' if yr_pos == `pos'
+    }
+}
+twoway ///
+    (rcap hi_w lo_w xpos_w, ///
+        lcolor(black%60) lwidth(vthin)) ///
+    (scatter b_w xpos_w, ///
+        mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (rcap hi_f lo_f xpos_f, ///
+        lcolor(red%60) lwidth(vthin)) ///
+    (scatter b_f xpos_f, ///
+        mcolor(red) msymbol(square) msize(vsmall)) ///
+    (rcap hi_m lo_m xpos_m, ///
+        lcolor(blue%60) lwidth(vthin)) ///
+    (scatter b_m xpos_m, ///
+        mcolor(blue%80) msymbol(triangle) msize(vsmall)) ///
+    (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin) msymbol(circle) mcolor(black) msize(vsmall)) ///
+    (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) msymbol(square) mcolor(red) msize(vsmall)) ///
+    (line b_m xpos_m if 1==0, lcolor(blue%80) lpattern(shortdash_dot) lwidth(thin) msymbol(triangle) mcolor(blue%80) msize(vsmall)), ///
+    yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+    xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+    xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+    xscale(range(0.5 16.5)) ///
+    xtitle("") ///
+    ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+    ylabel(, grid gmin gmax labsize(small)) ///
+    legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+        cols(3) size(medsmall) position(6) ring(1) ///
+        region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+    graphregion(color(white)) ///
+    plotregion(margin(l=1 r=1))
+graph export "$figures/Figure_2_w_fixeddenom.pdf", as(pdf) replace
+restore
+}
+di "Figure exported to: $figures/Figure_2_w_fixeddenom.pdf"
+
+*------------------------------------------------------------
+* Diagnostic requested alongside the R^2 discussion: how many
+* municipality-years get clipped at Intensity>=1 under each denominator
+* construction? Clipping compresses variation and could itself be part
+* of why the fixed-denominator R^2 only rose modestly (0.16->0.24)
+* rather than closing the gap to P&V's 0.65.
+*------------------------------------------------------------
+count if inten1999 >= 1 & !missing(inten1999) & $sample_marg
+di "`r(N)' HM municipality-year obs with current-construction Intensity_1999 clipped at 1"
+count if inten2005 >= 1 & !missing(inten2005) & $sample_marg
+di "`r(N)' HM municipality-year obs with current-construction Intensity_2005 clipped at 1"
+count if pgbenef_1999/hog1997_fixed >= 1 & !missing(hog1997_fixed) & $sample_marg
+di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_1999 clipped at 1 (before clipping applied)"
+count if pgbenef_2005/hog1997_fixed >= 1 & !missing(hog1997_fixed) & $sample_marg
+di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_2005 clipped at 1 (before clipping applied)"
+
