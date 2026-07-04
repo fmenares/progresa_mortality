@@ -1,0 +1,122 @@
+*converts municipality codes to 1990 master-municipalities, based on PDFs that detail the creation of new municipalities
+
+*PDF 90-95
+replace CVE_MUN=1 if CVE_MUN==10 & CVE_EDO==1
+replace CVE_MUN=1 if CVE_MUN==11 & CVE_EDO==1
+
+replace CVE_MUN=4 if CVE_MUN==5 & CVE_EDO==2
+
+replace CVE_MUN=1 if CVE_MUN==5 & CVE_EDO==3
+
+replace CVE_MUN=72 if CVE_MUN==76 & CVE_EDO==12
+
+*When new municipios combine more than one ex-municipios they take a new maste code, where first digit referes to the number of municipios combined and the rest of the code y their own codes in 1990 combined (3 digits per own code). 
+replace CVE_MUN=4025039070029 if CVE_MUN==122 & CVE_EDO==15
+replace CVE_MUN=4025039070029 if CVE_MUN==25 & CVE_EDO==15
+replace CVE_MUN=4025039070029 if CVE_MUN==39 & CVE_EDO==15
+replace CVE_MUN=4025039070029 if CVE_MUN==70 & CVE_EDO==15
+replace CVE_MUN=4025039070029 if CVE_MUN==29 & CVE_EDO==15
+
+replace CVE_MUN=1 if CVE_MUN==8 & CVE_EDO==23
+
+replace CVE_MUN=37 if CVE_MUN==57 & CVE_EDO==24
+replace CVE_MUN=10 if CVE_MUN==58 & CVE_EDO==24
+
+replace CVE_MUN=20 if CVE_MUN==45 & CVE_EDO==29
+replace CVE_MUN=30 if CVE_MUN==46 & CVE_EDO==29
+replace CVE_MUN=30 if CVE_MUN==47 & CVE_EDO==29
+replace CVE_MUN=2010029 if CVE_MUN==48 & CVE_EDO==29
+replace CVE_MUN=2010029 if CVE_MUN==10 & CVE_EDO==29
+replace CVE_MUN=2010029 if CVE_MUN==29 & CVE_EDO==29
+
+replace CVE_MUN=32 if CVE_MUN==49 & CVE_EDO==29
+replace CVE_MUN=10 if CVE_MUN==50 & CVE_EDO==29
+replace CVE_MUN=32 if CVE_MUN==51 & CVE_EDO==29
+replace CVE_MUN=38 if CVE_MUN==52 & CVE_EDO==29
+replace CVE_MUN=29 if CVE_MUN==53 & CVE_EDO==29
+replace CVE_MUN=44 if CVE_MUN==54 & CVE_EDO==29
+replace CVE_MUN=40 if CVE_MUN==55 & CVE_EDO==29
+replace CVE_MUN=15 if CVE_MUN==56 & CVE_EDO==29
+replace CVE_MUN=23 if CVE_MUN==57 & CVE_EDO==29
+replace CVE_MUN=44 if CVE_MUN==58 & CVE_EDO==29
+replace CVE_MUN=22 if CVE_MUN==59 & CVE_EDO==29
+replace CVE_MUN=29 if CVE_MUN==60 & CVE_EDO==29
+
+*PDF 95-00
+replace CVE_MUN=2004006 if CVE_MUN==11 & CVE_EDO==4
+replace CVE_MUN=2004006 if CVE_MUN==4 & CVE_EDO==4
+replace CVE_MUN=2004006 if CVE_MUN==6 & CVE_EDO==4
+
+
+replace CVE_MUN=3003004009 if CVE_MUN==10 & CVE_EDO==4
+replace CVE_MUN=3003004009 if CVE_MUN==3 & CVE_EDO==4
+replace CVE_MUN=3003004009 if CVE_MUN==4 & CVE_EDO==4
+replace CVE_MUN=3003004009 if CVE_MUN==9 & CVE_EDO==4
+
+
+
+replace CVE_MUN=26 if CVE_MUN==113 & CVE_EDO==7
+replace CVE_MUN=59 if CVE_MUN==114 & CVE_EDO==7
+replace CVE_MUN=52 if CVE_MUN==115 & CVE_EDO==7
+replace CVE_MUN=59 if CVE_MUN==116 & CVE_EDO==7
+replace CVE_MUN=8 if CVE_MUN==117 & CVE_EDO==7
+replace CVE_MUN=81 if CVE_MUN==118 & CVE_EDO==7
+replace CVE_MUN=49 if CVE_MUN==119 & CVE_EDO==7
+
+replace CVE_MUN=26 if CVE_MUN==71 & CVE_EDO==26
+replace CVE_MUN=29 if CVE_MUN==72 & CVE_EDO==26
+
+replace CVE_MUN=2045054 if CVE_MUN==208 & CVE_EDO==30
+replace CVE_MUN=2045054 if CVE_MUN==45 & CVE_EDO==30
+replace CVE_MUN=2045054 if CVE_MUN==54 & CVE_EDO==30
+
+replace CVE_MUN=2104149 if CVE_MUN==209 & CVE_EDO==30
+replace CVE_MUN=2104149 if CVE_MUN==104 & CVE_EDO==30
+replace CVE_MUN=2104149 if CVE_MUN==149 & CVE_EDO==30
+
+replace CVE_MUN=4108091070061 if CVE_MUN==210 & CVE_EDO==30
+replace CVE_MUN=4108091070061 if CVE_MUN==108 & CVE_EDO==30
+replace CVE_MUN=4108091070061 if CVE_MUN==91 & CVE_EDO==30
+replace CVE_MUN=4108091070061 if CVE_MUN==70 & CVE_EDO==30
+replace CVE_MUN=4108091070061 if CVE_MUN==61 & CVE_EDO==30
+
+
+replace CVE_MUN=17 if CVE_MUN==57 & CVE_EDO==32
+
+
+*PDF 00-05
+replace CVE_MUN=2013023 if CVE_MUN==77 & CVE_EDO==12
+replace CVE_MUN=2013023 if CVE_MUN==13 & CVE_EDO==12
+replace CVE_MUN=2013023 if CVE_MUN==23 & CVE_EDO==12
+
+replace CVE_MUN=43 if CVE_MUN==78 & CVE_EDO==12
+replace CVE_MUN=2028010 if CVE_MUN==79 & CVE_EDO==12
+replace CVE_MUN=2028010 if CVE_MUN==28 & CVE_EDO==12
+replace CVE_MUN=2028010 if CVE_MUN==10 & CVE_EDO==12
+
+replace CVE_MUN=13 if CVE_MUN==80 & CVE_EDO==12
+replace CVE_MUN=2041052 if CVE_MUN==81 & CVE_EDO==12
+replace CVE_MUN=2041052 if CVE_MUN==41 & CVE_EDO==12
+replace CVE_MUN=2041052 if CVE_MUN==52 & CVE_EDO==12
+
+
+replace CVE_MUN=82 if CVE_MUN==123 & CVE_EDO==15
+replace CVE_MUN=74 if CVE_MUN==124 & CVE_EDO==15
+replace CVE_MUN=44 if CVE_MUN==125 & CVE_EDO==15
+
+replace CVE_MUN=102 if CVE_MUN==211 & CVE_EDO==30
+replace CVE_MUN=130 if CVE_MUN==212 & CVE_EDO==30
+
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==58 & CVE_EDO==32
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==1 & CVE_EDO==32
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==3 & CVE_EDO==32
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==4 & CVE_EDO==32
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==19 & CVE_EDO==32
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==23 & CVE_EDO==32
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==45 & CVE_EDO==32
+replace CVE_MUN=7001003004019023045047 if CVE_MUN==47 & CVE_EDO==32
+
+*PDF 05-10
+replace CVE_MUN=8 if CVE_MUN==125 & CVE_EDO==14
+
+replace CVE_MUN=8 if CVE_MUN==9 & CVE_EDO==23
