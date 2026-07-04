@@ -3823,3 +3823,201 @@ foreach v in treated_15 treated_med treated_p75 {
 }
 di "Table exported to: $tables/appendix/AT_binary_es.tex"
 
+*============================================================
+* ROBUSTNESS: P&V-STYLE FIXED-DENOMINATOR INTENSITY CONSTRUCTION
+* User is worried the R²(Intensity_1999~Intensity_2005)=0.16 (vs P&V's
+* 0.65) may reflect a denominator difference: our `intensity_new` divides
+* cumulative beneficiaries by `hh_tot` AT EACH YEAR (year-varying), while
+* P&V divide by a SINGLE fixed interpolated-1997 household count
+* (hog1997 = 0.3*hog1990 + 0.7*hog2000) for BOTH snapshots. This section
+* rebuilds Intensity_1999/Intensity_2005 using P&V's exact fixed-
+* denominator formula, as a SIDE-BY-SIDE robustness check (does NOT
+* replace the main specification), to see how much of the R² gap and the
+* main regression coefficients this explains.
+*
+* Requires the raw numerator/denominator series saved by
+* 01_mortality_data.do: hh_tot (year-varying HH count), hh_tot1990
+* (fixed 1990 HH count), pgbenef_new (year-varying cumulative
+* beneficiaries, saved under its pre-rename name pg_new) -- merged in
+* fresh here since it is uncertain whether these raw series survived
+* into aamr_regression_municipality_gender_tb.dta, the file this script
+* actually loads.
+*============================================================
+cap drop hh_tot hh_tot1990 pgbenef_new
+merge m:1 cve_ent_mun_super year using "$data/Temp_data/hhnum_recoded.dta", keepusing(hh_tot) nogenerate
+merge m:1 cve_ent_mun_super using "$data/Temp_data/hhnum_1990.dta", keepusing(hh_tot1990) nogenerate
+merge m:1 cve_ent_mun_super year using "$data/Temp_data/Progresa_benef_mun_recoded.dta", keepusing(pg_new) nogenerate
+rename pg_new pgbenef_new
+
+count if missing(hh_tot) | missing(hh_tot1990) | missing(pgbenef_new)
+di "`r(N)' obs missing hh_tot/hh_tot1990/pgbenef_new after merge -- check the Temp_data paths above if this count is large"
+
+* Fixed 1997 household base, P&V's exact formula (0.3*HH1990 + 0.7*HH2000)
+cap drop hh_tot2000
+g aux = hh_tot if year == 2000
+bys cve_ent_mun_super: egen hh_tot2000 = min(aux)
+drop aux
+gen hog1997_fixed = 0.3*hh_tot1990 + 0.7*hh_tot2000
+count if missing(hog1997_fixed)
+di "`r(N)' obs missing the fixed 1997 household base (0.3*HH1990+0.7*HH2000)"
+
+* Cumulative beneficiaries AT the 1999 and 2005 snapshots (same pattern
+* used to build inten1997/1998/2000/2002 earlier, applied here to the RAW
+* pgbenef_new rather than the already-year-varying-denominator intensity_new)
+cap drop pgbenef_1999 pgbenef_2005
+g aux = pgbenef_new if year == 1999
+bys cve_ent_mun_super: egen pgbenef_1999 = min(aux)
+drop aux
+g aux = pgbenef_new if year == 2005
+bys cve_ent_mun_super: egen pgbenef_2005 = min(aux)
+drop aux
+
+cap drop inten1999_fix inten2005_fix
+gen inten1999_fix = pgbenef_1999/hog1997_fixed
+gen inten2005_fix = pgbenef_2005/hog1997_fixed
+replace inten1999_fix = 1 if inten1999_fix > 1 & !missing(inten1999_fix)
+replace inten2005_fix = 1 if inten2005_fix > 1 & !missing(inten2005_fix)
+label var inten1999_fix "Intensity 1999 (P&V-style fixed 1997 HH denominator)"
+label var inten2005_fix "Intensity 2005 (P&V-style fixed 1997 HH denominator)"
+
+di "--- Correlation of current (year-varying-denom) vs. fixed-denom Intensity, HM sample, 1996 cross-section ---"
+corr inten1999 inten1999_fix if $sample_marg & year==1996
+corr inten2005 inten2005_fix if $sample_marg & year==1996
+
+*------------------------------------------------------------
+* Robustness R²: same fn.18-style check as AT_pv_fig3_r2, but using the
+* fixed-denominator Intensity_1999/2005 instead of the year-varying-
+* denominator versions. Placed alongside AT_pv_fig3_r2 in tables_app.tex.
+* Output: $tables/appendix/AT_pv_fig3_r2_fixeddenom.tex
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999_fix inten2005_fix im_mun_1990
+duplicates drop cve_ent_mun_super, force
+count
+local n_r2fix_mun = r(N)
+di "`n_r2fix_mun' HM municipalities in the fixed-denominator correlation cross-section"
+
+xtile marg_pctile_bin_hm_fix = im_mun_1990, nq(10)
+
+reg inten1999_fix inten2005_fix
+local r2fix_1 : di %5.3f e(r2)
+di "R² of inten1999_fix ~ inten2005_fix (HM sample, FIXED denominator): `r2fix_1'   [current year-varying-denom version: 0.160; P&V benchmark: 0.65]"
+
+reg inten1999_fix inten2005_fix i.marg_pctile_bin_hm_fix
+local r2fix_2 : di %5.3f e(r2)
+di "R² + marg-percentile-decile FE (FIXED denominator): `r2fix_2'   [current: 0.275; P&V benchmark: 0.67]"
+
+{
+    cap file close r2f
+    file open r2f using "$tables/appendix/AT_pv_fig3_r2_fixeddenom.tex", write replace
+    file write r2f "\begin{tabular}{lccc} \hline \hline" _n
+    file write r2f "& \multicolumn{1}{c}{R\textsuperscript{2}} & \multicolumn{1}{c}{Year-varying denom.} & \multicolumn{1}{c}{P\&V (2023) benchmark} \\ \toprule" _n
+    file write r2f "Intensity 1999 on Intensity 2005 & `r2fix_1' & 0.160 & 0.65 \\ " _n
+    file write r2f "\quad + municipality marginality-percentile FE & `r2fix_2' & 0.275 & 0.67 \\ " _n
+    file write r2f "\bottomrule" _n
+    file write r2f "\multicolumn{4}{p{9.5cm}}{\footnotesize No.\ HM municipalities: `n_r2fix_mun'. Uses a P\&V-style fixed 1997 household base (0.3 x HH1990 + 0.7 x HH2000) as the denominator for both Intensity 1999 and Intensity 2005, instead of each year's own household count.} \\ " _n
+    file write r2f "\end{tabular}"
+    file close r2f
+}
+di "Table exported to: $tables/appendix/AT_pv_fig3_r2_fixeddenom.tex"
+restore
+
+*============================================================
+* ROBUSTNESS TABLE: main T2 spec (Intensity x Post) using the CURRENT
+* (year-varying-denominator) vs. FIXED (P&V-style) Intensity construction,
+* side by side, to see how much this choice moves beta0/beta1 in the
+* headline regression. Placed right after T2_b_mortality in tables.tex.
+* Output: $tables/T2_b_mortality_fixeddenom.tex
+*============================================================
+foreach pnl in p f m {
+    if "`pnl'" == "p" {
+        local out65  emr65
+        local wt65   popover65_
+    }
+    else if "`pnl'" == "f" {
+        local out65  emr65f
+        local wt65   popover65_f
+    }
+    else {
+        local out65  emr65m
+        local wt65   popover65_m
+    }
+
+    * Col 1: current (year-varying denominator)
+    reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+        [aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    local aux : di %12.3f _b[1.post#c.inten1999]
+    local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+    if      `t' >= 2.576 local b99_fd_`pnl'_1 = "`aux'***"
+    else if `t' >= 1.96  local b99_fd_`pnl'_1 = "`aux'**"
+    else if `t' >= 1.645 local b99_fd_`pnl'_1 = "`aux'*"
+    else                  local b99_fd_`pnl'_1 = "`aux'"
+    local se99_fd_`pnl'_1 : di %12.3f _se[1.post#c.inten1999]
+    local aux : di %12.3f _b[1.post#c.inten2005]
+    local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+    if      `t' >= 2.576 local b05_fd_`pnl'_1 = "`aux'***"
+    else if `t' >= 1.96  local b05_fd_`pnl'_1 = "`aux'**"
+    else if `t' >= 1.645 local b05_fd_`pnl'_1 = "`aux'*"
+    else                  local b05_fd_`pnl'_1 = "`aux'"
+    local se05_fd_`pnl'_1 : di %12.3f _se[1.post#c.inten2005]
+    local N_fd_`pnl'_1 : di %12.0fc e(N)
+
+    * Col 2: fixed 1997 household denominator (P&V-style)
+    reghdfe `out65' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+        [aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    local aux : di %12.3f _b[1.post#c.inten1999_fix]
+    local t = abs(_b[1.post#c.inten1999_fix] / _se[1.post#c.inten1999_fix])
+    if      `t' >= 2.576 local b99_fd_`pnl'_2 = "`aux'***"
+    else if `t' >= 1.96  local b99_fd_`pnl'_2 = "`aux'**"
+    else if `t' >= 1.645 local b99_fd_`pnl'_2 = "`aux'*"
+    else                  local b99_fd_`pnl'_2 = "`aux'"
+    local se99_fd_`pnl'_2 : di %12.3f _se[1.post#c.inten1999_fix]
+    local aux : di %12.3f _b[1.post#c.inten2005_fix]
+    local t = abs(_b[1.post#c.inten2005_fix] / _se[1.post#c.inten2005_fix])
+    if      `t' >= 2.576 local b05_fd_`pnl'_2 = "`aux'***"
+    else if `t' >= 1.96  local b05_fd_`pnl'_2 = "`aux'**"
+    else if `t' >= 1.645 local b05_fd_`pnl'_2 = "`aux'*"
+    else                  local b05_fd_`pnl'_2 = "`aux'"
+    local se05_fd_`pnl'_2 : di %12.3f _se[1.post#c.inten2005_fix]
+    local N_fd_`pnl'_2 : di %12.0fc e(N)
+}
+
+{
+    cap file close fd
+    file open fd using "$tables/T2_b_mortality_fixeddenom.tex", write replace
+    file write fd "\begin{tabular}{lcc} \hline \hline" _n
+    file write fd "& \multicolumn{1}{c}{Year-varying denom.\ (current)} & \multicolumn{1}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
+    file write fd "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
+    file write fd "\underline{\textit{Panel A: Pooled}} \\ " _n
+    file write fd "\textit{Intensity 1999 x post} & `b99_fd_p_1' & `b99_fd_p_2' \\ " _n
+    file write fd " & (`se99_fd_p_1') & (`se99_fd_p_2') \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "\textit{Intensity 2005 x post} & `b05_fd_p_1' & `b05_fd_p_2' \\ " _n
+    file write fd " & (`se05_fd_p_1') & (`se05_fd_p_2') \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "Obs & `N_fd_p_1' & `N_fd_p_2' \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "\underline{\textit{Panel B: Females}} \\ " _n
+    file write fd "\textit{Intensity 1999 x post} & `b99_fd_f_1' & `b99_fd_f_2' \\ " _n
+    file write fd " & (`se99_fd_f_1') & (`se99_fd_f_2') \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "\textit{Intensity 2005 x post} & `b05_fd_f_1' & `b05_fd_f_2' \\ " _n
+    file write fd " & (`se05_fd_f_1') & (`se05_fd_f_2') \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "Obs & `N_fd_f_1' & `N_fd_f_2' \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "\underline{\textit{Panel C: Males}} \\ " _n
+    file write fd "\textit{Intensity 1999 x post} & `b99_fd_m_1' & `b99_fd_m_2' \\ " _n
+    file write fd " & (`se99_fd_m_1') & (`se99_fd_m_2') \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "\textit{Intensity 2005 x post} & `b05_fd_m_1' & `b05_fd_m_2' \\ " _n
+    file write fd " & (`se05_fd_m_1') & (`se05_fd_m_2') \\ " _n
+    file write fd "  & & \\ " _n
+    file write fd "Obs & `N_fd_m_1' & `N_fd_m_2' \\ " _n
+    file write fd "\bottomrule" _n
+    file write fd "\end{tabular}"
+    file close fd
+}
+di "Table exported to: $tables/T2_b_mortality_fixeddenom.tex"
+

@@ -42,6 +42,20 @@
   }
 \end{table}
 
+\begin{table}[H]
+\RawCaption%
+  {\caption[]{Robustness: Fixed vs.\ Year-Varying Household Denominator in the Intensity Construction}
+   \label{t:did_age_fixeddenom}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.88}{
+      \input{tables/T2_b_mortality_fixeddenom}
+    }
+    \vspace{-3mm}
+    \floatfoot{\textit{Notes:} This table reports the main difference-in-differences specification of Table~\ref{t:did_age} (ages 65 and older, weighted, with Seguro Popular intensity) under two alternative constructions of $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$. Column~(1) reproduces the current specification, in which cumulative enrolled households are divided by each year's own municipal household count. Column~(2) instead divides by a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), following Parker and Vogl (2023). The sample is restricted to highly marginalized municipalities. All regressions include municipality and year fixed effects and Seguro Popular intensity. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+
 
 \begin{table}[H]
 \RawCaption%
