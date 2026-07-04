@@ -4130,3 +4130,143 @@ di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_1999 clippe
 count if pgbenef_2005/hog1997_fixed >= 1 & !missing(hog1997_fixed) & $sample_marg
 di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_2005 clipped at 1 (before clipping applied)"
 
+*============================================================
+* D0b (PARTIAL): P&V eq.(4) LOCALITY-COMPOSITION-SHARE CONTROL
+* Per user: the P&V replication package's raw data (including
+* Base_marginacion_localidad_90-10.dta, the 1990-2010 locality-level
+* CONAPO marginality index) is available in the user's Dropbox, same as
+* every other external data source in this project -- just needs a path.
+* SET THIS PATH before running:
+*------------------------------------------------------------
+global pvdata "$data/01_dataprep"
+* ^ best guess, mirroring P&V's own internal "$data/01_dataprep/..."
+*   convention reused against our existing $data root. ADJUST if the
+*   user's actual folder is elsewhere (e.g. a "3 replication package"
+*   subfolder, or a differently-named directory).
+*------------------------------------------------------------
+*
+* Builds L^p_m: the share of each municipality's population living in
+* localities at each percentile of the NATIONAL locality-marginality
+* distribution, following P&V's own construction in
+* "3 replication package/01_dataprep_programs/01_dataprep/
+* 01_create_municipal_level_indicators.do" (lines ~358-383):
+*   egen iml_pctile = cut(iml), group(100)
+*   tab iml_pctile, gen(iml_pc)                      [locality-level 0/1 dummies]
+*   collapse iml_pc* [aw=POB_TOT], by(CVE_EDO CVE_MUN) [pop-weighted mean = share]
+* This is the deeper fix for Eduardo's endogeneity concern beyond
+* AT_ses_trend (which only controls for MUNICIPALITY marginality percentile,
+* not the within-municipality DISTRIBUTION of locality-level poverty).
+*
+* NOTE ON SCOPE: this builds the CONTROL only (does not require locality-
+* level Progresa enrollment data). The actual P&V Figure-2 ANALOGUE (a
+* scatter/lpoly plot of locality-level enrollment ratio vs. locality
+* marginality percentile) additionally requires P&V's own locality-level
+* beneficiary panel (fams_fase_20134xloc_f.dta) -- confirm separately
+* whether that specific file is also in the copied data folder before
+* that companion figure can be built; the control below does not depend
+* on it.
+*============================================================
+* Non-destructive existence check: do NOT exit the whole do-file if the
+* path guess is wrong -- just skip this block and let the rest of the
+* script (T3, AT6, everything already built above) run normally.
+local d0b_ok = 0
+cap confirm file "$pvdata/Base_marginacion_localidad_90-10.dta"
+if _rc {
+    di as error "D0b SKIPPED: could not find $pvdata/Base_marginacion_localidad_90-10.dta -- verify/adjust the global pvdata path above and re-run this block only (nothing else in this file depends on it)."
+}
+else {
+    local d0b_ok = 1
+}
+
+if `d0b_ok' {
+    preserve
+    use "$pvdata/Base_marginacion_localidad_90-10.dta", clear
+    di "`c(N)' localities loaded (all years) from Base_marginacion_localidad_90-10.dta"
+
+    keep if año == 1995
+    di "`c(N)' localities in the 1995 cross-section"
+
+    * Same field parsing as P&V's own 04_rollout_locality.do: CVE_LOC packs
+    * municipality (3 digits) and locality (4 digits) into one numeric ID.
+    rename CVE_ENT CVE_EDO
+    gen id = string(CVE_LOC, "%12.0f")
+    gen CVE_MUNICIPIO = real(substr(id, -7, 3))
+    gen CVE_LOCALIDAD = real(substr(id, -4, 4))
+    drop CVE_MUN CVE_LOC id
+    rename CVE_MUNICIPIO CVE_MUN
+    rename CVE_LOCALIDAD loc
+
+    cap confirm string variable TOT_VIV
+    if !_rc {
+        replace TOT_VIV = "." if TOT_VIV == "-"
+        destring TOT_VIV, replace
+    }
+
+    count if missing(iml)
+    di "`r(N)' localities missing the continuous marginality index (iml) -- dropped from the percentile ranking"
+    drop if missing(iml)
+
+    * Percentile dummies over the FULL NATIONAL locality distribution,
+    * exactly matching P&V's construction (not restricted to HM localities).
+    egen iml_pctile = cut(iml), group(100)
+    tab iml_pctile, gen(iml_pc)
+    drop iml_pctile
+
+    count if missing(POB_TOT)
+    di "`r(N)' localities missing POB_TOT (population weight) -- dropped before the population-weighted collapse"
+    drop if missing(POB_TOT)
+
+    * Population-weighted collapse to municipality level: the mean of each
+    * 0/1 percentile dummy, weighted by locality population, equals the
+    * SHARE of the municipality's population living in that percentile bin.
+    collapse (mean) iml_pc* [aw=POB_TOT], by(CVE_EDO CVE_MUN)
+    di "`c(N)' municipalities (raw CVE_EDO/CVE_MUN codes) with locality-composition shares built"
+
+    * Cross-walk from raw state/municipality codes to our harmonized
+    * cve_ent_mun_super, reusing the SAME crosswalk file already used
+    * elsewhere in this project (e.g. the spmap figures above).
+    rename CVE_EDO cve_ent
+    rename CVE_MUN cve_mun
+    cap tostring cve_ent, replace format(%02.0f)
+    cap tostring cve_mun, replace format(%03.0f)
+    merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
+        keepusing(cve_ent_mun_super) nogenerate
+    count if missing(cve_ent_mun_super)
+    di "`r(N)' municipalities failed to match the cve_ent_mun_super crosswalk -- inspect cve_ent/cve_mun format (string vs numeric, zero-padding) if this count is large"
+    drop if missing(cve_ent_mun_super)
+
+    duplicates drop cve_ent_mun_super, force
+    tempfile loc_shares
+    save `loc_shares'
+    di "`c(N)' municipalities with locality-composition-share controls, ready to merge onto the main panel"
+    restore
+
+    merge m:1 cve_ent_mun_super using `loc_shares', nogenerate
+    count if missing(iml_pc1) & $sample_marg & year==1996
+    di "`r(N)' HM municipalities missing locality-composition shares after merge onto the main panel"
+
+    *------------------------------------------------------------
+    * Extend the fn.18-style R² table with P&V's third row: adding the
+    * full set of locality-composition-share controls on top of
+    * Intensity_2005 and the municipality-marginality-percentile FE.
+    * Matches P&V's own 65% -> 67% -> 75% progression (04_rollout_muni.do:
+    * "reg prop9799 prop9705 i.margpct iml_pc* if marginado==1").
+    *------------------------------------------------------------
+    preserve
+    keep if year == 1996 & $sample_marg
+    keep cve_ent_mun_super inten1999 inten2005 im_mun_1990 iml_pc*
+    duplicates drop cve_ent_mun_super, force
+    count if missing(iml_pc1)
+    local n_missing_locshare = r(N)
+    di "`n_missing_locshare' HM municipalities missing locality-composition shares (excluded from row 3 of the R² table)"
+
+    xtile marg_pctile_bin_hm_l4 = im_mun_1990, nq(10)
+
+    reg inten1999 inten2005 i.marg_pctile_bin_hm_l4 iml_pc*
+    local r2_3 : di %5.3f e(r2)
+    di "R² of inten1999 ~ inten2005 + marg-percentile FE + locality-composition shares (HM sample): `r2_3'   [P&V fn.18 benchmark: 0.75]"
+    restore
+
+    di "NOTE: manually update the 'locality marginality-share FE' row of AT_pv_fig3_r2.tex with `r2_3' once confirmed -- not auto-written to avoid silently overwriting that table before this block has been validated against real data."
+}
+
