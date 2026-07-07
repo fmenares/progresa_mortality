@@ -1,4 +1,24 @@
-# CLAUDE.md
+# research_project.md
+
+> **Note:** This file was renamed from `CLAUDE.md`. It is both the project reference doc and the running research log — every substantive finding, decision, and status update across sessions is recorded here so work can resume across sessions/threads without losing context.
+
+## Quick Cross-Session Summary (read this first)
+
+**Project:** DiD estimation of PROGRESA's effect on adult (65+) mortality in highly marginalized Mexican municipalities. Core spec: `emr65 ~ β₀·Intensity_1999×Post + β₁·Intensity_2005×Post + municipality FE + year FE`. Paper title: *"Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico."*
+
+**Where things stand (most recent session):**
+- Worked through two rounds of external feedback: **conference discussant comments** (11 items, mostly Done/In Progress — see "Conference Discussant Comments" tracker) and **IADB HBL-series seminar comments** (7 items, IADB-1 through IADB-7 — see "IADB Presentation Comments" tracker), both tracked in tables below with a status column.
+- Biggest recent thread: **identification defense against staggered-adoption critique** (IADB-3, Óscar's comment). Conclusion: the design (fixed 1999/2005 intensity snapshots × single 1997 break) is immune to the classic "forbidden comparisons" problem by construction (no staggered timing), same as Parker & Vogl (2023) — see the long "IDENTIFICATION-DEFENSE SYNTHESIS" section for the full reasoning chain (5 follow-ups) and the P&V replication-package comparison.
+- Built four empirical robustness deliverables (**D0, D1, D2, D3** — P&V Fig-3 replication, β₀-stability event study, binary high/low event study, saturation diagnostics), all code-complete in `codes/02_mortality.do` but **not yet run against real data** (this sandbox has no Progresa/mortality data).
+- Currently mid-investigation on a **discrepancy**: our R² between `Intensity_1999`/`Intensity_2005` is ~0.16–0.24, vs. P&V's reported 65–75%. Traced one real cause (P&V use a fixed 1997 household denominator; we use a year-varying one) — fixing it closed only part of the gap (R² 0.16→0.24). Built `D0b` (P&V's eq.-4 locality-composition-share control) as a further test, not yet run.
+- **Open question, unanswered when this session ended:** what exactly is needed to check consistency between our beneficiary (`pgbenef_new`) and marginality-index (`im_mun_1990`) construction vs. P&V's — see "OPEN QUESTION" note further down for the specific asks (source/vintage of beneficiary data, source of marginality index, municipality-crosswalk harmonization).
+- Also this session: added a Stata dataset-caching mechanism to `codes/03_experimental.do` (avoids re-importing raw SPSS/Panel files on every run), fixed several Stata bugs (nested `preserve`, `collapse (count)` on string var, a `word N of` local-splitting bug), and clarified that T3's column 6 is NOT a pooled-visits column.
+
+**Next steps queued (not started):** W1–W6 text fixes to `main.tex` (footnote correction on staggered-adoption estimators, citing `AT_ses_trend`, sharpening the Intensity_2005 narrative, etc.) — see "POST-IADB-PRESENTATION IMPLEMENTATION ROADMAP" section for the full itemized list (Buckets 1–4).
+
+**Full detail lives in the sections below — this summary is an index, not a replacement.** Key sections to jump to: "Conference Discussant Comments — Status Tracker", "IADB Presentation Comments (HBL Series) — Status Tracker", "IDENTIFICATION-DEFENSE SYNTHESIS", "POST-IADB-PRESENTATION IMPLEMENTATION ROADMAP", "P&V (2023) REPLICATION PACKAGE — DIRECT CODE COMPARISON".
+
+---
 
 ## Project Overview
 
@@ -14,7 +34,7 @@ This repository contains research code evaluating the causal impact of **PROGRES
 
 ```
 progresa_mortality/
-├── CLAUDE.md                     # This file
+├── research_project.md           # This file
 ├── codes/
 │   ├── aamr_011326.do            # Data assembly: merges all sources, constructs mortality rates
 │   ├── 01_enigh_data.do          # ENIGH household survey data processing
@@ -346,7 +366,7 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 | 10 | Table 1 consistency: 1990 SES, add po2sm | Implementation | **Done** | Match archive file; use 1990 census for SES variables; add po2sm column |
 | 11 | Progresa enrollment/take-up rates | Text | **Not Started** | Brief footnote |
 
-> **Instructions for Claude:** Update both tables whenever a comment is resolved. Mark status as **Done** and record the output filename or text change. Always update CLAUDE.md and commit before ending a session.
+> **Instructions for Claude:** Update both tables whenever a comment is resolved. Mark status as **Done** and record the output filename or text change. Always update research_project.md and commit before ending a session.
 
 ### Detailed approaches (so they survive context compression)
 
