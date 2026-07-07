@@ -24,19 +24,35 @@ set more off
 ***   "1997_1999" : inclusive — adds 1997 entrants (~1,961 mun, matches BR reported N)
 	global br_phase "1998_1999"
 
+*** Marginality tier switch: which definition of "highly marginalized" to use
+*** for gm_mun_1990 (and hence $sample_marg) downstream. Built in
+*** 000.MI_and_pop_counts_interpolation_recoding.do.
+***   "gm_1990"     : CONAPO's official 1990 breakpoints (-1.59/-.5/.044/1.135)
+***                   — matches Parker & Vogl (2023) exactly. DEFAULT.
+***   "gm_1990_emp" : empirical quintiles of our own 1990 index distribution
+***   "gm_1995_emp" : empirical quintiles of our own 1995 index distribution
+	global marg_tier "gm_1990"
+
 
 
 *** ====================================================================================
 *** 0. Margination Index & POP data (1990, 2000, 2005, 2010)- used Felipe/Jorge's data
 *** ====================================================================================
 	use "$data/MI_mun_ipolate_recoded_1990.dta", clear
-	
-*** Create geographic code 
-	sort cve_ent_mun_super year   
+
+*** Apply the marginality-tier switch: overwrite gm_mun_1990 with whichever
+*** tier definition $marg_tier points to, so every downstream table/figure
+*** that references gm_mun_1990 picks it up without further edits.
+	drop gm_mun_1990
+	gen gm_mun_1990 = ${marg_tier}
+	label val gm_mun_1990 gm_lbl
+
+*** Create geographic code
+	sort cve_ent_mun_super year
 	rename pob_tot pop_tot
 	* inconsistent: vhac sprim po2sm*
 	save "$data/Temp_data/Index_mun_recoded.dta", replace
-	
+
 	keep if year==1990
 	keep cve_ent_mun_super pop_tot im_mun_1990 gm_mun_1990
 	rename pop_tot pop_tot_1990
