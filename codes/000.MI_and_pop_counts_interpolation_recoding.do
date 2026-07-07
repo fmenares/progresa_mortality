@@ -23,19 +23,11 @@ usefule sources:
 1. Base_Indice_de_marginacion_municipal_by_year.do (Susan Parker)
 2. linear_interpolation_1990_2015.do (Jorge Peniche/Emma Aguila)
 *******************************************************************************/
-global data "C:\\Users\\FELIPEME\\Dropbox\\2026\\progresa_mortality/data/"
-global codes "C:\\Users\\FELIPEME\\Documents\\projects\\progresa_mortality\\codes/"
+	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
+	global codes "C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\"
 
-if c(username)=="root" {
-	global data  "/home/user/progresa_mortality/data/"
-	global codes "/home/user/progresa_mortality/codes/"
-}
 
-if c(username)=="fmenares" global ensanut "/hdir/0/fmenares/Dropbox/R01_MHAS\\ENSANUT"
-if c(username)=="felipe" global ensanut "C:\\Users\\felip\\Dropbox\\R01_MHAS\\ENSANUT"
 
-if c(username)=="fmenares" global r01 "/hdir/0/fmenares/Dropbox/R01_MHAS"
-if c(username)=="felipe" global r01 "C:\\Users\\felip\\Dropbox\\R01_MHAS"
 
 capture log close
 *log using "$ensanut/programs/fmenares/datasets/logs/02_margination_index_interpolation_recoded", replace text
