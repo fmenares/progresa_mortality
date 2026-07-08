@@ -3924,6 +3924,115 @@ di "Table exported to: $tables/appendix/AT_pv_fig3_r2_fixeddenom.tex"
 restore
 
 *============================================================
+* ROBUSTNESS: FASE-ONLY BENEFICIARY SOURCE (P&V-style numerator)
+* Companion check to the fixed-denominator robustness above: the R² gap
+* might also reflect a numerator difference, not just a denominator
+* difference. Our default ($benef_source = "mixed" in
+* 01_mortality_data.do) switches from the FASE file to the newer admin
+* pipeline (newProg_98_16.dta) starting in 1998, while P&V use ONLY the
+* FASE file for the entire 1997-2005 window. This section rebuilds
+* Intensity_1999/Intensity_2005 using the FASE-only numerator
+* (pg_mun*_fase, built in 00.programs_beneficiaries_recoded.do), crossed
+* with BOTH denominator choices (year-varying and P&V's fixed 1997
+* base), as a SIDE-BY-SIDE robustness check (does NOT replace the main
+* specification).
+*============================================================
+preserve
+use "$data/beneficiaries_mun_recoded_1990.dta", clear
+keep cve_ent_mun_super pg_mun*_fase
+forvalues j = 1997/2018 {
+	rename pg_mun`j'_fase pg_fase`j'
+}
+reshape long pg_fase, i(cve_ent_mun_super) j(year)
+tempfile fase_panel
+save `fase_panel'
+restore
+
+cap drop pg_fase
+merge m:1 cve_ent_mun_super year using `fase_panel', nogenerate
+
+cap drop pgbenef_fase_1999 pgbenef_fase_2005 hh_tot1999 hh_tot2005
+g aux = pg_fase if year == 1999
+bys cve_ent_mun_super: egen pgbenef_fase_1999 = min(aux)
+drop aux
+g aux = pg_fase if year == 2005
+bys cve_ent_mun_super: egen pgbenef_fase_2005 = min(aux)
+drop aux
+g aux = hh_tot if year == 1999
+bys cve_ent_mun_super: egen hh_tot1999 = min(aux)
+drop aux
+g aux = hh_tot if year == 2005
+bys cve_ent_mun_super: egen hh_tot2005 = min(aux)
+drop aux
+
+* Year-varying denominator (hh_tot AT each snapshot year) -- same
+* construction as the main inten1999/inten2005, just with the FASE-only
+* numerator in place of pgbenef_new (mixed).
+cap drop inten1999_fase inten2005_fase
+gen inten1999_fase = pgbenef_fase_1999/hh_tot1999
+gen inten2005_fase = pgbenef_fase_2005/hh_tot2005
+replace inten1999_fase = 1 if inten1999_fase > 1 & !missing(inten1999_fase)
+replace inten2005_fase = 1 if inten2005_fase > 1 & !missing(inten2005_fase)
+label var inten1999_fase "Intensity 1999 (FASE-only numerator, year-varying denom.)"
+label var inten2005_fase "Intensity 2005 (FASE-only numerator, year-varying denom.)"
+
+* Fixed 1997 household base (P&V's exact denominator), FASE-only numerator
+cap drop inten1999_fase_fix inten2005_fase_fix
+gen inten1999_fase_fix = pgbenef_fase_1999/hog1997_fixed
+gen inten2005_fase_fix = pgbenef_fase_2005/hog1997_fixed
+replace inten1999_fase_fix = 1 if inten1999_fase_fix > 1 & !missing(inten1999_fase_fix)
+replace inten2005_fase_fix = 1 if inten2005_fase_fix > 1 & !missing(inten2005_fase_fix)
+label var inten1999_fase_fix "Intensity 1999 (FASE-only numerator, fixed P&V denom.)"
+label var inten2005_fase_fix "Intensity 2005 (FASE-only numerator, fixed P&V denom.)"
+
+*------------------------------------------------------------
+* Robustness R² table: 2x2 grid crossing numerator choice (mixed vs.
+* FASE-only) with denominator choice (year-varying vs. fixed P&V-style),
+* reusing r2_1/r2_2 (mixed, year-varying) and r2fix_1/r2fix_2 (mixed,
+* fixed) computed above. Placed alongside AT_pv_fig3_r2_fixeddenom in
+* tables_app.tex. Output: $tables/appendix/AT_pv_r2_benefsource.tex
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999_fase inten2005_fase inten1999_fase_fix inten2005_fase_fix im_mun_1990
+duplicates drop cve_ent_mun_super, force
+count
+local n_r2fase_mun = r(N)
+di "`n_r2fase_mun' HM municipalities in the FASE-only correlation cross-section"
+
+xtile marg_pctile_bin_hm_fase = im_mun_1990, nq(10)
+
+reg inten1999_fase inten2005_fase
+local r2fase_yv_1 : di %5.3f e(r2)
+di "R² of inten1999_fase ~ inten2005_fase (HM sample, FASE-only numerator, year-varying denom): `r2fase_yv_1'   [mixed/year-varying: `r2_1'; P&V benchmark: 0.65]"
+
+reg inten1999_fase inten2005_fase i.marg_pctile_bin_hm_fase
+local r2fase_yv_2 : di %5.3f e(r2)
+
+reg inten1999_fase_fix inten2005_fase_fix
+local r2fase_fx_1 : di %5.3f e(r2)
+di "R² of inten1999_fase_fix ~ inten2005_fase_fix (HM sample, FASE-only numerator, FIXED denom): `r2fase_fx_1'   [mixed/fixed: `r2fix_1'; P&V benchmark: 0.65]"
+
+reg inten1999_fase_fix inten2005_fase_fix i.marg_pctile_bin_hm_fase
+local r2fase_fx_2 : di %5.3f e(r2)
+
+{
+    cap file close r2b
+    file open r2b using "$tables/appendix/AT_pv_r2_benefsource.tex", write replace
+    file write r2b "\begin{tabular}{lcccc} \hline \hline" _n
+    file write r2b "& \multicolumn{2}{c}{Mixed numerator} & \multicolumn{2}{c}{FASE-only numerator} \\" _n
+    file write r2b "& Year-varying denom. & Fixed (P\&V) denom. & Year-varying denom. & Fixed (P\&V) denom. \\ \toprule" _n
+    file write r2b "Intensity 1999 on Intensity 2005 & `r2_1' & `r2fix_1' & `r2fase_yv_1' & `r2fase_fx_1' \\ " _n
+    file write r2b "\quad + municipality marginality-percentile FE & `r2_2' & `r2fix_2' & `r2fase_yv_2' & `r2fase_fx_2' \\ " _n
+    file write r2b "\bottomrule" _n
+    file write r2b "\multicolumn{5}{p{13cm}}{\footnotesize No.\ HM municipalities: `n_r2fase_mun'. P\&V (2023) benchmark: 0.65 (0.67 with FE). ``Mixed'' numerator switches from the FASE file to the newProg\_98\_16 admin pipeline starting in 1998 (current default, \texttt{\$benef\_source == \"mixed\"} in 01\_mortality\_data.do); ``FASE-only'' uses the FASE file for the entire 1997-2005 window, as in Parker and Vogl (2023), switching to the admin pipeline only from 2006 onward (\texttt{\$benef\_source == \"fase\"}).} \\ " _n
+    file write r2b "\end{tabular}"
+    file close r2b
+}
+di "Table exported to: $tables/appendix/AT_pv_r2_benefsource.tex"
+restore
+
+*============================================================
 * ROBUSTNESS TABLE: main T2 spec (Intensity x Post) using the CURRENT
 * (year-varying-denominator) vs. FIXED (P&V-style) Intensity construction,
 * side by side, to see how much this choice moves beta0/beta1 in the

@@ -24,28 +24,18 @@ set more off
 ***   "1997_1999" : inclusive — adds 1997 entrants (~1,961 mun, matches BR reported N)
 	global br_phase "1998_1999"
 
-*** Marginality tier switch: which definition of "highly marginalized" to use
-*** for gm_mun_1990 (and hence $sample_marg) downstream. Built in
-*** 000.MI_and_pop_counts_interpolation_recoding.do.
-***   "gm_1990"     : CONAPO's official 1990 breakpoints (-1.59/-.5/.044/1.135)
-***                   — matches Parker & Vogl (2023) exactly. DEFAULT.
-***   "gm_1990_emp" : empirical quintiles of our own 1990 index distribution
-***   "gm_1995_emp" : empirical quintiles of our own 1995 index distribution
-	global marg_tier "gm_1990"
-
-
+*** Beneficiary-source switch: which Progresa numerator to use for
+*** pg_mun/cc_pg_mun (built in 00.programs_beneficiaries_recoded.do).
+***   "mixed" : FASE (1997) + newProg_98_16 (1998-2018) — DEFAULT.
+***   "fase"  : FASE only through 2005, newProg_98_16 from 2006 onward
+***             — matches Parker & Vogl (2023), which uses only the FASE
+***             file for the entire 1997-2005 period.
+	global benef_source "mixed"
 
 *** ====================================================================================
 *** 0. Margination Index & POP data (1990, 2000, 2005, 2010)- used Felipe/Jorge's data
 *** ====================================================================================
 	use "$data/MI_mun_ipolate_recoded_1990.dta", clear
-
-*** Apply the marginality-tier switch: overwrite gm_mun_1990 with whichever
-*** tier definition $marg_tier points to, so every downstream table/figure
-*** that references gm_mun_1990 picks it up without further edits.
-	drop gm_mun_1990
-	gen gm_mun_1990 = ${marg_tier}
-	label val gm_mun_1990 gm_lbl
 
 *** Create geographic code
 	sort cve_ent_mun_super year
@@ -73,8 +63,18 @@ set more off
 *** 1. NEW Beneficiary data (1997-2018)- collapsed by municipality - used Felipe/Jorge's data
 *** ======================================================================================
 	use "$data/beneficiaries_mun_recoded_1990.dta", clear
-	
-*** Create 1997 new benef = 1997 old benef	
+
+*** Apply the beneficiary-source switch: rename the selected variant's
+*** pg_mun/cc_pg_mun series to the plain names, and drop the unused variant,
+*** so downstream code needs no further edits.
+	local other = cond("${benef_source}"=="mixed","fase","mixed")
+	forvalues j=1997(1)2018 {
+	drop pg_mun`j'_`other' cc_pg_mun`j'_`other'
+	rename pg_mun`j'_${benef_source} pg_mun`j'
+	rename cc_pg_mun`j'_${benef_source} cc_pg_mun`j'
+	}
+
+*** Create 1997 new benef = 1997 old benef
 	forvalues j=1997(1)2018 {
 	rename pg_mun`j'  pg_new`j'
 	rename cc_pg_mun`j' c_pg_new`j'

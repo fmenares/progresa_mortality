@@ -272,20 +272,6 @@ preserve
 	save `m_index'
 restore
 
-*** Also pull the 1995 snapshot from the SAME (1990-crosswalk) panel, so that
-*** gm_1995_emp is built off the identical municipality harmonization as
-*** gm_1990/gm_1990_emp, rather than mixing in the separate 1995-crosswalk run.
-if `year' == 1990 {
-preserve
-	keep if year == 1995
-	ren im_mun im_mun_1995
-	keep cve_ent_mun_super im_mun_1995
-	sort cve_ent_mun_super
-	tempfile m_index_1995
-	save `m_index_1995'
-restore
-}
-
 merge m:1 cve_ent_mun_super using `m_index', nogen
 sort cve_ent_mun_super year
 
@@ -305,45 +291,17 @@ sum im_mun, d
 }
 
 if `year' == 1990 {
-merge m:1 cve_ent_mun_super using `m_index_1995', nogen
-
-*** TIER 1 - gm_1990: CONAPO's official 1990 breakpoints, applied to im_mun_1990.
-*** Matches Parker & Vogl (2023), 01_create_municipal_level_indicators.do lines 300-305:
-*** gm = 1 if d_im<=-1.59, 2 if <=-.5, 3 if <=.044, 4 if <=1.135, 5 otherwise.
-g gm_1990_str = "Very Low" if im_mun_1990 <= -1.59
-replace gm_1990_str = "Low" if gm_1990_str=="" & im_mun_1990 <= -.5
-replace gm_1990_str = "Medium" if gm_1990_str=="" & im_mun_1990 <= .044
-replace gm_1990_str = "High" if gm_1990_str=="" & im_mun_1990 <= 1.135
-replace gm_1990_str = "Very High" if gm_1990_str=="" & im_mun_1990 < .
-encode gm_1990_str, g(gm_1990)
-recode gm_1990 (1=4) (5=1) (4=5)
-drop gm_1990_str
-label val gm_1990 gm_lbl
-label var gm_1990 "Marginality tier (CONAPO official cutoffs, 1990 index) - matches P&V (2023)"
-
-*** TIER 2 - gm_1990_emp: empirical quintiles of OUR OWN im_mun_1990 distribution,
-*** rather than adopting CONAPO's published national cutoffs. Same direction
-*** convention as im (more positive = more marginalized), so ascending xtile
-*** groups map directly onto Very Low(1)...Very High(5).
-xtile gm_1990_emp = im_mun_1990 if im_mun_1990 < ., nq(5)
-label val gm_1990_emp gm_lbl
-label var gm_1990_emp "Marginality tier (empirical quintiles of 1990 index distribution)"
-
-*** TIER 3 - gm_1995_emp: empirical quintiles of the 1995 index snapshot
-*** (im_mun_1995), same 1990-crosswalk municipality harmonization as above.
-xtile gm_1995_emp = im_mun_1995 if im_mun_1995 < ., nq(5)
-label val gm_1995_emp gm_lbl
-label var gm_1995_emp "Marginality tier (empirical quintiles of 1995 index distribution)"
-
-*** Backward-compatible alias: existing code references gm_mun_1990.
-gen gm_mun_1990 = gm_1990
+g gm_1990 = "Very Low" if im_mun_1990 < -1.59
+replace gm_1990 = "Low" if inrange(im_mun_1990,-1.586, -.504)
+replace gm_1990 = "Medium" if inrange(im_mun_1990, -.5, .042)
+replace gm_1990 = "High" if inrange(im_mun_1990, .045, 1.132)
+replace gm_1990 = "Very High" if im_mun_1990 > 1.136
+encode gm_1990, g(gm_mun_1990)
+recode gm_mun_1990 (1=4) (5=1) (4=5)
+drop gm_1990
 label val gm_mun_1990 gm_lbl
-label var gm_mun_1990 "Grado de marginacion in 1990 (baseline) - alias of gm_1990"
-
-ta year gm_1990, miss
-ta gm_1990 gm_1990_emp, miss
-bys gm_1990: sum im_mun_1990
-bys gm_1995_emp: sum im_mun_1995
+ta year gm_mun_1990, miss
+bys gm_mun_1990: sum im_mun_1990
 sum im_mun, d
 }
 

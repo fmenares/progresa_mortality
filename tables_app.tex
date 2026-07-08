@@ -230,6 +230,20 @@ members. The second row reports the differential effect for households with elde
 
 \begin{table}[H]
 \RawCaption%
+  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Beneficiary-Source Comparison}
+   \label{at:pv_r2_benefsource}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_pv_r2_benefsource}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table crosses the beneficiary-numerator choice with the household-denominator choice from Appendix Tables~\ref{at:pv_fig3_r2} and~\ref{at:pv_fig3_r2_fixeddenom}. ``Mixed'' is the current default construction, which switches from the FASE beneficiary file to the newer admin pipeline (\texttt{newProg\_98\_16.dta}) starting in 1998; ``FASE-only'' uses the FASE file for the entire 1997-2005 window, matching Parker and Vogl (2023) exactly, and switches to the admin pipeline only from 2006 onward. The sample is the cross-section of highly marginalized municipalities. The benchmark from Parker and Vogl (2023) is 0.65 (0.67 with the marginality-percentile fixed effect).}
+  }
+\end{table}
+
+\begin{table}[H]
+\RawCaption%
   {\caption{Saturation Diagnostics: Year-on-Year Enrollment Intensity Changes, Highly Marginalized Municipalities}
    \label{at:saturation_diagnostics}}
 \floatbox[{\captop}]{table}[\FBwidth]
