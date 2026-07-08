@@ -17,8 +17,9 @@
 *** the original pre-switch behavior exactly.
 *** ============================================================================
 
-*if "$window" == "prog" 
-global window "prog"      // default when caller sets nothing
+if "$window" == "" {
+    global window "full"      // default when caller sets nothing (matches research_project.md)
+}
 
 * Independent if-blocks (no else) so this runs correctly whether the file is
 * `do`-ne or pasted line-by-line into the console.
