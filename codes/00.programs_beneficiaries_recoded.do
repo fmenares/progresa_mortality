@@ -23,7 +23,8 @@ OUTPUT DATA:
 *create_municipal_level_indicators_MHAS.do (Susan and Tom)
 /**Assigning beneficiaries at the municipality level.*/
 *all_municipal_data_allprog_v3_upd_benef
-******************************************************************************
+
+/*******************************************************************************
 NOTE (2026 cleanup): the 70 y Mas (UCT) block was removed -- p70_mun*/cc_70_mun*
 were never referenced downstream in 01_mortality_data.do or 02_mortality.do, so
 they were pure dead weight. Seguro Popular is KEPT (see section 1.2) and its
@@ -37,6 +38,7 @@ Also: this file used to loop over `foreach year in 1995 1990`, but only the
 1990 output (beneficiaries_mun_recoded_1990.dta) is ever loaded downstream --
 the 1995 vintage was built and never used. Simplified to a single pass.
 ******************************************************************************/
+
 if c(username)=="fmenares" global ensanut "/hdir/0/fmenares/Dropbox/R01_MHAS\ENSANUT"
 if c(username)=="felipe" global ensanut "C:\Users\felip\Dropbox\R01_MHAS\ENSANUT"
 
@@ -65,7 +67,7 @@ capture log close
 /************************************************************
 ***1.1 PROGRESA (CCT)**
 *************************************************************/
-use "$SP\Data_Progresa\Benefdata\OriginalLocalityBeneficiaryFile/fams_fase_20134xloc_f.dta", clear
+use "$data/fams_fase_20134xloc_f.dta", clear
 
 ren (CVE_EDO CVE_MUN CVE_LOC anio) (cve_ent cve_mun cve_loc year)
 sort cve_ent cve_mun cve_loc year
@@ -93,7 +95,7 @@ keep cve_ent cve_mun cve_loc pgbenef*
 tempfile pg_benef_old
 save `pg_benef_old' 
 
-use "$SP\Data_Progresa\NewData19982016/newProg_98_16.dta", clear
+use "$data/newProg_98_16.dta", clear
 ren (CVE_EDO CVE_MUN CVE_LOC fams) (cve_ent cve_mun cve_loc pgbenef)
 keep cve_ent cve_mun cve_loc year pgbenef
 reshape wide pgbenef, i(cve_ent cve_mun cve_loc) j(year)
@@ -104,7 +106,7 @@ ren cve_ent cve_edo
 drop pgbenef2016 
 /*UPDATE 2016 variables names*/
 preserve
-		use "$SP\Data_Progresa\NewData19982016/cierre_2016/prospera_2016_fam.dta", clear
+		use "$data/prospera_2016_fam.dta", clear
 		keep  cve_edo cve_mun cve_loc with_corresp 
 		rename with_corresp pgbenef2016
 		sort cve_edo cve_mun cve_loc
@@ -113,10 +115,10 @@ preserve
 restore
 merge 1:1 cve_edo cve_mun cve_loc using `data2016', nogen
 
-merge 1:1 cve_edo cve_mun cve_loc using "$SP\Data_Progresa\NewData19982016/2017_bim6_Nov-Dec\prospera_2017_fam.dta", nogen
+merge 1:1 cve_edo cve_mun cve_loc using "$data/prospera_2017_fam.dta", nogen
 ren with_corresp pgbenef2017_new
 drop pgbenef_total
-merge 1:1 cve_edo cve_mun cve_loc using "$SP\Data_Progresa\NewData19982016/2018_bim4_Jul-Aug\prospera_2018_fam.dta", nogen
+merge 1:1 cve_edo cve_mun cve_loc using "$data/prospera_2018_fam.dta", nogen
 ren with_corresp pgbenef2018_new
 drop pgbenef_total
 forv i=1998/2016 {
@@ -153,7 +155,7 @@ save `benef_pg_mun_recoded', replace
 /****************************
 1.2 SEGURO POPULAR DATA FILE (PHI) - 2001-2018
 ***************************/
-use "$SP\Data_SeguroPopular/Seguro_Popular_2001-2018.dta", clear
+use "$data/Seguro_Popular_2001-2018.dta", clear
 drop name_edo name_mun _m cve_edo_mun_2 cve_edo cve_mun 
 ren (cve_edo_mun) (cve_ent_mun)
 g cve_ent = substr(cve_ent_mun,1,2)
