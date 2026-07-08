@@ -114,6 +114,21 @@
 \end{figure}
 
 \begin{figure}[H]
+    \caption{Event Study: $\textit{Intensity}_{1999}$/$\textit{Intensity}_{2005}$ Coefficients by Construction (Original vs.\ Embedded Snapshot vs.\ Embedded Cumulative)}
+    \label{af:intensity_construction_comparison}
+\subfigure[Original (static \texttt{inten1999.dta}/\texttt{inten2005.dta})]
+     {\includegraphics[width=0.65\textwidth]{figures/appendix/Figure_2_orig.pdf}}
+
+  \subfigure[00-Embedded, snapshot (\texttt{intensity\_new} frozen at year)]
+{\includegraphics[width=0.65\textwidth]{figures/appendix/Figure_2_00.pdf}}
+
+  \subfigure[00-Embedded, cumulative (\texttt{c\_pg\_new} frozen at year)]
+{\includegraphics[width=0.65\textwidth]{figures/appendix/Figure_2_cum.pdf}}
+
+         \floatfoot{Notes: Panels display event-study estimates of the interaction between $\textit{Intensity}_{1999}$/$\textit{Intensity}_{2005}$ and year indicators (reference year 1996) for the pooled older-adult (65+) mortality rate per 1,000 inhabitants, weighted and with the Seguro Popular control, under the three constructions of Appendix Table~\ref{at:intensity_construction_comparison}. Panel~(a) uses the original static \texttt{inten1999.dta}/\texttt{inten2005.dta} files; Panel~(b) uses the identical single-year-snapshot formula rebuilt through the current \texttt{00.}$\to$\texttt{01.}$\to$\texttt{02.} pipeline; Panel~(c) uses genuine cumulative coverage (\texttt{c\_pg\_new}) frozen at 1999/2005 instead of the admin-stock-based snapshot. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. 95\% confidence intervals shown.}
+\end{figure}
+
+\begin{figure}[H]
     \caption{Progresa Enrollment Ratio by Roll-Out Phase and Municipality Marginality Percentile}
     \label{af:pv_fig3_replication}
 
