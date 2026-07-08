@@ -60,7 +60,8 @@ set more off
 	
 	
 *** ======================================================================================
-*** 1. NEW Beneficiary data (1997-2018)- collapsed by municipality - used Felipe/Jorge's data
+*** 1. NEW Beneficiary data (1997-2018) + Seguro Popular (2001-2018) - collapsed by
+***    municipality - both built in 00.programs_beneficiaries_recoded.do
 *** ======================================================================================
 	use "$data/beneficiaries_mun_recoded_1990.dta", clear
 
@@ -79,8 +80,21 @@ set more off
 	rename pg_mun`j'  pg_new`j'
 	rename cc_pg_mun`j' c_pg_new`j'
 	}
-	keep cve_ent_mun_super pg_new* c_pg_new* 
-	foreach j in pg_new c_pg_new {
+
+*** Seguro Popular (built in 00.programs_beneficiaries_recoded.do from the same
+*** crosswalk/HH pipeline as Progresa) -- carried through here as sp_new/c_sp_new
+*** so it survives past the keep below instead of being silently dropped. SP
+*** coverage doesn't exist before 2001, so those years are zero-filled just like
+*** the pre-1997 Progresa years. This gives an "embedded" SP intensity measure
+*** (sp_intensity_00, below) that 02_mortality.do compares against the
+*** standalone sp_intensity merged in from $data/SP_2001_2018.dta.
+	forvalues j=2001(1)2018 {
+	rename sp_mun`j'    sp_new`j'
+	rename cc_sp_mun`j' c_sp_new`j'
+	}
+
+	keep cve_ent_mun_super pg_new* c_pg_new* sp_new* c_sp_new*
+	foreach j in pg_new c_pg_new sp_new c_sp_new {
 	gen `j'1990=0
 	gen `j'1991=0
 	gen `j'1992=0
@@ -89,9 +103,14 @@ set more off
 	gen `j'1995=0
 	gen `j'1996=0
 	}
-	reshape long pg_new c_pg_new, i(cve_ent_mun_super) j(year)
+	forvalues j=1997(1)2000 {
+	cap gen sp_new`j'=0
+	cap gen c_sp_new`j'=0
+	}
+	reshape long pg_new c_pg_new sp_new c_sp_new, i(cve_ent_mun_super) j(year)
 	sort cve_ent_mun_super year
 	lab var pg_new "cumulative benef"
+	lab var c_sp_new "Seguro Popular cumulative % covered (embedded, from 00.)"
 	save "$data/Temp_data/Progresa_benef_mun_recoded.dta", replace
 
 	
@@ -135,11 +154,20 @@ set more off
 *** Only old beneficiary data is not cumulative
 	*bysort cve_ent_mun_super: gen pgbenef_old = sum(pg_old_y)
 	rename pg_new pgbenef_new
-	
+
 	lab var hh_tot "total HH"
 	lab var pop_tot "total population"
 	lab var pgbenef_new "cumulative new benef"
-	
+
+*** Embedded Seguro Popular intensity (built in 00.programs_beneficiaries_recoded.do
+*** from the same crosswalk/HH pipeline as Progresa's intensity_new below).
+*** Named "_00" to distinguish it from the standalone sp_intensity that
+*** 02_mortality.do separately merges in from $data/SP_2001_2018.dta -- both
+*** measures are kept in the panel so 02_mortality.do can compare them directly.
+	rename c_sp_new sp_intensity_00
+	lab var sp_intensity_00 "Seguro Popular cumulative % covered (embedded, from 00.)"
+	lab var sp_new "Seguro Popular new beneficiaries (embedded, from 00.)"
+
 *** Create Progresa intensity (cumulative benef) 
 	bysort cve_ent_mun_super: gen intensity_new= pgbenef_new/hh_tot
 	replace intensity_new=0 if intensity_new==.

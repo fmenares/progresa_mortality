@@ -244,6 +244,20 @@ members. The second row reports the differential effect for households with elde
 
 \begin{table}[H]
 \RawCaption%
+  {\caption{Seguro Popular Intensity: Standalone vs.\ Embedded Construction}
+   \label{at:sp_comparison}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_sp_comparison}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table compares two independently-constructed measures of Seguro Popular cumulative coverage at the municipality-year level. \texttt{sp\_intensity} (the control used throughout the main specification) is merged in from a standalone file, \texttt{SP\_2001\_2018.dta}, built outside this repository. \texttt{sp\_intensity\_00} is built inside \texttt{00.programs\_beneficiaries\_recoded.do} from the same crosswalk/household-count pipeline used to construct the Progresa intensity measures, and is carried through \texttt{01\_mortality\_data.do} rather than being dropped. The sample is highly marginalized municipality-years from 2001 onward, the first year Seguro Popular coverage is defined in either series.}
+  }
+\end{table}
+
+\begin{table}[H]
+\RawCaption%
   {\caption{Saturation Diagnostics: Year-on-Year Enrollment Intensity Changes, Highly Marginalized Municipalities}
    \label{at:saturation_diagnostics}}
 \floatbox[{\captop}]{table}[\FBwidth]

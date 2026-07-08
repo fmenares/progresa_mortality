@@ -93,6 +93,46 @@ set more off
 	order year cve_ent_mun_super inten1999 post sp_intensity
 
 *============================================================
+* SEGURO POPULAR: STANDALONE vs. EMBEDDED COMPARISON
+* sp_intensity (above) comes from the standalone $data/SP_2001_2018.dta file,
+* built outside this repo. sp_intensity_00 is the analogous cumulative-coverage
+* measure built inside 00.programs_beneficiaries_recoded.do from the same
+* crosswalk/HH pipeline as Progresa (carried through 01_mortality_data.do as
+* sp_new/sp_intensity_00, previously dropped silently along with the removed
+* 70-y-Mas block). This checks whether the two SP measures agree, the same
+* way the Progresa beneficiary-source robustness blocks (below) check mixed
+* vs. FASE. Restricted to years >=2001 (SP coverage is 0 by construction
+* before then in both series) and the HM analysis sample.
+*------------------------------------------------------------
+preserve
+keep if year >= 2001 & $sample_marg
+count if missing(sp_intensity) | missing(sp_intensity_00)
+di "`r(N)' HM municipality-years missing sp_intensity or sp_intensity_00 (>=2001)"
+
+corr sp_intensity sp_intensity_00
+local sp_corr : di %5.3f r(rho)
+
+reg sp_intensity_00 sp_intensity
+local sp_r2 : di %5.3f e(r2)
+local sp_n  : di %12.0fc e(N)
+
+{
+    cap file close spc
+    file open spc using "$tables/appendix/AT_sp_comparison.tex", write replace
+    file write spc "\begin{tabular}{lc} \hline \hline" _n
+    file write spc "& \multicolumn{1}{c}{Value} \\ \toprule" _n
+    file write spc "Correlation (standalone, embedded) & `sp_corr' \\ " _n
+    file write spc "R\textsuperscript{2} (embedded on standalone) & `sp_r2' \\ " _n
+    file write spc "Obs. (HM, year $\geq$ 2001) & `sp_n' \\ " _n
+    file write spc "\bottomrule" _n
+    file write spc "\multicolumn{2}{p{9cm}}{\footnotesize sp\_intensity = standalone Seguro Popular coverage from \texttt{SP\_2001\_2018.dta} (built outside this repo). sp\_intensity\_00 = cumulative coverage built in \texttt{00.programs\_beneficiaries\_recoded.do} from the same crosswalk/HH pipeline as the Progresa intensity measures.} \\ " _n
+    file write spc "\end{tabular}"
+    file close spc
+}
+di "Table exported to: $tables/appendix/AT_sp_comparison.tex"
+restore
+
+*============================================================
 * TABLE 1: Descriptives
 * T1_descriptives_b.tex
 * Panel A: Progresa enrollment intensity (inten1999, inten2005)
