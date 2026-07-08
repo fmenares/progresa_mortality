@@ -1,0 +1,9 @@
+\begin{tabular}{lcccc} \hline \hline
+& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed (P\&V) denom.} \\
+Numerator construction & R\textsuperscript{2} & + marg.\ pctile FE & R\textsuperscript{2} & + marg.\ pctile FE \\ \toprule
+Mixed, single-year snapshot (current default) &  &  &  &  \\ 
+Mixed, summed 1997--year like P\&V & 0.005 & 0.252 & 0.004 & 0.242 \\ 
+FASE-only, summed 1997--year (matches P\&V exactly) & 0.584 & 0.598 & 0.655 & 0.662 \\ 
+\bottomrule
+\multicolumn{5}{p{13.5cm}}{\footnotesize No.\ HM municipalities: 1119. P\&V (2023) benchmark: 0.65 (0.67 with FE). P\&V's own Intensity\_1999/Intensity\_2005 are running SUMS of annual FASE beneficiary counts (benef9799 = benef1997+benef1998+benef1999; benef9705 = benef9799+benef2000+...+benef2005), so their late measure nests the early one by construction.  is the current default: FASE for 1997, newProg\_98\_16 (\texttt{$benef\_source == \mixed\}) from 1998 on, each snapshot year taken directly with no summing.  applies P\&V's exact summing operation to the same mixed admin source, isolating the sum-vs-snapshot choice on its own.  additionally switches the source to the FASE file for the entire 1997-2005 window (\texttt{$benef\_source == \fase\}), matching P\&V's construction exactly.} \\ 
+\end{tabular}

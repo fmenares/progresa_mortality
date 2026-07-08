@@ -1,0 +1,15 @@
+\begin{tabular}{lccc} \hline \hline
+& \multicolumn{1}{c}{Original} & \multicolumn{1}{c}{00-Embedded} & \multicolumn{1}{c}{00-Embedded} \\ 
+& \multicolumn{1}{c}{(static files)} & \multicolumn{1}{c}{(snapshot)} & \multicolumn{1}{c}{(cumulative)} \\ 
+& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule
+Intensity 1999 x post &       -0.719 &       -0.719 &       -0.719 \\ 
+ & (       1.464) & (       1.464) & (       1.464) \\ 
+  & & & \\ 
+Intensity 2005 x post &       -2.796 &       -2.796 &       -2.796 \\ 
+ & (       1.803) & (       1.803) & (       1.803) \\ 
+  & & & \\ 
+Obs &       17,904 &       17,904 &       17,904 \\ 
+No.\ Mun &        1,119 &        1,119 &        1,119 \\ 
+\bottomrule
+\multicolumn{4}{p{11cm}}{\footnotesize Corr(Original, 00-Embedded snapshot): 1999 = 1.000, 2005 = 1.000. All columns: emr65, weighted by popover65\_, +sp\_intensity control, HM sample (gm\_mun\_1990=4 or 5), year+municipality FE, clustered SE. Original = merged from \texttt{inten1999.dta}/\texttt{inten2005.dta} (archived construction, requires those files to exist locally). 00-Embedded snapshot = intensity\_new frozen at 1999/2005 (identical formula, rebuilt fresh through the current pipeline). 00-Embedded cumulative = c\_pg\_new (cc\_pg\_mun ratio) frozen at 1999/2005.} \\ 
+\end{tabular}
