@@ -185,7 +185,6 @@ local sp_n  : di %12.0fc e(N)
     file write spc "R\textsuperscript{2} (embedded on standalone) & `sp_r2' \\ " _n
     file write spc "Obs. (HM, year $\geq$ 2001) & `sp_n' \\ " _n
     file write spc "\bottomrule" _n
-    file write spc "\multicolumn{2}{p{9cm}}{\footnotesize sp\_intensity = standalone Seguro Popular coverage from \texttt{SP\_2001\_2018.dta} (built outside this repo). sp\_intensity\_00 = cumulative coverage built in \texttt{00.programs\_beneficiaries\_recoded.do} from the same crosswalk/HH pipeline as the Progresa intensity measures.} \\ " _n
     file write spc "\end{tabular}"
     file close spc
 }
@@ -655,7 +654,8 @@ local corr05: di %5.3f r(rho)
 	file write cmp "Obs & `N_cmp_orig' & `N_cmp_00' & `N_cmp_cum' \\ " _n
 	file write cmp "No.\ Mun & `Nmun_cmp_orig' & `Nmun_cmp_00' & `Nmun_cmp_cum' \\ " _n
 	file write cmp "\bottomrule" _n
-	file write cmp "\multicolumn{4}{p{11cm}}{\footnotesize Corr(Original, 00-Embedded snapshot): 1999 = `corr99', 2005 = `corr05'. All columns: emr65, weighted by popover65\_, +sp\_intensity control, HM sample (gm\_mun\_1990=4 or 5), year+municipality FE, clustered SE. Original = merged from \texttt{inten1999.dta}/\texttt{inten2005.dta} (archived construction, requires those files to exist locally). 00-Embedded snapshot = intensity\_new frozen at 1999/2005 (identical formula, rebuilt fresh through the current pipeline). 00-Embedded cumulative = c\_pg\_new (cc\_pg\_mun ratio) frozen at 1999/2005.} \\ " _n
+	file write cmp "Corr(Original, 00-Emb.\ snapshot), 1999 & \multicolumn{3}{c}{`corr99'} \\ " _n
+	file write cmp "Corr(Original, 00-Emb.\ snapshot), 2005 & \multicolumn{3}{c}{`corr05'} \\ " _n
 	file write cmp "\end{tabular}"
 	file close cmp
 }
@@ -3591,7 +3591,7 @@ di "NOTE: P&V's third row (+ locality-marginality-share, -> 0.75) is DEFERRED pe
     file write r2 "\quad + municipality marginality-percentile FE & `r2_2' & 0.67 \\ " _n
     file write r2 "\quad + locality marginality-share FE & -- & 0.75 \\ " _n
     file write r2 "\bottomrule" _n
-    file write r2 "\multicolumn{3}{p{8cm}}{\footnotesize No.\ HM municipalities: `n_r2_mun'. Locality-share row deferred pending locality-level marginality data.} \\ " _n
+    file write r2 "No.\ HM municipalities & \multicolumn{2}{c}{`n_r2_mun'} \\ " _n
     file write r2 "\end{tabular}"
     file close r2
 }
@@ -3683,7 +3683,10 @@ foreach spec in 2005 none 2000 2002 {
     file write bs "`specname4' & `bp_4' & `Np_4' \\ " _n
     file write bs " & (`sep_4') & \\ " _n
     file write bs "\bottomrule" _n
-    file write bs "\multicolumn{3}{p{9cm}}{\footnotesize Share of eventual (2005) enrollment added after 1999, HM sample: mean=`flat_mean', median=`flat_p50', p75=`flat_p75', p90=`flat_p90'.} \\ " _n
+    file write bs "Share of eventual (2005) enrollment added after 1999 (mean) & `flat_mean' & \\ " _n
+    file write bs "\quad median & `flat_p50' & \\ " _n
+    file write bs "\quad p75 & `flat_p75' & \\ " _n
+    file write bs "\quad p90 & `flat_p90' & \\ " _n
     file write bs "\end{tabular}"
     file close bs
 }
@@ -4169,7 +4172,7 @@ di "R² + marg-percentile-decile FE (FIXED denominator): `r2fix_2'   [current: 0
     file write r2f "Intensity 1999 on Intensity 2005 & `r2fix_1' & 0.160 & 0.65 \\ " _n
     file write r2f "\quad + municipality marginality-percentile FE & `r2fix_2' & 0.275 & 0.67 \\ " _n
     file write r2f "\bottomrule" _n
-    file write r2f "\multicolumn{4}{p{9.5cm}}{\footnotesize No.\ HM municipalities: `n_r2fix_mun'. Uses a P\&V-style fixed 1997 household base (0.3 x HH1990 + 0.7 x HH2000) as the denominator for both Intensity 1999 and Intensity 2005, instead of each year's own household count.} \\ " _n
+    file write r2f "No.\ HM municipalities & \multicolumn{3}{c}{`n_r2fix_mun'} \\ " _n
     file write r2f "\end{tabular}"
     file close r2f
 }
@@ -4355,7 +4358,7 @@ local r2summix_fx_2 : di %5.3f e(r2)
     file write r2b "Mixed, summed 1997--year like P\&V & `r2summix_yv_1' & `r2summix_yv_2' & `r2summix_fx_1' & `r2summix_fx_2' \\ " _n
     file write r2b "FASE-only, summed 1997--year (matches P\&V exactly) & `r2fase_yv_1' & `r2fase_yv_2' & `r2fase_fx_1' & `r2fase_fx_2' \\ " _n
     file write r2b "\bottomrule" _n
-    file write r2b "\multicolumn{5}{p{13.5cm}}{\footnotesize No.\ HM municipalities: `n_r2fase_mun'. P\&V (2023) benchmark: 0.65 (0.67 with FE). P\&V's own Intensity\_1999/Intensity\_2005 are running SUMS of annual FASE beneficiary counts (benef9799 = benef1997+benef1998+benef1999; benef9705 = benef9799+benef2000+...+benef2005), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is the current default: FASE for 1997, newProg\_98\_16 (\texttt{\$benef\_source == ``mixed''}) from 1998 on, each snapshot year taken directly with no summing. ``Mixed, summed like P\&V'' applies P\&V's exact summing operation to the same mixed admin source, isolating the sum-vs-snapshot choice on its own. ``FASE-only, summed'' additionally switches the source to the FASE file for the entire 1997-2005 window (\texttt{\$benef\_source == ``fase''}), matching P\&V's construction exactly.} \\ " _n
+    file write r2b "No.\ HM municipalities & \multicolumn{4}{c}{`n_r2fase_mun'} \\ " _n
     file write r2b "\end{tabular}"
     file close r2b
 }
