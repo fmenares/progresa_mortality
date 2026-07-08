@@ -708,6 +708,52 @@ Current code used a **mixed source** creating inconsistency:
 
 ---
 
+#### **PART 2b: The Real Mechanism — Sum vs. Snapshot (CORRECTS Part 2 framing)**
+
+**Direct read of P&V's actual replication code** (`codes/3 replication package/01_dataprep_programs/01_dataprep/01_create_municipal_level_indicators.do`) surfaced a bigger issue than "which admin source": **P&V's Intensity_1999 and Intensity_2005 are not point-in-time snapshots — they are running SUMS of annual FASE beneficiary counts:**
+
+```stata
+egen benef1997 = rowtotal(FASE_1-FASE_2)      * annual FLOW, not stock
+egen benef1998 = rowtotal(FASE_3-FASE_6)
+egen benef1999 = rowtotal(FASE_7-FASE_10)
+...
+egen benef2005 = rowtotal(FASE_24-FASE_25)
+
+gen benef9799 = benef1997 + benef1998 + benef1999                   * their "Intensity 1999" numerator
+gen benef0005 = benef2000 + ... + benef2005
+gen benef9705 = benef9799 + benef0005                                * their "Intensity 2005" numerator = benef9799 + more
+
+gen hog1997 = .3*hog1990 + .7*hog2000                                * fixed denominator, both snapshots
+gen prop9799_hog = benef9799/hog1997
+gen prop9705_hog = benef9705/hog1997
+```
+
+**Because `benef9705` literally contains `benef9799` by construction, the late measure mechanically nests the early one.** That algebraic nesting is a first-order driver of P&V's ~65% R² — separate from, and probably bigger than, either the denominator-fixing or the FASE-vs-newProg source question.
+
+**Our original (mixed) construction never sums.** `intensity_new` at 1999 = `pgbenef_new1999/hh_tot1999` (single-year newProg roster value); at 2005 = `pgbenef_new2005/hh_tot2005`. No running sum, no guaranteed 2005≥1999 (consistent with the `phase2_new<0` finding in 66 municipalities found earlier). This is a materially different object from P&V's, independent of admin-source choice.
+
+**Implementation — isolating sum-vs-snapshot on its own (`codes/02_mortality.do`, inserted after the FASE-only block, ~line 3988):**
+
+Built a third numerator variant, **"mixed, summed like P&V"**: applies P&V's exact summing operation (`rowtotal` across years) to our own mixed admin source (FASE 1997 + newProg 1998+), rather than switching source to FASE:
+```stata
+egen pg_summix_1999 = rowtotal(pg_mun1997_mixed pg_mun1998_mixed pg_mun1999_mixed)
+egen pg_summix_2005 = rowtotal(pg_mun1997_mixed ... pg_mun2005_mixed)
+```
+then divided by both denominators (year-varying `hh_tot`, fixed `hog1997_fixed`) exactly as with the other variants.
+
+**Table `AT_pv_r2_benefsource.tex` restructured** from a 2×2 (numerator × denominator) grid into a **3-row × 4-column** grid — rows are now numerator constructions, columns are denominator × FE choice:
+1. **Mixed, single-year snapshot** (current default) — `r2_1`/`r2_2` (year-varying), `r2fix_1`/`r2fix_2` (fixed)
+2. **Mixed, summed like P&V** (isolates the sum-vs-snapshot mechanism alone) — `r2summix_yv_1`/`r2summix_yv_2`, `r2summix_fx_1`/`r2summix_fx_2`
+3. **FASE-only, summed like P&V** (matches P&V exactly — both source AND summing) — `r2fase_yv_1`/`r2fase_yv_2`, `r2fase_fx_1`/`r2fase_fx_2`
+
+Row 2 vs. Row 1 isolates the summing mechanism holding source fixed. Row 3 vs. Row 2 isolates the remaining source difference (FASE vs. newProg), holding the summing operation fixed. This decomposes the R² gap into two additive, testable pieces instead of conflating them.
+
+`tables_app.tex` caption and footnote updated to describe the 3-row structure and explain P&V's `benef9799`/`benef9705` nesting explicitly.
+
+**Status: code written, NOT yet run** (same as the rest of the beneficiary-source robustness block). Awaiting pipeline run.
+
+---
+
 ### Pending: Pipeline Run for R² Validation
 
 **Next Step:** Run full pipeline with new beneficiary-source comparison active:
@@ -717,9 +763,11 @@ do "codes/01_mortality_data.do"
 do "codes/02_mortality.do"
 ```
 
-**Hypothesis Test:** 
-- If FASE-only numerator significantly improves R² (e.g., from 0.16 → 0.40+), beneficiary source was primary driver
-- If improvement is modest, investigate other sources (crosswalk divergence, data-quality issues)
+**Hypothesis Test (now a 2-step decomposition, not a single before/after):**
+- **Step A — sum-vs-snapshot:** compare Row 2 ("mixed, summed like P&V") to Row 1 ("mixed, single-year snapshot," current default). If Row 2's R² jumps sharply toward 0.65, the mechanical nesting of P&V's running-sum construction — not the admin source — is the dominant driver.
+- **Step B — remaining source gap:** compare Row 3 ("FASE-only, summed") to Row 2. If Row 3 improves further, some of the gap is attributable to FASE vs. newProg source differences (vintage, retroactive corrections, locality-vs-municipality aggregation) on top of the summing mechanism.
+- If Row 2 already closes most of the gap to 0.65, the FASE/newProg source distinction is a second-order concern — the priority becomes deciding whether to adopt P&V's cumulative-sum convention in the main specification (not just as a robustness check), since that changes what "Intensity" means substantively (total historical exposure vs. current caseload).
+- If neither Row 2 nor Row 3 closes the gap, investigate crosswalk divergence or other data-quality issues.
 
 **Also still pending from this session:**
 - User to confirm/adjust the `global pvdata` path guess in the D0b block (`02_mortality.do`), and whether `fams_fase_20134xloc_f.dta` (needed for the actual locality-level Fig-2 scatter/lpoly, as opposed to just the eq.-4 control) is also in their copied folder.

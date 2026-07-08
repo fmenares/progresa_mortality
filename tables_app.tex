@@ -230,7 +230,7 @@ members. The second row reports the differential effect for households with elde
 
 \begin{table}[H]
 \RawCaption%
-  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Beneficiary-Source Comparison}
+  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Beneficiary-Source and Sum-vs-Snapshot Comparison}
    \label{at:pv_r2_benefsource}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
@@ -238,7 +238,7 @@ members. The second row reports the differential effect for households with elde
       \input{tables/appendix/AT_pv_r2_benefsource}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table crosses the beneficiary-numerator choice with the household-denominator choice from Appendix Tables~\ref{at:pv_fig3_r2} and~\ref{at:pv_fig3_r2_fixeddenom}. ``Mixed'' is the current default construction, which switches from the FASE beneficiary file to the newer admin pipeline (\texttt{newProg\_98\_16.dta}) starting in 1998; ``FASE-only'' uses the FASE file for the entire 1997-2005 window, matching Parker and Vogl (2023) exactly, and switches to the admin pipeline only from 2006 onward. The sample is the cross-section of highly marginalized municipalities. The benchmark from Parker and Vogl (2023) is 0.65 (0.67 with the marginality-percentile fixed effect).}
+    \floatfoot{Notes: This table crosses the beneficiary-numerator construction with the household-denominator choice from Appendix Tables~\ref{at:pv_fig3_r2} and~\ref{at:pv_fig3_r2_fixeddenom}. Parker and Vogl (2023) construct $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ as running \textit{sums} of annual FASE beneficiary counts (their \texttt{benef9799} = benef1997+benef1998+benef1999; \texttt{benef9705} = \texttt{benef9799}+benef2000+...+benef2005), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is our current default: the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) from 1998 on, with each snapshot year's value taken directly rather than summed. ``Mixed, summed like P\&V'' applies Parker and Vogl's exact summing operation to this same mixed admin source, isolating the sum-vs-snapshot choice on its own. ``FASE-only, summed'' additionally switches the source to the FASE file for the entire 1997-2005 window, matching Parker and Vogl (2023) exactly. The sample is the cross-section of highly marginalized municipalities. The benchmark from Parker and Vogl (2023) is 0.65 (0.67 with the marginality-percentile fixed effect).}
   }
 \end{table}
 
