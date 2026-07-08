@@ -754,6 +754,39 @@ Row 2 vs. Row 1 isolates the summing mechanism holding source fixed. Row 3 vs. R
 
 ---
 
+#### **PART 2c: CRITICAL BUG FOUND — main spec's `inten1999`/`inten2005` were reading a stale, unregenerated file**
+
+**User asked for a direct trace of two specific line ranges** to confirm, independent of my earlier framing, whether the numerator is genuinely a single-year snapshot. Traced both:
+
+**`01_mortality_data.do` lines 95–147:** confirmed line-by-line — `rename pg_new pgbenef_new` is a straight rename, no arithmetic. The one place a running-sum *would* have been applied (`*bysort cve_ent_mun_super: gen pgbenef_old = sum(pg_old_y)`, line 136) is commented out — dead code, never executes. The label `"cumulative new benef"` (line 141) is just a text annotation asserting an assumption, not a computed guarantee: it rests on the belief (documented in `00.programs_beneficiaries_recoded.do` line 224, `*Looks like with the new data for progresa beneficiares ac = cc`) that the newProg admin roster **already reports a cumulative total per year** (current active caseload including everyone still enrolled from prior years), unlike FASE, which is genuinely an annual flow requiring explicit `sum()` (done at line 231 of the `00.` file for `cc_pg_mun_old`, never for `_new`). **The `phase2_new<0` finding in 66 municipalities (found earlier) is evidence against a pure "ever-enrolled" cumulative interpretation** — a true running sum of adds can never decrease; a current-caseload stock can, if families exit the program. So the newProg-based numerator may be "cumulative" in the sense of *current stock*, not in P&V's sense of *cumulative gross enrollment ever recorded*.
+
+**`02_mortality.do` lines 58–61 (before this fix) — a bigger, independent problem:**
+```stata
+merge m:1 cve_ent_mun_super using "$data/inten1999.dta"
+merge m:1 cve_ent_mun_super using "$data/inten2005.dta"
+```
+Grepped `01_mortality_data.do` and `02_mortality.do` for any `save` of these two files — **neither exists in the current 00 → 01 → 02 pipeline.** Traced their actual construction to the **archived** script `codes/archive/aamr_011326.do` (lines 882–901): `keep if year==1999` → `gen inten1999=intensity_new` → `save "$Data/.../inten1999.dta"` (same pattern for 2005). Confirms independently that `inten1999`/`inten2005` are single-year snapshots of `intensity_new`, consistent with the finding above.
+
+**But the real bug:** `$data/inten1999.dta` and `$data/inten2005.dta` are **static files that only the archived, no-longer-run script produces.** The current `01_mortality_data.do` never regenerates them. This means:
+- The `$benef_source` switch (mixed vs. fase) changes `intensity_new` inside `aamr_regression_municipality_gender_tb.dta`.
+- But `02_mortality.do`'s main DiD regressions were merging in `inten1999`/`inten2005` from these separate, **stale, unregenerated files** — so switching `$benef_source` may have had **zero effect on the headline results**, only on the standalone robustness blocks added later in `02_mortality.do` (which rebuild their own intensity variables fresh from `beneficiaries_mun_recoded_1990.dta` and therefore were correctly picking up the switch).
+
+**FIXED** in `02_mortality.do` (~line 56–79): replaced the two `merge ... using "$data/inten1999.dta"` / `inten2005.dta` calls with an inline rebuild from `intensity_new`, using the same year-snapshot idiom already used elsewhere in this file (`g aux = intensity_new if year==Y; bys cve_ent_mun_super: egen intenY = min(aux)`):
+```stata
+cap drop inten1999 inten2005
+g aux = intensity_new if year==1999
+bys cve_ent_mun_super: egen inten1999 = min(aux)
+drop aux
+g aux = intensity_new if year==2005
+bys cve_ent_mun_super: egen inten2005 = min(aux)
+drop aux
+```
+Same snapshot-at-a-single-year definition as before — this fix does **not** change what `inten1999`/`inten2005` mean, it only guarantees they are always freshly derived from whichever `$benef_source` is active, instead of silently reading a possibly-outdated file left over from a script that is no longer part of the pipeline.
+
+**Practical implication:** every prior run of the main T2/T2_b tables (and any headline number quoted from them) may have been using **whatever `$benef_source`/`intensity_new` construction was active when `aamr_011326.do` was last run** (unknown, unrecorded), not the current pipeline's construction. Re-running `01_mortality_data.do` → `02_mortality.do` now is necessary not just to test the beneficiary-source hypothesis, but to confirm the main results haven't been silently stale all along.
+
+---
+
 ### Pending: Pipeline Run for R² Validation
 
 **Next Step:** Run full pipeline with new beneficiary-source comparison active:

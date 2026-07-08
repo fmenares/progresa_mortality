@@ -55,10 +55,30 @@ set more off
  *	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]
 	use "$data/aamr_regression_municipality_gender_tb.dta", clear
 
-	merge m:1 cve_ent_mun_super using "$data/inten1999.dta"
-	drop _merge
-	merge m:1 cve_ent_mun_super using "$data/inten2005.dta"
-	drop _merge
+*** Build inten1999/inten2005 directly from intensity_new (this file's own
+*** panel), instead of merging the static $data/inten1999.dta /
+*** inten2005.dta files. Those two files are NOT produced anywhere in the
+*** current 00 -> 01 -> 02 pipeline -- they were built once by the
+*** archived codes/archive/aamr_011326.do (keep if year==1999/2005; gen
+*** inten1999/inten2005 = intensity_new) and never regenerated since. That
+*** means the $benef_source switch in 01_mortality_data.do (mixed vs.
+*** fase) changes intensity_new but was SILENTLY NOT propagating into the
+*** inten1999/inten2005 used in the main regressions below, which is a
+*** distinct bug from the sum-vs-snapshot construction question -- fixing
+*** it here guarantees inten1999/inten2005 always reflect whichever
+*** $benef_source was active when 01_mortality_data.do last ran. Same
+*** snapshot-at-a-single-year definition as before (inten1999 =
+*** intensity_new at year==1999), just computed fresh instead of merged
+*** from a possibly stale file.
+	cap drop inten1999 inten2005
+	g aux = intensity_new if year==1999
+	bys cve_ent_mun_super: egen inten1999 = min(aux)
+	drop aux
+	g aux = intensity_new if year==2005
+	bys cve_ent_mun_super: egen inten2005 = min(aux)
+	drop aux
+	count if missing(inten1999) | missing(inten2005)
+	di "`r(N)' obs missing inten1999/inten2005 after rebuilding from intensity_new"
 
 	gen post=.
 	replace post=2 if year <1997 & year >1990 & year!=.
