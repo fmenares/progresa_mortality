@@ -55,10 +55,30 @@ set more off
  *	Interact with one post-dummy=1 - intensity99*post and one for intensity05*post. [MAY 2025]
 	use "$data/aamr_regression_municipality_gender_tb.dta", clear
 
-	merge m:1 cve_ent_mun_super using "$data/inten1999.dta"
-	drop _merge
-	merge m:1 cve_ent_mun_super using "$data/inten2005.dta"
-	drop _merge
+*** Build inten1999/inten2005 directly from intensity_new (this file's own
+*** panel), instead of merging the static $data/inten1999.dta /
+*** inten2005.dta files. Those two files are NOT produced anywhere in the
+*** current 00 -> 01 -> 02 pipeline -- they were built once by the
+*** archived codes/archive/aamr_011326.do (keep if year==1999/2005; gen
+*** inten1999/inten2005 = intensity_new) and never regenerated since. That
+*** means the $benef_source switch in 01_mortality_data.do (mixed vs.
+*** fase) changes intensity_new but was SILENTLY NOT propagating into the
+*** inten1999/inten2005 used in the main regressions below, which is a
+*** distinct bug from the sum-vs-snapshot construction question -- fixing
+*** it here guarantees inten1999/inten2005 always reflect whichever
+*** $benef_source was active when 01_mortality_data.do last ran. Same
+*** snapshot-at-a-single-year definition as before (inten1999 =
+*** intensity_new at year==1999), just computed fresh instead of merged
+*** from a possibly stale file.
+	cap drop inten1999 inten2005
+	g aux = intensity_new if year==1999
+	bys cve_ent_mun_super: egen inten1999 = min(aux)
+	drop aux
+	g aux = intensity_new if year==2005
+	bys cve_ent_mun_super: egen inten2005 = min(aux)
+	drop aux
+	count if missing(inten1999) | missing(inten2005)
+	di "`r(N)' obs missing inten1999/inten2005 after rebuilding from intensity_new"
 
 	gen post=.
 	replace post=2 if year <1997 & year >1990 & year!=.
@@ -3921,6 +3941,192 @@ di "R² + marg-percentile-decile FE (FIXED denominator): `r2fix_2'   [current: 0
     file close r2f
 }
 di "Table exported to: $tables/appendix/AT_pv_fig3_r2_fixeddenom.tex"
+restore
+
+*============================================================
+* ROBUSTNESS: FASE-ONLY BENEFICIARY SOURCE (P&V-style numerator)
+* Companion check to the fixed-denominator robustness above: the R² gap
+* might also reflect a numerator difference, not just a denominator
+* difference. Our default ($benef_source = "mixed" in
+* 01_mortality_data.do) switches from the FASE file to the newer admin
+* pipeline (newProg_98_16.dta) starting in 1998, while P&V use ONLY the
+* FASE file for the entire 1997-2005 window. This section rebuilds
+* Intensity_1999/Intensity_2005 using the FASE-only numerator
+* (pg_mun*_fase, built in 00.programs_beneficiaries_recoded.do), crossed
+* with BOTH denominator choices (year-varying and P&V's fixed 1997
+* base), as a SIDE-BY-SIDE robustness check (does NOT replace the main
+* specification).
+*============================================================
+preserve
+use "$data/beneficiaries_mun_recoded_1990.dta", clear
+keep cve_ent_mun_super pg_mun*_fase
+forvalues j = 1997/2018 {
+	rename pg_mun`j'_fase pg_fase`j'
+}
+reshape long pg_fase, i(cve_ent_mun_super) j(year)
+tempfile fase_panel
+save `fase_panel'
+restore
+
+cap drop pg_fase
+merge m:1 cve_ent_mun_super year using `fase_panel', nogenerate
+
+cap drop pgbenef_fase_1999 pgbenef_fase_2005 hh_tot1999 hh_tot2005
+g aux = pg_fase if year == 1999
+bys cve_ent_mun_super: egen pgbenef_fase_1999 = min(aux)
+drop aux
+g aux = pg_fase if year == 2005
+bys cve_ent_mun_super: egen pgbenef_fase_2005 = min(aux)
+drop aux
+g aux = hh_tot if year == 1999
+bys cve_ent_mun_super: egen hh_tot1999 = min(aux)
+drop aux
+g aux = hh_tot if year == 2005
+bys cve_ent_mun_super: egen hh_tot2005 = min(aux)
+drop aux
+
+* Year-varying denominator (hh_tot AT each snapshot year) -- same
+* construction as the main inten1999/inten2005, just with the FASE-only
+* numerator in place of pgbenef_new (mixed).
+cap drop inten1999_fase inten2005_fase
+gen inten1999_fase = pgbenef_fase_1999/hh_tot1999
+gen inten2005_fase = pgbenef_fase_2005/hh_tot2005
+replace inten1999_fase = 1 if inten1999_fase > 1 & !missing(inten1999_fase)
+replace inten2005_fase = 1 if inten2005_fase > 1 & !missing(inten2005_fase)
+label var inten1999_fase "Intensity 1999 (FASE-only numerator, year-varying denom.)"
+label var inten2005_fase "Intensity 2005 (FASE-only numerator, year-varying denom.)"
+
+* Fixed 1997 household base (P&V's exact denominator), FASE-only numerator
+cap drop inten1999_fase_fix inten2005_fase_fix
+gen inten1999_fase_fix = pgbenef_fase_1999/hog1997_fixed
+gen inten2005_fase_fix = pgbenef_fase_2005/hog1997_fixed
+replace inten1999_fase_fix = 1 if inten1999_fase_fix > 1 & !missing(inten1999_fase_fix)
+replace inten2005_fase_fix = 1 if inten2005_fase_fix > 1 & !missing(inten2005_fase_fix)
+label var inten1999_fase_fix "Intensity 1999 (FASE-only numerator, fixed P&V denom.)"
+label var inten2005_fase_fix "Intensity 2005 (FASE-only numerator, fixed P&V denom.)"
+
+*============================================================
+* ROBUSTNESS: ISOLATING THE SUM-VS-SNAPSHOT CHOICE
+* P&V's Intensity_1999/Intensity_2005 are NOT point-in-time values -- they
+* are explicit RUNNING SUMS of annual FASE beneficiary counts (see their
+* 01_create_municipal_level_indicators.do):
+*   benef9799 = benef1997 + benef1998 + benef1999        (their "1999")
+*   benef9705 = benef9799 + benef2000 + ... + benef2005  (their "2005")
+* so benef9705 CONTAINS benef9799 by construction -- the late measure
+* mechanically nests the early one. That nesting is itself a source of
+* their high 1999-2005 correlation, separate from *which* administrative
+* source is used for the numerator.
+*
+* Our default (mixed, current code) instead takes each snapshot year's
+* value directly (pg_mun1999_mixed, pg_mun2005_mixed) with no summing --
+* there is no guarantee the 2005 value is even >= the 1999 value (see the
+* phase2_new<0 diagnostic elsewhere in this file).
+*
+* This block applies P&V's exact summing operation to OUR mixed-source
+* series (same admin source as the current default -- FASE 1997,
+* newProg_98_16 1998+ -- just summed across years like P&V instead of
+* taken as a single-year snapshot). Crossed with both denominator choices,
+* this isolates the sum-vs-snapshot choice on its own, independent of the
+* FASE-vs-mixed source choice already tested above.
+*============================================================
+preserve
+use "$data/beneficiaries_mun_recoded_1990.dta", clear
+keep cve_ent_mun_super pg_mun1997_mixed-pg_mun2005_mixed
+egen pg_summix_1999 = rowtotal(pg_mun1997_mixed pg_mun1998_mixed pg_mun1999_mixed)
+egen pg_summix_2005 = rowtotal(pg_mun1997_mixed pg_mun1998_mixed pg_mun1999_mixed ///
+	pg_mun2000_mixed pg_mun2001_mixed pg_mun2002_mixed pg_mun2003_mixed ///
+	pg_mun2004_mixed pg_mun2005_mixed)
+keep cve_ent_mun_super pg_summix_1999 pg_summix_2005
+tempfile summix_panel
+save `summix_panel'
+restore
+
+cap drop pg_summix_1999 pg_summix_2005
+merge m:1 cve_ent_mun_super using `summix_panel', nogenerate
+
+* Year-varying denominator (hh_tot at the snapshot year), summed mixed numerator
+cap drop inten1999_summix inten2005_summix
+gen inten1999_summix = pg_summix_1999/hh_tot1999
+gen inten2005_summix = pg_summix_2005/hh_tot2005
+replace inten1999_summix = 1 if inten1999_summix > 1 & !missing(inten1999_summix)
+replace inten2005_summix = 1 if inten2005_summix > 1 & !missing(inten2005_summix)
+label var inten1999_summix "Intensity 1999 (mixed numerator, summed 1997-1999 like P&V, year-varying denom.)"
+label var inten2005_summix "Intensity 2005 (mixed numerator, summed 1997-2005 like P&V, year-varying denom.)"
+
+* Fixed 1997 household base (P&V's exact denominator), summed mixed numerator
+cap drop inten1999_summix_fix inten2005_summix_fix
+gen inten1999_summix_fix = pg_summix_1999/hog1997_fixed
+gen inten2005_summix_fix = pg_summix_2005/hog1997_fixed
+replace inten1999_summix_fix = 1 if inten1999_summix_fix > 1 & !missing(inten1999_summix_fix)
+replace inten2005_summix_fix = 1 if inten2005_summix_fix > 1 & !missing(inten2005_summix_fix)
+label var inten1999_summix_fix "Intensity 1999 (mixed numerator, summed like P&V, fixed P&V denom.)"
+label var inten2005_summix_fix "Intensity 2005 (mixed numerator, summed like P&V, fixed P&V denom.)"
+
+*------------------------------------------------------------
+* Robustness R² table: 3 numerator variants (mixed snapshot -- current
+* default; mixed summed like P&V; FASE-only summed like P&V, matching
+* P&V exactly) x 2 denominator choices (year-varying; fixed P&V-style),
+* reusing r2_1/r2_2 (mixed snapshot, year-varying) and r2fix_1/r2fix_2
+* (mixed snapshot, fixed) computed above. Placed alongside
+* AT_pv_fig3_r2_fixeddenom in tables_app.tex.
+* Output: $tables/appendix/AT_pv_r2_benefsource.tex
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999_fase inten2005_fase inten1999_fase_fix inten2005_fase_fix ///
+	inten1999_summix inten2005_summix inten1999_summix_fix inten2005_summix_fix im_mun_1990
+duplicates drop cve_ent_mun_super, force
+count
+local n_r2fase_mun = r(N)
+di "`n_r2fase_mun' HM municipalities in the FASE-only correlation cross-section"
+
+xtile marg_pctile_bin_hm_fase = im_mun_1990, nq(10)
+
+reg inten1999_fase inten2005_fase
+local r2fase_yv_1 : di %5.3f e(r2)
+di "R² of inten1999_fase ~ inten2005_fase (HM sample, FASE-only numerator, year-varying denom): `r2fase_yv_1'   [mixed/year-varying: `r2_1'; P&V benchmark: 0.65]"
+
+reg inten1999_fase inten2005_fase i.marg_pctile_bin_hm_fase
+local r2fase_yv_2 : di %5.3f e(r2)
+
+reg inten1999_fase_fix inten2005_fase_fix
+local r2fase_fx_1 : di %5.3f e(r2)
+di "R² of inten1999_fase_fix ~ inten2005_fase_fix (HM sample, FASE-only numerator, FIXED denom): `r2fase_fx_1'   [mixed/fixed: `r2fix_1'; P&V benchmark: 0.65]"
+
+reg inten1999_fase_fix inten2005_fase_fix i.marg_pctile_bin_hm_fase
+local r2fase_fx_2 : di %5.3f e(r2)
+
+* Mixed numerator, summed like P&V (isolates the sum-vs-snapshot choice,
+* holding the admin source fixed at "mixed")
+reg inten1999_summix inten2005_summix
+local r2summix_yv_1 : di %5.3f e(r2)
+di "R² of inten1999_summix ~ inten2005_summix (HM sample, mixed numerator SUMMED like P&V, year-varying denom): `r2summix_yv_1'   [mixed/snapshot: `r2_1'; FASE-only/summed: `r2fase_yv_1'; P&V benchmark: 0.65]"
+
+reg inten1999_summix inten2005_summix i.marg_pctile_bin_hm_fase
+local r2summix_yv_2 : di %5.3f e(r2)
+
+reg inten1999_summix_fix inten2005_summix_fix
+local r2summix_fx_1 : di %5.3f e(r2)
+di "R² of inten1999_summix_fix ~ inten2005_summix_fix (HM sample, mixed numerator SUMMED like P&V, FIXED denom): `r2summix_fx_1'   [mixed/snapshot: `r2fix_1'; FASE-only/summed: `r2fase_fx_1'; P&V benchmark: 0.65]"
+
+reg inten1999_summix_fix inten2005_summix_fix i.marg_pctile_bin_hm_fase
+local r2summix_fx_2 : di %5.3f e(r2)
+
+{
+    cap file close r2b
+    file open r2b using "$tables/appendix/AT_pv_r2_benefsource.tex", write replace
+    file write r2b "\begin{tabular}{lcccc} \hline \hline" _n
+    file write r2b "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed (P\&V) denom.} \\" _n
+    file write r2b "Numerator construction & R\textsuperscript{2} & + marg.\ pctile FE & R\textsuperscript{2} & + marg.\ pctile FE \\ \toprule" _n
+    file write r2b "Mixed, single-year snapshot (current default) & `r2_1' & `r2_2' & `r2fix_1' & `r2fix_2' \\ " _n
+    file write r2b "Mixed, summed 1997--year like P\&V & `r2summix_yv_1' & `r2summix_yv_2' & `r2summix_fx_1' & `r2summix_fx_2' \\ " _n
+    file write r2b "FASE-only, summed 1997--year (matches P\&V exactly) & `r2fase_yv_1' & `r2fase_yv_2' & `r2fase_fx_1' & `r2fase_fx_2' \\ " _n
+    file write r2b "\bottomrule" _n
+    file write r2b "\multicolumn{5}{p{13.5cm}}{\footnotesize No.\ HM municipalities: `n_r2fase_mun'. P\&V (2023) benchmark: 0.65 (0.67 with FE). P\&V's own Intensity\_1999/Intensity\_2005 are running SUMS of annual FASE beneficiary counts (benef9799 = benef1997+benef1998+benef1999; benef9705 = benef9799+benef2000+...+benef2005), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is the current default: FASE for 1997, newProg\_98\_16 (\texttt{\$benef\_source == \"mixed\"}) from 1998 on, each snapshot year taken directly with no summing. ``Mixed, summed like P\&V'' applies P\&V's exact summing operation to the same mixed admin source, isolating the sum-vs-snapshot choice on its own. ``FASE-only, summed'' additionally switches the source to the FASE file for the entire 1997-2005 window (\texttt{\$benef\_source == \"fase\"}), matching P\&V's construction exactly.} \\ " _n
+    file write r2b "\end{tabular}"
+    file close r2b
+}
+di "Table exported to: $tables/appendix/AT_pv_r2_benefsource.tex"
 restore
 
 *============================================================

@@ -335,31 +335,54 @@ la var cc_sp_mun`i' "SP - mun - cumulative % covered `i'"
 order cve_ent_mun_super pg* ac_pg*  cc_pg* sp* cc_sp* p70* cc_70*
 
 
-*consolidating progresa beneficiaries.
-g cc_pg_mun1997 = cc_pg_mun1997_old
+*consolidating progresa beneficiaries: build BOTH variants side by side so
+*01_mortality_data.do can switch between them without re-running this file.
+*  _mixed : FASE for 1997, newProg_98_16 from 1998 onward (current default)
+*  _fase  : FASE only through 2005, newProg_98_16 from 2006 onward
+*           (matches Parker & Vogl 2023, which uses only the FASE file for
+*           the entire 1997-2005 period)
+g cc_pg_mun1997_mixed = cc_pg_mun1997_old
+g pg_mun1997_mixed    = pg_mun1997_old
+g cc_pg_mun1997_fase  = cc_pg_mun1997_old
+g pg_mun1997_fase     = pg_mun1997_old
+
 forv i=1998/2018 {
-g cc_pg_mun`i' = cc_pg_mun`i'_new
-drop cc_pg_mun`i'_new 
-if `i'<2014 {
-	drop cc_pg_mun`i'_old
-}
+g cc_pg_mun`i'_mixed = cc_pg_mun`i'_new
+g pg_mun`i'_mixed    = pg_mun`i'_new
 }
 
-g pg_mun1997 = pg_mun1997_old
-forv i=1998/2018 {
-g pg_mun`i' = pg_mun`i'_new
-drop pg_mun`i'_new
-if `i'<2014 {
-	drop pg_mun`i'_old ac_pg_mun`i'_old
+*** IMPORTANT: pg_mun`i'_old (FASE source) is an ANNUAL flow, not a cumulative
+*** count -- unlike pg_mun`i'_new (newProg admin source), which is already a
+*** cumulative stock. For 1997 this doesn't matter (1997 is the program's
+*** first year, so the annual flow *is* the cumulative total), but for
+*** 1998-2005 the _fase variant needs an explicit running sum of the FASE
+*** annual flows to produce a genuinely cumulative beneficiary count.
+*** cc_pg_mun`i'_old is already cumulative (built as sum(pgbenef_old)/HH
+*** earlier in this file) and needs no adjustment.
+g pg_mun1997_cumfase = pg_mun1997_old
+forv i=1998/2005 {
+local j = `i'-1
+g pg_mun`i'_cumfase = pg_mun`j'_cumfase + pg_mun`i'_old
 }
+
+forv i=1998/2005 {
+g cc_pg_mun`i'_fase = cc_pg_mun`i'_old
+g pg_mun`i'_fase    = pg_mun`i'_cumfase
 }
+forv i=2006/2018 {
+g cc_pg_mun`i'_fase = cc_pg_mun`i'_new
+g pg_mun`i'_fase    = pg_mun`i'_new
+}
+drop pg_mun*_cumfase
 
 forv i=1997/2018 {
-la var pg_mun`i' "Progresa - mun - benef `i'"
-la var cc_pg_mun`i' "Progresa - mun - cumulative % covered `i'"
+la var pg_mun`i'_mixed "Progresa - mun - benef `i' (mixed: FASE 1997, newProg 1998+)"
+la var cc_pg_mun`i'_mixed "Progresa - mun - cumulative % covered `i' (mixed)"
+la var pg_mun`i'_fase "Progresa - mun - benef `i' (FASE-only through 2005, matches P&V)"
+la var cc_pg_mun`i'_fase "Progresa - mun - cumulative % covered `i' (FASE-only through 2005)"
 }
 
-drop cc_pg_mun1997_old pg_mun1997_old ac_pg_mun1997_old
+drop pg_mun*_old pg_mun*_new cc_pg_mun*_old cc_pg_mun*_new ac_pg_mun*_old
 
 misstable sum pg_* p70* sp* cc*
 
