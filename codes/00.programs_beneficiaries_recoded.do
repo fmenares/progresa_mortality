@@ -335,18 +335,23 @@ la var cc_sp_mun`i' "SP - mun - cumulative % covered `i'"
 order cve_ent_mun_super pg* ac_pg*  cc_pg* sp* cc_sp* p70* cc_70*
 
 
-*consolidating progresa beneficiaries: use ONLY FASE data (pgbenef_old) for 1997-2005
-*to match Parker & Vogl (2023) exactly. Switch to newProg_98_16 data after 2005.
-forv i=1997/2005 {
-g cc_pg_mun`i' = cc_pg_mun`i'_old
-g pg_mun`i' = pg_mun`i'_old
-}
-drop cc_pg_mun*_old pg_mun*_old ac_pg_mun*_old
-
-forv i=2006/2018 {
+*consolidating progresa beneficiaries.
+g cc_pg_mun1997 = cc_pg_mun1997_old
+forv i=1998/2018 {
 g cc_pg_mun`i' = cc_pg_mun`i'_new
+drop cc_pg_mun`i'_new 
+if `i'<2014 {
+	drop cc_pg_mun`i'_old
+}
+}
+
+g pg_mun1997 = pg_mun1997_old
+forv i=1998/2018 {
 g pg_mun`i' = pg_mun`i'_new
-drop cc_pg_mun`i'_new pg_mun`i'_new
+drop pg_mun`i'_new
+if `i'<2014 {
+	drop pg_mun`i'_old ac_pg_mun`i'_old
+}
 }
 
 forv i=1997/2018 {
@@ -354,6 +359,7 @@ la var pg_mun`i' "Progresa - mun - benef `i'"
 la var cc_pg_mun`i' "Progresa - mun - cumulative % covered `i'"
 }
 
+drop cc_pg_mun1997_old pg_mun1997_old ac_pg_mun1997_old
 
 misstable sum pg_* p70* sp* cc*
 
