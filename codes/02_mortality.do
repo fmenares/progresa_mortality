@@ -278,7 +278,16 @@ g intensity_new_per = intensity_new * 100
 preserve
 keep if $sample_marg
 collapse (mean) emr65 emr65m emr65f intensity_new_per [aw=popover65_], by(year)
-twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxis(1)) ///
+
+* Preferred version: genuine dual y-axis (mortality rate on the left,
+* Progresa penetration on the right). This is valid, standard twoway
+* syntax, but yaxis()/axis() invoke Stata's object-oriented graph engine
+* (axis.class / twowaygraph_g.class); on some Stata installs/consoles
+* that engine is broken or incomplete and errors with "Super invalid
+* member variable identifier" / "class member function not found"
+* regardless of the calling syntax. cap noisily lets the script fall
+* back to a single-axis version instead of halting the whole do-file.
+cap noisily twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxis(1)) ///
        (line emr65f year, lcolor(red)   lpattern(dash)          yaxis(1)) ///
        (line emr65m year, lcolor(blue)  lpattern(shortdash_dot) yaxis(1)) ///
        (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
@@ -288,6 +297,26 @@ twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxis(1)) ///
 	legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (right axis)") ///
 	cols(4) size(medsmall) position(6) ring(1)) ///
 	graphregion(fcolor(white))
+if _rc {
+	di as error "Dual y-axis graph failed (rc=`_rc'), likely a broken axis.class/twowaygraph_g.class on this Stata install -- falling back to a single-axis version with Progresa penetration rescaled onto the mortality-rate axis."
+	summ emr65 emr65f emr65m, meanonly
+	local mrt_max = r(max)
+	summ intensity_new_per, meanonly
+	local pen_max = r(max)
+	local pen_scale = `mrt_max' / `pen_max'
+	g intensity_new_scaled = intensity_new_per * `pen_scale'
+	local pen_scale_lbl : di %4.2f `pen_scale'
+
+	twoway (line emr65  year, lcolor(black) lpattern(solid)) ///
+	       (line emr65f year, lcolor(red)   lpattern(dash)) ///
+	       (line emr65m year, lcolor(blue)  lpattern(shortdash_dot)) ///
+	       (line intensity_new_scaled year, lcolor(orange) lpattern(longdash)), ///
+		ytitle("Mortality Rate (65+ per 1000)") ///
+		xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
+		legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (rescaled x`pen_scale_lbl', see notes)") ///
+		cols(4) size(medsmall) position(6) ring(1)) ///
+		graphregion(fcolor(white))
+}
 graph export "$figures/Figure_1a_marg.pdf", as(pdf) replace
 restore
 }
@@ -829,7 +858,12 @@ collapse (mean) emr65_nm=emr65 emr65f_nm=emr65f emr65m_nm=emr65m ///
 
 merge 1:1 year using `marg_trend', nogen
 
-twoway (line emr65_marg  year, lcolor(black) lpattern(solid) yaxis(1)) ///
+* See the analogous fallback in the FIGURE 1a block above: yaxis()/axis()
+* invoke Stata's object-oriented graph engine (axis.class /
+* twowaygraph_g.class), which can be broken/incomplete on some Stata
+* installs regardless of calling syntax. cap noisily + a single-axis
+* fallback keeps the script running past this figure either way.
+cap noisily twoway (line emr65_marg  year, lcolor(black) lpattern(solid) yaxis(1)) ///
        (line emr65f_marg year, lcolor(red)   lpattern(solid) yaxis(1)) ///
        (line emr65m_marg year, lcolor(blue)  lpattern(solid) yaxis(1)) ///
        (line emr65_nm    year, lcolor(black) lpattern(dash)  yaxis(1)) ///
@@ -845,6 +879,33 @@ twoway (line emr65_marg  year, lcolor(black) lpattern(solid) yaxis(1)) ///
 	             7 "Intensity, Marg (right axis)" 8 "Intensity, Non-Marg (right axis)") ///
 	cols(3) size(small) position(6) ring(1)) ///
 	graphregion(fcolor(white))
+if _rc {
+	di as error "Dual y-axis graph failed (rc=`_rc'), likely a broken axis.class/twowaygraph_g.class on this Stata install -- falling back to a single-axis version with Progresa penetration rescaled onto the mortality-rate axis."
+	summ emr65_marg emr65f_marg emr65m_marg emr65_nm emr65f_nm emr65m_nm, meanonly
+	local mrt_max = r(max)
+	summ inten_marg inten_nm, meanonly
+	local pen_max = r(max)
+	local pen_scale = `mrt_max' / `pen_max'
+	g inten_marg_scaled = inten_marg * `pen_scale'
+	g inten_nm_scaled   = inten_nm   * `pen_scale'
+	local pen_scale_lbl : di %4.2f `pen_scale'
+
+	twoway (line emr65_marg  year, lcolor(black) lpattern(solid)) ///
+	       (line emr65f_marg year, lcolor(red)   lpattern(solid)) ///
+	       (line emr65m_marg year, lcolor(blue)  lpattern(solid)) ///
+	       (line emr65_nm    year, lcolor(black) lpattern(dash)) ///
+	       (line emr65f_nm   year, lcolor(red)   lpattern(dash)) ///
+	       (line emr65m_nm   year, lcolor(blue)  lpattern(dash)) ///
+	       (line inten_marg_scaled year, lcolor(orange) lpattern(solid)) ///
+	       (line inten_nm_scaled   year, lcolor(orange) lpattern(dash)), ///
+		ytitle("Mortality Rate (65+ per 1,000)") ///
+		xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
+		legend(order(1 "Marg: All" 2 "Marg: Female" 3 "Marg: Male" ///
+		             4 "Non-Marg: All" 5 "Non-Marg: Female" 6 "Non-Marg: Male" ///
+		             7 "Intensity, Marg (rescaled x`pen_scale_lbl')" 8 "Intensity, Non-Marg (rescaled x`pen_scale_lbl')") ///
+		cols(3) size(small) position(6) ring(1)) ///
+		graphregion(fcolor(white))
+}
 graph export "$figures/appendix/Figure_1_all.pdf", as(pdf) replace
 restore
 }
