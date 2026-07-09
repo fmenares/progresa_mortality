@@ -1,8 +1,18 @@
 \begin{tabular}{lcccc} \hline \hline
 & \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed (P\&V) denom.} \\
 Numerator construction & R\textsuperscript{2} & + marg.\ pctile FE & R\textsuperscript{2} & + marg.\ pctile FE \\ \toprule
-Mixed, single-year snapshot (current default) & 0.160 & 0.275 & 0.238 & 0.315 \\ 
-FASE-only, cumulative (matches P\&V exactly) & 0.584 & 0.598 & 0.655 & 0.662 \\ 
+Mixed, single-year snapshot (current default) & 0.160 & 0.275 & 0.238 & 0.315 \\
+FASE-only, cumulative (P\&V's numerator) & 0.584 & 0.598 & 0.655 & 0.662 \\
+  & & & & \\
+P\&V (2023) benchmark & \multicolumn{2}{c}{0.65} & \multicolumn{2}{c}{0.65} \\
+\quad + marg.\ pctile FE benchmark & \multicolumn{2}{c}{0.67} & \multicolumn{2}{c}{0.67} \\
 \bottomrule
-No.\ HM municipalities & \multicolumn{4}{c}{1119} \\ 
+\multicolumn{5}{l}{\textit{Decomposition of $\Delta R^2$ vs.\ the current-default baseline (top-left cell):}} \\
+\quad Denominator fix alone, no marg.\ FE & \multicolumn{4}{c}{0.078} \\
+\quad Denominator fix alone, + marg.\ FE & \multicolumn{4}{c}{0.040} \\
+\quad Numerator fix alone, no marg.\ FE & \multicolumn{4}{c}{0.424} \\
+\quad Numerator fix alone, + marg.\ FE & \multicolumn{4}{c}{0.323} \\
+\quad Both combined, no marg.\ FE & \multicolumn{4}{c}{0.495} \\
+\quad Both combined, + marg.\ FE & \multicolumn{4}{c}{0.387} \\
+No.\ HM municipalities & \multicolumn{4}{c}{1119} \\
 \end{tabular}

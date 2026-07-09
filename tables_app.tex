@@ -202,35 +202,7 @@ members. The second row reports the differential effect for households with elde
 
 \begin{table}[H]
 \RawCaption%
-  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$ and Marginality Controls}
-   \label{at:pv_fig3_r2}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.95}{
-      \input{tables/appendix/AT_pv_fig3_r2}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table reports the $R^2$ from regressions of $\textit{Intensity}_{1999}$ on $\textit{Intensity}_{2005}$, alone and with municipality marginality-percentile fixed effects added, following footnote 18 of Parker and Vogl (2023). The sample is the cross-section of highly marginalized municipalities. The benchmark column reports the corresponding statistic from Parker and Vogl (2023). The third row (adding locality-level marginality-share controls) is deferred pending locality-level marginality index data.}
-  }
-\end{table}
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Fixed vs.\ Year-Varying Household Denominator}
-   \label{at:pv_fig3_r2_fixeddenom}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.95}{
-      \input{tables/appendix/AT_pv_fig3_r2_fixeddenom}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table repeats the $R^2$ check of Appendix Table~\ref{at:pv_fig3_r2}, but using $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ constructed with a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), following Parker and Vogl (2023) exactly, in place of each year's own municipal household count. The sample is the cross-section of highly marginalized municipalities. The middle column reproduces the year-varying-denominator values from Appendix Table~\ref{at:pv_fig3_r2} for comparison; the benchmark column reports the corresponding statistic from Parker and Vogl (2023).}
-  }
-\end{table}
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Beneficiary-Source Comparison}
+  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Numerator and Denominator Decomposition}
    \label{at:pv_r2_benefsource}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
@@ -238,35 +210,7 @@ members. The second row reports the differential effect for households with elde
       \input{tables/appendix/AT_pv_r2_benefsource}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table crosses the beneficiary-numerator construction with the household-denominator choice from Appendix Tables~\ref{at:pv_fig3_r2} and~\ref{at:pv_fig3_r2_fixeddenom}. Parker and Vogl (2023) construct $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ as running \textit{sums} of annual FASE beneficiary counts (their \texttt{benef9799} = benef1997+benef1998+benef1999; \texttt{benef9705} = \texttt{benef9799}+benef2000+...+benef2005), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is our current default: the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) from 1998 on, with each snapshot year's value taken directly as a point-in-time headcount rather than summed. ``FASE-only, cumulative'' switches the numerator to the FASE file for the entire 1997-2005 window and applies Parker and Vogl's exact summing operation, matching Parker and Vogl (2023) exactly; FASE is the only source available that is a genuine annual flow, so it is the only one this summing is valid for -- the newer admin pipeline reports a status headcount, not a flow, and summing it instead would double-count continuing beneficiaries. The sample is the cross-section of highly marginalized municipalities. The benchmark from Parker and Vogl (2023) is 0.65 (0.67 with the marginality-percentile fixed effect).}
-  }
-\end{table}
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Seguro Popular Intensity: Standalone vs.\ Embedded Construction}
-   \label{at:sp_comparison}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.95}{
-      \input{tables/appendix/AT_sp_comparison}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table compares two independently-constructed measures of Seguro Popular cumulative coverage at the municipality-year level. \texttt{sp\_intensity} (the control used throughout the main specification) is merged in from a standalone file, \texttt{SP\_2001\_2018.dta}, built outside this repository. \texttt{sp\_intensity\_00} is built inside \texttt{00.programs\_beneficiaries\_recoded.do} from the same crosswalk/household-count pipeline used to construct the Progresa intensity measures, and is carried through \texttt{01\_mortality\_data.do} rather than being dropped. The sample is highly marginalized municipality-years from 2001 onward, the first year Seguro Popular coverage is defined in either series.}
-  }
-\end{table}
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Intensity$_{1999}$/Intensity$_{2005}$: Mixed Snapshot vs.\ FASE Cumulative Construction}
-   \label{at:intensity_construction_comparison}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.95}{
-      \input{tables/appendix/AT_intensity_construction_comparison}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table compares two constructions of the $\textit{Intensity}_{1999}$/$\textit{Intensity}_{2005}$ regressors used in the main $\textit{Intensity} \times \textit{Post}$ specification (Table~\ref{t:did_age}, column 1). ``Mixed (snapshot)'' is the current default: \texttt{intensity\_new} frozen at 1999/2005, built from the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) taken directly, with no summing, from 1998 on. This is a point-in-time headcount of who is \textit{currently} enrolled, not who has \textit{ever} been enrolled -- it need not be monotonic, since \texttt{newProg\_98\_16.dta} carries no household identifier that would let a household's entry and later exit be tracked across years. ``FASE (cumulative)'' instead uses Parker and Vogl's (2023) own construction: a genuine running sum of annual FASE beneficiary counts frozen at 1999/2005, giving a monotonic ``ever enrolled by year $Y$'' measure. FASE is the only numerator source available that is a genuine annual flow, so it is the only one a running sum is valid for. The correlation between the two constructions (reported below the table) is informative precisely because they need not agree: divergence reflects households whose enrollment status changed between entry and the snapshot year. All columns use the same preferred specification: \texttt{emr65}, weighted by population aged 65+, with the Seguro Popular control, year and municipality fixed effects, and standard errors clustered by municipality, restricted to highly marginalized municipalities.}
+    \floatfoot{Notes: This table reports the $R^2$ from regressions of $\textit{Intensity}_{1999}$ on $\textit{Intensity}_{2005}$, alone and with municipality marginality-percentile fixed effects added, following footnote 18 of Parker and Vogl (2023), crossing the beneficiary-numerator construction with the household-denominator choice. Parker and Vogl (2023) construct $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ as running \textit{sums} of annual FASE beneficiary counts (their \texttt{benef9799} = benef1997+benef1998+benef1999; \texttt{benef9705} = \texttt{benef9799}+benef2000+...+benef2005) divided by a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is our current default: the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) from 1998 on, with each snapshot year's value taken directly as a point-in-time headcount rather than summed, divided by each year's own municipal household count. ``FASE-only, cumulative'' switches the numerator to the FASE file for the entire 1997-2005 window and applies Parker and Vogl's exact summing operation; FASE is the only source available that is a genuine annual flow, so it is the only one this summing is valid for -- the newer admin pipeline reports a status headcount, not a flow, and summing it instead would double-count continuing beneficiaries. Columns~1-2 use each year's own municipal household count as the denominator (our default); columns~3-4 use Parker and Vogl's fixed 1997 base instead, holding the denominator constant across snapshots. The bottom panel decomposes the $R^2$ gap to the Parker and Vogl benchmark (0.65, or 0.67 with the marginality-percentile fixed effect) into the contribution of the denominator choice alone (Mixed numerator, fixed vs.\ year-varying denominator), the numerator/beneficiary-source choice alone (FASE vs.\ Mixed numerator, year-varying denominator), and both changes combined, each measured relative to the current-default cell (top-left): the beneficiary-source choice accounts for the large majority of the gap, with the denominator choice a secondary contributor. The sample is the cross-section of highly marginalized municipalities.}
   }
 \end{table}
 
