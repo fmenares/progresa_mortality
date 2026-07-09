@@ -114,15 +114,19 @@
 \end{figure}
 
 \begin{figure}[H]
-    \caption{Event Study: $\textit{Intensity}_{1999}$/$\textit{Intensity}_{2005}$ Coefficients by Construction (Mixed Snapshot vs.\ FASE Cumulative)}
+    \caption{Event Study: $\textit{Intensity}_{1999}$/$\textit{Intensity}_{2005}$ Coefficients by Numerator and Denominator Construction}
     \label{af:intensity_construction_comparison}
-\subfigure[Mixed (snapshot: \texttt{intensity\_new} frozen at year)]
-     {\includegraphics[width=0.65\textwidth]{figures/appendix/Figure_2_snap.pdf}}
+\subfigure[Mixed numerator, year-varying denom.\ (current default)]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/Figure_2_snap.pdf}}
+  \subfigure[FASE numerator, year-varying denom.\ (numerator fix alone)]
+{\includegraphics[width=0.49\textwidth]{figures/appendix/Figure_2_cum.pdf}}
 
-  \subfigure[FASE (cumulative: running sum of annual FASE counts, frozen at year)]
-{\includegraphics[width=0.65\textwidth]{figures/appendix/Figure_2_cum.pdf}}
+\subfigure[Mixed numerator, fixed P\&V denom.\ (denominator fix alone)]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/Figure_2_snap_fix.pdf}}
+  \subfigure[FASE numerator, fixed P\&V denom.\ (both combined)]
+{\includegraphics[width=0.49\textwidth]{figures/appendix/Figure_2_cum_fix.pdf}}
 
-         \floatfoot{Notes: Panels display event-study estimates of the interaction between $\textit{Intensity}_{1999}$/$\textit{Intensity}_{2005}$ and year indicators (reference year 1996) for the pooled older-adult (65+) mortality rate per 1,000 inhabitants, weighted and with the Seguro Popular control, under the two constructions of Appendix Table~\ref{at:intensity_construction_comparison}. Panel~(a) uses the current default: a point-in-time headcount (FASE for 1997, the newer admin pipeline taken directly from 1998 on), which need not be monotonic. Panel~(b) uses Parker and Vogl's (2023) own construction: a genuine running sum of annual FASE beneficiary counts, giving a monotonic ``ever enrolled'' measure. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. 95\% confidence intervals shown.}
+         \floatfoot{Notes: Panels display event-study estimates of the interaction between $\textit{Intensity}_{1999}$/$\textit{Intensity}_{2005}$ and year indicators (reference year 1996) for the pooled older-adult (65+) mortality rate per 1,000 inhabitants, weighted and with the Seguro Popular control, under the four constructions of Table~\ref{t:did_age_fixeddenom}, crossing the beneficiary-numerator choice (Mixed vs.\ FASE) with the household-denominator choice (year-varying vs.\ fixed P\&V-style). Panel~(a) is the current default: a point-in-time headcount (FASE for 1997, the newer admin pipeline taken directly from 1998 on) divided by each year's own municipal household count; it need not be monotonic. Panel~(b) replaces the numerator with Parker and Vogl's (2023) own construction, a genuine running sum of annual FASE beneficiary counts, keeping the year-varying denominator. Panel~(c) keeps the current numerator but divides by a single, time-invariant household count fixed at an interpolated 1997 base. Panel~(d) combines both changes, matching Parker and Vogl (2023) exactly. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. 95\% confidence intervals shown.}
 \end{figure}
 
 \begin{figure}[H]
@@ -131,7 +135,7 @@
 
 {\includegraphics[width=0.75\textwidth]{figures/appendix/AF_pv_fig3_replication.pdf}}
 
-         \floatfoot{Notes: This figure replicates Figure~3 of Parker and Vogl (2023) using our data. The horizontal axis is a municipality's percentile in the national distribution of the 1990 CONAPO marginalization index; each point is the mean new-enrollment ratio within a 1-point percentile bin. The black series is the early phase (1997--1999, $\textit{Intensity}_{1999}$); the red series is the incremental enrollment added during the later phase (2000--2005, $\textit{Intensity}_{2005} - \textit{Intensity}_{1999}$). Unlike the main analysis, this figure uses all Mexican municipalities (not only the highly marginalized subsample) to display the full national targeting gradient, following Parker and Vogl's own construction. Appendix Table~\ref{at:pv_fig3_r2} reports the corresponding variance-decomposition ($R^2$) check.}
+         \floatfoot{Notes: This figure replicates Figure~3 of Parker and Vogl (2023) using our data. The horizontal axis is a municipality's percentile in the national distribution of the 1990 CONAPO marginalization index; each point is the mean new-enrollment ratio within a 1-point percentile bin. The black series is the early phase (1997--1999, $\textit{Intensity}_{1999}$); the red series is the incremental enrollment added during the later phase (2000--2005, $\textit{Intensity}_{2005} - \textit{Intensity}_{1999}$). Unlike the main analysis, this figure uses all Mexican municipalities (not only the highly marginalized subsample) to display the full national targeting gradient, following Parker and Vogl's own construction. Appendix Table~\ref{at:pv_r2_benefsource} reports the corresponding variance-decomposition ($R^2$) check.}
 \end{figure}
 
 \begin{figure}[H]

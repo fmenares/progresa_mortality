@@ -29,11 +29,12 @@ NOTE (2026 cleanup): the 70 y Mas (UCT) block was removed -- p70_mun*/cc_70_mun*
 were never referenced downstream in 01_mortality_data.do or 02_mortality.do, so
 they were pure dead weight. Seguro Popular is KEPT (see section 1.2) and its
 cumulative-coverage variable (cc_sp_mun*) is now carried through into
-01_mortality_data.do as sp_new/c_sp_new/sp_intensity_00, so it survives past
-the "keep pg_new* c_pg_new*" step that used to silently drop it. This gives an
-embedded SP intensity measure built from the same crosswalk/HH pipeline as
-Progresa, which 02_mortality.do compares against the standalone sp_intensity
-merged in from $data/SP_2001_2018.dta (a file built outside this repo).
+01_mortality_data.do as sp_new/sp_intensity, so it survives past the
+"keep pg_new* c_pg_new*" step that used to silently drop it. This SP intensity
+measure, built from the same crosswalk/HH pipeline as Progresa, is the only
+one used throughout 02_mortality.do; a standalone $data/SP_2001_2018.dta
+series (a file built outside this repo) was previously merged in alongside it
+for comparison, confirmed identical (corr = R² = 1.000), and removed.
 Also: this file used to loop over `foreach year in 1995 1990`, but only the
 1990 output (beneficiaries_mun_recoded_1990.dta) is ever loaded downstream --
 the 1995 vintage was built and never used. Simplified to a single pass.

@@ -85,9 +85,11 @@ set more off
 *** crosswalk/HH pipeline as Progresa) -- carried through here as sp_new/c_sp_new
 *** so it survives past the keep below instead of being silently dropped. SP
 *** coverage doesn't exist before 2001, so those years are zero-filled just like
-*** the pre-1997 Progresa years. This gives an "embedded" SP intensity measure
-*** (sp_intensity_00, below) that 02_mortality.do compares against the
-*** standalone sp_intensity merged in from $data/SP_2001_2018.dta.
+*** the pre-1997 Progresa years. This is renamed to sp_intensity below and is
+*** the only Seguro Popular measure used throughout 02_mortality.do -- a
+*** previously-merged standalone $data/SP_2001_2018.dta series was confirmed
+*** identical (corr = R² = 1.000, see AT_sp_comparison in the archived history)
+*** and removed to avoid maintaining two copies of the same construction.
 	forvalues j=2001(1)2018 {
 	rename sp_mun`j'    sp_new`j'
 	rename cc_sp_mun`j' c_sp_new`j'
@@ -159,14 +161,11 @@ set more off
 	lab var pop_tot "total population"
 	lab var pgbenef_new "cumulative new benef"
 
-*** Embedded Seguro Popular intensity (built in 00.programs_beneficiaries_recoded.do
+*** Seguro Popular intensity (built in 00.programs_beneficiaries_recoded.do
 *** from the same crosswalk/HH pipeline as Progresa's intensity_new below).
-*** Named "_00" to distinguish it from the standalone sp_intensity that
-*** 02_mortality.do separately merges in from $data/SP_2001_2018.dta -- both
-*** measures are kept in the panel so 02_mortality.do can compare them directly.
-	rename c_sp_new sp_intensity_00
-	lab var sp_intensity_00 "Seguro Popular cumulative % covered (embedded, from 00.)"
-	lab var sp_new "Seguro Popular new beneficiaries (embedded, from 00.)"
+	rename c_sp_new sp_intensity
+	lab var sp_intensity "Seguro Popular cumulative % covered"
+	lab var sp_new "Seguro Popular new beneficiaries"
 
 *** Create Progresa intensity (cumulative benef) 
 	bysort cve_ent_mun_super: gen intensity_new= pgbenef_new/hh_tot
