@@ -39,6 +39,7 @@ set more off
 	global SP "/home/user/progresa_mortality/data/"
 }
 
+global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 *** BR phase-in sample: which start-year municipalities count as BR?
 ***   "1998_1999" : strict — only 1998 and 1999 entrants (current default, ~1,422 mun)
 ***   "1997_1999" : inclusive — adds 1997 entrants (~1,961 mun, matches BR reported N)
@@ -246,7 +247,7 @@ restore
 
 	
 	tab post 
-	global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
+	
 	
 	
 	
