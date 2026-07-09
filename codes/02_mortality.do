@@ -4099,106 +4099,198 @@ corr inten2005_fix inten2005_fase_fix if $sample_marg & year==1996
 local corr05_fix: di %5.3f r(rho)
 
 *============================================================
-* APPENDIX FIGURES: event studies for each intensity construction variant
-* Same design as Figure 2 (inten x year_1995 interactions), pooled sample,
-* weighted + SP, run once per variant so the dynamic pattern can be
-* compared across constructions. Crosses the same 2 numerator variants
-* (mixed snapshot vs. FASE cumulative) x 2 denominator choices
-* (year-varying vs. fixed P&V-style) as the merged T2_b_mortality_
-* fixeddenom table, so each of that table's 4 columns has a matching
-* event-study panel:
+* APPENDIX FIGURE: event study for Intensity_1999 x year, ALL FOUR
+* intensity constructions overlaid on one set of axes (rather than four
+* separate small-multiple panels), so the beta_k profile's movement
+* across constructions is directly visible. Same design as Figure 2
+* (inten x year_1995 interactions), pooled sample, weighted + SP.
+* Crosses the same 2 numerator variants (mixed snapshot vs. FASE
+* cumulative) x 2 denominator choices (year-varying vs. fixed P&V-style)
+* as the merged T2_b_mortality_fixeddenom table, so each of that table's
+* 4 columns has a matching series here. Intensity_2005 is dropped (the
+* comparison here is about the construction of Intensity_1999 itself,
+* not the second phase).
 *   snap     : Mixed numerator,  year-varying denom (current default)
 *   cum      : FASE numerator,   year-varying denom (numerator fix alone)
 *   snap_fix : Mixed numerator,  fixed 1997 P&V denom (denominator fix alone)
 *   cum_fix  : FASE numerator,   fixed 1997 P&V denom (both combined)
-* Output: $figures/appendix/Figure_2_snap.pdf / Figure_2_cum.pdf /
-*         Figure_2_snap_fix.pdf / Figure_2_cum_fix.pdf
+* Output: $figures/appendix/Figure_2_all.pdf
 *============================================================
 {
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 foreach v in snap cum snap_fix cum_fix {
 	if "`v'" == "snap" {
 		local inten99v inten1999
-		local inten05v inten2005
 	}
 	else if "`v'" == "cum" {
 		local inten99v inten1999_fase
-		local inten05v inten2005_fase
 	}
 	else if "`v'" == "snap_fix" {
 		local inten99v inten1999_fix
-		local inten05v inten2005_fix
 	}
 	else {
 		local inten99v inten1999_fase_fix
-		local inten05v inten2005_fase_fix
 	}
 
-	cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 c.`inten05v'##ib6.year_1995 ///
+	cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 ///
 		c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if _rc == 0 {
 		forval pos = 1/16 {
 			if `pos' == 6 {
 				local b99_`v'_`pos'  = 0
 				local se99_`v'_`pos' = 0
-				local b05_`v'_`pos'  = 0
-				local se05_`v'_`pos' = 0
 			}
 			else {
 				local b99_`v'_`pos'  = _b[`pos'.year_1995#c.`inten99v']
 				local se99_`v'_`pos' = _se[`pos'.year_1995#c.`inten99v']
-				local b05_`v'_`pos'  = _b[`pos'.year_1995#c.`inten05v']
-				local se05_`v'_`pos' = _se[`pos'.year_1995#c.`inten05v']
 			}
 		}
-
-		preserve
-		clear
-		set obs 16
-		gen yr_pos = _n
-		gen xpos99 = yr_pos - 0.12
-		gen xpos05 = yr_pos + 0.12
-		gen b99  = .
-		gen hi99 = .
-		gen lo99 = .
-		gen b05  = .
-		gen hi05 = .
-		gen lo05 = .
-		forval pos = 1/16 {
-			replace b99  = `b99_`v'_`pos''                           if yr_pos == `pos'
-			replace hi99 = `b99_`v'_`pos'' + 1.96 * `se99_`v'_`pos'' if yr_pos == `pos'
-			replace lo99 = `b99_`v'_`pos'' - 1.96 * `se99_`v'_`pos'' if yr_pos == `pos'
-			replace b05  = `b05_`v'_`pos''                           if yr_pos == `pos'
-			replace hi05 = `b05_`v'_`pos'' + 1.96 * `se05_`v'_`pos'' if yr_pos == `pos'
-			replace lo05 = `b05_`v'_`pos'' - 1.96 * `se05_`v'_`pos'' if yr_pos == `pos'
-		}
-		* xpos99/xpos05 offset the two series by +/-0.12 year-units so their
-		* point estimates and CI whiskers don't sit directly on top of each
-		* other at each year.
-		twoway ///
-			(rcap hi99 lo99 xpos99, lcolor(black%60) lwidth(vthin)) ///
-			(scatter b99 xpos99, mcolor(black) msymbol(circle) msize(vsmall)) ///
-			(rcap hi05 lo05 xpos05, lcolor(orange%60) lwidth(vthin)) ///
-			(scatter b05 xpos05, mcolor(orange) msymbol(square) msize(vsmall)), ///
-			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-			xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-			xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-			xscale(range(0.5 16.5)) ///
-			xtitle("") ///
-			ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-			ylabel(, grid gmin gmax labsize(small)) ///
-			legend(order(2 "Intensity 1999" 4 "Intensity 2005") ///
-				cols(2) size(medsmall) position(6) ring(1) ///
-				region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-			graphregion(color(white)) ///
-			plotregion(margin(l=1 r=1))
-		graph export "$figures/appendix/Figure_2_`v'.pdf", as(pdf) replace
-		restore
 	}
 	else {
-		di as error "Variant `v': event-study reghdfe failed (rc=`_rc'), skipping Figure_2_`v'.pdf"
+		di as error "Variant `v': event-study reghdfe failed (rc=`_rc'), leaving cells blank"
 	}
 }
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+* Four series dodged +/-0.27/+/-0.09 year-units (same spacing convention
+* as AF_ses_trend) so points/CIs don't overlap at each year.
+gen xpos_snap     = yr_pos - 0.27
+gen xpos_cum      = yr_pos - 0.09
+gen xpos_snap_fix = yr_pos + 0.09
+gen xpos_cum_fix  = yr_pos + 0.27
+foreach v in snap cum snap_fix cum_fix {
+	gen b_`v'  = .
+	gen hi_`v' = .
+	gen lo_`v' = .
+}
+forval pos = 1/16 {
+	foreach v in snap cum snap_fix cum_fix {
+		replace b_`v'  = `b99_`v'_`pos''                           if yr_pos == `pos'
+		replace hi_`v' = `b99_`v'_`pos'' + 1.96 * `se99_`v'_`pos'' if yr_pos == `pos'
+		replace lo_`v' = `b99_`v'_`pos'' - 1.96 * `se99_`v'_`pos'' if yr_pos == `pos'
+	}
+}
+twoway ///
+	(rcap hi_snap lo_snap xpos_snap, lcolor(black%60) lwidth(vthin)) ///
+	(scatter b_snap xpos_snap, mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(rcap hi_cum lo_cum xpos_cum, lcolor(orange%60) lwidth(vthin)) ///
+	(scatter b_cum xpos_cum, mcolor(orange) msymbol(square) msize(vsmall)) ///
+	(rcap hi_snap_fix lo_snap_fix xpos_snap_fix, lcolor(blue%60) lwidth(vthin)) ///
+	(scatter b_snap_fix xpos_snap_fix, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+	(rcap hi_cum_fix lo_cum_fix xpos_cum_fix, lcolor(green%60) lwidth(vthin)) ///
+	(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(2 "Mixed, year-varying (current)" 4 "FASE, year-varying" ///
+		6 "Mixed, fixed P&V" 8 "FASE, fixed P&V") ///
+		cols(2) size(small) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/Figure_2_all.pdf", as(pdf) replace
+restore
+}
+
+*============================================================
+* APPENDIX FIGURE: companion to Figure_2_all.pdf, adding the SES/
+* marginality-trend control. Same four intensity constructions, same
+* combined-overlay design, but each regression now also includes
+* i.im90_bin#c.year (a municipality-specific linear trend interacted
+* with 1990 marginalization-index quintiles), following Parker and
+* Vogl's (2023) preferred SES-trend specification (spec 3 of
+* AF_ses_trend/AT_ses_trend). Comparing this figure to Figure_2_all.pdf
+* isolates whether the SES trend, rather than the numerator/denominator
+* choice, is driving any divergence across constructions.
+* Output: $figures/appendix/Figure_2_all_ses.pdf
+*============================================================
+{
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+foreach v in snap cum snap_fix cum_fix {
+	if "`v'" == "snap" {
+		local inten99v inten1999
+	}
+	else if "`v'" == "cum" {
+		local inten99v inten1999_fase
+	}
+	else if "`v'" == "snap_fix" {
+		local inten99v inten1999_fix
+	}
+	else {
+		local inten99v inten1999_fase_fix
+	}
+
+	cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 ///
+		c.sp_intensity i.im90_bin#c.year [aw=popover65_] if $sample_marg, ///
+		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if _rc == 0 {
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local bses_`v'_`pos'  = 0
+				local seses_`v'_`pos' = 0
+			}
+			else {
+				local bses_`v'_`pos'  = _b[`pos'.year_1995#c.`inten99v']
+				local seses_`v'_`pos' = _se[`pos'.year_1995#c.`inten99v']
+			}
+		}
+	}
+	else {
+		di as error "SES-trend variant `v': event-study reghdfe failed (rc=`_rc'), leaving cells blank"
+	}
+}
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_snap     = yr_pos - 0.27
+gen xpos_cum      = yr_pos - 0.09
+gen xpos_snap_fix = yr_pos + 0.09
+gen xpos_cum_fix  = yr_pos + 0.27
+foreach v in snap cum snap_fix cum_fix {
+	gen b_`v'  = .
+	gen hi_`v' = .
+	gen lo_`v' = .
+}
+forval pos = 1/16 {
+	foreach v in snap cum snap_fix cum_fix {
+		replace b_`v'  = `bses_`v'_`pos''                            if yr_pos == `pos'
+		replace hi_`v' = `bses_`v'_`pos'' + 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
+		replace lo_`v' = `bses_`v'_`pos'' - 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
+	}
+}
+twoway ///
+	(rcap hi_snap lo_snap xpos_snap, lcolor(black%60) lwidth(vthin)) ///
+	(scatter b_snap xpos_snap, mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(rcap hi_cum lo_cum xpos_cum, lcolor(orange%60) lwidth(vthin)) ///
+	(scatter b_cum xpos_cum, mcolor(orange) msymbol(square) msize(vsmall)) ///
+	(rcap hi_snap_fix lo_snap_fix xpos_snap_fix, lcolor(blue%60) lwidth(vthin)) ///
+	(scatter b_snap_fix xpos_snap_fix, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+	(rcap hi_cum_fix lo_cum_fix xpos_cum_fix, lcolor(green%60) lwidth(vthin)) ///
+	(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(2 "Mixed, year-varying (current)" 4 "FASE, year-varying" ///
+		6 "Mixed, fixed P&V" 8 "FASE, fixed P&V") ///
+		cols(2) size(small) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/Figure_2_all_ses.pdf", as(pdf) replace
+restore
 }
 
 *------------------------------------------------------------
@@ -4402,21 +4494,16 @@ di "Table exported to: $tables/T2_b_mortality_fixeddenom.tex"
 * 2 code exactly (weighted + Seguro Popular event study, pooled/female/
 * male, ib6.year_1995 interactions, reference year 1996) with
 * inten1999_fix/inten2005_fix substituted for inten1999/inten2005.
-* Output: $figures/Figure_2_pooled_fixeddenom.pdf / _female_ / _male_
-* Same pooled/female/male three-panel split as the main Figure 2 above
-* (see note there): one series per panel instead of three overlaid series.
+* Output: $figures/Figure_2_female_fixeddenom.pdf / _male_
+* Pooled panel (Figure_2_pooled_fixeddenom.pdf) removed: it duplicated
+* the pooled/Intensity_1999/fixed-denom series now shown as one of the
+* four series in the combined appendix figure af:intensity_construction_
+* comparison (Figure_2_all.pdf), so only female/male are exported here.
 *============================================================
 {
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-foreach grp in w f m {
-    if "`grp'" == "w" {
-        local outcome emr65
-        local wvar   popover65_
-        local gcolor black
-        local gsym   circle
-        local gname  pooled
-    }
-    else if "`grp'" == "f" {
+foreach grp in f m {
+    if "`grp'" == "f" {
         local outcome emr65f
         local wvar   popover65_f
         local gcolor red
