@@ -4212,6 +4212,19 @@ restore
 * Output: $figures/appendix/Figure_2_all_ses.pdf
 *============================================================
 {
+* im90_bin (built for AF_ses_trend/AT_ses_trend above) is explicitly
+* dropped once that block is done with it (see "Clean up generated SES
+* baseline variables"), so it no longer exists in the dataset by this
+* point in the file -- rebuild it here using the identical construction.
+local nq_ses 5
+cap drop im90_bin
+egen _mun_tag = tag(cve_ent_mun_super)
+xtile im90_bin = im_mun_1990 if _mun_tag, nq(`nq_ses')
+bys cve_ent_mun_super: egen _im90_bin = max(im90_bin)
+replace im90_bin = _im90_bin
+drop _mun_tag _im90_bin
+label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
+
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 foreach v in snap cum snap_fix cum_fix {
 	if "`v'" == "snap" {
