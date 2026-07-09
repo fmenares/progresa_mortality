@@ -450,10 +450,20 @@ foreach grp in w f m {
 		if `pos' == 6 {
 			local b_`pos'  = 0
 			local se_`pos' = 0
+			local th_`grp'_6    = 0
+			local seth_`grp'_6  = 0
 		}
 		else {
 			local b_`pos'  = _b[`pos'.year_1995#c.inten1999]
 			local se_`pos' = _se[`pos'.year_1995#c.inten1999]
+			* th_`grp'_`pos'/seth_`grp'_`pos' (Intensity_2005 x year
+			* coefficients) are consumed by the AF_beta1_sex figure block
+			* right below this one -- kept per-group (unlike b_/se_ above,
+			* which only need to survive one iteration since each group is
+			* exported to its own file) since AF_beta1_sex plots all three
+			* groups together after this loop finishes.
+			local th_`grp'_`pos'   = _b[`pos'.year_1995#c.inten2005]
+			local seth_`grp'_`pos' = _se[`pos'.year_1995#c.inten2005]
 		}
 	}
 
