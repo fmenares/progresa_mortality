@@ -4132,6 +4132,14 @@ foreach v in snap cum snap_fix cum_fix {
 		local inten99v inten1999_fase_fix
 	}
 
+	* Default every position to missing first, so a failed regression
+	* leaves valid (blank-plotting) locals behind instead of undefined
+	* macros that would break the "replace ... if yr_pos == `pos'" step
+	* below with an "if not found" error.
+	forval pos = 1/16 {
+		local b99_`v'_`pos'  = .
+		local se99_`v'_`pos' = .
+	}
 	cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 ///
 		c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if _rc == 0 {
@@ -4216,94 +4224,117 @@ restore
 * dropped once that block is done with it (see "Clean up generated SES
 * baseline variables"), so it no longer exists in the dataset by this
 * point in the file -- rebuild it here using the identical construction.
+* Guarded with a count check (rather than assumed to succeed) so that if
+* cve_ent_mun_super/im_mun_1990 are unexpectedly empty at this exact
+* point in a given run (e.g. the dataset in memory does not match what
+* this block expects), the SES-trend companion figure is skipped with an
+* error message instead of halting the entire do-file.
 local nq_ses 5
 cap drop im90_bin
+cap drop _mun_tag
 egen _mun_tag = tag(cve_ent_mun_super)
-xtile im90_bin = im_mun_1990 if _mun_tag, nq(`nq_ses')
-bys cve_ent_mun_super: egen _im90_bin = max(im90_bin)
-replace im90_bin = _im90_bin
-drop _mun_tag _im90_bin
-label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
+count if _mun_tag & !missing(im_mun_1990)
+local ses_ok = (r(N) > 0)
+if `ses_ok' {
+	xtile im90_bin = im_mun_1990 if _mun_tag, nq(`nq_ses')
+	bys cve_ent_mun_super: egen _im90_bin = max(im90_bin)
+	replace im90_bin = _im90_bin
+	drop _im90_bin
+	label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
+}
+else {
+	di as error "cve_ent_mun_super/im_mun_1990 unexpectedly empty at this point -- skipping the SES-trend companion figure (Figure_2_all_ses.pdf)"
+}
+drop _mun_tag
 
-local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-foreach v in snap cum snap_fix cum_fix {
-	if "`v'" == "snap" {
-		local inten99v inten1999
-	}
-	else if "`v'" == "cum" {
-		local inten99v inten1999_fase
-	}
-	else if "`v'" == "snap_fix" {
-		local inten99v inten1999_fix
-	}
-	else {
-		local inten99v inten1999_fase_fix
-	}
+if `ses_ok' {
+	local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+	foreach v in snap cum snap_fix cum_fix {
+		if "`v'" == "snap" {
+			local inten99v inten1999
+		}
+		else if "`v'" == "cum" {
+			local inten99v inten1999_fase
+		}
+		else if "`v'" == "snap_fix" {
+			local inten99v inten1999_fix
+		}
+		else {
+			local inten99v inten1999_fase_fix
+		}
 
-	cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 ///
-		c.sp_intensity i.im90_bin#c.year [aw=popover65_] if $sample_marg, ///
-		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	if _rc == 0 {
+		* Default every position to missing first (see the analogous note
+		* in the non-SES Figure_2_all block above) so a failed regression
+		* cannot leave an undefined local behind.
 		forval pos = 1/16 {
-			if `pos' == 6 {
-				local bses_`v'_`pos'  = 0
-				local seses_`v'_`pos' = 0
-			}
-			else {
-				local bses_`v'_`pos'  = _b[`pos'.year_1995#c.`inten99v']
-				local seses_`v'_`pos' = _se[`pos'.year_1995#c.`inten99v']
+			local bses_`v'_`pos'  = .
+			local seses_`v'_`pos' = .
+		}
+		cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 ///
+			c.sp_intensity i.im90_bin#c.year [aw=popover65_] if $sample_marg, ///
+			a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		if _rc == 0 {
+			forval pos = 1/16 {
+				if `pos' == 6 {
+					local bses_`v'_`pos'  = 0
+					local seses_`v'_`pos' = 0
+				}
+				else {
+					local bses_`v'_`pos'  = _b[`pos'.year_1995#c.`inten99v']
+					local seses_`v'_`pos' = _se[`pos'.year_1995#c.`inten99v']
+				}
 			}
 		}
+		else {
+			di as error "SES-trend variant `v': event-study reghdfe failed (rc=`_rc'), leaving cells blank"
+		}
 	}
-	else {
-		di as error "SES-trend variant `v': event-study reghdfe failed (rc=`_rc'), leaving cells blank"
-	}
-}
 
-preserve
-clear
-set obs 16
-gen yr_pos = _n
-gen xpos_snap     = yr_pos - 0.27
-gen xpos_cum      = yr_pos - 0.09
-gen xpos_snap_fix = yr_pos + 0.09
-gen xpos_cum_fix  = yr_pos + 0.27
-foreach v in snap cum snap_fix cum_fix {
-	gen b_`v'  = .
-	gen hi_`v' = .
-	gen lo_`v' = .
-}
-forval pos = 1/16 {
+	preserve
+	clear
+	set obs 16
+	gen yr_pos = _n
+	gen xpos_snap     = yr_pos - 0.27
+	gen xpos_cum      = yr_pos - 0.09
+	gen xpos_snap_fix = yr_pos + 0.09
+	gen xpos_cum_fix  = yr_pos + 0.27
 	foreach v in snap cum snap_fix cum_fix {
-		replace b_`v'  = `bses_`v'_`pos''                            if yr_pos == `pos'
-		replace hi_`v' = `bses_`v'_`pos'' + 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
-		replace lo_`v' = `bses_`v'_`pos'' - 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
+		gen b_`v'  = .
+		gen hi_`v' = .
+		gen lo_`v' = .
 	}
+	forval pos = 1/16 {
+		foreach v in snap cum snap_fix cum_fix {
+			replace b_`v'  = `bses_`v'_`pos''                            if yr_pos == `pos'
+			replace hi_`v' = `bses_`v'_`pos'' + 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
+			replace lo_`v' = `bses_`v'_`pos'' - 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
+		}
+	}
+	twoway ///
+		(rcap hi_snap lo_snap xpos_snap, lcolor(black%60) lwidth(vthin)) ///
+		(scatter b_snap xpos_snap, mcolor(black) msymbol(circle) msize(vsmall)) ///
+		(rcap hi_cum lo_cum xpos_cum, lcolor(orange%60) lwidth(vthin)) ///
+		(scatter b_cum xpos_cum, mcolor(orange) msymbol(square) msize(vsmall)) ///
+		(rcap hi_snap_fix lo_snap_fix xpos_snap_fix, lcolor(blue%60) lwidth(vthin)) ///
+		(scatter b_snap_fix xpos_snap_fix, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+		(rcap hi_cum_fix lo_cum_fix xpos_cum_fix, lcolor(green%60) lwidth(vthin)) ///
+		(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+		xscale(range(0.5 16.5)) ///
+		xtitle("") ///
+		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+		legend(order(2 "Mixed, year-varying (current)" 4 "FASE, year-varying" ///
+			6 "Mixed, fixed P&V" 8 "FASE, fixed P&V") ///
+			cols(2) size(small) position(6) ring(1) ///
+			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+	graph export "$figures/appendix/Figure_2_all_ses.pdf", as(pdf) replace
+	restore
 }
-twoway ///
-	(rcap hi_snap lo_snap xpos_snap, lcolor(black%60) lwidth(vthin)) ///
-	(scatter b_snap xpos_snap, mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(rcap hi_cum lo_cum xpos_cum, lcolor(orange%60) lwidth(vthin)) ///
-	(scatter b_cum xpos_cum, mcolor(orange) msymbol(square) msize(vsmall)) ///
-	(rcap hi_snap_fix lo_snap_fix xpos_snap_fix, lcolor(blue%60) lwidth(vthin)) ///
-	(scatter b_snap_fix xpos_snap_fix, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
-	(rcap hi_cum_fix lo_cum_fix xpos_cum_fix, lcolor(green%60) lwidth(vthin)) ///
-	(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)), ///
-	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-	xscale(range(0.5 16.5)) ///
-	xtitle("") ///
-	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Mixed, year-varying (current)" 4 "FASE, year-varying" ///
-		6 "Mixed, fixed P&V" 8 "FASE, fixed P&V") ///
-		cols(2) size(small) position(6) ring(1) ///
-		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-	graphregion(color(white)) ///
-	plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/Figure_2_all_ses.pdf", as(pdf) replace
-restore
 }
 
 *------------------------------------------------------------
