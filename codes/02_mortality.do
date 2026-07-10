@@ -3189,11 +3189,13 @@ foreach grp in p f m {
 	restore
 }
 
-* Clean up generated SES baseline variables
+* Clean up generated SES baseline variables. im90_bin is intentionally
+* KEPT (not dropped) here: Figure_2_all_ses.pdf, much later in this file,
+* reuses this exact variable for its own SES-trend control rather than
+* rebuilding it from im_mun_1990/cve_ent_mun_super at that later point.
 foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
 	cap drop `v'_90
 }
-cap drop im90_bin
 
 
 *============================================================
@@ -4208,59 +4210,170 @@ restore
 }
 
 *============================================================
-* APPENDIX FIGURE: companion to Figure_2_all.pdf, adding the SES/
+* APPENDIX FIGURE: companion to Figure_2_all.pdf that puts Intensity_2005
+* back INTO the regression (matching the preferred T2 spec / Table
+* t:did_age_fixeddenom, which controls for both intensities), but still
+* only PLOTS the Intensity_1999 coefficient -- Figure_2_all.pdf omits
+* Intensity_2005 from the specification entirely, which is a distinct,
+* separately useful comparison (both are kept rather than one replacing
+* the other).
+* Output: $figures/appendix/Figure_2_all_w2005.pdf
+*============================================================
+{
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+foreach v in snap cum snap_fix cum_fix {
+	if "`v'" == "snap" {
+		local inten99v inten1999
+		local inten05v inten2005
+	}
+	else if "`v'" == "cum" {
+		local inten99v inten1999_fase
+		local inten05v inten2005_fase
+	}
+	else if "`v'" == "snap_fix" {
+		local inten99v inten1999_fix
+		local inten05v inten2005_fix
+	}
+	else {
+		local inten99v inten1999_fase_fix
+		local inten05v inten2005_fase_fix
+	}
+
+	forval pos = 1/16 {
+		local b99w_`v'_`pos'  = .
+		local se99w_`v'_`pos' = .
+	}
+	cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 c.`inten05v'##ib6.year_1995 ///
+		c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if _rc == 0 {
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local b99w_`v'_`pos'  = 0
+				local se99w_`v'_`pos' = 0
+			}
+			else {
+				local b99w_`v'_`pos'  = _b[`pos'.year_1995#c.`inten99v']
+				local se99w_`v'_`pos' = _se[`pos'.year_1995#c.`inten99v']
+			}
+		}
+	}
+	else {
+		di as error "Variant `v' (w/ Intensity_2005): event-study reghdfe failed (rc=`_rc'), leaving cells blank"
+	}
+}
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_snap     = yr_pos - 0.27
+gen xpos_cum      = yr_pos - 0.09
+gen xpos_snap_fix = yr_pos + 0.09
+gen xpos_cum_fix  = yr_pos + 0.27
+foreach v in snap cum snap_fix cum_fix {
+	gen b_`v'  = .
+	gen hi_`v' = .
+	gen lo_`v' = .
+}
+forval pos = 1/16 {
+	foreach v in snap cum snap_fix cum_fix {
+		replace b_`v'  = `b99w_`v'_`pos''                            if yr_pos == `pos'
+		replace hi_`v' = `b99w_`v'_`pos'' + 1.96 * `se99w_`v'_`pos'' if yr_pos == `pos'
+		replace lo_`v' = `b99w_`v'_`pos'' - 1.96 * `se99w_`v'_`pos'' if yr_pos == `pos'
+	}
+}
+twoway ///
+	(rcap hi_snap lo_snap xpos_snap, lcolor(black%60) lwidth(vthin)) ///
+	(scatter b_snap xpos_snap, mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(rcap hi_cum lo_cum xpos_cum, lcolor(orange%60) lwidth(vthin)) ///
+	(scatter b_cum xpos_cum, mcolor(orange) msymbol(square) msize(vsmall)) ///
+	(rcap hi_snap_fix lo_snap_fix xpos_snap_fix, lcolor(blue%60) lwidth(vthin)) ///
+	(scatter b_snap_fix xpos_snap_fix, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+	(rcap hi_cum_fix lo_cum_fix xpos_cum_fix, lcolor(green%60) lwidth(vthin)) ///
+	(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(2 "Mixed, year-varying (current)" 4 "FASE, year-varying" ///
+		6 "Mixed, fixed P&V" 8 "FASE, fixed P&V") ///
+		cols(2) size(small) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/Figure_2_all_w2005.pdf", as(pdf) replace
+restore
+}
+
+*============================================================
+* APPENDIX FIGURE: companion to Figure_2_all_w2005.pdf, adding the SES/
 * marginality-trend control. Same four intensity constructions, same
 * combined-overlay design, but each regression now also includes
 * i.im90_bin#c.year (a municipality-specific linear trend interacted
 * with 1990 marginalization-index quintiles), following Parker and
 * Vogl's (2023) preferred SES-trend specification (spec 3 of
-* AF_ses_trend/AT_ses_trend). Comparing this figure to Figure_2_all.pdf
-* isolates whether the SES trend, rather than the numerator/denominator
-* choice, is driving any divergence across constructions.
+* AF_ses_trend/AT_ses_trend). Also controls for Intensity_2005 (same
+* construction as Intensity_1999 in each variant), matching the
+* preferred T2 specification -- only Intensity_1999's coefficient is
+* plotted. Comparing this figure to Figure_2_all_w2005.pdf isolates
+* whether the SES trend, rather than the numerator/denominator choice,
+* is driving any divergence across constructions.
 * Output: $figures/appendix/Figure_2_all_ses.pdf
 *============================================================
 {
-* im90_bin (built for AF_ses_trend/AT_ses_trend above) is explicitly
-* dropped once that block is done with it (see "Clean up generated SES
-* baseline variables"), so it no longer exists in the dataset by this
-* point in the file -- rebuild it here using the identical construction.
-* Guarded with a count check (rather than assumed to succeed) so that if
-* cve_ent_mun_super/im_mun_1990 are unexpectedly empty at this exact
-* point in a given run (e.g. the dataset in memory does not match what
-* this block expects), the SES-trend companion figure is skipped with an
-* error message instead of halting the entire do-file.
-local nq_ses 5
-cap drop im90_bin
-cap drop _mun_tag
-egen _mun_tag = tag(cve_ent_mun_super)
-count if _mun_tag & !missing(im_mun_1990)
-local ses_ok = (r(N) > 0)
-if `ses_ok' {
-	xtile im90_bin = im_mun_1990 if _mun_tag, nq(`nq_ses')
-	bys cve_ent_mun_super: egen _im90_bin = max(im90_bin)
-	replace im90_bin = _im90_bin
-	drop _im90_bin
-	label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
+* im90_bin is built once for AF_ses_trend/AT_ses_trend above and is now
+* intentionally KEPT (not dropped) after that block, so the normal path
+* here is to reuse that exact variable directly -- no rebuilding, which
+* removes any dependence on the dataset's state at this later point in
+* the file. Only if it is somehow missing (e.g. this section is run in
+* isolation without the earlier block having executed) is it rebuilt
+* from scratch as a fallback, guarded by a count check so a genuinely
+* empty cve_ent_mun_super/im_mun_1990 skips this figure with an error
+* message instead of halting the entire do-file.
+cap confirm variable im90_bin
+if _rc == 0 {
+	local ses_ok = 1
 }
 else {
-	di as error "cve_ent_mun_super/im_mun_1990 unexpectedly empty at this point -- skipping the SES-trend companion figure (Figure_2_all_ses.pdf)"
+	local nq_ses 5
+	cap drop _mun_tag
+	egen _mun_tag = tag(cve_ent_mun_super)
+	count if _mun_tag & !missing(im_mun_1990)
+	local ses_ok = (r(N) > 0)
+	if `ses_ok' {
+		xtile im90_bin = im_mun_1990 if _mun_tag, nq(`nq_ses')
+		bys cve_ent_mun_super: egen _im90_bin = max(im90_bin)
+		replace im90_bin = _im90_bin
+		drop _im90_bin
+		label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
+	}
+	else {
+		di as error "cve_ent_mun_super/im_mun_1990 unexpectedly empty at this point -- skipping the SES-trend companion figure (Figure_2_all_ses.pdf)"
+	}
+	drop _mun_tag
 }
-drop _mun_tag
 
 if `ses_ok' {
 	local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 	foreach v in snap cum snap_fix cum_fix {
 		if "`v'" == "snap" {
 			local inten99v inten1999
+			local inten05v inten2005
 		}
 		else if "`v'" == "cum" {
 			local inten99v inten1999_fase
+			local inten05v inten2005_fase
 		}
 		else if "`v'" == "snap_fix" {
 			local inten99v inten1999_fix
+			local inten05v inten2005_fix
 		}
 		else {
 			local inten99v inten1999_fase_fix
+			local inten05v inten2005_fase_fix
 		}
 
 		* Default every position to missing first (see the analogous note
@@ -4270,7 +4383,7 @@ if `ses_ok' {
 			local bses_`v'_`pos'  = .
 			local seses_`v'_`pos' = .
 		}
-		cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 ///
+		cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 c.`inten05v'##ib6.year_1995 ///
 			c.sp_intensity i.im90_bin#c.year [aw=popover65_] if $sample_marg, ///
 			a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		if _rc == 0 {
