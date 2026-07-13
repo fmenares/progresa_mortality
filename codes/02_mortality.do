@@ -4101,24 +4101,29 @@ corr inten2005_fix inten2005_fase_fix if $sample_marg & year==1996
 local corr05_fix: di %5.3f r(rho)
 
 *============================================================
-* APPENDIX TABLE: AT4_BR_robustness_emr65, extended with an Intensity_2002
-* control column per sample (BR sample: col 3; full HM sample: col 6).
-* This is the BR-window (1992-2002) analog of the main T2 table's
-* Intensity_2005 x Post control: it holds cumulative enrollment fixed at
-* the END OF THE WINDOW BEING ANALYZED, using 2002 (not 2005, which would
-* reach outside the 1992-2002 BR window and reintroduce post-window
-* enrollment growth into a within-window comparison).
+* APPENDIX TABLE: AT4_BR_robustness_emr65, rebuilt with the FASE-only
+* numerator and Parker & Vogl's (2023) fixed 1997 household denominator
+* THROUGHOUT (all 6 columns), rather than mixing that construction only
+* into the Intensity_2002-control columns. This reflects the TRUE
+* cumulative ("ever enrolled") beneficiary count in every column, so
+* Unweighted/Weighted (cols 1-2, 4-5) and the Intensity_2002-controlled
+* columns (3, 6) are all on the same construction and directly comparable
+* -- no column mixes mixed/snapshot Intensity_1999 with a cumulative
+* control, which would defeat the nesting logic below.
+*
+* Columns 3 and 6 additionally control for Intensity_2002 x Post -- the
+* BR-window (1992-2002) analog of the main T2 table's Intensity_2005 x
+* Post control: it holds cumulative enrollment fixed at the END OF THE
+* WINDOW BEING ANALYZED, using 2002 (not 2005, which would reach outside
+* the 1992-2002 BR window and reintroduce post-window enrollment growth
+* into a within-window comparison).
 *
 * Nesting requirement: for "hold total-by-2002 dosage fixed" to be
 * meaningful, Intensity_2002 must nest Intensity_1999 (97-99 enrolled
-* households subset of 97-02 enrolled households). This requires BOTH
-* terms to use the FASE-cumulative, fixed-1997-denominator construction
-* (inten1999_fase_fix / inten2002_fase_fix) -- pairing a fixed-denom
-* Intensity_2002 control with the mixed/snapshot inten1999 used in the
-* other columns of this table would not nest, reproducing the same
-* negative-increment problem documented for AF_pv_fig3_replication's
-* phase2_new diagnostic. Both new columns are weighted + SP, matching the
-* "Weighted" columns already in this table.
+* households subset of 97-02 enrolled households). Only the FASE-
+* cumulative, fixed-1997-denominator construction (inten1999_fase_fix /
+* inten2002_fase_fix) guarantees this -- the mixed/snapshot construction
+* does not (see AF_pv_fig3_replication's phase2_new < 0 diagnostic).
 * Output: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl.tex
 *============================================================
 cap drop pgbenef_fase_2002
@@ -4132,9 +4137,9 @@ replace inten2002_fase_fix = 1 if inten2002_fase_fix > 1 & !missing(inten2002_fa
 label var inten2002_fase_fix "Intensity 2002 (FASE-only numerator, fixed P&V denom.)"
 
 foreach pnl in p f m {
-	matrix results_emr65_2002ctrl_`pnl' = J(6, 2, .)
-	matrix colnames results_emr65_2002ctrl_`pnl' = "br_wsp2002" "marg_wsp2002"
-	matrix rownames results_emr65_2002ctrl_`pnl' = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
+	matrix results_emr65_fasefix_`pnl' = J(6, 6, .)
+	matrix colnames results_emr65_fasefix_`pnl' = "br_uw" "br_wsp" "br_wsp2002" "marg_uw" "marg_wsp" "marg_wsp2002"
+	matrix rownames results_emr65_fasefix_`pnl' = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
 }
 
 foreach pnl in p f m {
@@ -4158,26 +4163,53 @@ foreach pnl in p f m {
 
 		local depvar emr65`osfx'
 
+		* Spec 1: unweighted + SP (matches the "Unweighted" column
+		* convention already used in AT4_BR_robustness_emr65)
+		reghdfe `depvar' c.inten1999_fase_fix#i.post c.sp_intensity ///
+			if inrange(year,1992,2002) & `cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		matrix results_emr65_fasefix_`pnl'[1,`col'] = _b[1.post#c.inten1999_fase_fix]
+		matrix results_emr65_fasefix_`pnl'[2,`col'] = _se[1.post#c.inten1999_fase_fix]
+		matrix results_emr65_fasefix_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999_fase_fix] / _se[1.post#c.inten1999_fase_fix])
+		matrix results_emr65_fasefix_`pnl'[4,`col'] = e(N)
+		distinct cve_ent_mun_super if e(sample)
+		matrix results_emr65_fasefix_`pnl'[5,`col'] = r(ndistinct)
+		sum `depvar' if e(sample) & post==2
+		matrix results_emr65_fasefix_`pnl'[6,`col'] = r(mean)
+		local col = `col' + 1
+
+		* Spec 2: weighted + SP
+		reghdfe `depvar' c.inten1999_fase_fix#i.post c.sp_intensity [aw=`wv'] ///
+			if inrange(year,1992,2002) & `cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		matrix results_emr65_fasefix_`pnl'[1,`col'] = _b[1.post#c.inten1999_fase_fix]
+		matrix results_emr65_fasefix_`pnl'[2,`col'] = _se[1.post#c.inten1999_fase_fix]
+		matrix results_emr65_fasefix_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999_fase_fix] / _se[1.post#c.inten1999_fase_fix])
+		matrix results_emr65_fasefix_`pnl'[4,`col'] = e(N)
+		distinct cve_ent_mun_super if e(sample)
+		matrix results_emr65_fasefix_`pnl'[5,`col'] = r(ndistinct)
+		sum `depvar' if e(sample) & post==2
+		matrix results_emr65_fasefix_`pnl'[6,`col'] = r(mean)
+		local col = `col' + 1
+
+		* Spec 3: weighted + SP + Intensity_2002 x post control
 		reghdfe `depvar' c.inten1999_fase_fix#i.post c.inten2002_fase_fix#i.post c.sp_intensity [aw=`wv'] ///
 			if inrange(year,1992,2002) & `cond', ///
 			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-
-		matrix results_emr65_2002ctrl_`pnl'[1,`col'] = _b[1.post#c.inten1999_fase_fix]
-		matrix results_emr65_2002ctrl_`pnl'[2,`col'] = _se[1.post#c.inten1999_fase_fix]
-		matrix results_emr65_2002ctrl_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999_fase_fix] / _se[1.post#c.inten1999_fase_fix])
-		matrix results_emr65_2002ctrl_`pnl'[4,`col'] = e(N)
+		matrix results_emr65_fasefix_`pnl'[1,`col'] = _b[1.post#c.inten1999_fase_fix]
+		matrix results_emr65_fasefix_`pnl'[2,`col'] = _se[1.post#c.inten1999_fase_fix]
+		matrix results_emr65_fasefix_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999_fase_fix] / _se[1.post#c.inten1999_fase_fix])
+		matrix results_emr65_fasefix_`pnl'[4,`col'] = e(N)
 		distinct cve_ent_mun_super if e(sample)
-		matrix results_emr65_2002ctrl_`pnl'[5,`col'] = r(ndistinct)
+		matrix results_emr65_fasefix_`pnl'[5,`col'] = r(ndistinct)
 		sum `depvar' if e(sample) & post==2
-		matrix results_emr65_2002ctrl_`pnl'[6,`col'] = r(mean)
-
+		matrix results_emr65_fasefix_`pnl'[6,`col'] = r(mean)
 		local col = `col' + 1
 	}
 }
 
-* Mean Intensity 1999 under the FASE-fixed construction (cols 3/6 only),
-* mirroring the mixed-construction meanI99_br/meanI99_hm rows already
-* computed for the base table.
+* Mean Intensity 1999 under the FASE-fixed (true cumulative) construction,
+* one shared row across all 6 columns since they now share a construction.
 preserve
 keep if year == 1996
 quietly sum inten1999_fase_fix if $sample_br
@@ -4203,95 +4235,43 @@ restore
 		file write tbl2 "\underline{\textit{`plabel'}} \\ " _n
 
 		file write tbl2 "\textit{Intensity 1999 x Post}"
-		foreach col in 2 3 {
-			local coef = results_emr65_`pnl'[1,`col']
-			local t    = results_emr65_`pnl'[3,`col']
+		forval col = 1/6 {
+			local coef = results_emr65_fasefix_`pnl'[1,`col']
+			local t    = results_emr65_fasefix_`pnl'[3,`col']
 			if      `t' >= 2.576 file write tbl2 "& " %9.3f (`coef') "***"
 			else if `t' >= 1.96  file write tbl2 "& " %9.3f (`coef') "**"
 			else if `t' >= 1.645 file write tbl2 "& " %9.3f (`coef') "*"
 			else                  file write tbl2 "& " %9.3f (`coef') ""
 		}
-		local coef3 = results_emr65_2002ctrl_`pnl'[1,1]
-		local t3    = results_emr65_2002ctrl_`pnl'[3,1]
-		if      `t3' >= 2.576 file write tbl2 "& " %9.3f (`coef3') "***"
-		else if `t3' >= 1.96  file write tbl2 "& " %9.3f (`coef3') "**"
-		else if `t3' >= 1.645 file write tbl2 "& " %9.3f (`coef3') "*"
-		else                   file write tbl2 "& " %9.3f (`coef3') ""
-		foreach col in 5 6 {
-			local coef = results_emr65_`pnl'[1,`col']
-			local t    = results_emr65_`pnl'[3,`col']
-			if      `t' >= 2.576 file write tbl2 "& " %9.3f (`coef') "***"
-			else if `t' >= 1.96  file write tbl2 "& " %9.3f (`coef') "**"
-			else if `t' >= 1.645 file write tbl2 "& " %9.3f (`coef') "*"
-			else                  file write tbl2 "& " %9.3f (`coef') ""
-		}
-		local coef6 = results_emr65_2002ctrl_`pnl'[1,2]
-		local t6    = results_emr65_2002ctrl_`pnl'[3,2]
-		if      `t6' >= 2.576 file write tbl2 "& " %9.3f (`coef6') "***"
-		else if `t6' >= 1.96  file write tbl2 "& " %9.3f (`coef6') "**"
-		else if `t6' >= 1.645 file write tbl2 "& " %9.3f (`coef6') "*"
-		else                   file write tbl2 "& " %9.3f (`coef6') ""
 		file write tbl2 " \\ " _n
 
 		file write tbl2 " "
-		foreach col in 2 3 {
-			local se = results_emr65_`pnl'[2,`col']
+		forval col = 1/6 {
+			local se = results_emr65_fasefix_`pnl'[2,`col']
 			file write tbl2 "& (" %9.3f (`se') ")"
 		}
-		local se3 = results_emr65_2002ctrl_`pnl'[2,1]
-		file write tbl2 "& (" %9.3f (`se3') ")"
-		foreach col in 5 6 {
-			local se = results_emr65_`pnl'[2,`col']
-			file write tbl2 "& (" %9.3f (`se') ")"
-		}
-		local se6 = results_emr65_2002ctrl_`pnl'[2,2]
-		file write tbl2 "& (" %9.3f (`se6') ")"
 		file write tbl2 " \\ " _n
 		file write tbl2 "  & & & & & & \\ " _n
 
 		file write tbl2 "Mean (1991-1996)"
-		foreach col in 2 3 {
-			local mean = results_emr65_`pnl'[6,`col']
+		forval col = 1/6 {
+			local mean = results_emr65_fasefix_`pnl'[6,`col']
 			file write tbl2 "& " %9.2f (`mean') ""
 		}
-		local mean3 = results_emr65_2002ctrl_`pnl'[6,1]
-		file write tbl2 "& " %9.2f (`mean3') ""
-		foreach col in 5 6 {
-			local mean = results_emr65_`pnl'[6,`col']
-			file write tbl2 "& " %9.2f (`mean') ""
-		}
-		local mean6 = results_emr65_2002ctrl_`pnl'[6,2]
-		file write tbl2 "& " %9.2f (`mean6') ""
 		file write tbl2 " \\ " _n
 
 		file write tbl2 "Obs"
-		foreach col in 2 3 {
-			local n = results_emr65_`pnl'[4,`col']
+		forval col = 1/6 {
+			local n = results_emr65_fasefix_`pnl'[4,`col']
 			file write tbl2 "& " %9.0f (`n') ""
 		}
-		local n3 = results_emr65_2002ctrl_`pnl'[4,1]
-		file write tbl2 "& " %9.0f (`n3') ""
-		foreach col in 5 6 {
-			local n = results_emr65_`pnl'[4,`col']
-			file write tbl2 "& " %9.0f (`n') ""
-		}
-		local n6 = results_emr65_2002ctrl_`pnl'[4,2]
-		file write tbl2 "& " %9.0f (`n6') ""
 		file write tbl2 " \\ " _n
 
 		file write tbl2 "No. Mun"
-		foreach col in 2 3 {
-			local nmun = results_emr65_`pnl'[5,`col']
+		forval col = 1/6 {
+			local nmun = results_emr65_fasefix_`pnl'[5,`col']
 			file write tbl2 "& " %9.0f (`nmun') ""
 		}
-		local nmun3 = results_emr65_2002ctrl_`pnl'[5,1]
-		file write tbl2 "& " %9.0f (`nmun3') ""
-		foreach col in 5 6 {
-			local nmun = results_emr65_`pnl'[5,`col']
-			file write tbl2 "& " %9.0f (`nmun') ""
-		}
-		local nmun6 = results_emr65_2002ctrl_`pnl'[5,2]
-		file write tbl2 "& " %9.0f (`nmun6') ""
 		if "`pnl'" != "m" {
 			file write tbl2 " \\ " _n
 			file write tbl2 "  & & & & & & \\ " _n
@@ -4302,8 +4282,7 @@ restore
 	}
 
 	file write tbl2 "  & & & & & & \\ " _n
-	file write tbl2 "Mean Intensity 1999, Mixed (\%) & `meanI99_br' & `meanI99_br' & & `meanI99_hm' & `meanI99_hm' & \\ " _n
-	file write tbl2 "Mean Intensity 1999, FASE-fixed (\%) & & & `meanI99fase_br' & & & `meanI99fase_hm' \\ " _n
+	file write tbl2 "Mean Intensity 1999, FASE-fixed (\%) & \multicolumn{3}{c}{`meanI99fase_br'} & \multicolumn{3}{c}{`meanI99fase_hm'} \\ " _n
 	file write tbl2 "\bottomrule" _n
 	file write tbl2 "\end{tabular}"
 	file close tbl2
