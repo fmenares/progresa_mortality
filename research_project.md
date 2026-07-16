@@ -837,6 +837,38 @@ MDE = (t_power + t_α) × SE, using standard multipliers for 80% power at 5% sig
 
 ---
 
+#### **PART 6: Threshold/categorical treatment design as a route to power + construction-robustness (DESIGN DISCUSSION, not yet implemented)**
+
+Follow-up to PART 5's finding that continuous column 4 is underpowered and its CIs can't be tightened by relabeling regressors. User proposed two alternative designs to gain efficiency and a more transparent comparison, benchmarked against **Evans, Lieber & Power (2019, REStat)**, *"How the Reformulation of OxyContin Ignited the Heroin Epidemic"* (`https://direct.mit.edu/rest/article/101/1/1/58660`). Assessment below; nothing built yet.
+
+**Key unifying insight: the user's two proposals are the same categorical object.** Define three mutually-exclusive municipality types from a 1999 threshold and a 2005 threshold (e.g., ≥15% enrolled):
+
+| Type | 1999 | 2005 | Role |
+|---|---|---|---|
+| **Never** (low-low) | below | below | control / base |
+| **Late-only** (low-high) | below | above | the "increment" group |
+| **Early** (high-high) | above | above | early adopters |
+
+Under the **FASE-cumulative + fixed-denom** construction (PART 4), intensity is monotone → `Intensity_2005 ≥ Intensity_1999` always → **high-low is empty by construction** (nothing to "remove" there; the user's "remove high-low" is vacuous under the correct construction). The three cells above exhaust the space. So:
+- **Proposal 1** = keep all three, base = Never, estimate `Early×Post` and `Late-only×Post` as two dummy interactions (controls for the middle group via its own indicator).
+- **Proposal 2** = drop Late-only, compare Early vs Never as a clean 2×2 (DDD-style clean-cell restriction). Same framework; the only difference is whether the middle group is *controlled for* or *dropped*.
+
+**(1) Does this improve efficiency? Yes — but the source is decollinearization, not fewer parameters (Proposal 1).** Column 4's wide CI is driven by R²≈0.65 collinearity between the two *nested continuous* intensities (VIF ≈ 1/(1−0.65) ≈ 2.9 → SE inflated ≈1.7×). Replacing them with *mutually-exclusive category dummies* removes most of that overlap (exclusive indicators can't nest the way continuous cumulative measures do), so `Early×Post` recovers much of that ≈1.7× inflation — a genuine precision gain from a *better-conditioned regressor design*, with the **same** parameter count as column 4. This is distinct from the PART 5 lever (dropping a parameter, which only buys precision by imposing a possibly-false restriction). Proposal 2 (drop Late-only) is a *separate* lever — fewer parameters + smaller sample — that buys a cleaner comparison at a power cost and narrows the estimand to "early-and-persistent vs never."
+
+**(2) Two honest caveats on binarizing.** (a) Dichotomization discards within-group dose variation and *in general* loses power relative to a correctly-specified continuous dose-response; the efficiency gain in (1) is real *only because* it simultaneously kills the collinearity, and the two effects partly offset — so the continuous spec (column 4) should stay primary, categorical as the robust companion. (b) **Project-specific upside, the stronger argument:** a binary "crossed 15% by 1999" indicator is far more robust to the mixed-vs-FASE / fixed-vs-varying-denominator fragility that has driven essentially every instability in this project (PART 4–5) — a clearly-high municipality stays high-classified under both constructions — so the dummy design partly *sidesteps* the construction sensitivity that's been the main headache.
+
+**(3) Threshold choice and the "break" analysis.** 15% is defensible (matches the existing intensity cut) but arbitrary → show robustness across a grid of thresholds, and the user's "actual exposure when the break occurs" idea is the right defense: a dose-response / RD-in-intensity plot around the cut tests whether a step function matches the DGP rather than being imposed. If the relationship is genuinely step-like, binarizing *matches* the truth and doesn't lose power; if it's linear, it does — the break analysis discriminates.
+
+**(4) Evans, Lieber & Power (2019) — what to actually borrow.** Their *estimation* is *continuous* exposure (pre-period OxyContin misuse rate) × post, **not** dichotomized; their raw-means-by-exposure-group graph (the figure the user was recalling) is purely a *parallel-trends visualization*. So the lesson is not "dichotomize the regression" but "add a raw-means-by-group event-study graph." This project already has the **D2** binary high-vs-low event study on `Intensity_1999` (`02_mortality.do` ~3662–3850); the ELP-style addition is a **three-group** raw-means version (Never / Late-only / Early), which is exactly the picture that lets a reader *see* whether dropping Late-only (Proposal 2) is justified and whether Early vs Never move in parallel pre-1997.
+
+**Recommendation (agreed framing, not yet implemented):**
+- Make **Proposal 1** (categorical {Never, Late-only, Early} × Post on the FASE-fixed construction, BR + HM samples) the new companion spec — it answers the efficiency question (recovers collinearity-inflated SE) *and* buys construction-robustness while preserving the early/late contrast.
+- Keep **Proposal 2** (drop Late-only) as a robustness cut, not the headline, with the power cost stated.
+- Add the **three-group raw-means event-study graph** (ELP Figure-2 analog) as the trends defense, extending the existing D2 binary event study.
+- **Not yet built.** When requested: write as blank-placeholder table(s) + Stata code in the usual pattern (no Stata in sandbox to populate cells).
+
+---
+
 ### Pending: Pipeline Run for R² Validation
 
 **Next Step:** Run full pipeline with new beneficiary-source comparison active:
