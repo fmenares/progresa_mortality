@@ -867,6 +867,13 @@ Under the **FASE-cumulative + fixed-denom** construction (PART 4), intensity is 
 - Add the **three-group raw-means event-study graph** (ELP Figure-2 analog) as the trends defense, extending the existing D2 binary event study.
 - **Not yet built.** When requested: write as blank-placeholder table(s) + Stata code in the usual pattern (no Stata in sandbox to populate cells).
 
+**(5) dCDH question revisited — CONFIRMED infeasible: `AT_saturation_diagnostics` (real pipeline output, already committed as `b336c6f`, not a placeholder) shows there is no never-treated group in the HM sample.** User asked, before proposing the categorical design above, whether monotonic intensity alone was enough to make dCDH-continuous worth implementing. Checking the D3 diagnostic table directly (not re-derived, actual run output) settles the "enough stayers" precondition flagged back in the FEASIBILITY discussion (lines ~474–479) with real numbers instead of the earlier interpolated-snapshot guess:
+- **0 / 1,119** HM municipalities never cross 15% intensity by 2006 — no never-treated units at all.
+- **0** municipality-years anywhere have max intensity under 5% — no near-zero-penetration units either.
+- 986/1,119 (88%) had already crossed 15% by **1999** alone — saturation is front-loaded, not gradual.
+- Only 16.9% of municipality-years qualify as "stayers" (|Δintensity|<1pp year-on-year), and most of that mass is the pre-1998 universal-zero baseline, not post-rollout flat-dose years — i.e. even the nominal stayer share overstates identifying variation *within the post period specifically*.
+- **Conclusion: dCDH-continuous (`did_multiplegt_dyn`) is not viable here** — its identification needs "stayer" (flat-dose) municipalities as controls for "switchers," and the post-rollout window supplies almost none. This corroborates FOLLOW-UP 4's separate argument (dCDH would solve a non-problem, since the single-1997-break design already has no forbidden comparison) with an independent, purely data-driven reason to not pursue it. **Net: monotonicity fixed one precondition for continuous-treatment estimators (well-behaved sign of dose changes) but the *other* precondition (a real stayer/never-treated reservoir) fails outright — the current fixed-snapshot design remains the right choice, exactly as the earlier "hidden strength of the current design" argument (line ~478) anticipated.** The categorical {Never, Late-only, Early} design in (1)–(4) above is *also* affected by this: "Never" (low-low) may be a very small or empty cell in practice given 88% cross 15% by 1999 already — should be checked with actual counts before treating Proposal 1/2 as viable, not assumed from the construction logic alone.
+
 ---
 
 ### Pending: Pipeline Run for R² Validation
