@@ -125,6 +125,33 @@
 \end{table}
 
 
+\begin{table}[H]
+\RawCaption%
+  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Numerator and Denominator Decomposition}
+   \label{at:pv_r2_benefsource}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_pv_r2_benefsource}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports the $R^2$ from regressions of $\textit{Intensity}_{1999}$ on $\textit{Intensity}_{2005}$, alone and with municipality marginality-percentile fixed effects added, following footnote 18 of Parker and Vogl (2023), crossing the beneficiary-numerator construction with the household-denominator choice. Parker and Vogl (2023) construct $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ as running \textit{sums} of annual FASE beneficiary counts (their \texttt{benef9799} = benef1997+benef1998+benef1999; \texttt{benef9705} = \texttt{benef9799}+benef2000+...+benef2005) divided by a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is our current default: the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) from 1998 on, with each snapshot year's value taken directly as a point-in-time headcount rather than summed, divided by each year's own municipal household count. ``FASE-only, cumulative'' switches the numerator to the FASE file for the entire 1997-2005 window and applies Parker and Vogl's exact summing operation. Columns~1-2 use each year's own municipal household count as the denominator (our default); columns~3-4 use Parker and Vogl's fixed 1997 base instead, holding the denominator constant across snapshots. The bottom panel decomposes the $R^2$ gap to the Parker and Vogl benchmark (0.65, or 0.67 with the marginality-percentile fixed effect) into the contribution of the denominator choice alone (Mixed numerator, fixed vs.\ year-varying denominator), the numerator/beneficiary-source choice alone (FASE vs.\ Mixed numerator, year-varying denominator), and both changes combined, each measured relative to the current-default cell (top-left). The sample is the cross-section of highly marginalized municipalities.}
+  }
+\end{table}
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Saturation Diagnostics: Year-on-Year Enrollment Intensity Changes, Highly Marginalized Municipalities}
+   \label{at:saturation_diagnostics}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_saturation_diagnostics}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports diagnostics on the year-to-year evolution of Progresa enrollment intensity within highly marginalized municipalities, 1997--2006, used to assess the feasibility of continuous-treatment and staggered-timing difference-in-differences estimators as robustness checks. The top panel reports the distribution of the absolute year-on-year change in cumulative enrollment intensity and the share of municipality-year observations with a change below 1 percentage point (``stayers''). The middle panel reports the distribution of the first year in which each municipality's cumulative intensity crosses 15 percent, which bears on the feasibility of a binarized treatment definition. The bottom panel reports the number of municipality-years with maximum post-1997 intensity below 5 percent, indicating near-zero program penetration.}
+  }
+\end{table}
 
 
 
@@ -215,33 +242,6 @@ members. The second row reports the differential effect for households with elde
   }
 \end{table}
 
-\begin{table}[H]
-\RawCaption%
-  {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Numerator and Denominator Decomposition}
-   \label{at:pv_r2_benefsource}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.95}{
-      \input{tables/appendix/AT_pv_r2_benefsource}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table reports the $R^2$ from regressions of $\textit{Intensity}_{1999}$ on $\textit{Intensity}_{2005}$, alone and with municipality marginality-percentile fixed effects added, following footnote 18 of Parker and Vogl (2023), crossing the beneficiary-numerator construction with the household-denominator choice. Parker and Vogl (2023) construct $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ as running \textit{sums} of annual FASE beneficiary counts (their \texttt{benef9799} = benef1997+benef1998+benef1999; \texttt{benef9705} = \texttt{benef9799}+benef2000+...+benef2005) divided by a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is our current default: the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) from 1998 on, with each snapshot year's value taken directly as a point-in-time headcount rather than summed, divided by each year's own municipal household count. ``FASE-only, cumulative'' switches the numerator to the FASE file for the entire 1997-2005 window and applies Parker and Vogl's exact summing operation; FASE is the only source available that is a genuine annual flow, so it is the only one this summing is valid for -- the newer admin pipeline reports a status headcount, not a flow, and summing it instead would double-count continuing beneficiaries. Columns~1-2 use each year's own municipal household count as the denominator (our default); columns~3-4 use Parker and Vogl's fixed 1997 base instead, holding the denominator constant across snapshots. The bottom panel decomposes the $R^2$ gap to the Parker and Vogl benchmark (0.65, or 0.67 with the marginality-percentile fixed effect) into the contribution of the denominator choice alone (Mixed numerator, fixed vs.\ year-varying denominator), the numerator/beneficiary-source choice alone (FASE vs.\ Mixed numerator, year-varying denominator), and both changes combined, each measured relative to the current-default cell (top-left): the beneficiary-source choice accounts for the large majority of the gap, with the denominator choice a secondary contributor. The sample is the cross-section of highly marginalized municipalities.}
-  }
-\end{table}
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Saturation Diagnostics: Year-on-Year Enrollment Intensity Changes, Highly Marginalized Municipalities}
-   \label{at:saturation_diagnostics}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.95}{
-      \input{tables/appendix/AT_saturation_diagnostics}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table reports diagnostics on the year-to-year evolution of Progresa enrollment intensity within highly marginalized municipalities, 1997--2006, used to assess the feasibility of continuous-treatment and staggered-timing difference-in-differences estimators as robustness checks. The top panel reports the distribution of the absolute year-on-year change in cumulative enrollment intensity and the share of municipality-year observations with a change below 1 percentage point (``stayers''). The middle panel reports the distribution of the first year in which each municipality's cumulative intensity crosses 15 percent, which bears on the feasibility of a binarized treatment definition. The bottom panel reports the number of municipality-years with maximum post-1997 intensity below 5 percent, indicating near-zero program penetration.}
-  }
-\end{table}
 
 \begin{table}[H]
 \RawCaption%
