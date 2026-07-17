@@ -141,6 +141,34 @@
 
 \begin{table}[H]
 \RawCaption%
+  {\caption{Non-Monotonicity in the Mixed Intensity Construction and Municipality Boundary Harmonization}
+   \label{at:crosswalk_supermun_diagnostic}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_crosswalk_supermun_diagnostic}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table tests whether municipalities for which $\textit{Intensity}_{2005}<\textit{Intensity}_{1999}$ under the Mixed (snapshot) numerator construction (Appendix Figure~\ref{af:intensity_comparison_measures}) are disproportionately ``super-municipalities'' -- harmonized units built from two or more original INEGI municipality codes to account for municipal boundary splits, mergers, and creations between 1990 and 2020 (see \texttt{0.super\_municipality\_id\_and\_HH\_data.do}). If a super-municipality's component (origin) codes are inconsistently present across years in the source administrative beneficiary data, the resulting boundary-aggregation artifact could produce an apparent decline in enrollment intensity with no underlying change in real household enrollment or attrition, independent of the beneficiary-numerator construction discussed elsewhere in this Appendix. A municipality is classified as a super-municipality if two or more origin (\texttt{cve\_ent}, \texttt{cve\_mun}) pairs map to the same harmonized municipality code in the crosswalk file used throughout this project (\texttt{crosswalk\_super\_mun\_id\_1990.dta}); municipalities absent from that file had no boundary change and map one-to-one to themselves. The sample is the cross-section of highly marginalized municipalities in 1996. A statistically significant $\chi^2$ statistic would indicate that non-monotonicity is disproportionately concentrated among super-municipalities, consistent with a crosswalk-aggregation artifact rather than, or in addition to, real household attrition or migration.}
+  }
+\end{table}
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Early/Late-Only/Never Enrollment Group Sizes Across the Threshold Grid}
+   \label{at:threshold_validation_cellcounts}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_threshold_validation_cellcounts}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports the number of highly marginalized municipalities (1996 cross-section) classified as \textit{Early}, \textit{Late-only}, or \textit{Never} under each of the three outcome-blind thresholds used in Appendix Figure~\ref{af:threshold_validation}: 15 percent (a priori); the median of $\textit{Intensity}_{1999}$; and the upper tercile of $\textit{Intensity}_{1999}$, both computed on the FASE-cumulative, fixed-1997-denominator construction in the 1996 highly marginalized cross-section. Groups are defined as in Appendix Figure~\ref{af:threshold_validation}: Early ($\textit{Intensity}_{1999}\geq c$), Late-only ($\textit{Intensity}_{1999}<c\leq\textit{Intensity}_{2005}$), Never ($\textit{Intensity}_{2005}<c$). At the 15 percent threshold the Never group is empty, since program penetration was already near-universal by 1999 in this sample (Appendix Table~\ref{at:saturation_diagnostics}); the Never group only becomes populated at the higher, distribution-based thresholds.}
+  }
+\end{table}
+
+\begin{table}[H]
+\RawCaption%
   {\caption{Saturation Diagnostics: Year-on-Year Enrollment Intensity Changes, Highly Marginalized Municipalities}
    \label{at:saturation_diagnostics}}
 \floatbox[{\captop}]{table}[\FBwidth]

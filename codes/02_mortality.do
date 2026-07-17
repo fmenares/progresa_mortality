@@ -4101,6 +4101,41 @@ corr inten2005_fix inten2005_fase_fix if $sample_marg & year==1996
 local corr05_fix: di %5.3f r(rho)
 
 *============================================================
+* CROSSWALK "SUPER-MUNICIPALITY" DIAGNOSTIC -- is the A1 non-monotonicity
+* (Intensity_2005 < Intensity_1999 under the Mixed construction) a
+* crosswalk-aggregation artifact rather than real household attrition?
+* research_project.md PART 3 flags municipality-boundary harmonization
+* (cve_ent_mun_super, built in 0.super_municipality_id_and_HH_data.do,
+* harmonizing ~100+ municipality splits/creations 1990-2020, mostly
+* Oaxaca/Chiapas) as an unverified candidate driver of the R2 gap vs.
+* Parker & Vogl; the same mechanism could independently produce A1/A3-
+* type symptoms if a super-municipality's component (origin) codes are
+* inconsistently present across years in the source admin data, with no
+* need for any real enrollment change.
+*
+* Uses the SAME crosswalk file as the map-figure code and the intensity-
+* construction blocks above (crosswalk_super_mun_id_1990.dta): one row
+* per origin (cve_ent, cve_mun) pair mapped to a harmonized
+* cve_ent_mun_super code. A "super-municipality" is one where 2+ distinct
+* origin pairs map to the same harmonized code; municipalities absent
+* from the crosswalk file had no boundary change and map 1:1 to
+* themselves (n_origin_mun = 1 by construction, matching the
+* "replace cve_ent_mun_super = cve_ent + cve_mun if ==''" convention
+* used elsewhere in this file).
+* Output: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex
+*------------------------------------------------------------
+preserve
+use "$data/crosswalk_super_mun_id_1990.dta", clear
+keep cve_ent cve_mun cve_ent_mun_super
+duplicates drop cve_ent cve_mun cve_ent_mun_super, force
+bys cve_ent_mun_super: gen n_origin_mun = _N
+duplicates drop cve_ent_mun_super, force
+keep cve_ent_mun_super n_origin_mun
+tempfile origin_counts
+save `origin_counts'
+restore
+
+*============================================================
 * APPENDIX FIGURE: Mixed (snapshot) vs. FASE (cumulative) intensity --
 * direct measure-vs-measure comparison ("similar but mean different
 * things"; research_project.md PART 6, A1 discussion). Both series use
@@ -4142,6 +4177,52 @@ local n_nonmono = r(N)
 local n_tot = _N
 di "`n_nonmono' / `n_tot' HM municipalities have Intensity_2005 < Intensity_1999 under the Mixed (snapshot) construction -- candidates for the A1 'drop non-monotone municipalities' robustness trim"
 
+*------------------------------------------------------------
+* Crosswalk cross-tab: are the non-monotone-in-Mixed municipalities
+* disproportionately crosswalk "super-municipalities" (2+ origin codes
+* harmonized into one), suggesting a boundary-aggregation artifact
+* rather than real attrition/churn?
+*------------------------------------------------------------
+merge m:1 cve_ent_mun_super using `origin_counts', keep(master match) nogen
+replace n_origin_mun = 1 if missing(n_origin_mun)
+gen byte super_mun = (n_origin_mun >= 2)
+count if super_mun
+local n_super = r(N)
+di "`n_super' / `n_tot' HM municipalities are crosswalk 'super-municipalities' (2+ origin INEGI codes harmonized into one)"
+
+count if super_mun
+local n_super_tot = r(N)
+count if !super_mun
+local n_notsuper_tot = r(N)
+count if nonmonotone_mix & super_mun
+local n_nonmono_super = r(N)
+count if nonmonotone_mix & !super_mun
+local n_nonmono_notsuper = r(N)
+local pct_super    : di %4.1f 100*`n_nonmono_super'/`n_super_tot'
+local pct_notsuper : di %4.1f 100*`n_nonmono_notsuper'/`n_notsuper_tot'
+di "Non-monotone share among super-municipalities: `n_nonmono_super' / `n_super_tot' (`pct_super'%)"
+di "Non-monotone share among non-super municipalities: `n_nonmono_notsuper' / `n_notsuper_tot' (`pct_notsuper'%)"
+
+tab super_mun nonmonotone_mix, chi2
+local chi2_supermun : di %5.3f r(chi2)
+local chi2_p_supermun : di %5.3f r(p)
+di "Chi2 test of independence (super-municipality x non-monotone): chi2=`chi2_supermun', p=`chi2_p_supermun'"
+
+cap file close fd
+file open fd using "$tables/appendix/AT_crosswalk_supermun_diagnostic.tex", write replace
+file write fd "\begin{tabular}{lccc} \hline \hline" _n
+file write fd "& Non-monotone & Monotone & Total \\ " _n
+file write fd "& (Intensity{\textsubscript{2005}} \$<\$ Intensity{\textsubscript{1999}}, Mixed) & & \\ \toprule" _n
+file write fd "Super-municipality (2+ origin codes) & `n_nonmono_super' & `=`n_super_tot'-`n_nonmono_super'' & `n_super_tot' (`pct_super'\%) \\ " _n
+file write fd "Simple municipality (1 origin code) & `n_nonmono_notsuper' & `=`n_notsuper_tot'-`n_nonmono_notsuper'' & `n_notsuper_tot' (`pct_notsuper'\%) \\ " _n
+file write fd "\bottomrule" _n
+file write fd "Total & `n_nonmono' & `=`n_tot'-`n_nonmono'' & `n_tot' \\ " _n
+file write fd "  & & & \\ " _n
+file write fd "\$\chi^2\$ test of independence & \multicolumn{3}{c}{`chi2_supermun' (p = `chi2_p_supermun')} \\ " _n
+file write fd "\end{tabular}" _n
+file close fd
+di "Table written to: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex"
+
 * --- Panel (a): level comparison, both snapshot years, 45-degree line ---
 twoway ///
     (scatter inten1999_fase_fix inten1999_fix, mcolor(gs8) msymbol(circle) msize(vsmall)) ///
@@ -4174,6 +4255,134 @@ restore
 
 di "Figures exported to: $figures/appendix/AF_intensity_comparison_scatter.pdf and AF_intensity_comparison_density.pdf"
 di "A1 diagnostic: `n_nonmono' of `n_tot' HM municipalities are non-monotone under the Mixed construction"
+
+*============================================================
+* RAW MORTALITY-BY-GROUP-OVER-TIME FIGURE: threshold validation for the
+* Early/Late-only/Never categorical design (research_project.md PART 6,
+* items 1-4 and 7). This is the raw-data companion the user asked to
+* "resurface" -- unmodeled, population-weighted mean emr65 by year, one
+* line per group, across a threshold grid, to (a) visually pre-trend-
+* test the three groups with no modeling, and (b) show directly that the
+* low-low ("Never") cell is empty at 15% and only becomes populated at a
+* higher threshold, matching the count correction in PART 6(7).
+*
+* Groups use the FASE-cumulative, fixed-1997-denominator construction
+* (inten1999_fase_fix / inten2005_fase_fix) -- the monotonic measure --
+* so Early/Late-only/Never are well-defined and mutually exclusive:
+*   Early(c):     Intensity_1999_fase_fix >= c
+*   Late-only(c): Intensity_1999_fase_fix <  c  AND Intensity_2005_fase_fix >= c
+*   Never(c):     Intensity_2005_fase_fix <  c
+*
+* Thresholds are chosen OUTCOME-BLIND, per the credibility caveat in
+* PART 6(7): 15% (the a priori cut used elsewhere in this project), and
+* the median and upper-tercile of Intensity_1999_fase_fix in the 1996
+* HM cross-section (distribution-based, not chosen to maximize any
+* visible mortality gap). Population-weighted by popover65_, pooled
+* sample only for this first build (a female/male split, and an
+* unweighted companion panel, are natural extensions -- see PART 6(7)
+* and PART 6(2) on weighting -- not built here).
+* Output: $figures/appendix/AF_threshold_validation_15.pdf,
+*         $figures/appendix/AF_threshold_validation_median.pdf,
+*         $figures/appendix/AF_threshold_validation_tercile.pdf,
+*         $tables/appendix/AT_threshold_validation_cellcounts.tex
+*------------------------------------------------------------
+preserve
+keep if $sample_marg & inrange(year, 1991, 2006)
+
+count if missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
+di "`r(N)' HM municipality-years dropped for missing FASE-fixed intensity in the threshold-validation figure"
+drop if missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
+
+* --- Outcome-blind thresholds from the 1996 (pre-period) cross-section ---
+summarize inten1999_fase_fix if year == 1996, detail
+local thresh_median  = r(p50)
+local thresh_tercile = r(p67)
+di "Threshold grid (Intensity_1999, FASE-cumulative fixed-denom, 1996 HM cross-section): 15% (a priori); median = `thresh_median'; upper tercile = `thresh_tercile'"
+
+foreach spec in 15 median tercile {
+    if "`spec'" == "15" {
+        local c = 0.15
+        local clabel_15 "15\%"
+    }
+    else if "`spec'" == "median" {
+        local c = `thresh_median'
+        local clabel_median : di %4.3f `thresh_median'
+    }
+    else {
+        local c = `thresh_tercile'
+        local clabel_tercile : di %4.3f `thresh_tercile'
+    }
+
+    cap drop group_`spec'
+    gen byte group_`spec' = .
+    replace group_`spec' = 1 if inten1999_fase_fix >= `c'
+    replace group_`spec' = 2 if inten1999_fase_fix <  `c' & inten2005_fase_fix >= `c'
+    replace group_`spec' = 3 if inten2005_fase_fix <  `c'
+    label define group_`spec'_lbl 1 "Early" 2 "Late-only" 3 "Never", replace
+    label values group_`spec' group_`spec'_lbl
+
+    * --- Cell counts (municipality-level, 1996 cross-section) ---
+    count if year == 1996 & group_`spec' == 1
+    local n_early_`spec' = r(N)
+    count if year == 1996 & group_`spec' == 2
+    local n_late_`spec' = r(N)
+    count if year == 1996 & group_`spec' == 3
+    local n_never_`spec' = r(N)
+    di "Threshold `spec': Early=`n_early_`spec'', Late-only=`n_late_`spec'', Never=`n_never_`spec''"
+
+    * --- Raw population-weighted group means by year ---
+    preserve
+    collapse (mean) emr65 [aw=popover65_], by(year group_`spec')
+
+    * Build the plot and legend dynamically: skip empty groups (e.g. "Never"
+    * at the 15% threshold, per PART 6(7)'s count correction) rather than
+    * plotting an empty series or mislabeling the legend.
+    local plotcmd ""
+    local legend_order ""
+    local nser = 0
+    if `n_early_`spec'' > 0 {
+        local nser = `nser' + 1
+        local plotcmd `"`plotcmd' (connected emr65 year if group_`spec'==1, lcolor(black) mcolor(black) msymbol(circle) msize(small))"'
+        local legend_order `"`legend_order' `nser' "Early""'
+    }
+    if `n_late_`spec'' > 0 {
+        local nser = `nser' + 1
+        local plotcmd `"`plotcmd' (connected emr65 year if group_`spec'==2, lcolor(blue) mcolor(blue) msymbol(triangle) msize(small))"'
+        local legend_order `"`legend_order' `nser' "Late-only""'
+    }
+    if `n_never_`spec'' > 0 {
+        local nser = `nser' + 1
+        local plotcmd `"`plotcmd' (connected emr65 year if group_`spec'==3, lcolor(red) mcolor(red) msymbol(square) msize(small))"'
+        local legend_order `"`legend_order' `nser' "Never""'
+    }
+
+    twoway `plotcmd', ///
+        xline(1997, lcolor(gs8) lpattern(dash)) ///
+        xtitle("Year", size(small)) ///
+        ytitle("EMR 65+ (per 1,000)", size(small)) ///
+        xlabel(1991(2)2006, labsize(small)) ylabel(, labsize(small)) ///
+        legend(order(`legend_order') cols(3) size(small) position(6) ring(1) region(lcolor(none))) ///
+        graphregion(color(white)) plotregion(margin(l=1 r=1))
+    graph export "$figures/appendix/AF_threshold_validation_`spec'.pdf", as(pdf) replace
+    restore
+}
+
+* --- Cell-count companion table (one row per group, one column per threshold) ---
+cap file close cc
+file open cc using "$tables/appendix/AT_threshold_validation_cellcounts.tex", write replace
+file write cc "\begin{tabular}{lccc} \hline \hline" _n
+file write cc "& 15\% (a priori) & Median & Upper tercile \\ " _n
+file write cc "Threshold value & `clabel_15' & `clabel_median' & `clabel_tercile' \\ \toprule" _n
+file write cc "Early (Intensity{\textsubscript{1999}} \$\geq\$ c) & `n_early_15' & `n_early_median' & `n_early_tercile' \\ " _n
+file write cc "Late-only (Intensity{\textsubscript{1999}} \$<\$ c \$\leq\$ Intensity{\textsubscript{2005}}) & `n_late_15' & `n_late_median' & `n_late_tercile' \\ " _n
+file write cc "Never (Intensity{\textsubscript{2005}} \$<\$ c) & `n_never_15' & `n_never_median' & `n_never_tercile' \\ " _n
+file write cc "\bottomrule" _n
+file write cc "\end{tabular}" _n
+file close cc
+
+di "Figures exported to: $figures/appendix/AF_threshold_validation_15.pdf, AF_threshold_validation_median.pdf, AF_threshold_validation_tercile.pdf"
+di "Table written to: $tables/appendix/AT_threshold_validation_cellcounts.tex"
+restore
 
 *============================================================
 * APPENDIX TABLE: AT4_BR_robustness_emr65, rebuilt with the FASE-only
