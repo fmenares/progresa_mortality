@@ -4331,7 +4331,12 @@ foreach spec in 15 median tercile {
     di "Threshold `spec': Early=`n_early_`spec'', Late-only=`n_late_`spec'', Never=`n_never_`spec''"
 
     * --- Raw population-weighted group means by year ---
-    preserve
+    * NOTE: cannot use preserve/restore here -- Stata only allows one
+    * active preserve at a time, and the outer block (before this foreach
+    * loop) already holds one. Save/use a tempfile instead to return to
+    * the municipality-year panel after each iteration's collapse.
+    tempfile panel_snapshot_`spec'
+    save `panel_snapshot_`spec'', replace
     collapse (mean) emr65 [aw=popover65_], by(year group_`spec')
 
     * Build the plot and legend dynamically: skip empty groups (e.g. "Never"
@@ -4364,7 +4369,7 @@ foreach spec in 15 median tercile {
         legend(order(`legend_order') cols(3) size(small) position(6) ring(1) region(lcolor(none))) ///
         graphregion(color(white)) plotregion(margin(l=1 r=1))
     graph export "$figures/appendix/AF_threshold_validation_`spec'.pdf", as(pdf) replace
-    restore
+    use `panel_snapshot_`spec'', clear
 }
 
 * --- Cell-count companion table (one row per group, one column per threshold) ---
