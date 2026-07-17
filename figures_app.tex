@@ -150,6 +150,18 @@
 \end{figure}
 
 \begin{figure}[H]
+    \caption{Mixed (Snapshot) versus FASE (Cumulative) Enrollment Intensity: Level Comparison and Phase-2 Increment Distribution}
+    \label{af:intensity_comparison_measures}
+
+\subfigure[Level comparison, 1999 and 2005 snapshots]
+{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_intensity_comparison_scatter.pdf}}
+\subfigure[Phase-2 increment ($\textit{Intensity}_{2005}-\textit{Intensity}_{1999}$)]
+{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_intensity_comparison_density.pdf}}
+
+         \floatfoot{Notes: This figure compares the Mixed (snapshot) and FASE (cumulative) beneficiary-numerator constructions directly, holding the denominator fixed (Parker and Vogl's, 2023, fixed 1997 household base) so that only the numerator construction differs. Panel (a) plots each highly marginalized municipality's Mixed-construction intensity (horizontal axis) against its FASE-construction intensity (vertical axis) for both the 1999 and 2005 snapshots, with the 45-degree line for reference; 2005 observations for which the Mixed construction is non-monotone (i.e., $\textit{Intensity}_{2005}<\textit{Intensity}_{1999}$ under Mixed) are marked separately. Panel (b) plots the kernel density of the phase-2 increment, $\textit{Intensity}_{2005}-\textit{Intensity}_{1999}$, computed under each construction: the Mixed increment can be negative, reflecting net caseload decline (e.g., attrition or migration) between the two snapshot years, while the FASE increment is bounded at zero by construction, since it is a running sum of non-negative annual enrollment flows. The two constructions are highly correlated in levels (Table~\ref{t:did_age_fixeddenom}) while capturing conceptually different objects: Mixed is a point-in-time caseload count, and FASE is a genuine cumulative ``ever-enrolled'' measure. This figure is the analogue, restricted to the highly marginalized analysis sample and the fixed-denominator construction, of the phase2\_new$<$0 diagnostic reported in Appendix Figure~\ref{af:pv_fig3_replication}.}
+\end{figure}
+
+\begin{figure}[H]
     \caption{Event Study: Stability of the Early-Phase (Intensity 1999) Coefficient to the Choice of Second-Phase Control}
     \label{af:beta0_stability}
 

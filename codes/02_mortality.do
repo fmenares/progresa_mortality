@@ -4101,6 +4101,81 @@ corr inten2005_fix inten2005_fase_fix if $sample_marg & year==1996
 local corr05_fix: di %5.3f r(rho)
 
 *============================================================
+* APPENDIX FIGURE: Mixed (snapshot) vs. FASE (cumulative) intensity --
+* direct measure-vs-measure comparison ("similar but mean different
+* things"; research_project.md PART 6, A1 discussion). Both series use
+* the SAME fixed 1997 household denominator (inten*_fix / inten*_fase_
+* fix), isolating the NUMERATOR construction (mixed snapshot vs. FASE
+* cumulative sum) as the only difference -- the denominator choice
+* (a separate, B-type issue) is held constant so this is a clean A-issue
+* diagnostic, not a mix of both.
+*
+* Panel (a): scatter of Mixed vs. FASE intensity, 1999 and 2005 snapshots
+* overlaid, with the 45-degree line, highlighting municipalities that are
+* non-monotone (Intensity_2005 < Intensity_1999) under the Mixed
+* construction -- these are the candidates for an "A1: drop the non-
+* monotone municipalities" robustness trim.
+* Panel (b): kernel density of the phase-2 increment
+* (Intensity_2005 - Intensity_1999) under each construction. The Mixed
+* increment can be negative (net caseload decline for real registrants,
+* e.g. attrition/migration); the FASE increment is bounded at zero by
+* construction (a sum of non-negative annual flows). This is the same
+* underlying fact as AF_pv_fig3_replication's phase2_new<0 diagnostic
+* (there computed on the full national sample, year-varying denominator),
+* shown here directly for the HM analysis sample under the fixed-denom
+* construction used in the headline T2 spec.
+* Output: $figures/appendix/AF_intensity_comparison_scatter.pdf,
+*         $figures/appendix/AF_intensity_comparison_density.pdf
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999_fix inten2005_fix inten1999_fase_fix inten2005_fase_fix
+duplicates drop cve_ent_mun_super, force
+
+count if missing(inten1999_fix) | missing(inten2005_fix) | missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
+di "`r(N)' HM municipalities dropped for missing intensity values in the construction-comparison figure"
+drop if missing(inten1999_fix) | missing(inten2005_fix) | missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
+
+gen byte nonmonotone_mix = (inten2005_fix < inten1999_fix)
+count if nonmonotone_mix
+local n_nonmono = r(N)
+local n_tot = _N
+di "`n_nonmono' / `n_tot' HM municipalities have Intensity_2005 < Intensity_1999 under the Mixed (snapshot) construction -- candidates for the A1 'drop non-monotone municipalities' robustness trim"
+
+* --- Panel (a): level comparison, both snapshot years, 45-degree line ---
+twoway ///
+    (scatter inten1999_fase_fix inten1999_fix, mcolor(gs8) msymbol(circle) msize(vsmall)) ///
+    (scatter inten2005_fase_fix inten2005_fix if !nonmonotone_mix, mcolor(black) msymbol(triangle) msize(vsmall)) ///
+    (scatter inten2005_fase_fix inten2005_fix if nonmonotone_mix, mcolor(red) msymbol(x) msize(medsmall)) ///
+    (function y=x, range(0 1) lcolor(black) lpattern(dash) lwidth(thin)), ///
+    xtitle("Mixed (snapshot) intensity", size(small)) ///
+    ytitle("FASE (cumulative) intensity", size(small)) ///
+    xlabel(0(0.2)1, labsize(small)) ylabel(0(0.2)1, labsize(small)) ///
+    legend(order(1 "1999" 2 "2005 (monotone)" 3 "2005 (non-monotone in Mixed)" 4 "45{c 176} line") ///
+        cols(1) size(small) position(4) ring(0) region(lcolor(none))) ///
+    graphregion(color(white)) plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_intensity_comparison_scatter.pdf", as(pdf) replace
+
+* --- Panel (b): phase-2 increment distribution under each construction ---
+cap drop phase2_mix phase2_fase
+gen phase2_mix  = inten2005_fix - inten1999_fix
+gen phase2_fase = inten2005_fase_fix - inten1999_fase_fix
+
+twoway ///
+    (kdensity phase2_mix, lcolor(black) lwidth(medthick)) ///
+    (kdensity phase2_fase, lcolor(red) lwidth(medthick) lpattern(dash)), ///
+    xtitle("Intensity{sub:2005} - Intensity{sub:1999}", size(small)) ///
+    ytitle("Density", size(small)) ///
+    xline(0, lcolor(gs8) lpattern(dot)) ///
+    legend(order(1 "Mixed (snapshot)" 2 "FASE (cumulative)") cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
+    graphregion(color(white)) plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_intensity_comparison_density.pdf", as(pdf) replace
+restore
+
+di "Figures exported to: $figures/appendix/AF_intensity_comparison_scatter.pdf and AF_intensity_comparison_density.pdf"
+di "A1 diagnostic: `n_nonmono' of `n_tot' HM municipalities are non-monotone under the Mixed construction"
+
+*============================================================
 * APPENDIX TABLE: AT4_BR_robustness_emr65, rebuilt with the FASE-only
 * numerator and Parker & Vogl's (2023) fixed 1997 household denominator
 * THROUGHOUT (all 6 columns), rather than mixing that construction only
