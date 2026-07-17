@@ -109,17 +109,18 @@
     \floatfoot{Notes: This table applies the interaction design of equation~(\ref{eq:didadapted}) to both the Barham-Rowberry sample and the full highly marginalized sample, using $\textit{Intensity}_{1999} \times \textit{Post}$ as the treatment variable over a 1992--2002 window. The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Columns (1) and (2) report unweighted and population-weighted estimates for the Barham-Rowberry sample (municipalities incorporated into Progresa in 1998 or 1999); columns (3) and (4) report the corresponding estimates for the full highly marginalized sample ($\textit{gm\_mun\_1990} = 4$ or $5$). Panel~A reports pooled estimates; Panel~B reports estimates for females; Panel~C reports estimates for males. All regressions include municipality and year fixed effects and Seguro Popular intensity controls. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
+
 \begin{table}[H]
 \RawCaption%
   {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Controlling for Cumulative Enrollment at the End of the Window}
    \label{at:did_robust_br2_2002ctrl}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
-  {\scalebox{0.9}{
+  {\scalebox{0.8}{
       \input{tables/appendix/AT4_BR_robustness_emr65_2002ctrl}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table repeats the specifications of Appendix Table~\ref{at:did_robust_br2} (Barham-Rowberry sample and full highly marginalized sample, with Seguro Popular controls) but reconstructs $\textit{Intensity}_{1999}$ throughout using the FASE-only numerator and Parker and Vogl's (2023) fixed 1997 household denominator (see Appendix Table~\ref{at:pv_r2_benefsource}) -- a genuine running sum of annual FASE beneficiary counts, reflecting true cumulative ("ever enrolled") beneficiaries rather than the mixed-source, point-in-time snapshot used in Appendix Table~\ref{at:did_robust_br2}. Columns~(1)/(4) and~(2)/(5) report unweighted and weighted estimates for the Barham-Rowberry and full highly marginalized samples, respectively, under this construction. Columns~(3) and~(6) additionally control for $\textit{Intensity}_{2002} \times \textit{Post}$ -- the 1992--2002-window analog of the main text's $\textit{Intensity}_{2005} \times \textit{Post}$ control (Table~\ref{t:did_age_fixeddenom}), holding cumulative enrollment fixed at the \textit{end of the window being analyzed} (2002) rather than reaching beyond it to 2005. Because $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2002}$ share the same FASE-cumulative, fixed-denominator construction in every column of this table, $\textit{Intensity}_{2002}$ nests $\textit{Intensity}_{1999}$ by construction (97--99 enrolled households are a subset of 97--02 enrolled households), so "holding total enrollment by 2002 fixed" is a meaningful restriction rather than one contaminated by a non-nested numerator. All regressions include municipality and year fixed effects and Seguro Popular intensity controls. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+    \floatfoot{Notes: This table repeats the specifications of Appendix Table~\ref{at:did_robust_br2} (Barham-Rowberry sample and full highly marginalized sample, with Seguro Popular controls) but reconstructs $\textit{Intensity}_{1999}$ throughout using the FASE-only numerator and Parker and Vogl's (2023) fixed 1997 household denominator (see Appendix Table~\ref{at:pv_r2_benefsource}). Columns~(1)/(4) and~(2)/(5) report unweighted and weighted estimates for the Barham-Rowberry and full highly marginalized samples, respectively, under this construction. Columns~(3) and~(6) additionally control for $\textit{Intensity}_{2002} \times \textit{Post}$. All regressions include municipality and year fixed effects and Seguro Popular intensity controls. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
 
