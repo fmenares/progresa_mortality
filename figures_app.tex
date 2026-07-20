@@ -98,19 +98,7 @@
 {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_ses_trend_m.pdf}}
 
 
-         \floatfoot{\textcolor{red}{Notes: Panels~(a)--(c) present event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the pooled, female, and male older-adult (65+) mortality rate per 1,000 inhabitants, respectively. Within each panel, four specifications are overlaid: (i) the baseline weighted specification with Seguro Popular intensity; (ii) the baseline plus a municipality-specific linear time trend interacted with the continuous 1990 marginalization index; (iii) the baseline plus a linear trend interacted with 1990 marginalization-index quintiles (following Parker and Vogl, 2023); and (iv) the quintile-trend specification excluding $\textit{Intensity}_{2005}$. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities and regressions are weighted by the population aged 65 and older. 95\% confidence intervals shown.}}
-\end{figure}
-
-\begin{figure}[H]
-    \caption{Event Study: Effect of Progresa Enrollment 2005 Intensity on Older Adults' Mortality Rate by Sex and \textcolor{red}{Weighting}}
-    \label{af:beta1_2005}
-\subfigure[by Sex]
-     {\includegraphics[width=0.65\textwidth]{figures/appendix/AF_beta1_sex.pdf}}
-
-  \subfigure[by Weight]
-{\includegraphics[width=0.65\textwidth]{figures/appendix/AF_beta1_wuw.pdf}}
-
-         \floatfoot{\textcolor{red}{Notes: Panels display event-study estimates of the interaction between $\textit{Intensity}_{2005}$ and year indicators (reference year 1996) for the older-adult (65+) mortality rate per 1,000 inhabitants, in the weighted specification with Seguro Popular intensity. Panel~(a) reports pooled, female, and male estimates; Panel~(b) reports the pooled estimates under population weighting versus no weighting. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). 95\% confidence intervals shown.}}
+         \floatfoot{\textcolor{red}{Notes: Panels~(a)--(c) present event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the pooled, female, and male older-adult (65+) mortality rate per 1,000 inhabitants, respectively. Within each panel, three specifications are overlaid: (i) the baseline weighted specification with Seguro Popular intensity; (ii) the baseline plus a municipality-specific linear time trend interacted with the continuous 1990 marginalization index; and (iii) the baseline plus a linear trend interacted with 1990 marginalization-index quintiles (following Parker and Vogl, 2023). All three specifications control for $\textit{Intensity}_{2005}$, which isolates the early-phase timing effect; a fourth specification excluding $\textit{Intensity}_{2005}$ has no causal interpretation on its own and is not shown. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities and regressions are weighted by the population aged 65 and older. 95\% confidence intervals shown.}}
 \end{figure}
 
 \begin{figure}[H]
@@ -123,21 +111,12 @@
 \end{figure}
 
 \begin{figure}[H]
-    \caption{Event Study: $\textit{Intensity}_{1999}$ Coefficient by Numerator and Denominator Construction, Controlling for $\textit{Intensity}_{2005}$}
-    \label{af:intensity_construction_comparison_w2005}
-
-{\includegraphics[width=0.75\textwidth]{figures/appendix/Figure_2_all_w2005.pdf}}
-
-         \floatfoot{Notes: This figure repeats Appendix Figure~\ref{af:intensity_construction_comparison}, but each of the four underlying regressions now also controls for $\textit{Intensity}_{2005}$ (constructed the same way as $\textit{Intensity}_{1999}$ within each variant), matching the preferred specification of Table~\ref{t:did_age_fixeddenom}; only the $\textit{Intensity}_{1999}$ coefficient is plotted. Comparing this figure to Appendix Figure~\ref{af:intensity_construction_comparison} shows whether controlling for the later phase of enrollment, rather than the beneficiary-numerator or household-denominator choice, is driving any divergence across constructions. The four series are offset slightly on the x-axis so points and confidence intervals do not overlap. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. 95\% confidence intervals shown.}
-\end{figure}
-
-\begin{figure}[H]
     \caption{Event Study: $\textit{Intensity}_{1999}$ Coefficient by Numerator and Denominator Construction, with SES Trend Control}
     \label{af:intensity_construction_comparison_ses}
 
 {\includegraphics[width=0.75\textwidth]{figures/appendix/Figure_2_all_ses.pdf}}
 
-         \floatfoot{Notes: This figure repeats Appendix Figure~\ref{af:intensity_construction_comparison_w2005}, adding a municipality-specific linear time trend interacted with 1990 marginalization-index quintiles ($\textit{quintile} \times \textit{year}$), following Parker and Vogl's (2023) preferred specification (see Appendix Table~\ref{at:ses_trend} and Appendix Figure~\ref{af:ses_trend}), to each of the four constructions; $\textit{Intensity}_{2005}$ remains in the specification, as in Appendix Figure~\ref{af:intensity_construction_comparison_w2005}, and only the $\textit{Intensity}_{1999}$ coefficient is plotted. Comparing this figure to Appendix Figure~\ref{af:intensity_construction_comparison_w2005} shows whether the SES trend control, rather than the beneficiary-numerator or household-denominator choice, is driving any divergence across constructions. The four series are offset slightly on the x-axis so points and confidence intervals do not overlap. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. 95\% confidence intervals shown.}
+         \floatfoot{Notes: This figure repeats Appendix Figure~\ref{af:intensity_construction_comparison}, but each of the four underlying regressions now also controls for $\textit{Intensity}_{2005}$ (constructed the same way as $\textit{Intensity}_{1999}$ within each variant) and adds a municipality-specific linear time trend interacted with 1990 marginalization-index quintiles ($\textit{quintile} \times \textit{year}$), following Parker and Vogl's (2023) preferred specification (see Appendix Figure~\ref{af:ses_trend}); only the $\textit{Intensity}_{1999}$ coefficient is plotted. Comparing this figure to Appendix Figure~\ref{af:intensity_construction_comparison} shows whether controlling for the later phase of enrollment and the SES trend, rather than the beneficiary-numerator or household-denominator choice, is driving any divergence across constructions. The four series are offset slightly on the x-axis so points and confidence intervals do not overlap. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. 95\% confidence intervals shown.}
 \end{figure}
 
 \begin{figure}[H]
@@ -150,27 +129,12 @@
 \end{figure}
 
 \begin{figure}[H]
-    \caption{Mixed (Snapshot) versus FASE (Cumulative) Enrollment Intensity: Level Comparison and Phase-2 Increment Distribution}
-    \label{af:intensity_comparison_measures}
-
-\subfigure[Level comparison, 1999 and 2005 snapshots]
-{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_intensity_comparison_scatter.pdf}}
-\subfigure[Phase-2 increment ($\textit{Intensity}_{2005}-\textit{Intensity}_{1999}$)]
-{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_intensity_comparison_density.pdf}}
-
-         \floatfoot{Notes: This figure compares the Mixed (snapshot) and FASE (cumulative) beneficiary-numerator constructions directly, holding the denominator fixed (Parker and Vogl's, 2023, fixed 1997 household base) so that only the numerator construction differs. Panel (a) plots each highly marginalized municipality's Mixed-construction intensity (horizontal axis) against its FASE-construction intensity (vertical axis) for both the 1999 and 2005 snapshots, with the 45-degree line for reference; 2005 observations for which the Mixed construction is non-monotone (i.e., $\textit{Intensity}_{2005}<\textit{Intensity}_{1999}$ under Mixed) are marked separately. Panel (b) plots the kernel density of the phase-2 increment, $\textit{Intensity}_{2005}-\textit{Intensity}_{1999}$, computed under each construction: the Mixed increment can be negative, reflecting net caseload decline (e.g., attrition or migration) between the two snapshot years, while the FASE increment is bounded at zero by construction, since it is a running sum of non-negative annual enrollment flows. The two constructions are highly correlated in levels (Table~\ref{t:did_age_fixeddenom}) while capturing conceptually different objects: Mixed is a point-in-time caseload count, and FASE is a genuine cumulative ``ever-enrolled'' measure. This figure is the analogue, restricted to the highly marginalized analysis sample and the fixed-denominator construction, of the phase2\_new$<$0 diagnostic reported in Appendix Figure~\ref{af:pv_fig3_replication}.}
-\end{figure}
-
-\begin{figure}[H]
     \caption{Mean Enrollment Intensity Over Time, All Four Numerator/Denominator Constructions}
     \label{af:intensity_timeseries}
 
-\subfigure[Weighted by population 65+]
-{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_intensity_timeseries_w.pdf}}
-\subfigure[Unweighted]
-{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_intensity_timeseries_uw.pdf}}
+{\includegraphics[width=0.75\textwidth]{figures/appendix/AF_intensity_timeseries_w.pdf}}
 
-         \floatfoot{Notes: This figure plots the mean enrollment intensity by calendar year (1997--2006) across highly marginalized municipalities, for each of the four numerator/denominator constructions in Table~\ref{t:did_age_fixeddenom}: End-of-year numerator with year-varying denominator (solid black); Cumulative numerator with year-varying denominator (dashed black); End-of-year numerator with the fixed 1997 household denominator (solid red); and Cumulative numerator with the fixed 1997 household denominator (dashed red). The End-of-year series is $\textit{intensity\_new}$, the genuine year-by-year point-in-time snapshot used throughout this project, not a construction derived from the fixed 1999/2005 snapshots. Panel~(a) weights municipality means by the population aged 65 and older; panel~(b) is unweighted (equally weighting municipalities), since weighting can let a small number of large municipalities dominate the weighted picture. The two End-of-year series and the two Cumulative series converge toward each other over the roll-out window, consistent with the pattern in Appendix Table~\ref{at:intensity_correlations}: the correlation between End-of-year and Cumulative numerators is substantially lower in 1999 (0.700--0.706) than in 2005 (0.911--0.912), indicating that the divergence between the two numerator constructions is concentrated in the early (1997--1999) roll-out period, before near-universal saturation compresses the gap.}
+         \floatfoot{Notes: This figure plots the population-weighted (65+) mean enrollment intensity by calendar year (1997--2006) across highly marginalized municipalities, for each of the four numerator/denominator constructions in Table~\ref{t:did_age_fixeddenom}: End-of-year numerator with year-varying denominator (solid black); Cumulative numerator with year-varying denominator (dashed black); End-of-year numerator with the fixed 1997 household denominator (solid red); and Cumulative numerator with the fixed 1997 household denominator (dashed red). The End-of-year series is $\textit{intensity\_new}$, the genuine year-by-year point-in-time snapshot used throughout this project, not a construction derived from the fixed 1999/2005 snapshots. The two End-of-year series and the two Cumulative series converge toward each other over the roll-out window, consistent with the pattern in Appendix Table~\ref{at:intensity_correlations}: the correlation between End-of-year and Cumulative numerators is substantially lower in 1999 (0.700--0.706) than in 2005 (0.911--0.912), indicating that the divergence between the two numerator constructions is concentrated in the early (1997--1999) roll-out period, before near-universal saturation compresses the gap.}
 \end{figure}
 
 \begin{figure}[H]
@@ -195,7 +159,7 @@
 
 {\includegraphics[width=0.75\textwidth]{figures/appendix/AF_beta0_stability.pdf}}
 
-         \floatfoot{Notes: This figure presents event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the older-adult (65+) mortality rate per 1,000 inhabitants, under four choices of the second-phase (later cumulative enrollment) control: the baseline specification controlling for $\textit{Intensity}_{2005}$; a specification with no second-phase control; and specifications controlling for the intermediate cumulative-intensity snapshots $\textit{Intensity}_{2000}$ and $\textit{Intensity}_{2002}$ instead. All specifications include Seguro Popular intensity and municipality fixed effects, and are weighted by the population aged 65 and older. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. Overlapping year-by-year profiles across the four series indicate that the early-phase coefficient is not sensitive to which later-phase snapshot is conditioned on, supporting the assumption that enrollment intensity was approximately flat after 1999. Appendix Table~\ref{at:beta0_stability} reports the corresponding standard difference-in-differences $\textit{Intensity}_{1999}\times\textit{Post}$ coefficient under each of the four control choices. 95\% confidence intervals shown.}
+         \floatfoot{Notes: This figure presents event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the older-adult (65+) mortality rate per 1,000 inhabitants, under four choices of the second-phase (later cumulative enrollment) control: the baseline specification controlling for $\textit{Intensity}_{2005}$; and specifications controlling for the later intensity snapshots $\textit{Intensity}_{2002}$, $\textit{Intensity}_{2004}$, and $\textit{Intensity}_{2006}$ instead. All specifications include Seguro Popular intensity and municipality fixed effects, and are weighted by the population aged 65 and older. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. Overlapping year-by-year profiles across the four series indicate that the early-phase coefficient is not sensitive to which later-phase snapshot is conditioned on. 95\% confidence intervals shown.}
 \end{figure}
 
 \begin{figure}[H]
