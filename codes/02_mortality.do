@@ -4294,9 +4294,15 @@ di "`r(N)' HM municipality-years dropped for missing FASE-fixed intensity in the
 drop if missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
 
 * --- Outcome-blind thresholds from the 1996 (pre-period) cross-section ---
-summarize inten1999_fase_fix if year == 1996, detail
-local thresh_median  = r(p50)
-local thresh_tercile = r(p67)
+* NOTE: `summarize, detail` only stores the fixed percentiles p1/p5/p10/p25/
+* p50/p75/p90/p95/p99 in r() -- r(p67) does not exist and silently returns
+* missing, which (since Stata treats missing as +infinity in comparisons)
+* previously made every municipality satisfy "Intensity_2005 < c" and fall
+* into the Never group at the tercile threshold. Use _pctile, which
+* accepts arbitrary percentiles, instead.
+_pctile inten1999_fase_fix if year == 1996, percentiles(50 67)
+local thresh_median  = r(r1)
+local thresh_tercile = r(r2)
 di "Threshold grid (Intensity_1999, FASE-cumulative fixed-denom, 1996 HM cross-section): 15% (a priori); median = `thresh_median'; upper tercile = `thresh_tercile'"
 
 foreach spec in 15 median tercile {
