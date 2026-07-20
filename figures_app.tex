@@ -166,13 +166,15 @@
     \label{af:threshold_validation}
 
 \subfigure[Threshold: 15\% (a priori)]
-{\includegraphics[width=0.32\textwidth]{figures/appendix/AF_threshold_validation_15.pdf}}
-\subfigure[Threshold: median $\textit{Intensity}_{1999}$]
-{\includegraphics[width=0.32\textwidth]{figures/appendix/AF_threshold_validation_median.pdf}}
-\subfigure[Threshold: upper tercile $\textit{Intensity}_{1999}$]
-{\includegraphics[width=0.32\textwidth]{figures/appendix/AF_threshold_validation_tercile.pdf}}
+{\includegraphics[width=0.5\textwidth]{figures/appendix/AF_threshold_validation_15.pdf}}
 
-         \floatfoot{Notes: This figure plots raw (unmodeled), population-weighted mean older-adult (65+) mortality rates by year for three mutually exclusive municipality groups, defined from the FASE-cumulative, fixed-1997-denominator enrollment intensity ($\textit{Intensity}_{1999}^{\text{FASE-fixed}}$, $\textit{Intensity}_{2005}^{\text{FASE-fixed}}$; monotonic by construction, so the groups below are well defined and mutually exclusive): \textit{Early} ($\textit{Intensity}_{1999}\geq c$); \textit{Late-only} ($\textit{Intensity}_{1999}<c\leq\textit{Intensity}_{2005}$); and \textit{Never} ($\textit{Intensity}_{2005}<c$). Each panel uses a different, outcome-blind threshold $c$: (a) 15 percent, the a priori cut used elsewhere in this project; (b) the median of $\textit{Intensity}_{1999}$ in the 1996 highly marginalized cross-section; (c) the upper tercile of $\textit{Intensity}_{1999}$ in the same cross-section. Thresholds are chosen independently of the mortality outcome to avoid selecting the cut that maximizes any visible gap between groups. A group's series is omitted from a panel if no municipality falls into it at that threshold; in particular, the \textit{Never} group is empty at the 15 percent threshold, since 0 of 1,119 highly marginalized municipalities fail to reach 15 percent enrollment intensity by 2005 (Appendix Table~\ref{at:saturation_diagnostics}), and only becomes populated at the higher, distribution-based thresholds in panels (b) and (c). The vertical line marks the program's 1997 rollout. This figure is descriptive only: it does not include municipality or year fixed effects, and is intended as (i) a visual pre-trend check of the groups' pre-1997 trajectories, and (ii) a transparency check on how the threshold choice populates the \textit{Never} cell, ahead of any regression-based categorical treatment specification (see the discussion of the Early/Late-only/Never design in the main text robustness discussion). Appendix Table~\ref{at:threshold_validation_cellcounts} reports the number of municipalities in each group at each threshold, and the exact threshold value used in panels (b) and (c).}
+\subfigure[Threshold: median $\textit{Intensity}_{1999}$]
+{\includegraphics[width=0.5\textwidth]{figures/appendix/AF_threshold_validation_median.pdf}}
+
+\subfigure[Threshold: upper tercile $\textit{Intensity}_{1999}$]
+{\includegraphics[width=0.5\textwidth]{figures/appendix/AF_threshold_validation_tercile.pdf}}
+
+         \floatfoot{Notes: This figure plots raw population-weighted mean older-adult (65+) mortality rates by year for three mutually exclusive municipality groups, defined from the FASE-cumulative, fixed-1997-denominator enrollment intensity: \textit{Early} ($\textit{Intensity}_{1999}\geq c$); \textit{Late-only} ($\textit{Intensity}_{1999}<c\leq\textit{Intensity}_{2005}$); and \textit{Never} ($\textit{Intensity}_{2005}<c$). Each panel uses a different, outcome-blind threshold $c$: (a) 15 percent, the a priori cut used elsewhere in this project; (b) the median of $\textit{Intensity}_{1999}$ in the 1996 highly marginalized cross-section; (c) the upper tercile of $\textit{Intensity}_{1999}$ in the same cross-section. A group's series is omitted from a panel if no municipality falls into it at that threshold. The vertical line marks the program's 1997 rollout. See Table~\ref{at:threshold_validation_cellcounts} for counts.}
 \end{figure}
 
 \begin{figure}[H]
