@@ -3436,6 +3436,13 @@ reg inten1999 inten2005
 local r2_1 : di %5.3f e(r2)
 di "R² of inten1999 ~ inten2005 (HM sample): `r2_1'   [P&V fn.18 benchmark: 0.65]"
 
+* Signed correlation companion to r2_1 -- coauthor requested a correlation
+* table (corr(Intensity_1999, Intensity_2005) within each construction) as
+* the "R2 in terms of correlation" complement to the R2 decomposition
+* table above. R2 alone loses the sign; take corr directly.
+corr inten1999 inten2005
+local corr_eoy_yv : di %5.3f r(rho)
+
 reg inten1999 inten2005 i.marg_pctile_bin_hm
 local r2_2 : di %5.3f e(r2)
 di "R² of inten1999 ~ inten2005 + marg-percentile-decile FE (HM sample): `r2_2'   [P&V fn.18 benchmark + muni percentile: 0.67]"
@@ -4009,6 +4016,9 @@ xtile marg_pctile_bin_hm_fix = im_mun_1990, nq(10)
 reg inten1999_fix inten2005_fix
 local r2fix_1 : di %5.3f e(r2)
 di "R² of inten1999_fix ~ inten2005_fix (HM sample, FIXED denominator): `r2fix_1'   [current year-varying-denom version: 0.160; P&V benchmark: 0.65]"
+
+corr inten1999_fix inten2005_fix
+local corr_eoy_fix : di %5.3f r(rho)
 
 reg inten1999_fix inten2005_fix i.marg_pctile_bin_hm_fix
 local r2fix_2 : di %5.3f e(r2)
@@ -4585,6 +4595,260 @@ restore
 di "Table exported to: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl.tex"
 
 *============================================================
+* APPENDIX TABLE: AT4_BR_robustness_emr65_2002ctrl_eoy -- End-of-year
+* (Mixed numerator) + fixed 1997 denominator analog of the table above,
+* requested after the coauthor meeting decision to use the End-of-year
+* numerator (column 3 of T2_b_mortality_fixeddenom) as the main
+* specification rather than Cumulative (column 4). Same 6-column
+* structure (BR-sample and full-HM-sample, each x {unweighted+SP,
+* weighted+SP, weighted+SP+Intensity_2002 control}), but built from
+* inten1999_fix / inten2002_fix (End-of-year numerator, fixed P&V
+* denominator) instead of the FASE-cumulative versions.
+*
+* IMPORTANT CAVEAT, different from the table above: the nesting argument
+* ("Intensity_2002 must nest Intensity_1999 for holding total-by-2002
+* dosage fixed to be meaningful") is NOT guaranteed under the End-of-year
+* construction, since it is a point-in-time caseload count rather than a
+* genuine running sum -- this project's own crosswalk/non-monotonicity
+* diagnostics (AT_crosswalk_supermun_diagnostic; the 25 non-monotone
+* municipalities in Intensity_2005<Intensity_1999) show this construction
+* is NOT guaranteed monotonic. Column (3)/(6)'s Intensity_2002 control
+* should therefore be read as a same-construction robustness check (does
+* the coefficient move when a later, still-End-of-year, snapshot is
+* added), not as a "hold total eventual enrollment fixed" identification
+* argument the way it is for the FASE-cumulative table.
+* Output: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex
+*------------------------------------------------------------
+cap drop pgbenef_2002
+g aux = pgbenef_new if year == 2002
+bys cve_ent_mun_super: egen pgbenef_2002 = min(aux)
+drop aux
+
+cap drop inten2002_fix
+gen inten2002_fix = pgbenef_2002/hog1997_fixed
+replace inten2002_fix = 1 if inten2002_fix > 1 & !missing(inten2002_fix)
+label var inten2002_fix "Intensity 2002 (End-of-year numerator, fixed P&V denom.)"
+
+foreach pnl in p f m {
+	matrix results_emr65_eoyfix_`pnl' = J(6, 6, .)
+	matrix colnames results_emr65_eoyfix_`pnl' = "br_uw" "br_wsp" "br_wsp2002" "marg_uw" "marg_wsp" "marg_wsp2002"
+	matrix rownames results_emr65_eoyfix_`pnl' = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
+}
+
+foreach pnl in p f m {
+	if "`pnl'" == "p" {
+		local osfx ""
+		local wv "popover65_"
+	}
+	else if "`pnl'" == "f" {
+		local osfx "f"
+		local wv "popover65_f"
+	}
+	else {
+		local osfx "m"
+		local wv "popover65_m"
+	}
+
+	local col = 1
+	foreach samp in br marg {
+		if "`samp'" == "br" local cond "$sample_br"
+		else                 local cond "$sample_marg"
+
+		local depvar emr65`osfx'
+
+		* Spec 1: unweighted + SP
+		reghdfe `depvar' c.inten1999_fix#i.post c.sp_intensity ///
+			if inrange(year,1992,2002) & `cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		matrix results_emr65_eoyfix_`pnl'[1,`col'] = _b[1.post#c.inten1999_fix]
+		matrix results_emr65_eoyfix_`pnl'[2,`col'] = _se[1.post#c.inten1999_fix]
+		matrix results_emr65_eoyfix_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999_fix] / _se[1.post#c.inten1999_fix])
+		matrix results_emr65_eoyfix_`pnl'[4,`col'] = e(N)
+		distinct cve_ent_mun_super if e(sample)
+		matrix results_emr65_eoyfix_`pnl'[5,`col'] = r(ndistinct)
+		sum `depvar' if e(sample) & post==2
+		matrix results_emr65_eoyfix_`pnl'[6,`col'] = r(mean)
+		local col = `col' + 1
+
+		* Spec 2: weighted + SP
+		reghdfe `depvar' c.inten1999_fix#i.post c.sp_intensity [aw=`wv'] ///
+			if inrange(year,1992,2002) & `cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		matrix results_emr65_eoyfix_`pnl'[1,`col'] = _b[1.post#c.inten1999_fix]
+		matrix results_emr65_eoyfix_`pnl'[2,`col'] = _se[1.post#c.inten1999_fix]
+		matrix results_emr65_eoyfix_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999_fix] / _se[1.post#c.inten1999_fix])
+		matrix results_emr65_eoyfix_`pnl'[4,`col'] = e(N)
+		distinct cve_ent_mun_super if e(sample)
+		matrix results_emr65_eoyfix_`pnl'[5,`col'] = r(ndistinct)
+		sum `depvar' if e(sample) & post==2
+		matrix results_emr65_eoyfix_`pnl'[6,`col'] = r(mean)
+		local col = `col' + 1
+
+		* Spec 3: weighted + SP + Intensity_2002 x post control (same-
+		* construction robustness, NOT a nesting-guaranteed control -- see
+		* caveat above)
+		reghdfe `depvar' c.inten1999_fix#i.post c.inten2002_fix#i.post c.sp_intensity [aw=`wv'] ///
+			if inrange(year,1992,2002) & `cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		matrix results_emr65_eoyfix_`pnl'[1,`col'] = _b[1.post#c.inten1999_fix]
+		matrix results_emr65_eoyfix_`pnl'[2,`col'] = _se[1.post#c.inten1999_fix]
+		matrix results_emr65_eoyfix_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999_fix] / _se[1.post#c.inten1999_fix])
+		matrix results_emr65_eoyfix_`pnl'[4,`col'] = e(N)
+		distinct cve_ent_mun_super if e(sample)
+		matrix results_emr65_eoyfix_`pnl'[5,`col'] = r(ndistinct)
+		sum `depvar' if e(sample) & post==2
+		matrix results_emr65_eoyfix_`pnl'[6,`col'] = r(mean)
+		local col = `col' + 1
+	}
+}
+
+* Mean Intensity 1999 under the End-of-year fixed-denom construction,
+* one shared row across all 6 columns since they share a construction.
+preserve
+keep if year == 1996
+quietly sum inten1999_fix if $sample_br
+local meanI99eoy_br: di %6.1f r(mean) * 100
+quietly sum inten1999_fix if $sample_marg
+local meanI99eoy_hm: di %6.1f r(mean) * 100
+restore
+
+{
+	cap file close tbl3
+	file open tbl3 using "$tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex", write replace
+	file write tbl3 "\begin{tabular}{lcccccc} \hline \hline" _n
+	file write tbl3 "& \multicolumn{3}{c}{\textit{BR Sample}} & \multicolumn{3}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}" _n
+	file write tbl3 "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} \\ " _n
+	file write tbl3 "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
+	file write tbl3 "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+
+	foreach pnl in p f m {
+		if "`pnl'" == "p"      local plabel "Panel A: Pooled"
+		else if "`pnl'" == "f" local plabel "Panel B: Females"
+		else                    local plabel "Panel C: Males"
+
+		file write tbl3 "\underline{\textit{`plabel'}} \\ " _n
+
+		file write tbl3 "\textit{Intensity 1999 x Post}"
+		forval col = 1/6 {
+			local coef = results_emr65_eoyfix_`pnl'[1,`col']
+			local t    = results_emr65_eoyfix_`pnl'[3,`col']
+			if      `t' >= 2.576 file write tbl3 "& " %9.3f (`coef') "***"
+			else if `t' >= 1.96  file write tbl3 "& " %9.3f (`coef') "**"
+			else if `t' >= 1.645 file write tbl3 "& " %9.3f (`coef') "*"
+			else                  file write tbl3 "& " %9.3f (`coef') ""
+		}
+		file write tbl3 " \\ " _n
+
+		file write tbl3 " "
+		forval col = 1/6 {
+			local se = results_emr65_eoyfix_`pnl'[2,`col']
+			file write tbl3 "& (" %9.3f (`se') ")"
+		}
+		file write tbl3 " \\ " _n
+		file write tbl3 "  & & & & & & \\ " _n
+
+		file write tbl3 "Mean (1991-1996)"
+		forval col = 1/6 {
+			local mean = results_emr65_eoyfix_`pnl'[6,`col']
+			file write tbl3 "& " %9.2f (`mean') ""
+		}
+		file write tbl3 " \\ " _n
+
+		file write tbl3 "Obs"
+		forval col = 1/6 {
+			local n = results_emr65_eoyfix_`pnl'[4,`col']
+			file write tbl3 "& " %9.0f (`n') ""
+		}
+		file write tbl3 " \\ " _n
+
+		file write tbl3 "No. Mun"
+		forval col = 1/6 {
+			local nmun = results_emr65_eoyfix_`pnl'[5,`col']
+			file write tbl3 "& " %9.0f (`nmun') ""
+		}
+		if "`pnl'" != "m" {
+			file write tbl3 " \\ " _n
+			file write tbl3 "  & & & & & & \\ " _n
+		}
+		else {
+			file write tbl3 " \\ " _n
+		}
+	}
+
+	file write tbl3 "  & & & & & & \\ " _n
+	file write tbl3 "Mean Intensity 1999, End-of-year fixed (\%) & \multicolumn{3}{c}{`meanI99eoy_br'} & \multicolumn{3}{c}{`meanI99eoy_hm'} \\ " _n
+	file write tbl3 "\bottomrule" _n
+	file write tbl3 "\end{tabular}"
+	file close tbl3
+}
+di "Table exported to: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex"
+
+*============================================================
+* APPENDIX FIGURE: Time series of the 4 intensity constructions,
+* 1997-2006. Coauthor-requested; corrects an earlier mis-specification
+* in this conversation (a first version proposed building the
+* "End-of-year" series from the 1999/2005 snapshots) -- the correct
+* End-of-year series is `intensity_new' itself, the genuine year-by-year
+* snapshot, unrelated to which intensity years are used downstream. Two
+* versions are produced (weighted by population 65+, and unweighted),
+* since weighting can let a few large municipalities dominate the
+* unweighted picture.
+*
+* The 4 series (HM-sample averages, by calendar year):
+*   (1) End-of-year, year-varying denom = intensity_new (= pgbenef_new/hh_tot)
+*   (2) Cumulative,  year-varying denom = pg_fase/hh_tot
+*   (3) End-of-year, fixed denom        = pgbenef_new/hog1997_fixed
+*   (4) Cumulative,  fixed denom        = pg_fase/hog1997_fixed
+* Output: $figures/appendix/AF_intensity_timeseries_w.pdf,
+*         $figures/appendix/AF_intensity_timeseries_uw.pdf
+*------------------------------------------------------------
+preserve
+keep if $sample_marg & inrange(year, 1997, 2006)
+
+gen ts_eoy_yv  = intensity_new
+gen ts_cum_yv  = pg_fase / hh_tot
+gen ts_eoy_fix = pgbenef_new / hog1997_fixed
+gen ts_cum_fix = pg_fase / hog1997_fixed
+
+count if missing(ts_eoy_yv) | missing(ts_cum_yv) | missing(ts_eoy_fix) | missing(ts_cum_fix)
+di "`r(N)' HM municipality-years dropped for missing intensity in the time-series figure"
+drop if missing(ts_eoy_yv) | missing(ts_cum_yv) | missing(ts_eoy_fix) | missing(ts_cum_fix)
+
+* NOTE: cannot use preserve/restore inside the foreach loop below -- Stata
+* only allows one active preserve at a time, and this block already holds
+* one. Save/use a tempfile instead (same fix as the threshold-validation
+* figure block above).
+tempfile ts_base
+save `ts_base', replace
+
+foreach wgt in w uw {
+    use `ts_base', clear
+    if "`wgt'" == "w" {
+        collapse (mean) ts_eoy_yv ts_cum_yv ts_eoy_fix ts_cum_fix [aw=popover65_], by(year)
+    }
+    else {
+        collapse (mean) ts_eoy_yv ts_cum_yv ts_eoy_fix ts_cum_fix, by(year)
+    }
+
+    twoway ///
+        (connected ts_eoy_yv year, lcolor(black) mcolor(black) msymbol(circle) msize(small)) ///
+        (connected ts_cum_yv year, lcolor(black) mcolor(black) msymbol(circle) msize(small) lpattern(dash)) ///
+        (connected ts_eoy_fix year, lcolor(red) mcolor(red) msymbol(triangle) msize(small)) ///
+        (connected ts_cum_fix year, lcolor(red) mcolor(red) msymbol(triangle) msize(small) lpattern(dash)), ///
+        xtitle("Year", size(small)) ///
+        ytitle("Mean Intensity", size(small)) ///
+        xlabel(1997(1)2006, labsize(small)) ylabel(, labsize(small)) ///
+        legend(order(1 "End-of-year, year-varying denom" 2 "Cumulative, year-varying denom" ///
+                     3 "End-of-year, fixed denom" 4 "Cumulative, fixed denom") ///
+               cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
+        graphregion(color(white)) plotregion(margin(l=1 r=1))
+    graph export "$figures/appendix/AF_intensity_timeseries_`wgt'.pdf", as(pdf) replace
+}
+restore
+
+di "Figures exported to: $figures/appendix/AF_intensity_timeseries_w.pdf and AF_intensity_timeseries_uw.pdf"
+
+*============================================================
 * APPENDIX FIGURE: event study for Intensity_1999 x year, ALL FOUR
 * intensity constructions overlaid on one set of axes (rather than four
 * separate small-multiple panels), so the beta_k profile's movement
@@ -4960,12 +5224,18 @@ reg inten1999_fase inten2005_fase
 local r2fase_yv_1 : di %5.3f e(r2)
 di "R² of inten1999_fase ~ inten2005_fase (HM sample, FASE-only numerator, year-varying denom): `r2fase_yv_1'   [mixed/year-varying: `r2_1'; P&V benchmark: 0.65]"
 
+corr inten1999_fase inten2005_fase
+local corr_cum_yv : di %5.3f r(rho)
+
 reg inten1999_fase inten2005_fase i.marg_pctile_bin_hm_fase
 local r2fase_yv_2 : di %5.3f e(r2)
 
 reg inten1999_fase_fix inten2005_fase_fix
 local r2fase_fx_1 : di %5.3f e(r2)
 di "R² of inten1999_fase_fix ~ inten2005_fase_fix (HM sample, FASE-only numerator, FIXED denom): `r2fase_fx_1'   [mixed/fixed: `r2fix_1'; P&V benchmark: 0.65]"
+
+corr inten1999_fase_fix inten2005_fase_fix
+local corr_cum_fix : di %5.3f r(rho)
 
 reg inten1999_fase_fix inten2005_fase_fix i.marg_pctile_bin_hm_fase
 local r2fase_fx_2 : di %5.3f e(r2)
@@ -4987,8 +5257,8 @@ di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `dd
     file write r2b "\begin{tabular}{lcccc} \hline \hline" _n
     file write r2b "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed (P\&V) denom.} \\" _n
     file write r2b "Numerator construction & R\textsuperscript{2} & + marg.\ pctile FE & R\textsuperscript{2} & + marg.\ pctile FE \\ \toprule" _n
-    file write r2b "Mixed, single-year snapshot (current default) & `r2_1' & `r2_2' & `r2fix_1' & `r2fix_2' \\ " _n
-    file write r2b "FASE-only, cumulative (P\&V's numerator) & `r2fase_yv_1' & `r2fase_yv_2' & `r2fase_fx_1' & `r2fase_fx_2' \\ " _n
+    file write r2b "End-of-year (current default) & `r2_1' & `r2_2' & `r2fix_1' & `r2fix_2' \\ " _n
+    file write r2b "Cumulative (P\&V's numerator) & `r2fase_yv_1' & `r2fase_yv_2' & `r2fase_fx_1' & `r2fase_fx_2' \\ " _n
     file write r2b "  & & & & \\ " _n
     file write r2b "P\&V (2023) benchmark & \multicolumn{2}{c}{0.65} & \multicolumn{2}{c}{0.65} \\ " _n
     file write r2b "\quad + marg.\ pctile FE benchmark & \multicolumn{2}{c}{0.67} & \multicolumn{2}{c}{0.67} \\ " _n
@@ -5006,6 +5276,42 @@ di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `dd
 }
 di "Table exported to: $tables/appendix/AT_pv_r2_benefsource.tex"
 restore
+
+*============================================================
+* APPENDIX TABLE: AT_intensity_correlations -- coauthor-requested
+* correlation table, requested as a complement to (not replacement for)
+* AT_pv_r2_benefsource's R2 decomposition, after the coauthor meeting
+* decision to use the End-of-year (not Cumulative) numerator as the main
+* specification. Two objects:
+*   Row 1: corr(Intensity_1999, Intensity_2005) WITHIN each of the 4
+*          constructions -- "R2 in terms of correlation" per the
+*          coauthor's request. This is the SIGNED companion to the
+*          no-marg-FE R2 column of AT_pv_r2_benefsource (for a simple
+*          bivariate regression, R2 = corr^2, but R2 alone loses the
+*          sign, hence the separate `corr' calls added above rather
+*          than just taking sqrt(R2)).
+*   Rows 2-3: corr(End-of-year, Cumulative) at each snapshot year --
+*          relocated from the footer of T2_b_mortality_fixeddenom (per
+*          the coauthor's request to move it here), unchanged values
+*          (corr99/corr99_fix/corr05/corr05_fix, already computed above).
+* Column order matches T2_b_mortality_fixeddenom: (1) year-varying
+* denom/End-of-year, (2) year-varying/Cumulative, (3) fixed/End-of-year,
+* (4) fixed/Cumulative.
+* Output: $tables/appendix/AT_intensity_correlations.tex
+*------------------------------------------------------------
+cap file close ic
+file open ic using "$tables/appendix/AT_intensity_correlations.tex", write replace
+file write ic "\begin{tabular}{lcccc} \hline \hline" _n
+file write ic "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
+file write ic "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
+file write ic "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+file write ic "Corr(Intensity{\textsubscript{1999}}, Intensity{\textsubscript{2005}}) & `corr_eoy_yv' & `corr_cum_yv' & `corr_eoy_fix' & `corr_cum_fix' \\ " _n
+file write ic "\bottomrule" _n
+file write ic "Corr(End-of-year, Cumulative), 1999 & \multicolumn{2}{c}{`corr99'} & \multicolumn{2}{c}{`corr99_fix'} \\ " _n
+file write ic "Corr(End-of-year, Cumulative), 2005 & \multicolumn{2}{c}{`corr05'} & \multicolumn{2}{c}{`corr05_fix'} \\ " _n
+file write ic "\end{tabular}"
+file close ic
+di "Table exported to: $tables/appendix/AT_intensity_correlations.tex"
 
 *============================================================
 * MERGED ROBUSTNESS TABLE: T2_b_mortality_fixeddenom
@@ -5065,6 +5371,12 @@ foreach pnl in p f m {
             [aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
         if _rc == 0 & e(N) > 0 {
             local aux : di %12.3f _b[1.post#c.`inten99v']
+            * Save the un-starred numeric coefficient under its own name --
+            * `aux' gets reused below for the Intensity_2005 coefficient, so
+            * a persistent copy is needed for the power/MDE table, which
+            * needs the raw number (not the significance-star-annotated
+            * display string in b99_fd_`pnl'_`c').
+            local b99num_fd_`pnl'_`c' "`aux'"
             local t = abs(_b[1.post#c.`inten99v'] / _se[1.post#c.`inten99v'])
             if      `t' >= 2.576 local b99_fd_`pnl'_`c' = "`aux'***"
             else if `t' >= 1.96  local b99_fd_`pnl'_`c' = "`aux'**"
@@ -5092,7 +5404,7 @@ foreach pnl in p f m {
     file open fd using "$tables/T2_b_mortality_fixeddenom.tex", write replace
     file write fd "\begin{tabular}{lcccc} \hline \hline" _n
     file write fd "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
-    file write fd "& \multicolumn{1}{c}{Mixed} & \multicolumn{1}{c}{FASE} & \multicolumn{1}{c}{Mixed} & \multicolumn{1}{c}{FASE} \\ " _n
+    file write fd "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
     file write fd "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
     file write fd "\underline{\textit{Panel A: Pooled}} \\ " _n
     file write fd "\textit{Intensity 1999 x post} & `b99_fd_p_1' & `b99_fd_p_2' & `b99_fd_p_3' & `b99_fd_p_4' \\ " _n
@@ -5121,12 +5433,71 @@ foreach pnl in p f m {
     file write fd "  & & & & \\ " _n
     file write fd "Obs & `N_fd_m_1' & `N_fd_m_2' & `N_fd_m_3' & `N_fd_m_4' \\ " _n
     file write fd "\bottomrule" _n
-    file write fd "Corr(Mixed, FASE numerator), 1999 & \multicolumn{2}{c}{`corr99'} & \multicolumn{2}{c}{`corr99_fix'} \\ " _n
-    file write fd "Corr(Mixed, FASE numerator), 2005 & \multicolumn{2}{c}{`corr05'} & \multicolumn{2}{c}{`corr05_fix'} \\ " _n
     file write fd "\end{tabular}"
     file close fd
 }
 di "Table exported to: $tables/T2_b_mortality_fixeddenom.tex"
+
+*============================================================
+* APPENDIX TABLE: AT_power_mde -- power/Minimum Detectable Effect (MDE)
+* summary for the Intensity_1999 x Post coefficient (beta_0 only, per
+* coauthor's request -- Intensity_2005 not needed) across all 4
+* numerator/denominator constructions of T2_b_mortality_fixeddenom,
+* benchmarked against Barham & Rowberry (2013). Reuses the coefficient/SE
+* locals already computed for T2_b_mortality_fixeddenom above (same
+* regressions; no new estimation).
+*
+* MDE = (t_power + t_alpha) x SE, using the standard 80%-power/5%-two-
+* sided multiplier 2.80 (see research_project.md PART 5). This is a
+* "can this design detect an effect of BR's magnitude" statement, NOT a
+* formal test that rules BR's estimate out -- BR's own -6.37 comes from
+* a different sample/spec (continuously-lagged intensity, BR-incorporation
+* sample), so the comparison is a magnitude benchmark, not a nested test.
+* Output: $tables/appendix/AT_power_mde.tex
+*------------------------------------------------------------
+local mde_mult = 2.80
+
+cap file close mde
+file open mde using "$tables/appendix/AT_power_mde.tex", write replace
+file write mde "\begin{tabular}{lcccc} \hline \hline" _n
+file write mde "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
+file write mde "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
+file write mde "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+
+foreach pnl in p f m {
+    if "`pnl'" == "p"      local plabel "Panel A: Pooled"
+    else if "`pnl'" == "f" local plabel "Panel B: Females"
+    else                    local plabel "Panel C: Males"
+
+    file write mde "\underline{\textit{`plabel'}} \\ " _n
+    file write mde "\textit{Intensity 1999 x post (\$\beta_0\$)}"
+    forval c = 1/4 {
+        file write mde " & `b99_fd_`pnl'_`c''"
+    }
+    file write mde " \\ " _n
+
+    file write mde " "
+    forval c = 1/4 {
+        file write mde " & (`se99_fd_`pnl'_`c'')"
+    }
+    file write mde " \\ " _n
+
+    file write mde "\textit{MDE (80\% power, two-sided 5\%)}"
+    forval c = 1/4 {
+        local mde_`pnl'_`c' : di %12.2f (`mde_mult' * real("`se99_fd_`pnl'_`c''"))
+        file write mde " & `mde_`pnl'_`c''"
+    }
+    file write mde " \\ " _n
+    file write mde "  & & & & \\ " _n
+}
+
+file write mde "\bottomrule" _n
+file write mde "\multicolumn{5}{l}{\textit{Memo: Barham and Rowberry (2013) own estimate = -6.37; this project's BR-sample replication = -7.061.}} \\ " _n
+file write mde "\multicolumn{5}{l}{\textit{MDE below BR's -6.37 in absolute value indicates the design is well-powered to detect an effect of that magnitude;}} \\ " _n
+file write mde "\multicolumn{5}{l}{\textit{MDE above -6.37 indicates the design cannot distinguish a null from an effect of BR's size (underpowered).}} \\ " _n
+file write mde "\end{tabular}"
+file close mde
+di "Table exported to: $tables/appendix/AT_power_mde.tex"
 
 *============================================================
 * ROBUSTNESS FIGURE: Figure 2 analogue (f:es_dd_sex_no_weight) using the

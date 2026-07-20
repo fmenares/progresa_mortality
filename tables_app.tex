@@ -127,6 +127,21 @@
 
 \begin{table}[H]
 \RawCaption%
+  {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Controlling for Cumulative Enrollment at the End of the Window, End-of-Year Numerator}
+   \label{at:did_robust_br2_2002ctrl_eoy}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.8}{
+      \input{tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table repeats the specifications of Appendix Table~\ref{at:did_robust_br2_2002ctrl}, but reconstructs $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2002}$ using the End-of-year numerator (Parker and Vogl's fixed 1997 household denominator, matching column~(3) of Table~\ref{t:did_age_fixeddenom}) rather than the Cumulative numerator. Columns~(1)/(4) and~(2)/(5) report unweighted and weighted estimates for the Barham-Rowberry and full highly marginalized samples, respectively, under this construction. Columns~(3) and~(6) additionally control for $\textit{Intensity}_{2002} \times \textit{Post}$; unlike the Cumulative version of this table, the End-of-year construction does not guarantee that $\textit{Intensity}_{2002}$ nests $\textit{Intensity}_{1999}$ (see Appendix Table~\ref{at:crosswalk_supermun_diagnostic} on non-monotonicity), so this control should be read as a same-construction robustness check rather than a ``hold total eventual enrollment fixed'' identification argument. All regressions include municipality and year fixed effects and Seguro Popular intensity controls. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+
+
+\begin{table}[H]
+\RawCaption%
   {\caption{Variance of $\textit{Intensity}_{1999}$ Explained by $\textit{Intensity}_{2005}$: Numerator and Denominator Decomposition}
    \label{at:pv_r2_benefsource}}
 \floatbox[{\captop}]{table}[\FBwidth]
@@ -135,7 +150,37 @@
       \input{tables/appendix/AT_pv_r2_benefsource}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table reports the $R^2$ from regressions of $\textit{Intensity}_{1999}$ on $\textit{Intensity}_{2005}$, alone and with municipality marginality-percentile fixed effects added, following footnote 18 of Parker and Vogl (2023), crossing the beneficiary-numerator construction with the household-denominator choice. Parker and Vogl (2023) construct $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ as running \textit{sums} of annual FASE beneficiary counts (their \texttt{benef9799} = benef1997+benef1998+benef1999; \texttt{benef9705} = \texttt{benef9799}+benef2000+...+benef2005) divided by a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), so their late measure nests the early one by construction. ``Mixed, single-year snapshot'' is our current default: the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) from 1998 on, with each snapshot year's value taken directly as a point-in-time headcount rather than summed, divided by each year's own municipal household count. ``FASE-only, cumulative'' switches the numerator to the FASE file for the entire 1997-2005 window and applies Parker and Vogl's exact summing operation. Columns~1-2 use each year's own municipal household count as the denominator (our default); columns~3-4 use Parker and Vogl's fixed 1997 base instead, holding the denominator constant across snapshots. The bottom panel decomposes the $R^2$ gap to the Parker and Vogl benchmark (0.65, or 0.67 with the marginality-percentile fixed effect) into the contribution of the denominator choice alone (Mixed numerator, fixed vs.\ year-varying denominator), the numerator/beneficiary-source choice alone (FASE vs.\ Mixed numerator, year-varying denominator), and both changes combined, each measured relative to the current-default cell (top-left). The sample is the cross-section of highly marginalized municipalities.}
+    \floatfoot{Notes: This table reports the $R^2$ from regressions of $\textit{Intensity}_{1999}$ on $\textit{Intensity}_{2005}$, alone and with municipality marginality-percentile fixed effects added, following footnote 18 of Parker and Vogl (2023), crossing the beneficiary-numerator construction with the household-denominator choice. Parker and Vogl (2023) construct $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ as running \textit{sums} of annual FASE beneficiary counts (their \texttt{benef9799} = benef1997+benef1998+benef1999; \texttt{benef9705} = \texttt{benef9799}+benef2000+...+benef2005) divided by a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), so their late measure nests the early one by construction. ``End-of-year'' is our main specification: the FASE file for 1997 and the newer admin pipeline (\texttt{newProg\_98\_16.dta}) from 1998 on, with each snapshot year's value taken directly as a point-in-time headcount rather than summed, divided by each year's own municipal household count. ``Cumulative'' switches the numerator to the FASE file for the entire 1997-2005 window and applies Parker and Vogl's exact summing operation. Columns~1-2 use each year's own municipal household count as the denominator; columns~3-4 use Parker and Vogl's fixed 1997 base instead, holding the denominator constant across snapshots (our main specification, column~3 of Table~\ref{t:did_age_fixeddenom}, uses the End-of-year numerator with this fixed denominator). The bottom panel decomposes the $R^2$ gap to the Parker and Vogl benchmark (0.65, or 0.67 with the marginality-percentile fixed effect) into the contribution of the denominator choice alone (End-of-year numerator, fixed vs.\ year-varying denominator), the numerator/beneficiary-source choice alone (Cumulative vs.\ End-of-year numerator, year-varying denominator), and both changes combined, each measured relative to the top-left cell. The sample is the cross-section of highly marginalized municipalities.}
+  }
+\end{table}
+
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Correlation Between the $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ Measures, and Between Numerator Constructions}
+   \label{at:intensity_correlations}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_intensity_correlations}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports two complementary correlation diagnostics, requested by the coauthor team as a correlation-based companion to the $R^2$ decomposition in Appendix Table~\ref{at:pv_r2_benefsource}. The top row reports the cross-sectional correlation between $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ \textit{within} each of the four numerator/denominator constructions -- the signed correlation corresponding to the no-marginality-fixed-effect $R^2$ column of Appendix Table~\ref{at:pv_r2_benefsource} (for a simple bivariate regression, $R^2$ equals the squared correlation, but loses the sign). The bottom two rows report the correlation between the End-of-year and Cumulative numerator constructions at each snapshot year, holding the denominator fixed (relocated from Table~\ref{t:did_age_fixeddenom}). The substantial increase in this between-construction correlation from 1999 (0.700--0.706) to 2005 (0.911--0.912) indicates that the two numerator constructions diverge primarily in the early roll-out window (1997--1999), when program penetration was still ramping up and the distinction between a point-in-time caseload count (End-of-year) and a genuine cumulative ``ever-enrolled'' count (Cumulative) is most consequential; by 2005, near-universal saturation within the highly marginalized sample compresses the gap between the two constructions. The sample is the cross-section of highly marginalized municipalities in 1996.}
+  }
+\end{table}
+
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Minimum Detectable Effect for $\textit{Intensity}_{1999} \times \textit{Post}$, Compared to Barham and Rowberry (2013)}
+   \label{at:power_mde}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_power_mde}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports the Minimum Detectable Effect (MDE) for the $\textit{Intensity}_{1999} \times \textit{Post}$ coefficient ($\beta_0$) in each of the four numerator/denominator constructions of Table~\ref{t:did_age_fixeddenom}, for the pooled, female, and male samples. MDE is computed as $(t_{\text{power}} + t_{\alpha}) \times SE$, using the standard multiplier of 2.80 for 80 percent power at the 5 percent two-sided significance level, applied to the same coefficients and standard errors reported in Table~\ref{t:did_age_fixeddenom}. The memo row reports Barham and Rowberry's (2013) own point estimate ($-6.37$) and this project's own replication of their specification on their sample ($-7.061$, Appendix Table~\ref{at:did_robust_br}), as magnitude benchmarks. An MDE smaller in absolute value than $6.37$ indicates the design is well powered to detect an effect of Barham and Rowberry's magnitude, so a null result is informative; an MDE larger than $6.37$ indicates the design cannot statistically distinguish a null from an effect of that magnitude (underpowered). This comparison is a magnitude benchmark, not a formal nested test, since Barham and Rowberry's estimate comes from a different sample and specification (a single continuously-lagged intensity measure, restricted to municipalities incorporated into Progresa in 1998 or 1999). The End-of-year numerator (columns~1 and~3) yields MDEs below the Barham and Rowberry benchmark in every panel, while the Cumulative numerator (columns~2 and~4) does not.}
   }
 \end{table}
 
