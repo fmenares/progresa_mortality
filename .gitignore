@@ -19,6 +19,9 @@ wordcount.tex
 *.synctex.gz
 *.nav
 *.snm
+*.loc
+*.soc
+main.pdf
 
 # ---- Stata temporary files ----
 *.stswp
