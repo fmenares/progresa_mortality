@@ -2606,6 +2606,22 @@ replace im90_bin = _im90_bin
 drop _mun_tag _im90_bin
 label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
 
+* P&V (2023) equation-3 EXACT replication: margpct_pv is the discrete
+* 0-99 percentile bin of the raw 1990 municipality marginality index,
+* matching their own construction exactly (01_create_municipal_level_
+* indicators.do line 309: "egen margpct = cut(d_im), group(100)") --
+* unlike im90_bin above (quintiles via xtile), this uses their exact
+* group(100) resolution and cut() function; no coarsening is needed
+* here since this is a single per-municipality categorical assignment
+* (absorbed as a FE below), not a vector of shares like Lshare_pc*.
+cap drop margpct_pv
+egen _mun_tag3 = tag(cve_ent_mun_super)
+egen margpct_pv = cut(im_mun_1990) if _mun_tag3, group(100)
+bys cve_ent_mun_super: egen _margpct_pv = max(margpct_pv)
+replace margpct_pv = _margpct_pv
+drop _mun_tag3 _margpct_pv
+label var margpct_pv "1990 marginalization-index percentile bin, P&V (2023) eq. 3 (0-99)"
+
 *============================================================
 * Lshare_pc1-Lshare_pc5: P&V (2023) equation-4 locality-marginality
 * PERCENTILE SHARES, for AF_ses_trend Spec 4 below (the true eq.-4
@@ -2643,11 +2659,26 @@ if `locshare_ok' {
 
 *============================================================
 * APPENDIX FIGURE: AF_ses_trend (pooled / female / male)
-* Event study (beta_k = Intensity_1999 x year) across 4 SES trend specs:
+* Event study (beta_k = Intensity_1999 x year) across 5 SES trend specs:
 *   Series 1 (black,  solid):         Baseline (W+SP)
-*   Series 2 (red,    dash):          + Trend × im_mun_1990 (municipality index)
-*   Series 3 (blue,   shortdash_dot): + Trend × 1990 marg.-index quintile (P&V 2023 eq. 3, municipality)
-*   Series 4 (green,  dash):          + Trend × locality marg. %-ile shares (P&V 2023 eq. 4)
+*   Series 2 (red,    dash):          + Trend × im_mun_1990 (municipality index, continuous, linear trend)
+*   Series 3 (blue,   shortdash_dot): + Trend × 1990 marg.-index quintile (linear trend)
+*   Series 4 (green,  dash):          + Locality marg. %-ile shares (P&V 2023 eq. 4)
+*   Series 5 (purple, longdash):      + Municipality marg. %-ile FE (P&V 2023 eq. 3, exact replication)
+*
+* Series 2-3 are OUR OWN standard DiD pre-trend robustness checks (a
+* baseline covariate interacted with a linear calendar-year trend) --
+* useful in their own right, but NOT a literal P&V eq.-3 replication:
+* P&V never use the raw continuous index (series 2 has no P&V
+* counterpart), and even their percentile-bin version (closer to
+* series 3 in spirit) is never interacted with a linear trend -- it is
+* absorbed as a FULLY FLEXIBLE cohort(year)-by-percentile-bin fixed
+* effect (04_analysis2010.do: a(MUN_PRE i.age97##i.margpct)), with no
+* assumption about the shape of the time path within a bin. Series 5
+* below is the genuine eq.-3 replication, added alongside (not
+* replacing) series 2-3 so the linear-trend approximation and the true
+* P&V mechanic can be compared directly on the same figure.
+*
 * Series 4 is P&V's actual equation-4 "Locality marg. %-ile shares"
 * control (Table 2 columns (3)/(7)) -- NOT a scalar locality-marginality
 * aggregate interacted with a trend (that was an earlier, non-P&V
@@ -2657,11 +2688,20 @@ if `locshare_ok' {
 * not entered as explicit regressors -- see Lshare_pc* construction
 * above and 000.MI_and_pop_counts_interpolation_recoding.do (section 3)
 * for the full percentile-share build (P&V's exact egen/tab/collapse
-* mechanic, super-locality-harmonized via our own crosswalk rather than
-* P&V's TablaEquivalencia). This directly speaks to IADB-5
+* mechanic, super-locality-harmonized via crosswalk_super_loc_id_1995.dta
+* rather than P&V's TablaEquivalencia). This directly speaks to IADB-5
 * (heterogeneity/endogeneity tied to locality-level composition, not
 * just the municipality-level scalar) more faithfully than the earlier
 * iml_loc_mun construct did.
+*
+* Series 5 is P&V's actual equation-3 "Muni. marg. %-ile dummies"
+* control (Table 2 columns (1)/(2)/(5)/(6)), built the same way as
+* series 4: cut im_mun_1990 into 100 national percentile bins
+* (margpct_pv, matching P&V's own group(100) resolution exactly, since
+* it is a single per-municipality categorical assignment rather than a
+* vector of shares -- no coarsening needed the way Lshare_pc* required),
+* absorbed as a(cve_ent_mun_super year_1995#i.margpct_pv).
+*
 * A sixth spec (quintile trend, EXCLUDING Intensity_2005) was removed --
 * dropping the later-phase control from a spec whose whole purpose is
 * isolating the early-phase coefficient net of later enrollment has no
@@ -2771,16 +2811,38 @@ foreach grp in p f m {
 		di as error "Spec 4 (locality marg. %-ile shares, P&V eq. 4, `grp'): reghdfe failed (rc=`_rc'), likely Lshare_pc* unavailable -- series left blank"
 	}
 
+	* Spec 5: + P&V (2023) equation-3 municipality-marginality-percentile
+	* control (Table 2 columns (1)/(2)/(5)/(6)) -- their exact
+	* implementation (04_analysis2010.do: "a(MUN_PRE i.age97##i.margpct)")
+	* absorbs the cohort-by-percentile-bin interaction as a fixed effect,
+	* not a linear trend. Added ALONGSIDE (not replacing) Specs 2-3's
+	* linear-trend approximations, so the true P&V mechanic and our own
+	* standard DiD pre-trend checks can be compared directly.
+	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
+		a(cve_ent_mun_super year_1995#i.margpct_pv) vce(cluster cve_ent_mun_super)
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local bes5_`pos'  = 0
+			local sees5_`pos' = 0
+		}
+		else {
+			local bes5_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local sees5_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
+	}
+
 	* --- Plot ---
 	preserve
 	clear
 	set obs 16
 	gen yr_pos = _n
-	gen xpos_1 = yr_pos - 0.27
-	gen xpos_2 = yr_pos - 0.09
-	gen xpos_3 = yr_pos + 0.09
-	gen xpos_4 = yr_pos + 0.27
-	foreach s in 1 2 3 4 {
+	gen xpos_1 = yr_pos - 0.36
+	gen xpos_2 = yr_pos - 0.18
+	gen xpos_3 = yr_pos
+	gen xpos_4 = yr_pos + 0.18
+	gen xpos_5 = yr_pos + 0.36
+	foreach s in 1 2 3 4 5 {
 		gen b_s`s'  = .
 		gen hi_s`s' = .
 		gen lo_s`s' = .
@@ -2798,6 +2860,9 @@ foreach grp in p f m {
 		replace b_s4  = `bes4_`pos''                            if yr_pos == `pos'
 		replace hi_s4 = `bes4_`pos'' + 1.96 * `sees4_`pos''    if yr_pos == `pos'
 		replace lo_s4 = `bes4_`pos'' - 1.96 * `sees4_`pos''    if yr_pos == `pos'
+		replace b_s5  = `bes5_`pos''                            if yr_pos == `pos'
+		replace hi_s5 = `bes5_`pos'' + 1.96 * `sees5_`pos''    if yr_pos == `pos'
+		replace lo_s5 = `bes5_`pos'' - 1.96 * `sees5_`pos''    if yr_pos == `pos'
 	}
 	twoway ///
 		(rcap hi_s1 lo_s1 xpos_1, lcolor(`scol'%60) lwidth(vthin) lpattern(solid)) ///
@@ -2808,10 +2873,13 @@ foreach grp in p f m {
 		(scatter b_s3 xpos_3, mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
 		(rcap hi_s4 lo_s4 xpos_4, lcolor(green%60) lwidth(vthin) lpattern(dash)) ///
 		(scatter b_s4 xpos_4, mcolor(green) msymbol(diamond) msize(vsmall)) ///
+		(rcap hi_s5 lo_s5 xpos_5, lcolor(purple%60) lwidth(vthin) lpattern(longdash)) ///
+		(scatter b_s5 xpos_5, mcolor(purple) msymbol(plus) msize(vsmall)) ///
 		(line b_s1 xpos_1 if 1==0, lcolor(`scol') lpattern(solid) lwidth(thin) mcolor(`scol') msymbol(circle) msize(vsmall)) ///
 		(line b_s2 xpos_2 if 1==0, lcolor(`scol') lpattern(dash) lwidth(thin) mcolor(`scol') msymbol(square) msize(vsmall)) ///
 		(line b_s3 xpos_3 if 1==0, lcolor(`scol') lpattern(shortdash_dot) lwidth(thin) mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
-		(line b_s4 xpos_4 if 1==0, lcolor(green) lpattern(dash) lwidth(thin) mcolor(green) msymbol(diamond) msize(vsmall)), ///
+		(line b_s4 xpos_4 if 1==0, lcolor(green) lpattern(dash) lwidth(thin) mcolor(green) msymbol(diamond) msize(vsmall)) ///
+		(line b_s5 xpos_5 if 1==0, lcolor(purple) lpattern(longdash) lwidth(thin) mcolor(purple) msymbol(plus) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -2819,8 +2887,8 @@ foreach grp in p f m {
 		xtitle("") ///
 		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 		ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
-		legend(order(9 "Baseline (W+SP)" 10 "+ Trend x Marg. Index (muni)" 11 "+ Trend x Quintile (muni, P&V eq. 3)" ///
-			12 "+ Locality marg. %-ile shares (P&V eq. 4)") ///
+		legend(order(11 "Baseline (W+SP)" 12 "+ Trend x Marg. Index (muni, linear)" 13 "+ Trend x Quintile (muni, linear)" ///
+			14 "+ Locality marg. %-ile shares (P&V eq. 4)" 15 "+ Muni. marg. %-ile FE (P&V eq. 3)") ///
 			cols(2) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
@@ -5378,18 +5446,17 @@ di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_2005 clippe
 * not the within-municipality DISTRIBUTION of locality-level poverty).
 *
 * NOTE ON DUPLICATION WITH AF_ses_trend's Spec 4 (Lshare_pc*, above): this
-* block intentionally builds its OWN 100-bin iml_pc* inline, WITHOUT
-* dropping boundary-unstable localities, rather than reusing
+* block intentionally builds its OWN 100-bin iml_pc* inline, WITHOUT the
+* crosswalk_super_loc_id_1995.dta harmonization, rather than reusing
 * Lshare_pc*/MI_locshare_1995_mun.dta. That is deliberate here -- P&V's
 * own fn.18 R² benchmark (0.75) below was computed with exactly 100 raw
 * bins in a plain cross-sectional `reg`, not a year-interacted panel
 * regression, so the degrees-of-freedom problem that motivated coarsening
 * to `nq_locshare'=5 bins for AF_ses_trend's Spec 4 does not apply here.
-* It also does NOT drop boundary-unstable localities via the AGEEML
-* catalog method Spec 4 now uses (000.do section 3) -- if that turns out
-* to matter for this R² row too, re-point this block at
-* $data/MI_locshare_1995_mun.dta with group(100) instead of rebuilding
-* iml_pc* inline.
+* It also does NOT apply the super-locality harmonization Spec 4 now uses
+* (000.do section 3) -- if that turns out to matter for this R² row too,
+* re-point this block at $data/MI_locshare_1995_mun.dta with group(100)
+* instead of rebuilding iml_pc* inline.
 *============================================================
 * Non-destructive existence check: do NOT exit the whole do-file if the
 * file isn't found -- just skip this block and let the rest of the
