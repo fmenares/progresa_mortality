@@ -433,7 +433,22 @@ duplicates drop cve_ent cve_mun cve_loc, force
 merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
     keepusing(cve_ent_mun_super) nogenerate
 count if missing(cve_ent_mun_super)
-di "`r(N)' localities failed to match the cve_ent_mun_super crosswalk on (cve_ent, cve_mun) -- kept as-is, but will be treated as missing municipality by any downstream collapse"
+di "`r(N)' localities failed to match the cve_ent_mun_super crosswalk on (cve_ent, cve_mun) -- falling back to the raw (unharmonized) cve_ent+cve_mun code for those"
+
+* BUG FIX: the fallback above matches the SAME convention 02_mortality.do's
+* own working panel already applies (line ~372/898:
+* "replace cve_ent_mun_super = cve_ent + cve_mun if cve_ent_mun_super == \"\"").
+* This fallback was previously MISSING here, so unmatched localities were
+* left with cve_ent_mun_super == "" -- during section 3's collapse below,
+* this would pool MULTIPLE unrelated municipalities' localities into one
+* bogus empty-string group, which then could never match the main working
+* panel (which never has a truly empty cve_ent_mun_super after its own
+* fallback) -- silently producing entirely missing Lshare_pc* for every
+* affected municipality once merged in 02_mortality.do. This is very
+* likely the source of the huge CIs originally flagged on AF_ses_trend
+* Spec 4 -- confirmed as a real merge-coverage bug, not just a modeling
+* choice.
+replace cve_ent_mun_super = cve_ent + cve_mun if missing(cve_ent_mun_super)
 
 keep cve_ent cve_mun cve_loc cve_ent_mun_super iml TOT_VIV POB_TOT
 order cve_ent cve_mun cve_loc cve_ent_mun_super iml TOT_VIV POB_TOT
