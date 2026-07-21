@@ -5378,17 +5378,18 @@ di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_2005 clippe
 * not the within-municipality DISTRIBUTION of locality-level poverty).
 *
 * NOTE ON DUPLICATION WITH AF_ses_trend's Spec 4 (Lshare_pc*, above): this
-* block intentionally builds its OWN 100-bin iml_pc* inline, unharmonized
-* at the locality level, rather than reusing Lshare_pc*/MI_locshare_1995_mun.dta.
-* That is deliberate here -- P&V's own fn.18 R² benchmark (0.75) below was
-* computed with exactly 100 raw bins in a plain cross-sectional `reg`, not
-* a year-interacted panel regression, so the degrees-of-freedom problem that
-* motivated coarsening to `nq_locshare'=5 bins for AF_ses_trend's Spec 4 does
-* not apply here. It does NOT apply the super-locality harmonization crosswalk
-* (superlocs_masterdata_b1995_101121v1.dta) either -- if that turns out to
-* matter for this R² row too, re-point this block at
-* $data/MI_locshare_1995_mun.dta with group(100) instead of rebuilding iml_pc*
-* inline.
+* block intentionally builds its OWN 100-bin iml_pc* inline, WITHOUT
+* dropping boundary-unstable localities, rather than reusing
+* Lshare_pc*/MI_locshare_1995_mun.dta. That is deliberate here -- P&V's
+* own fn.18 R² benchmark (0.75) below was computed with exactly 100 raw
+* bins in a plain cross-sectional `reg`, not a year-interacted panel
+* regression, so the degrees-of-freedom problem that motivated coarsening
+* to `nq_locshare'=5 bins for AF_ses_trend's Spec 4 does not apply here.
+* It also does NOT drop boundary-unstable localities via the AGEEML
+* catalog method Spec 4 now uses (000.do section 3) -- if that turns out
+* to matter for this R² row too, re-point this block at
+* $data/MI_locshare_1995_mun.dta with group(100) instead of rebuilding
+* iml_pc* inline.
 *============================================================
 * Non-destructive existence check: do NOT exit the whole do-file if the
 * file isn't found -- just skip this block and let the rest of the

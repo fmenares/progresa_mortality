@@ -6,6 +6,9 @@ SUPER MUNICIPALITY
 use $ensanut/datasets/crosswalk_super_mun_id_2020.dta, clear
 SUPER LOCALITY
 superlocs_masterdata_b1995_101121v1.dta
+(NOTE: section 3 below does NOT use this file -- it instead drops
+boundary-unstable localities via the INEGI AGEEML catalog method
+from 00_locality_pop_interpolated.do; see section 3's own header)
 
 1. Municipality level Margination Indexes (MI) from CONAPO
 1.1 Base_Indice_de_marginacion_municipal_90-15.csv 
@@ -483,29 +486,44 @@ HARMONIZATION: P&V match their Progresa/marginality locality files
 to each other (and across the one boundary-change window they need,
 2000-2005) via hand-matching plus a locality-splits-only
 "TablaEquivalencia" file (04_rollout_locality.do lines 50-92,
-190-234). We use OUR OWN, more general super-locality crosswalk
-instead (superlocs_masterdata_b1995_101121v1.dta -- listed as an
-input at the top of this file but not previously actually used),
-built the same way as the super-municipality crosswalk
-(crosswalk_super_mun_id_1990.dta; see
-0.super_municipality_id_and_HH_data.do), so it generalizes to any
-year of boundary change rather than just splits in 2000-2005.
+190-234). We use a DIFFERENT, simpler method instead -- the one
+already worked out and tested in the user's own
+00_locality_pop_interpolated.do (70ymas project), which applies it
+to this SAME raw file (Base_marginacion_localidad_90-10.csv): rather
+than harmonizing split/merged localities onto one common id, DROP
+any locality that ever underwent a boundary change, using INEGI's
+official AGEEML catalog of locality-level geo-statistical changes
+(creation/elimination/fusion/conurbation/reactivation/deconurbation/
+defusion/nonexistence/destruction). Recipe reproduced verbatim from
+00_locality_pop_interpolated.do lines 42-119 (same cgo_act codes,
+same locality-id construction via zero-padded string concatenation
++ destring) rather than guessing at a separate crosswalk file's
+schema.
 
-ASSUMPTION FLAG: superlocs_masterdata_b1995_101121v1.dta's exact
-merge keys and harmonized-id variable name are UNVERIFIED --
-placeholders below (raw keys cve_ent/cve_mun/cve_loc; harmonized id
-cve_loc_super) mirror the municipality crosswalk's own naming
-convention (cve_ent_mun_super). If `describe` on the actual file
-shows different names, adjust ONLY the merge/keepusing line below.
-Guarded with `cap noisily merge`: if the merge key types/names are
-wrong, this block logs the failure and skips (leaving
-MI_locshare_1995_mun.dta unwritten) rather than halting 000.do.
+DEVIATION FROM THE REFERENCE FILE: it caps the catalog at
+`keep if year <= 2011` (tied to its own 2000-2011 population-
+interpolation window). Our panel runs through ~2017-2018, so we do
+NOT cap the year here -- we want to catch any boundary change
+through the full span this 1995 baseline index gets used over, not
+just changes through 2011. If this excludes materially more
+localities than intended, revisit.
+
+ASSUMPTION FLAG: the exact input filename (AGEEML_202474143568) is
+copied verbatim from 00_locality_pop_interpolated.do's `$data`
+folder (a different project) -- confirm the equivalent raw INEGI
+AGEEML catalog file's actual name in THIS project's $data folder
+(portal-downloaded files often carry a per-download suffix) and
+adjust the `import delimited` line below if it differs. Guarded
+with `cap noisily`: if the file isn't found under this name, this
+block logs the failure and skips (leaving MI_locshare_1995_mun.dta
+unwritten, and Spec 4 of AF_ses_trend dropped) rather than halting
+000.do.
 
 OUTPUT: MI_locshare_1995_mun.dta -- one row per cve_ent_mun_super,
 with Lshare_pc1 ... Lshare_pc`nq_locshare' (population shares,
 summing to 1 within each municipality, of that municipality's
-population living in localities in national locality-marginality
-percentile bin p).
+population living in STABLE localities in national locality-
+marginality percentile bin p).
 *************************************************************/
 local locshare = 1
 if `locshare' == 1 {
@@ -516,33 +534,67 @@ if _rc {
 }
 else {
 
-use "$data/MI_loc_1995_recoded.dta", clear
-drop if missing(iml) | missing(POB_TOT)
-
-* --- Harmonize RAW locality codes via our own super-locality
-* crosswalk (replaces P&V's TablaEquivalencia hand-matching) ---
-cap noisily merge m:1 cve_ent cve_mun cve_loc using ///
-    "$data/superlocs_masterdata_b1995_101121v1.dta", ///
-    keepusing(cve_loc_super) nogenerate
+* --- Build the list of UNSTABLE localities (boundary changes) from
+* INEGI's AGEEML catalog -- exact recipe from
+* 00_locality_pop_interpolated.do lines 42-84. ---
+local ageeml_ok = 0
+cap noisily import delimited "$data/AGEEML_202474143568", clear
 if _rc {
-    di as error "Super-locality crosswalk merge FAILED (rc=`_rc') -- likely a key name/type mismatch with superlocs_masterdata_b1995_101121v1.dta (see ASSUMPTION FLAG above). Falling back to raw (unharmonized) locality codes so this block can still run -- verify the crosswalk's actual variable names and re-run for the harmonized version."
-    gen cve_loc_super = cve_ent + cve_mun + cve_loc
+    di as error "AGEEML locality-change catalog NOT FOUND under this name (rc=`_rc') -- confirm the actual filename in $data and adjust the import line above (see ASSUMPTION FLAG). Locality-share (eq.-4) construction SKIPPED for this run."
 }
 else {
-    count if missing(cve_loc_super)
-    di "`r(N)' localities failed to match the super-locality crosswalk -- falling back to the raw (unharmonized) locality id for those"
-    replace cve_loc_super = cve_ent + cve_mun + cve_loc if missing(cve_loc_super)
+    local ageeml_ok = 1
 }
 
-{
-    * Pop-weighted collapse to the HARMONIZED (municipality, locality)
-    * pair -- same wtsum_iml/POB_TOT formula P&V use after their own
-    * equivalencia merge (04_rollout_locality.do lines 208-211), just
-    * driven by our crosswalk instead of theirs.
-    gen double wtsum_iml = iml * POB_TOT
-    collapse (sum) wtsum_iml POB_TOT, by(cve_ent_mun_super cve_loc_super)
-    gen iml = wtsum_iml / POB_TOT
-    drop wtsum_iml
+if `ageeml_ok' {
+    gen year = substr(fecha_act, 1, 4)
+    destring year, replace
+    * Change-type codes affecting locality population composition:
+    * B=creation, C=eliminate, D=fusion, E=conurbation, F=reactivation,
+    * N=deconurbation, O=defused, R=nonexistent, T=destroyed. (Excluded:
+    * H/I/J/M = municipality/state/size reclassification without a
+    * population-composition change; W = name change only.)
+    keep if inlist(cgo_act, "B", "C", "D", "E", "F", "N", "O", "R", "T")
+    destring cve_ent, replace force
+    drop if missing(cve_ent)
+    keep cve_ent cve_mun cve_loc
+    duplicates drop
+
+    tostring cve_ent cve_mun cve_loc, replace
+    replace cve_ent = "" if cve_ent == "."
+    replace cve_mun = "" if cve_mun == "."
+    replace cve_loc = "" if cve_loc == "."
+    replace cve_ent = "0" + cve_ent if length(cve_ent) == 1
+    replace cve_mun = "0" + cve_mun if length(cve_mun) == 2
+    replace cve_mun = "00" + cve_mun if length(cve_mun) == 1
+    replace cve_loc = "0" + cve_loc if length(cve_loc) == 3
+    replace cve_loc = "00" + cve_loc if length(cve_loc) == 2
+    replace cve_loc = "000" + cve_loc if length(cve_loc) == 1
+    egen id = concat(cve_ent cve_mun cve_loc)
+    destring id, g(locality) force
+
+    save "$data/change_localities.dta", replace
+    di "Saved: $data/change_localities.dta (`c(N)' localities flagged as boundary-unstable)"
+}
+
+if `ageeml_ok' {
+    use "$data/MI_loc_1995_recoded.dta", clear
+    drop if missing(iml) | missing(POB_TOT)
+
+    * Build the SAME `locality` id (zero-padded concat, destringed) to
+    * join against change_localities -- cve_ent/cve_mun/cve_loc are
+    * already zero-padded strings from section 2 above.
+    egen id = concat(cve_ent cve_mun cve_loc)
+    destring id, g(locality) force
+
+    * DROP any locality that appears in the change list (keep only
+    * _merge==1, i.e. never flagged as boundary-unstable) -- matches
+    * 00_locality_pop_interpolated.do line 118 exactly.
+    merge m:1 locality using "$data/change_localities.dta"
+    count if _merge == 3
+    di "`r(N)' of `c(N)' localities dropped as boundary-unstable (matched the AGEEML change catalog)"
+    keep if _merge == 1
+    drop _merge locality id
 
     * --- P&V's exact eq.-4 mechanic (01_create_municipal_level_
     * indicators.do lines 358-383), coarsened from their 100 bins to
