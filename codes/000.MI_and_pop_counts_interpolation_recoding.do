@@ -11,12 +11,16 @@ superlocs_masterdata_b1995_101121v1.dta
 1.1 Base_Indice_de_marginacion_municipal_90-15.csv 
 1.2 IMM_2020.csv
 1.3 Base_Indice_de_marginacion_localidad_90-10.csv 
-OUTPUT DATA: 
-1. Interpolation of the Margination Index for all years and municipalities 
+OUTPUT DATA:
+1. Interpolation of the Margination Index for all years and municipalities
 (1995-2018) recoded back to 1995
 1.1 MI_mun_1995-2018vars_ipolate_recoded.dta
-2. Interpolation of the Margination Index for all years and localities 
+2. Interpolation of the Margination Index for all years and localities
 (1995-2018) recoded back to 1995
+2.1 MI_loc_1995_recoded.dta (one row per locality)
+2.2 MI_locshare_1995_mun.dta (P&V (2023) eq.-4 locality-marginality
+    percentile shares, super-locality-harmonized, collapsed to the
+    municipality -- one row per cve_ent_mun_super)
 CODE: Felipe Menares
 DATE: 6/24/2021
 usefule sources:
@@ -438,4 +442,139 @@ sort cve_ent cve_mun cve_loc
 save "$data/MI_loc_1995_recoded.dta", replace
 di "Saved: $data/MI_loc_1995_recoded.dta"
 
+}
+
+/***********************************************************
+3. P&V (2023) EQUATION-4 LOCALITY-MARGINALITY PERCENTILE
+SHARES (L^p_m) -- FOR THE eq.-4 "LOCALITY-COMPOSITION-SHARE"
+TREND CONTROL IN 02_mortality.do's AF_ses_trend.
+
+NOT Figure 2 (the locality-level scatter/lpoly already built via
+AF_pv_fig2_locality_replication in 02_mortality.do): this is P&V's
+actual Table 2 columns (3)/(7) regression control ("Locality
+marg. %-ile shares" in Table 2's footer, equation 4 in the text).
+Our earlier iml_loc_mun/iml_loc_mun_bin construct (a single
+population-weighted SCALAR, or its quintile, interacted with a
+linear year trend) was our own invention, not a P&V replication --
+rereading 04_rollout_locality.do confirms there is no year-trend
+spec there at all (its Figure 2 is a static 1995 cross-section).
+P&V's true eq.-4 control is built entirely differently, in
+01_create_municipal_level_indicators.do (lines 358-383):
+
+    egen iml_pctile = cut(iml), group(100)   // 100 national
+                                              // percentile bins of
+                                              // LOCALITY iml
+    tab iml_pctile, gen(iml_pc)              // one 0/1 dummy per bin
+    collapse iml_pc* [aw=POB_TOT], by(CVE_EDO CVE_MUN)
+      // pop-weighted mean of a 0/1 locality indicator, collapsed to
+      // the municipality, IS the population SHARE living in that
+      // percentile bin -- this is L^p_m in equation (4).
+
+They enter these shares as an ABSORBED interaction with their
+cohort variable, not as explicit reported regressors
+(04_analysis2010.do), e.g.:
+    a(MUN_PRE i.age97#i.margpct age97##c.(iml_pc*))
+i.e. reghdfe's a() partials out cohort-by-share-bin interactions
+as high-dimensional fixed effects. 02_mortality.do mirrors this
+exactly, substituting our year_1995 event-time variable for their
+age97 cohort variable.
+
+HARMONIZATION: P&V match their Progresa/marginality locality files
+to each other (and across the one boundary-change window they need,
+2000-2005) via hand-matching plus a locality-splits-only
+"TablaEquivalencia" file (04_rollout_locality.do lines 50-92,
+190-234). We use OUR OWN, more general super-locality crosswalk
+instead (superlocs_masterdata_b1995_101121v1.dta -- listed as an
+input at the top of this file but not previously actually used),
+built the same way as the super-municipality crosswalk
+(crosswalk_super_mun_id_1990.dta; see
+0.super_municipality_id_and_HH_data.do), so it generalizes to any
+year of boundary change rather than just splits in 2000-2005.
+
+ASSUMPTION FLAG: superlocs_masterdata_b1995_101121v1.dta's exact
+merge keys and harmonized-id variable name are UNVERIFIED --
+placeholders below (raw keys cve_ent/cve_mun/cve_loc; harmonized id
+cve_loc_super) mirror the municipality crosswalk's own naming
+convention (cve_ent_mun_super). If `describe` on the actual file
+shows different names, adjust ONLY the merge/keepusing line below.
+Guarded with `cap noisily merge`: if the merge key types/names are
+wrong, this block logs the failure and skips (leaving
+MI_locshare_1995_mun.dta unwritten) rather than halting 000.do.
+
+OUTPUT: MI_locshare_1995_mun.dta -- one row per cve_ent_mun_super,
+with Lshare_pc1 ... Lshare_pc`nq_locshare' (population shares,
+summing to 1 within each municipality, of that municipality's
+population living in localities in national locality-marginality
+percentile bin p).
+*************************************************************/
+local locshare = 1
+if `locshare' == 1 {
+
+cap confirm file "$data/MI_loc_1995_recoded.dta"
+if _rc {
+    di as error "Locality-share (eq.-4) construction SKIPPED: MI_loc_1995_recoded.dta not found -- run section 2 above first."
+}
+else {
+
+use "$data/MI_loc_1995_recoded.dta", clear
+drop if missing(iml) | missing(POB_TOT)
+
+* --- Harmonize RAW locality codes via our own super-locality
+* crosswalk (replaces P&V's TablaEquivalencia hand-matching) ---
+cap noisily merge m:1 cve_ent cve_mun cve_loc using ///
+    "$data/superlocs_masterdata_b1995_101121v1.dta", ///
+    keepusing(cve_loc_super) nogenerate
+if _rc {
+    di as error "Super-locality crosswalk merge FAILED (rc=`_rc') -- likely a key name/type mismatch with superlocs_masterdata_b1995_101121v1.dta (see ASSUMPTION FLAG above). Falling back to raw (unharmonized) locality codes so this block can still run -- verify the crosswalk's actual variable names and re-run for the harmonized version."
+    gen cve_loc_super = cve_ent + cve_mun + cve_loc
+}
+else {
+    count if missing(cve_loc_super)
+    di "`r(N)' localities failed to match the super-locality crosswalk -- falling back to the raw (unharmonized) locality id for those"
+    replace cve_loc_super = cve_ent + cve_mun + cve_loc if missing(cve_loc_super)
+}
+
+{
+    * Pop-weighted collapse to the HARMONIZED (municipality, locality)
+    * pair -- same wtsum_iml/POB_TOT formula P&V use after their own
+    * equivalencia merge (04_rollout_locality.do lines 208-211), just
+    * driven by our crosswalk instead of theirs.
+    gen double wtsum_iml = iml * POB_TOT
+    collapse (sum) wtsum_iml POB_TOT, by(cve_ent_mun_super cve_loc_super)
+    gen iml = wtsum_iml / POB_TOT
+    drop wtsum_iml
+
+    * --- P&V's exact eq.-4 mechanic (01_create_municipal_level_
+    * indicators.do lines 358-383), coarsened from their 100 bins to
+    * `nq_locshare' -- P&V's 100-bin, ~300k-observation individual-
+    * level cross-section with only 5 cohort "time" bins (100x5=500
+    * interaction terms) is not comparable to our much smaller
+    * municipality-YEAR panel (~1,400 HM municipalities x up to 16
+    * years); 100 bins x 16 years = 1,600 terms is not identified at
+    * our scale. `nq_locshare' matches the existing quintile convention
+    * (nq_ses=5) used for im90_bin/iml_loc_mun_bin in 02_mortality.do --
+    * keep the two in sync if either changes.
+    local nq_locshare = 5
+
+    egen iml_pctile = cut(iml), group(`nq_locshare')
+    tab iml_pctile, gen(Lshare_pc)
+    drop iml_pctile iml
+
+    * Pop-weighted mean of each 0/1 percentile-bin indicator, collapsed
+    * to the municipality: this IS the population share living in that
+    * bin (L^p_m in eq. 4) -- rows sum to 1 across p within each
+    * cve_ent_mun_super.
+    collapse (mean) Lshare_pc* [aw=POB_TOT], by(cve_ent_mun_super)
+
+    label var Lshare_pc1 "Share of muni. pop. in locality-marginality percentile bin 1 (least marginalized)"
+    forval p = 2/`nq_locshare' {
+        label var Lshare_pc`p' "Share of muni. pop. in locality-marginality percentile bin `p'"
+    }
+
+    sort cve_ent_mun_super
+    save "$data/MI_locshare_1995_mun.dta", replace
+    di "Saved: $data/MI_locshare_1995_mun.dta (`nq_locshare' locality-marginality percentile-share bins, P&V eq.-4 style)"
+}
+
+}
 }

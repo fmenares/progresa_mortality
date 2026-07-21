@@ -2607,78 +2607,61 @@ drop _mun_tag _im90_bin
 label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most marginalized)"
 
 *============================================================
-* iml_loc_mun / iml_loc_mun_bin: municipality-level aggregate of LOCALITY
-* marginality (population-weighted mean 1995 locality marginality index,
-* collapsed to the municipality), for AF_ses_trend specs 4-5 below. This
-* is distinct from im_mun_1990 (the municipality-level CONAPO index,
-* computed top-down, not aggregated bottom-up from localities) -- it is
-* the "locality-marginality interaction instead of the municipality one"
-* requested, and speaks to Eduardo's endogeneity concern at the within-
-* municipality locality-composition level (IADB-2/IADB-5) rather than
-* just the municipality-level scalar. Data prep (raw CSV import, cleaning,
-* geographic-code parsing) now lives in
-* 000.MI_and_pop_counts_interpolation_recoding.do, which outputs the
-* already-cleaned MI_loc_1995_recoded.dta (one row per locality: cve_ent,
-* cve_mun, cve_loc, cve_ent_mun_super, iml, TOT_VIV, POB_TOT). D0b and the
-* locality-level P&V Fig-2 analogue further below share this same file.
+* Lshare_pc1-Lshare_pc5: P&V (2023) equation-4 locality-marginality
+* PERCENTILE SHARES, for AF_ses_trend Spec 4 below (the true eq.-4
+* "Locality marg. %-ile shares" replication -- Table 2 columns (3)/(7)
+* in the paper). Lshare_pc`p' is the share of the municipality's
+* population living in localities in national locality-marginality
+* percentile bin `p' (rows sum to 1 across p within each municipality).
+* This replaces the earlier iml_loc_mun/iml_loc_mun_bin construct (a
+* single population-weighted SCALAR, or its quintile, interacted with a
+* linear year trend), which was our own invention -- P&V's actual eq.-4
+* control is the percentile-SHARE vector below, not a scalar aggregate.
+* See 000.MI_and_pop_counts_interpolation_recoding.do (section 3) for
+* the full construction (super-locality-harmonized, P&V's exact
+* egen/tab/collapse mechanic from 01_create_municipal_level_indicators.do,
+* coarsened from their 100 bins to 5 to fit our municipality-year panel).
 *
-* Non-destructive: skips (iml_loc_mun stays entirely missing, and specs
-* 4-5 are dropped from AF_ses_trend's legend) if the file isn't found --
-* mirrors D0b's own guard.
+* Non-destructive: skips (Lshare_pc* stay entirely missing, and Spec 4
+* is dropped from AF_ses_trend's legend) if the file isn't found.
 *============================================================
-local locmun_ok = 0
-cap confirm file "$data/MI_loc_1995_recoded.dta"
+local locshare_ok = 0
+cap confirm file "$data/MI_locshare_1995_mun.dta"
 if _rc {
-    di as error "Locality-marginality municipal aggregate SKIPPED: could not find $data/MI_loc_1995_recoded.dta -- run 000.MI_and_pop_counts_interpolation_recoding.do first."
+    di as error "Locality-marginality percentile shares SKIPPED: could not find $data/MI_locshare_1995_mun.dta -- run 000.MI_and_pop_counts_interpolation_recoding.do first."
 }
 else {
-    local locmun_ok = 1
+    local locshare_ok = 1
 }
 
-if `locmun_ok' {
-    preserve
-    use "$data/MI_loc_1995_recoded.dta", clear
-    drop if missing(iml) | missing(POB_TOT) | missing(cve_ent_mun_super)
-
-    * Population-weighted mean locality marginality index, collapsed to
-    * the municipality (cve_ent_mun_super, already harmonized upstream).
-    collapse (mean) iml [aw=POB_TOT], by(cve_ent_mun_super)
-    rename iml iml_loc_mun
-    duplicates drop cve_ent_mun_super, force
-    label var iml_loc_mun "Municipality mean locality marginality index (1995, pop-weighted)"
-    tempfile locmun_agg
-    save `locmun_agg'
-    restore
-
-    cap drop iml_loc_mun
-    merge m:1 cve_ent_mun_super using `locmun_agg', nogenerate
-    count if missing(iml_loc_mun) & $sample_marg & year==1996
-    di "`r(N)' HM municipalities missing the locality-marginality aggregate (iml_loc_mun) after merge"
-
-    cap drop iml_loc_mun_bin
-    egen _mun_tag2 = tag(cve_ent_mun_super)
-    xtile iml_loc_mun_bin = iml_loc_mun if _mun_tag2, nq(`nq_ses')
-    bys cve_ent_mun_super: egen _iml_loc_mun_bin = max(iml_loc_mun_bin)
-    replace iml_loc_mun_bin = _iml_loc_mun_bin
-    drop _mun_tag2 _iml_loc_mun_bin
-    label var iml_loc_mun_bin "Municipality mean locality marginality quintile (1=least, `nq_ses'=most marginalized)"
+if `locshare_ok' {
+    cap drop Lshare_pc*
+    merge m:1 cve_ent_mun_super using "$data/MI_locshare_1995_mun.dta", nogenerate
+    count if missing(Lshare_pc1) & $sample_marg & year==1996
+    di "`r(N)' HM municipalities missing the locality-marginality percentile shares (Lshare_pc*) after merge"
 }
 
 *============================================================
 * APPENDIX FIGURE: AF_ses_trend (pooled / female / male)
-* Event study (beta_k = Intensity_1999 x year) across 5 SES trend specs:
+* Event study (beta_k = Intensity_1999 x year) across 4 SES trend specs:
 *   Series 1 (black,  solid):         Baseline (W+SP)
 *   Series 2 (red,    dash):          + Trend × im_mun_1990 (municipality index)
-*   Series 3 (blue,   shortdash_dot): + Trend × 1990 marg.-index quintile (P&V 2023, municipality)
-*   Series 4 (green,  dash):          + Trend × iml_loc_mun (locality-marginality municipal aggregate)
-*   Series 5 (orange, shortdash_dot): + Trend × iml_loc_mun quintile
-* Series 4-5 mirror 2-3 but swap the municipality-level CONAPO index for
-* a municipality-level aggregate BUILT FROM locality marginality data
-* (pop-weighted mean 1995 locality iml, collapsed to the municipality --
-* see the iml_loc_mun construction above), i.e. the "locality-marginality
-* interaction instead of the municipality one." This directly speaks to
-* IADB-5 (heterogeneity/endogeneity tied to locality-level composition,
-* not just the municipality-level scalar).
+*   Series 3 (blue,   shortdash_dot): + Trend × 1990 marg.-index quintile (P&V 2023 eq. 3, municipality)
+*   Series 4 (green,  dash):          + Trend × locality marg. %-ile shares (P&V 2023 eq. 4)
+* Series 4 is P&V's actual equation-4 "Locality marg. %-ile shares"
+* control (Table 2 columns (3)/(7)) -- NOT a scalar locality-marginality
+* aggregate interacted with a trend (that was an earlier, non-P&V
+* construct of ours, since replaced). Following P&V's own
+* 04_analysis2010.do syntax exactly, the year-by-share interaction is
+* ABSORBED as a high-dimensional fixed effect (a(... year_1995#c.(Lshare_pc*))),
+* not entered as explicit regressors -- see Lshare_pc* construction
+* above and 000.MI_and_pop_counts_interpolation_recoding.do (section 3)
+* for the full percentile-share build (P&V's exact egen/tab/collapse
+* mechanic, super-locality-harmonized via our own crosswalk rather than
+* P&V's TablaEquivalencia). This directly speaks to IADB-5
+* (heterogeneity/endogeneity tied to locality-level composition, not
+* just the municipality-level scalar) more faithfully than the earlier
+* iml_loc_mun construct did.
 * A sixth spec (quintile trend, EXCLUDING Intensity_2005) was removed --
 * dropping the later-phase control from a spec whose whole purpose is
 * isolating the early-phase coefficient net of later enrollment has no
@@ -2754,18 +2737,24 @@ foreach grp in p f m {
 		}
 	}
 
-	* Spec 4: + Trend × iml_loc_mun (locality-marginality municipal
-	* aggregate, continuous) -- guarded, since iml_loc_mun depends on the
-	* locality marginality file being found (see the non-destructive guard
-	* above); on failure the series is left entirely missing rather than
-	* halting the whole figure.
+	* Spec 4: + P&V (2023) equation-4 locality-marginality percentile-
+	* SHARE control (Table 2 columns (3)/(7)) -- their exact
+	* implementation absorbs the cohort(here: year)-by-share interaction
+	* as a high-dimensional fixed effect rather than including it as
+	* explicit regressors (04_analysis2010.do: e.g.
+	* "a(MUN_PRE i.age97#i.margpct age97##c.(iml_pc*))"). We mirror that
+	* syntax exactly, substituting year_1995 for their age97 cohort
+	* variable and our Lshare_pc* (built in 000.do, section 3) for their
+	* iml_pc*. Guarded, since Lshare_pc* depends on the locality-share
+	* file being found (see the non-destructive guard above); on failure
+	* the series is left entirely missing rather than halting the figure.
 	forval pos = 1/16 {
 		local bes4_`pos'  = .
 		local sees4_`pos' = .
 	}
 	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-		c.sp_intensity c.iml_loc_mun#c.year [aw=`ywt'] if $sample_marg, ///
-		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
+		a(cve_ent_mun_super year_1995#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
 	if _rc == 0 {
 		forval pos = 1/16 {
 			if `pos' == 6 {
@@ -2779,31 +2768,7 @@ foreach grp in p f m {
 		}
 	}
 	else {
-		di as error "Spec 4 (locality-marginality trend, `grp'): reghdfe failed (rc=`_rc'), likely iml_loc_mun unavailable -- series left blank"
-	}
-
-	* Spec 5: + Trend × iml_loc_mun quintile
-	forval pos = 1/16 {
-		local bes5_`pos'  = .
-		local sees5_`pos' = .
-	}
-	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-		c.sp_intensity i.iml_loc_mun_bin#c.year [aw=`ywt'] if $sample_marg, ///
-		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	if _rc == 0 {
-		forval pos = 1/16 {
-			if `pos' == 6 {
-				local bes5_`pos'  = 0
-				local sees5_`pos' = 0
-			}
-			else {
-				local bes5_`pos'  = _b[`pos'.year_1995#c.inten1999]
-				local sees5_`pos' = _se[`pos'.year_1995#c.inten1999]
-			}
-		}
-	}
-	else {
-		di as error "Spec 5 (locality-marginality quintile trend, `grp'): reghdfe failed (rc=`_rc'), likely iml_loc_mun_bin unavailable -- series left blank"
+		di as error "Spec 4 (locality marg. %-ile shares, P&V eq. 4, `grp'): reghdfe failed (rc=`_rc'), likely Lshare_pc* unavailable -- series left blank"
 	}
 
 	* --- Plot ---
@@ -2811,12 +2776,11 @@ foreach grp in p f m {
 	clear
 	set obs 16
 	gen yr_pos = _n
-	gen xpos_1 = yr_pos - 0.36
-	gen xpos_2 = yr_pos - 0.18
-	gen xpos_3 = yr_pos
-	gen xpos_4 = yr_pos + 0.18
-	gen xpos_5 = yr_pos + 0.36
-	foreach s in 1 2 3 4 5 {
+	gen xpos_1 = yr_pos - 0.27
+	gen xpos_2 = yr_pos - 0.09
+	gen xpos_3 = yr_pos + 0.09
+	gen xpos_4 = yr_pos + 0.27
+	foreach s in 1 2 3 4 {
 		gen b_s`s'  = .
 		gen hi_s`s' = .
 		gen lo_s`s' = .
@@ -2834,9 +2798,6 @@ foreach grp in p f m {
 		replace b_s4  = `bes4_`pos''                            if yr_pos == `pos'
 		replace hi_s4 = `bes4_`pos'' + 1.96 * `sees4_`pos''    if yr_pos == `pos'
 		replace lo_s4 = `bes4_`pos'' - 1.96 * `sees4_`pos''    if yr_pos == `pos'
-		replace b_s5  = `bes5_`pos''                            if yr_pos == `pos'
-		replace hi_s5 = `bes5_`pos'' + 1.96 * `sees5_`pos''    if yr_pos == `pos'
-		replace lo_s5 = `bes5_`pos'' - 1.96 * `sees5_`pos''    if yr_pos == `pos'
 	}
 	twoway ///
 		(rcap hi_s1 lo_s1 xpos_1, lcolor(`scol'%60) lwidth(vthin) lpattern(solid)) ///
@@ -2847,13 +2808,10 @@ foreach grp in p f m {
 		(scatter b_s3 xpos_3, mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
 		(rcap hi_s4 lo_s4 xpos_4, lcolor(green%60) lwidth(vthin) lpattern(dash)) ///
 		(scatter b_s4 xpos_4, mcolor(green) msymbol(diamond) msize(vsmall)) ///
-		(rcap hi_s5 lo_s5 xpos_5, lcolor(orange%60) lwidth(vthin) lpattern(shortdash_dot)) ///
-		(scatter b_s5 xpos_5, mcolor(orange) msymbol(plus) msize(vsmall)) ///
 		(line b_s1 xpos_1 if 1==0, lcolor(`scol') lpattern(solid) lwidth(thin) mcolor(`scol') msymbol(circle) msize(vsmall)) ///
 		(line b_s2 xpos_2 if 1==0, lcolor(`scol') lpattern(dash) lwidth(thin) mcolor(`scol') msymbol(square) msize(vsmall)) ///
 		(line b_s3 xpos_3 if 1==0, lcolor(`scol') lpattern(shortdash_dot) lwidth(thin) mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
-		(line b_s4 xpos_4 if 1==0, lcolor(green) lpattern(dash) lwidth(thin) mcolor(green) msymbol(diamond) msize(vsmall)) ///
-		(line b_s5 xpos_5 if 1==0, lcolor(orange) lpattern(shortdash_dot) lwidth(thin) mcolor(orange) msymbol(plus) msize(vsmall)), ///
+		(line b_s4 xpos_4 if 1==0, lcolor(green) lpattern(dash) lwidth(thin) mcolor(green) msymbol(diamond) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -2861,8 +2819,8 @@ foreach grp in p f m {
 		xtitle("") ///
 		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 		ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
-		legend(order(11 "Baseline (W+SP)" 12 "+ Trend x Marg. Index (muni)" 13 "+ Trend x Quintile (muni)" ///
-			14 "+ Trend x Marg. Index (locality)" 15 "+ Trend x Quintile (locality)") ///
+		legend(order(9 "Baseline (W+SP)" 10 "+ Trend x Marg. Index (muni)" 11 "+ Trend x Quintile (muni, P&V eq. 3)" ///
+			12 "+ Locality marg. %-ile shares (P&V eq. 4)") ///
 			cols(2) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
@@ -3047,7 +3005,7 @@ di "Intensity snapshots now available for: 1997 1998 1999 2000 2001 2002 2003 20
 * which outputs the already-cleaned MI_loc_1995_recoded.dta (one row per
 * locality: cve_ent, cve_mun, cve_loc, cve_ent_mun_super, iml, TOT_VIV,
 * POB_TOT) -- the same file the D0b locality-composition-share control
-* and the iml_loc_mun aggregate above use.
+* and the Lshare_pc* percentile-share construction above use.
 *
 * Matches P&V's own Figure 2 construction (their paper, Fig. 2 note,
 * read directly from literature/Parker and Vogl 2023.pdf): sample
@@ -5404,8 +5362,8 @@ di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_2005 clippe
 * 000.MI_and_pop_counts_interpolation_recoding.do, which outputs the
 * already-cleaned MI_loc_1995_recoded.dta (one row per locality: cve_ent,
 * cve_mun, cve_loc, cve_ent_mun_super, iml, TOT_VIV, POB_TOT) -- the same
-* file the iml_loc_mun aggregate and the locality-level P&V Fig-2
-* analogue above use.
+* file the Lshare_pc* percentile-share construction and the locality-level
+* P&V Fig-2 analogue above use.
 *
 * Builds L^p_m: the share of each municipality's population living in
 * localities at each percentile of the NATIONAL locality-marginality
@@ -5418,6 +5376,19 @@ di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_2005 clippe
 * This is the deeper fix for Eduardo's endogeneity concern beyond
 * AT_ses_trend (which only controls for MUNICIPALITY marginality percentile,
 * not the within-municipality DISTRIBUTION of locality-level poverty).
+*
+* NOTE ON DUPLICATION WITH AF_ses_trend's Spec 4 (Lshare_pc*, above): this
+* block intentionally builds its OWN 100-bin iml_pc* inline, unharmonized
+* at the locality level, rather than reusing Lshare_pc*/MI_locshare_1995_mun.dta.
+* That is deliberate here -- P&V's own fn.18 R² benchmark (0.75) below was
+* computed with exactly 100 raw bins in a plain cross-sectional `reg`, not
+* a year-interacted panel regression, so the degrees-of-freedom problem that
+* motivated coarsening to `nq_locshare'=5 bins for AF_ses_trend's Spec 4 does
+* not apply here. It does NOT apply the super-locality harmonization crosswalk
+* (superlocs_masterdata_b1995_101121v1.dta) either -- if that turns out to
+* matter for this R² row too, re-point this block at
+* $data/MI_locshare_1995_mun.dta with group(100) instead of rebuilding iml_pc*
+* inline.
 *============================================================
 * Non-destructive existence check: do NOT exit the whole do-file if the
 * file isn't found -- just skip this block and let the rest of the
