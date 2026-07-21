@@ -3025,6 +3025,209 @@ foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
 	cap drop `v'_90
 }
 
+*============================================================
+* TABLE T2_c: SES-Trend / Heterogeneity-Control Summary
+* Point-estimate (Post-interaction, not event-study) companion to the
+* AF_ses_trend event-study figure -- same structure as T2/T2_b (Panel
+* A/B/C = Pooled/Female/Male; Intensity 1999/2005 x post rows; Mean;
+* Obs), but with one column per AF_ses_trend SES-trend/heterogeneity
+* control instead of one column per weighting/Seguro-Popular
+* combination. Uses inten1999_fix/inten2005_fix (End-of-year numerator,
+* fixed 1997 denominator), matching AF_ses_trend's own construction.
+*   Col 1: Baseline (W+SP)                                    = AF_ses_trend Spec 1
+*   Col 2: + Trend x im_mun_1990 (continuous, linear)         = AF_ses_trend Spec 2
+*   Col 3: + Trend x im_mun_1990 quintile (linear)            = AF_ses_trend Spec 3
+*   Col 4: + Municipality marg. %-ile FE (P&V eq. 3)          = AF_ses_trend Spec 4
+*   Col 5: + Locality marg. %-ile shares, flexible FE (P&V eq. 4, paper) = AF_ses_trend Spec 5
+*   Col 6: + Locality marg. %-ile shares, linear trend (P&V eq. 4, code) = AF_ses_trend Spec 6
+* Cols 5-6 are guarded (cap noisily), same as AF_ses_trend Specs 5-6:
+* if Lshare_pc* is unavailable, those columns are written as "n/a"
+* rather than halting the table.
+* Output: $tables/appendix/AT_ses_trend_summary.tex
+*============================================================
+
+foreach pnl in p f m {
+	if "`pnl'" == "p" {
+		local out65 emr65
+		local wt65  popover65_
+	}
+	else if "`pnl'" == "f" {
+		local out65 emr65f
+		local wt65  popover65_f
+	}
+	else {
+		local out65 emr65m
+		local wt65  popover65_m
+	}
+
+	foreach col in 1 2 3 4 {
+		if `col' == 1 {
+			reghdfe `out65' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 2 {
+			reghdfe `out65' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+				c.im_mun_1990#c.year ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 3 {
+			reghdfe `out65' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+				i.im90_bin#c.year ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			reghdfe `out65' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super i.year#i.margpct_pv) vce(cluster cve_ent_mun_super)
+		}
+
+		local aux: di %12.3f _b[1.post#c.inten1999_fix]
+		local t = abs(_b[1.post#c.inten1999_fix] / _se[1.post#c.inten1999_fix])
+		if      `t' >= 2.576 local b99_2c_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b99_2c_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b99_2c_`pnl'_`col' = "`aux'*"
+		else                  local b99_2c_`pnl'_`col' = "`aux'"
+		local se99_2c_`pnl'_`col': di %12.3f _se[1.post#c.inten1999_fix]
+		local aux: di %12.3f _b[1.post#c.inten2005_fix]
+		local t = abs(_b[1.post#c.inten2005_fix] / _se[1.post#c.inten2005_fix])
+		if      `t' >= 2.576 local b05_2c_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b05_2c_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b05_2c_`pnl'_`col' = "`aux'*"
+		else                  local b05_2c_`pnl'_`col' = "`aux'"
+		local se05_2c_`pnl'_`col': di %12.3f _se[1.post#c.inten2005_fix]
+
+		sum `out65' if e(sample) & year < 1997
+		local mean_2c_`pnl'_`col': di %12.2fc `r(mean)'
+		local N_2c_`pnl'_`col':    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local Nmun_2c_`pnl'_`col': di %12.0fc `r(ndistinct)'
+	}
+
+	* Cols 5-6: locality marg. %-ile shares (fully flexible FE, and linear
+	* trend) -- guarded, same as AF_ses_trend Specs 5-6, since Lshare_pc*
+	* depends on the locality-share file being found.
+	foreach col in 5 6 {
+		local b99_2c_`pnl'_`col'   = "n/a"
+		local se99_2c_`pnl'_`col'  = "n/a"
+		local b05_2c_`pnl'_`col'   = "n/a"
+		local se05_2c_`pnl'_`col'  = "n/a"
+		local mean_2c_`pnl'_`col'  = "n/a"
+		local N_2c_`pnl'_`col'     = "n/a"
+		local Nmun_2c_`pnl'_`col'  = "n/a"
+	}
+	if `locshare_ok' {
+		cap noisily reghdfe `out65' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+			[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super i.year#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
+		if _rc == 0 {
+			local aux: di %12.3f _b[1.post#c.inten1999_fix]
+			local t = abs(_b[1.post#c.inten1999_fix] / _se[1.post#c.inten1999_fix])
+			if      `t' >= 2.576 local b99_2c_`pnl'_5 = "`aux'***"
+			else if `t' >= 1.96  local b99_2c_`pnl'_5 = "`aux'**"
+			else if `t' >= 1.645 local b99_2c_`pnl'_5 = "`aux'*"
+			else                  local b99_2c_`pnl'_5 = "`aux'"
+			local se99_2c_`pnl'_5: di %12.3f _se[1.post#c.inten1999_fix]
+			local aux: di %12.3f _b[1.post#c.inten2005_fix]
+			local t = abs(_b[1.post#c.inten2005_fix] / _se[1.post#c.inten2005_fix])
+			if      `t' >= 2.576 local b05_2c_`pnl'_5 = "`aux'***"
+			else if `t' >= 1.96  local b05_2c_`pnl'_5 = "`aux'**"
+			else if `t' >= 1.645 local b05_2c_`pnl'_5 = "`aux'*"
+			else                  local b05_2c_`pnl'_5 = "`aux'"
+			local se05_2c_`pnl'_5: di %12.3f _se[1.post#c.inten2005_fix]
+			sum `out65' if e(sample) & year < 1997
+			local mean_2c_`pnl'_5: di %12.2fc `r(mean)'
+			local N_2c_`pnl'_5:    di %12.0fc `e(N)'
+			distinct cve_ent_mun_super if e(sample)
+			local Nmun_2c_`pnl'_5: di %12.0fc `r(ndistinct)'
+		}
+		else {
+			di as error "T2_c col 5 (locality marg. %-ile shares, flexible, `pnl'): reghdfe failed (rc=`_rc') -- written as n/a"
+		}
+
+		cap noisily reghdfe `out65' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+			c.(Lshare_pc*)#c.year ///
+			[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		if _rc == 0 {
+			local aux: di %12.3f _b[1.post#c.inten1999_fix]
+			local t = abs(_b[1.post#c.inten1999_fix] / _se[1.post#c.inten1999_fix])
+			if      `t' >= 2.576 local b99_2c_`pnl'_6 = "`aux'***"
+			else if `t' >= 1.96  local b99_2c_`pnl'_6 = "`aux'**"
+			else if `t' >= 1.645 local b99_2c_`pnl'_6 = "`aux'*"
+			else                  local b99_2c_`pnl'_6 = "`aux'"
+			local se99_2c_`pnl'_6: di %12.3f _se[1.post#c.inten1999_fix]
+			local aux: di %12.3f _b[1.post#c.inten2005_fix]
+			local t = abs(_b[1.post#c.inten2005_fix] / _se[1.post#c.inten2005_fix])
+			if      `t' >= 2.576 local b05_2c_`pnl'_6 = "`aux'***"
+			else if `t' >= 1.96  local b05_2c_`pnl'_6 = "`aux'**"
+			else if `t' >= 1.645 local b05_2c_`pnl'_6 = "`aux'*"
+			else                  local b05_2c_`pnl'_6 = "`aux'"
+			local se05_2c_`pnl'_6: di %12.3f _se[1.post#c.inten2005_fix]
+			sum `out65' if e(sample) & year < 1997
+			local mean_2c_`pnl'_6: di %12.2fc `r(mean)'
+			local N_2c_`pnl'_6:    di %12.0fc `e(N)'
+			distinct cve_ent_mun_super if e(sample)
+			local Nmun_2c_`pnl'_6: di %12.0fc `r(ndistinct)'
+		}
+		else {
+			di as error "T2_c col 6 (locality marg. %-ile shares, linear, `pnl'): reghdfe failed (rc=`_rc') -- written as n/a"
+		}
+	}
+}
+
+quietly sum inten1999_fix if $sample_marg & year == 1996
+local meanI99_2c: di %6.1f r(mean) * 100
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_ses_trend_summary.tex", write replace
+	file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_p_1' & `b99_2c_p_2' & `b99_2c_p_3' & `b99_2c_p_4' & `b99_2c_p_5' & `b99_2c_p_6' \\ " _n
+	file write sm " & (`se99_2c_p_1') & (`se99_2c_p_2') & (`se99_2c_p_3') & (`se99_2c_p_4') & (`se99_2c_p_5') & (`se99_2c_p_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_2c_p_1' & `b05_2c_p_2' & `b05_2c_p_3' & `b05_2c_p_4' & `b05_2c_p_5' & `b05_2c_p_6' \\ " _n
+	file write sm " & (`se05_2c_p_1') & (`se05_2c_p_2') & (`se05_2c_p_3') & (`se05_2c_p_4') & (`se05_2c_p_5') & (`se05_2c_p_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2c_p_1' & `mean_2c_p_2' & `mean_2c_p_3' & `mean_2c_p_4' & `mean_2c_p_5' & `mean_2c_p_6' \\ " _n
+	file write sm "Obs & `N_2c_p_1' & `N_2c_p_2' & `N_2c_p_3' & `N_2c_p_4' & `N_2c_p_5' & `N_2c_p_6' \\ " _n
+	file write sm "  & & & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_f_1' & `b99_2c_f_2' & `b99_2c_f_3' & `b99_2c_f_4' & `b99_2c_f_5' & `b99_2c_f_6' \\ " _n
+	file write sm " & (`se99_2c_f_1') & (`se99_2c_f_2') & (`se99_2c_f_3') & (`se99_2c_f_4') & (`se99_2c_f_5') & (`se99_2c_f_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_2c_f_1' & `b05_2c_f_2' & `b05_2c_f_3' & `b05_2c_f_4' & `b05_2c_f_5' & `b05_2c_f_6' \\ " _n
+	file write sm " & (`se05_2c_f_1') & (`se05_2c_f_2') & (`se05_2c_f_3') & (`se05_2c_f_4') & (`se05_2c_f_5') & (`se05_2c_f_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2c_f_1' & `mean_2c_f_2' & `mean_2c_f_3' & `mean_2c_f_4' & `mean_2c_f_5' & `mean_2c_f_6' \\ " _n
+	file write sm "Obs & `N_2c_f_1' & `N_2c_f_2' & `N_2c_f_3' & `N_2c_f_4' & `N_2c_f_5' & `N_2c_f_6' \\ " _n
+	file write sm "  & & & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_m_1' & `b99_2c_m_2' & `b99_2c_m_3' & `b99_2c_m_4' & `b99_2c_m_5' & `b99_2c_m_6' \\ " _n
+	file write sm " & (`se99_2c_m_1') & (`se99_2c_m_2') & (`se99_2c_m_3') & (`se99_2c_m_4') & (`se99_2c_m_5') & (`se99_2c_m_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `b05_2c_m_1' & `b05_2c_m_2' & `b05_2c_m_3' & `b05_2c_m_4' & `b05_2c_m_5' & `b05_2c_m_6' \\ " _n
+	file write sm " & (`se05_2c_m_1') & (`se05_2c_m_2') & (`se05_2c_m_3') & (`se05_2c_m_4') & (`se05_2c_m_5') & (`se05_2c_m_6') \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2c_m_1' & `mean_2c_m_2' & `mean_2c_m_3' & `mean_2c_m_4' & `mean_2c_m_5' & `mean_2c_m_6' \\ " _n
+	file write sm "Obs & `N_2c_m_1' & `N_2c_m_2' & `N_2c_m_3' & `N_2c_m_4' & `N_2c_m_5' & `N_2c_m_6' \\ " _n
+	file write sm "  & & & & & & \\ " _n
+
+	file write sm "No.\ Mun & `Nmun_2c_p_1' & `Nmun_2c_p_2' & `Nmun_2c_p_3' & `Nmun_2c_p_4' & `Nmun_2c_p_5' & `Nmun_2c_p_6' \\ " _n
+	file write sm "  & & & & & & \\ " _n
+	file write sm "SES Trend (Cont.\ Muni.\ Index) & N & Y & N & N & N & N \\ " _n
+	file write sm "SES Trend (Muni.\ Quintile) & N & N & Y & N & N & N \\ " _n
+	file write sm "Muni.\ Marg.\ \%-ile FE (P\&V eq.\ 3) & N & N & N & Y & N & N \\ " _n
+	file write sm "Locality Marg.\ \%-ile Shares, Flexible (P\&V eq.\ 4, paper) & N & N & N & N & Y & N \\ " _n
+	file write sm "Locality Marg.\ \%-ile Shares, Linear (P\&V eq.\ 4, code) & N & N & N & N & N & Y \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/appendix/AT_ses_trend_summary.tex"
+
 
 *============================================================
 * APPENDIX TABLE: Age Sub-Group Mortality (Minor Comment 7)
