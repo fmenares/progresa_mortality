@@ -505,15 +505,25 @@ base year through at least 2006. Not independently verified here;
 confirm the crosswalk's actual year coverage matches what this
 project's panel needs (through the mortality panel's later years).
 
-ASSUMPTION FLAG: crosswalk_super_loc_id_1995.dta's exact merge keys
-and harmonized-id variable name are UNVERIFIED -- placeholders below
-(raw keys cve_ent/cve_mun/cve_loc; harmonized id cve_loc_super)
-mirror crosswalk_super_mun_id_1990.dta's own naming convention
-(cve_ent_mun_super). If `describe` on the actual file shows different
-names, adjust ONLY the merge/keepusing line below. Guarded with
-`cap noisily merge`: if the merge key names/types are wrong, this
-block logs the failure and falls back to raw (unharmonized) locality
-codes rather than halting 000.do.
+VERIFIED SCHEMA (user-supplied `describe`/`list`, 45,931 obs, 3 vars):
+    id      str31   CVE_GEOEST -- raw 9-char locality code, no
+                     separators (2-digit cve_ent + 3-digit cve_mun +
+                     4-digit cve_loc concatenated, e.g. "010010001")
+    sl_id   str12   harmonized "super locality" id -- MANY raw `id`
+                     values can map to the same sl_id (e.g. raw ids
+                     010010001/010010114/010010124/010010394 all map
+                     to sl_id 010010001050), confirming this is the
+                     genuine many-to-one harmonization crosswalk.
+    dup     float   duplicate-match flag (analogous to P&V's own
+                     `dup` tag in their TablaEquivalencia handling)
+Sorted by id. Merge key is the concatenated 9-char string, NOT
+separate cve_ent/cve_mun/cve_loc columns -- built below to match
+exactly (cve_ent/cve_mun/cve_loc are already zero-padded strings
+from section 2 above, so simple concatenation reproduces the
+CVE_GEOEST format verbatim). Guarded with `cap noisily merge`: if
+the key still doesn't match (e.g. a formatting edge case), this
+block logs the failure and falls back to raw (unharmonized)
+locality codes rather than halting 000.do.
 
 OUTPUT: MI_locshare_1995_mun.dta -- one row per cve_ent_mun_super,
 with Lshare_pc1 ... Lshare_pc`nq_locshare' (population shares,
@@ -536,18 +546,22 @@ drop if missing(iml) | missing(POB_TOT)
 * --- Harmonize RAW locality codes via the locality-level crosswalk,
 * same strategy as the municipality panel (crosswalk merge -> collapse
 * split/merged units together), rather than dropping unstable units. ---
-cap noisily merge m:1 cve_ent cve_mun cve_loc using ///
-    "$data/crosswalk_super_loc_id_1995.dta", ///
-    keepusing(cve_loc_super) nogenerate
+gen id = cve_ent + cve_mun + cve_loc
+cap noisily merge m:1 id using "$data/crosswalk_super_loc_id_1995.dta", ///
+    keepusing(sl_id) keep(1 3)
 if _rc {
-    di as error "crosswalk_super_loc_id_1995.dta merge FAILED (rc=`_rc') -- likely a key name/type mismatch (see ASSUMPTION FLAG above). Falling back to raw (unharmonized) locality codes so this block can still run -- verify the crosswalk's actual variable names and re-run for the harmonized version."
-    gen cve_loc_super = cve_ent + cve_mun + cve_loc
+    di as error "crosswalk_super_loc_id_1995.dta merge FAILED (rc=`_rc') -- unexpected given the verified schema (id/sl_id/dup); check for a formatting edge case (e.g. leading/trailing spaces). Falling back to raw (unharmonized) locality codes so this block can still run."
+    gen cve_loc_super = id
 }
 else {
-    count if missing(cve_loc_super)
-    di "`r(N)' localities failed to match the super-locality crosswalk -- falling back to the raw (unharmonized) locality id for those"
-    replace cve_loc_super = cve_ent + cve_mun + cve_loc if missing(cve_loc_super)
+    cap drop _merge
+    count if missing(sl_id)
+    di "`r(N)' localities failed to match the super-locality crosswalk (crosswalk_super_loc_id_1995.dta) -- falling back to the raw (unharmonized) locality id for those"
+    gen cve_loc_super = sl_id
+    replace cve_loc_super = id if missing(cve_loc_super)
+    drop sl_id
 }
+drop id
 
 {
     * Pop-weighted collapse to the HARMONIZED (municipality, locality)
