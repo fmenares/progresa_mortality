@@ -2668,39 +2668,46 @@ if `locshare_ok' {
 *
 * Series 2-3 are OUR OWN standard DiD pre-trend robustness checks (a
 * baseline covariate interacted with a linear calendar-year trend) --
-* useful in their own right, but NOT a literal P&V eq.-3 replication:
-* P&V never use the raw continuous index (series 2 has no P&V
-* counterpart), and even their percentile-bin version (closer to
-* series 3 in spirit) is never interacted with a linear trend -- it is
-* absorbed as a FULLY FLEXIBLE cohort(year)-by-percentile-bin fixed
-* effect (04_analysis2010.do: a(MUN_PRE i.age97##i.margpct)), with no
-* assumption about the shape of the time path within a bin. Series 5
-* below is the genuine eq.-3 replication, added alongside (not
+* useful in their own right, but NOT a literal P&V eq.-3 replication.
+* Series 5 below is the genuine eq.-3 replication, added alongside (not
 * replacing) series 2-3 so the linear-trend approximation and the true
 * P&V mechanic can be compared directly on the same figure.
 *
-* Series 4 is P&V's actual equation-4 "Locality marg. %-ile shares"
-* control (Table 2 columns (3)/(7)) -- NOT a scalar locality-marginality
-* aggregate interacted with a trend (that was an earlier, non-P&V
-* construct of ours, since replaced). Following P&V's own
-* 04_analysis2010.do syntax exactly, the year-by-share interaction is
-* ABSORBED as a high-dimensional fixed effect (a(... year_1995#c.(Lshare_pc*))),
-* not entered as explicit regressors -- see Lshare_pc* construction
-* above and 000.MI_and_pop_counts_interpolation_recoding.do (section 3)
-* for the full percentile-share build (P&V's exact egen/tab/collapse
-* mechanic, super-locality-harmonized via crosswalk_super_loc_id_1995.dta
-* rather than P&V's TablaEquivalencia). This directly speaks to IADB-5
-* (heterogeneity/endogeneity tied to locality-level composition, not
-* just the municipality-level scalar) more faithfully than the earlier
-* iml_loc_mun construct did.
+* IMPORTANT, verified by reading 04_analysis2010.do character-by-
+* character (not just the paper text): P&V's eq.-3 and eq.-4 controls
+* use DIFFERENT functional forms for the cohort interaction, and their
+* eq.-4 does not replace eq.-3's term -- it ADDS to it. Confirmed
+* consistent across every occurrence in their file (~20 lines,
+* 0 exceptions):
+*   eq. 3 (municipality-percentile FE): a(MUN_PRE i.age97##i.margpct)
+*     -- i.age97 (WITH the i. prefix): FULLY FLEXIBLE cohort x
+*     percentile-bin fixed effect, no assumption about the shape of
+*     the time path within a bin.
+*   eq. 4 (locality-share control):    a(MUN_PRE i.age97#i.margpct age97##c.(iml_pc*))
+*     -- keeps the SAME i.age97#i.margpct FE from eq. 3, and ADDS
+*     age97##c.(iml_pc*) -- age97 WITHOUT the i. prefix, i.e.
+*     CONTINUOUS/LINEAR, interacted with the (continuous) locality
+*     shares. This is almost certainly deliberate: a fully flexible
+*     cohort x share-bin interaction would be exactly collinear with
+*     the cohort main effect (the shares sum to 1 for every
+*     municipality, so summing a full set of share-bin dummies within
+*     any given cohort exactly reproduces that cohort's dummy) --
+*     switching to a linear cohort trend for the shares avoids this.
 *
-* Series 5 is P&V's actual equation-3 "Muni. marg. %-ile dummies"
-* control (Table 2 columns (1)/(2)/(5)/(6)), built the same way as
-* series 4: cut im_mun_1990 into 100 national percentile bins
-* (margpct_pv, matching P&V's own group(100) resolution exactly, since
-* it is a single per-municipality categorical assignment rather than a
-* vector of shares -- no coarsening needed the way Lshare_pc* required),
-* absorbed as a(cve_ent_mun_super year_1995#i.margpct_pv).
+* Series 4 and 5 below mirror this exactly: Series 5 = the eq.-3 FE
+* alone; Series 4 = the SAME eq.-3 FE, PLUS the eq.-4 linear-trend-
+* times-locality-share addition on top (not the addition alone).
+* Substituting year_1995 for their age97 cohort variable and our
+* Lshare_pc* (000.MI_and_pop_counts_interpolation_recoding.do, section
+* 3 -- P&V's exact egen/tab/collapse mechanic, cutoff-restricted via
+* TablaEquivalencia.dta rather than crosswalk_super_loc_id_1995.dta,
+* see that file's own header) for their iml_pc*.
+*
+* margpct_pv (built below) cuts im_mun_1990 into 100 national
+* percentile bins, matching P&V's own group(100) resolution exactly
+* (no coarsening needed here, unlike Lshare_pc*, since this is a
+* single per-municipality categorical assignment, not a vector of
+* shares that must sum to 1 and be jointly estimated).
 *
 * A sixth spec (quintile trend, EXCLUDING Intensity_2005) was removed --
 * dropping the later-phase control from a spec whose whole purpose is
@@ -2779,22 +2786,28 @@ foreach grp in p f m {
 
 	* Spec 4: + P&V (2023) equation-4 locality-marginality percentile-
 	* SHARE control (Table 2 columns (3)/(7)) -- their exact
-	* implementation absorbs the cohort(here: year)-by-share interaction
-	* as a high-dimensional fixed effect rather than including it as
-	* explicit regressors (04_analysis2010.do: e.g.
-	* "a(MUN_PRE i.age97#i.margpct age97##c.(iml_pc*))"). We mirror that
-	* syntax exactly, substituting year_1995 for their age97 cohort
-	* variable and our Lshare_pc* (built in 000.do, section 3) for their
-	* iml_pc*. Guarded, since Lshare_pc* depends on the locality-share
-	* file being found (see the non-destructive guard above); on failure
-	* the series is left entirely missing rather than halting the figure.
+	* implementation (04_analysis2010.do: "a(MUN_PRE i.age97#i.margpct
+	* age97##c.(iml_pc*))") KEEPS the eq.-3 fully flexible cohort x
+	* municipality-percentile-bin FE (i.age97#i.margpct, WITH the i.
+	* prefix) AND ADDS a LINEAR cohort trend interacted with the
+	* locality shares (age97##c.(iml_pc*), age97 WITHOUT the i. prefix
+	* -- continuous, not a fully flexible interaction; see the header
+	* comment above for why: a fully flexible version would be exactly
+	* collinear with the cohort main effect, since the shares sum to 1).
+	* We mirror both pieces exactly: i.year_1995#i.margpct_pv (the
+	* carried-over eq.-3 FE) plus year_1995#c.(Lshare_pc*) (year_1995
+	* bare/continuous, matching their bare age97) for the new linear-
+	* trend-times-share addition. Guarded, since Lshare_pc* depends on
+	* the locality-share file being found (see the non-destructive
+	* guard above); on failure the series is left entirely missing
+	* rather than halting the figure.
 	forval pos = 1/16 {
 		local bes4_`pos'  = .
 		local sees4_`pos' = .
 	}
 	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
 		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
-		a(cve_ent_mun_super year_1995#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
+		a(cve_ent_mun_super i.year_1995#i.margpct_pv year_1995#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
 	if _rc == 0 {
 		forval pos = 1/16 {
 			if `pos' == 6 {
@@ -2813,14 +2826,18 @@ foreach grp in p f m {
 
 	* Spec 5: + P&V (2023) equation-3 municipality-marginality-percentile
 	* control (Table 2 columns (1)/(2)/(5)/(6)) -- their exact
-	* implementation (04_analysis2010.do: "a(MUN_PRE i.age97##i.margpct)")
-	* absorbs the cohort-by-percentile-bin interaction as a fixed effect,
-	* not a linear trend. Added ALONGSIDE (not replacing) Specs 2-3's
+	* implementation (04_analysis2010.do: "a(MUN_PRE i.age97##i.margpct)",
+	* i.age97 WITH the i. prefix) absorbs the cohort-by-percentile-bin
+	* interaction as a FULLY FLEXIBLE fixed effect, not a linear trend.
+	* i.year_1995 (WITH the i. prefix, matching i.age97) is required here
+	* -- a bare year_1995 would default to continuous, silently changing
+	* this into a linear-trend spec instead of the fully flexible FE P&V
+	* actually use for eq. 3. Added ALONGSIDE (not replacing) Specs 2-3's
 	* linear-trend approximations, so the true P&V mechanic and our own
 	* standard DiD pre-trend checks can be compared directly.
 	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
 		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
-		a(cve_ent_mun_super year_1995#i.margpct_pv) vce(cluster cve_ent_mun_super)
+		a(cve_ent_mun_super i.year_1995#i.margpct_pv) vce(cluster cve_ent_mun_super)
 	forval pos = 1/16 {
 		if `pos' == 6 {
 			local bes5_`pos'  = 0
