@@ -5168,6 +5168,13 @@ restore
 * AF_ses_trend). Controls for Intensity_2005 (same construction as
 * Intensity_1999 in each variant), matching the preferred T2
 * specification -- only Intensity_1999's coefficient is plotted.
+* A fifth series ("nomono") reproduces column 5 of
+* T2_b_mortality_fixeddenom: the same Mixed/fixed-P&V construction as
+* snap_fix, but the estimation sample additionally drops municipalities
+* where Intensity_2005 < Intensity_1999 under this construction
+* (nonmonotone_mix, built earlier in this file), since the End-of-year
+* numerator does not guarantee monotonicity -- checking whether these
+* municipalities are driving the snap_fix series here too.
 * Output: $figures/appendix/Figure_2_all_ses.pdf
 *============================================================
 {
@@ -5205,22 +5212,39 @@ else {
 
 if `ses_ok' {
 	local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-	foreach v in snap cum snap_fix cum_fix {
+	* nomono is column 5 of T2_b_mortality_fixeddenom (see that table,
+	* ~line 5430): same Mixed/fixed-P&V construction as snap_fix, but the
+	* estimation sample additionally drops municipalities where
+	* Intensity_2005 < Intensity_1999 under this construction
+	* (nonmonotone_mix, built earlier in this file at ~line 3902) --
+	* checking whether these non-monotone municipalities (the End-of-year
+	* numerator is not guaranteed monotonic) are driving the snap_fix
+	* series here too.
+	foreach v in snap cum snap_fix cum_fix nomono {
 		if "`v'" == "snap" {
 			local inten99v inten1999
 			local inten05v inten2005
+			local extracond ""
 		}
 		else if "`v'" == "cum" {
 			local inten99v inten1999_fase
 			local inten05v inten2005_fase
+			local extracond ""
 		}
 		else if "`v'" == "snap_fix" {
 			local inten99v inten1999_fix
 			local inten05v inten2005_fix
+			local extracond ""
 		}
-		else {
+		else if "`v'" == "cum_fix" {
 			local inten99v inten1999_fase_fix
 			local inten05v inten2005_fase_fix
+			local extracond ""
+		}
+		else {
+			local inten99v inten1999_fix
+			local inten05v inten2005_fix
+			local extracond "& !nonmonotone_mix"
 		}
 
 		* Default every position to missing first (see the analogous note
@@ -5231,7 +5255,7 @@ if `ses_ok' {
 			local seses_`v'_`pos' = .
 		}
 		cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 c.`inten05v'##ib6.year_1995 ///
-			c.sp_intensity i.im90_bin#c.year [aw=popover65_] if $sample_marg, ///
+			c.sp_intensity i.im90_bin#c.year [aw=popover65_] if $sample_marg `extracond', ///
 			a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		if _rc == 0 {
 			forval pos = 1/16 {
@@ -5254,17 +5278,18 @@ if `ses_ok' {
 	clear
 	set obs 16
 	gen yr_pos = _n
-	gen xpos_snap     = yr_pos - 0.27
-	gen xpos_cum      = yr_pos - 0.09
-	gen xpos_snap_fix = yr_pos + 0.09
-	gen xpos_cum_fix  = yr_pos + 0.27
-	foreach v in snap cum snap_fix cum_fix {
+	gen xpos_snap     = yr_pos - 0.36
+	gen xpos_cum      = yr_pos - 0.18
+	gen xpos_snap_fix = yr_pos
+	gen xpos_cum_fix  = yr_pos + 0.18
+	gen xpos_nomono   = yr_pos + 0.36
+	foreach v in snap cum snap_fix cum_fix nomono {
 		gen b_`v'  = .
 		gen hi_`v' = .
 		gen lo_`v' = .
 	}
 	forval pos = 1/16 {
-		foreach v in snap cum snap_fix cum_fix {
+		foreach v in snap cum snap_fix cum_fix nomono {
 			replace b_`v'  = `bses_`v'_`pos''                            if yr_pos == `pos'
 			replace hi_`v' = `bses_`v'_`pos'' + 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
 			replace lo_`v' = `bses_`v'_`pos'' - 1.96 * `seses_`v'_`pos'' if yr_pos == `pos'
@@ -5278,7 +5303,9 @@ if `ses_ok' {
 		(rcap hi_snap_fix lo_snap_fix xpos_snap_fix, lcolor(blue%60) lwidth(vthin)) ///
 		(scatter b_snap_fix xpos_snap_fix, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
 		(rcap hi_cum_fix lo_cum_fix xpos_cum_fix, lcolor(green%60) lwidth(vthin)) ///
-		(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)), ///
+		(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)) ///
+		(rcap hi_nomono lo_nomono xpos_nomono, lcolor(purple%60) lwidth(vthin)) ///
+		(scatter b_nomono xpos_nomono, mcolor(purple) msymbol(plus) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -5287,7 +5314,7 @@ if `ses_ok' {
 		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 		ylabel(, grid gmin gmax labsize(small)) ///
 		legend(order(2 "Mixed, year-varying (current)" 4 "FASE, year-varying" ///
-			6 "Mixed, fixed P&V" 8 "FASE, fixed P&V") ///
+			6 "Mixed, fixed P&V" 8 "FASE, fixed P&V" 10 "Mixed, fixed P&V, ex. non-monotone") ///
 			cols(2) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
