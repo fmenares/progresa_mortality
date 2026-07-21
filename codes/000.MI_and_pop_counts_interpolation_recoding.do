@@ -9,9 +9,8 @@ crosswalk_super_loc_id_1995.dta -- locality-level analogue of
 crosswalk_super_mun_id_1990.dta below. NOT used by section 3 (it
 harmonizes through 2018, more than this project needs) -- section 3
 instead builds its own cutoff-restricted crosswalk directly from
-"3 replication package/02_dataanalysis_data/02_dataanalysis/
-TablaEquivalencia.DTA" (already in this repo); see section 3's own
-header for details.
+TablaEquivalencia.dta (also in $data); see section 3's own header
+for details.
 
 1. Municipality level Margination Indexes (MI) from CONAPO
 1.1 Base_Indice_de_marginacion_municipal_90-15.csv 
@@ -494,18 +493,19 @@ TablaEquivalencia's fecha_act (change date) to restrict to
 "only focus on splits between 2000 and 2005" (`keep if year<=2005`),
 since their study only needs harmonization through their own rollout
 window, not indefinitely into the future. We do the same, but build
-our OWN restricted crosswalk directly from TablaEquivalencia.DTA
-(already present in this repo -- "$codes/3 replication package/
-02_dataanalysis_data/02_dataanalysis/TablaEquivalencia.DTA", 148,259
-raw change records, columns cve_ent_ori/cve_mun_ori/cve_loc_ori
-[origin code] -> cve_ent_act/cve_mun_act/cve_loc_act [destination
-code], fecha_act, cgo_act, descrip -- confirmed present and readable
-in this sandbox) rather than crosswalk_super_loc_id_1995.dta, since
-the latter has no date information to restrict by.
+our OWN restricted crosswalk directly from TablaEquivalencia.dta
+(per the user, also in $data -- 148,259 raw change records, columns
+cve_ent_ori/cve_mun_ori/cve_loc_ori [origin code] -> cve_ent_act/
+cve_mun_act/cve_loc_act [destination code], fecha_act, cgo_act,
+descrip; structure confirmed by inspecting the copy bundled with
+P&V's own replication package, "codes/3 replication package/
+02_dataanalysis_data/02_dataanalysis/TablaEquivalencia.DTA")
+rather than crosswalk_super_loc_id_1995.dta, since the latter has no
+date information to restrict by.
 
-CUTOFF: `loc_harmon_cutoff' below, defaulting to 2010 per the user
-("2005 or 2010 should be fine") -- easily changed to 2005 to match
-P&V's own choice exactly if preferred.
+CUTOFF: `loc_harmon_cutoff' below is set to 2005, matching P&V's own
+choice exactly (04_rollout_locality.do: "keep if year<=2005", per the
+user's explicit instruction to use that cutoff).
 
 FILTERING mirrors P&V's exact logic (04_rollout_locality.do lines
 66-80): drop records with no destination code (locality disappeared/
@@ -513,8 +513,8 @@ was destroyed -- nothing to remap TO), no origin code (newly created/
 reactivated -- nothing to remap FROM), and pure name changes (origin
 == destination code, no actual reclassification). Verified via direct
 inspection of TablaEquivalencia.DTA in this sandbox: within
-year<=2010, this leaves 9,841 genuine origin->destination remaps, of
-which only 41 origin codes (out of 9,729 distinct) map to MULTIPLE
+year<=2005, this leaves 4,921 genuine origin->destination remaps, of
+which only 24 origin codes (out of 4,870 distinct) map to MULTIPLE
 destinations (genuine 1:many splits) -- these are excluded from the
 remap (no single destination is assignable without additional
 population-share context, mirroring the ambiguity P&V's own `dup` tag
@@ -536,12 +536,12 @@ if _rc {
 }
 else {
 
-local loc_harmon_cutoff = 2010
+local loc_harmon_cutoff = 2005
 
 local tablaeq_ok = 0
-cap noisily confirm file "$codes/3 replication package/02_dataanalysis_data/02_dataanalysis/TablaEquivalencia.DTA"
+cap noisily confirm file "$data/TablaEquivalencia.dta"
 if _rc {
-    di as error "TablaEquivalencia.DTA not found at the expected repo path -- locality harmonization SKIPPED, falling back to raw (unharmonized) locality codes for this run."
+    di as error "TablaEquivalencia.dta not found in $data -- locality harmonization SKIPPED, falling back to raw (unharmonized) locality codes for this run."
 }
 else {
     local tablaeq_ok = 1
@@ -549,7 +549,7 @@ else {
 
 if `tablaeq_ok' {
     preserve
-    use "$codes/3 replication package/02_dataanalysis_data/02_dataanalysis/TablaEquivalencia.DTA", clear
+    use "$data/TablaEquivalencia.dta", clear
     gen year = real(substr(fecha_act, 1, 4))
     keep if year <= `loc_harmon_cutoff'
 
