@@ -80,6 +80,20 @@
     \vspace{-3mm}
     \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column (1) reproduces their original unweighted estimate; Column (2) reports our close replication. Column (3) adds population weights, which attenuates the estimate by approximately 50\% and reduces precision. \textcolor{red}{Columns~(4) and~(5) progressively trim the smallest municipalities, dropping those in the bottom 10\% and 25\% of the distribution of average older-adult (65+) population over 1992--2002; both are estimated unweighted, matching the specification of column~(2).} All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
+\newpage
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Stratification by Municipality Size}
+   \label{at:size_tercile}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.85}{
+      \input{tables/appendix/AT_size_tercile}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table addresses the concern (IADB comment 4) that trimming the smallest municipalities, as in Appendix Table~\ref{at:br_trimming}, discards observations rather than characterizing how the estimated effect varies with municipality size. Municipalities in the highly marginalized sample are split into three equal-sized groups (terciles) by their 1996 population aged 65 and older, and the main specification (column~3 of Table~\ref{t:did_age_fixeddenom}: $\textit{Intensity}_{1999} \times \textit{Post}$ and $\textit{Intensity}_{2005} \times \textit{Post}$, both using the End-of-year numerator with Parker and Vogl's fixed 1997 household denominator, plus Seguro Popular intensity controls) is estimated separately within each tercile, both unweighted and weighted by the population aged 65 and older. Panel~A reports pooled estimates; Panel~B reports estimates for females; Panel~C reports estimates for males. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+\end{table}
 
 
 \begin{table}[H]
@@ -179,7 +193,7 @@
       \input{tables/appendix/AT_threshold_validation_cellcounts}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table reports the number of highly marginalized municipalities (1996 cross-section) classified as \textit{Early}, \textit{Late-only}, or \textit{Never} under each of the three outcome-blind thresholds used in Appendix Figure~\ref{af:threshold_validation}: 15 percent (a priori); the median of $\textit{Intensity}_{1999}$; and the upper tercile of $\textit{Intensity}_{1999}$, both computed on the FASE-cumulative, fixed-1997-denominator construction in the 1996 highly marginalized cross-section. Groups are defined as in Appendix Figure~\ref{af:threshold_validation}: Early ($\textit{Intensity}_{1999}\geq c$), Late-only ($\textit{Intensity}_{1999}<c\leq\textit{Intensity}_{2005}$), Never ($\textit{Intensity}_{2005}<c$). At the 15 percent threshold the Never group is empty, since program penetration was already near-universal by 1999 in this sample (Appendix Table~\ref{at:saturation_diagnostics}); the Never group only becomes populated at the higher, distribution-based thresholds.}
+    \floatfoot{Notes: This table reports the number of highly marginalized municipalities (1996 cross-section) classified as \textit{Early}, \textit{Late-only}, \textit{Never}, or \textit{High-Low} under each of the three outcome-blind thresholds used in Appendix Figure~\ref{af:threshold_validation}: 15 percent (a priori); the median of $\textit{Intensity}_{1999}$; and the upper tercile of $\textit{Intensity}_{1999}$, computed on the End-of-year numerator with the fixed 1997 P\&V household denominator (matching column~3 of Table~\ref{t:did_age_fixeddenom}) in the 1996 highly marginalized cross-section. Groups are defined as in Appendix Figure~\ref{af:threshold_validation}: Early ($\textit{Intensity}_{1999}\geq c$ and $\textit{Intensity}_{2005}\geq c$), Late-only ($\textit{Intensity}_{1999}<c\leq\textit{Intensity}_{2005}$), Never ($\textit{Intensity}_{1999}<c$ and $\textit{Intensity}_{2005}<c$), and High-Low ($\textit{Intensity}_{1999}\geq c>\textit{Intensity}_{2005}$), the non-monotone cell that is possible under the End-of-year numerator (unlike the FASE-cumulative numerator used in earlier versions of this table, which guarantees it is empty). At the 15 percent threshold the Never group is empty, since program penetration was already near-universal by 1999 in this sample (Appendix Table~\ref{at:saturation_diagnostics}); the Never group only becomes populated at the higher, distribution-based thresholds.}
   }
 \end{table}
 
@@ -282,7 +296,7 @@ members. The second row reports the differential effect for households with elde
       \input{tables/appendix/AT_binary_es}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table reports the standard difference-in-differences estimate of a binarized $\textit{Intensity}_{1999}$ indicator interacted with \textit{Post} on the older-adult (65+) mortality rate per 1,000 inhabitants, under three alternative thresholds for classifying municipalities as high- versus low-intensity: 15 percent, the highly-marginalized-sample median, and the 75th percentile. All specifications include Seguro Popular intensity, municipality and year fixed effects, and are weighted by the population aged 65 and older. The sample is restricted to highly marginalized municipalities. The ``High'' and ``Low'' columns report the number of municipalities above and below each threshold as of 1996 (i.e., before program roll-out). This is the point-estimate companion to the year-by-year event study in Appendix Figure~\ref{af:binary_es}. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+    \floatfoot{Notes: This table reports the standard difference-in-differences estimate of a binarized $\textit{Intensity}_{1999}$ indicator (End-of-year numerator, fixed 1997 P\&V household denominator, matching column~3 of Table~\ref{t:did_age_fixeddenom}) interacted with \textit{Post} on the older-adult (65+) mortality rate per 1,000 inhabitants, under three alternative thresholds for classifying municipalities as high- versus low-intensity: 15 percent, the highly-marginalized-sample median, and the 75th percentile. All specifications include Seguro Popular intensity, municipality and year fixed effects, and are weighted by the population aged 65 and older. The sample is restricted to highly marginalized municipalities. The ``High'' and ``Low'' columns report the number of municipalities above and below each threshold as of 1996 (i.e., before program roll-out). This is the point-estimate companion to the year-by-year event study in Appendix Figure~\ref{af:binary_es}. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
 

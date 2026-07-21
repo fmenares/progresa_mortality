@@ -437,8 +437,8 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 | IADB-1 | Óscar | Why does the *identity* of the recipient matter (vs. just a budget-constraint shock)? Reduced form can't see intra-HH allocation. | **Partially addressed (framing)** | Conf. Comment 7 |
 | IADB-2 | Eduardo | Endogeneity of treatment intensity (higher intensity ↔ deeper poverty ↔ worse mortality). | **Addressed in framing, UNDER-LEVERAGED** | Conf. Comments 3, 4 |
 | IADB-3 | Óscar | "Forbidden comparisons" / staggered adoption; two-period intensity fix may not solve it. Continuous-DiD (dCDH) is the modern rebuttal. | **NEW — and paper's fn.\ is vulnerable** | — |
-| IADB-4 | Óscar | Population weights are a *parametric* way to absorb size heterogeneity; add non-parametric subsample-by-size. | **Partially addressed** | AT5 trimming |
-| IADB-5 | Luis | Heterogeneity by *beneficiary vulnerability*, not municipality size. | **NEW — not started** | — |
+| IADB-4 | Óscar | Population weights are a *parametric* way to absorb size heterogeneity; add non-parametric subsample-by-size. | **Addressed** | AT5 trimming, AT_size_tercile |
+| IADB-5 | Luis | Heterogeneity by *beneficiary vulnerability*, not municipality size. | **Addressed** | AF_pv_fig2_locality_replication, AF_ses_trend (iml_loc_mun) |
 | IADB-6 | León + Eduardo | Null may reflect poor health-*supply* quality, not program failure; use hospital openings. | **Partially addressed** | Conf. Comment 2 |
 | IADB-7 | Leonel | Migration as confounder (short-run ↓ intl. migration; long-run possibly ↑) → compositional bias. | **Addressed (text + MHAS)** | AT_migration_robustness |
 
@@ -987,6 +987,18 @@ Seven-item request. Items 1–4 implemented; item 5 answered as a diagnostic (re
 **(7) Confirmed: items 1–2 (locality-level replication figure, locality-marginality SES trend controls) directly address IADB-5** (Luis: heterogeneity/endogeneity should be examined at the level of beneficiary/locality composition, not just municipality size or a municipality-level scalar). The `iml_loc_mun` trend control (item 2) is the first concrete implementation of a locality-composition-aware robustness check outside the still-pending D0b decomposition row.
 
 **Verified via full-document `pdflatex` compile** (55 pages, 0 undefined references; all not-yet-run new/changed figures degrade to draft placeholders or show stale pre-change content as expected).
+
+---
+
+#### **PART 10: Resolving PART 9's open items — construction fix for the threshold/binary tables, size-tercile stratification table, IADB-5 tracker update**
+
+Follow-up to PART 9 items 5–7, per the user's explicit resolution: "For 5 make sure uses the preferred intensity, end of year over fixed denom. In 6, do as proposed, and in 7 implement."
+
+**(5) Both `AT_binary_es` and `AT_threshold_validation_cellcounts` switched to the preferred main construction, `inten1999_fix`/`inten2005_fix` (End-of-year numerator, Parker and Vogl's fixed 1997 household denominator).** `AT_binary_es` was a simple variable swap (median/p75 thresholds recomputed on `inten1999_fix` within the HM sample). `AT_threshold_validation_cellcounts` was **not** a simple swap: PART 9 item 5 flagged that the Early/Late-only/Never design's well-definedness depends on monotonicity, which the End-of-year construction does not guarantee (confirmed earlier, PART 8/`AT_crosswalk_supermun_diagnostic`: 25 HM municipalities have $\textit{Intensity}_{2005} < \textit{Intensity}_{1999}$). The old code used 3 sequential/overwriting `replace` statements, which silently mis-slots a High→Low municipality into "Never" once applied to non-monotonic data. **Fixed properly, not papered over:** rebuilt the group assignment as a genuine 4-way mutually exclusive partition (`gen` + independent AND-condition `replace`s, not a broadening-condition overwrite chain), adding an explicit 4th category, "High-Low (non-monotone)," for municipalities above the threshold in 1999 but below it in 2005. Added the corresponding 4th plotted series (conditionally shown only if non-empty) and a 4th row in the table. Both tables' `tables_app.tex`/`figures_app.tex` floatfeet updated to describe the End-of-year + fixed-denom construction and, for the threshold table, the new High-Low category and why it can now be non-empty.
+
+**(6) Implemented the tercile-stratification table proposed in PART 9 item 6.** New block in `codes/02_mortality.do` (after `AT5_BR_trimming`, before the `im90_bin` construction): builds 3 population terciles from 1996 `popover65_` (HM sample; same variable used for weighting elsewhere), then runs the main End-of-year + fixed-denom T2 spec (`inten1999_fix`/`inten2005_fix` interacted with `post`, plus `sp_intensity`, municipality and year FE, clustered SEs) separately within each tercile, both unweighted and population-weighted, across pooled/female/male panels. **Output:** `tables/appendix/AT_size_tercile.tex` (placeholder written; real values populate on next pipeline run), wired into `tables_app.tex` as a new table (`at:size_tercile`) immediately following `AT5_BR_trimming` (`at:br_trimming`), with a floatfoot explaining it as a non-parametric, size-varying complement to `AT5_BR_trimming`'s progressive trimming — directly answering Óscar's IADB-4 request for a genuine subsample-by-size check.
+
+**(7) IADB-5 tracker updated.** Per PART 9 item 7's confirmation, the IADB comment table's IADB-4 and IADB-5 rows are updated from "Partially addressed"/"NEW — not started" to **"Addressed"**, referencing `AT5_BR_trimming` + `AT_size_tercile` for IADB-4, and `AF_pv_fig2_locality_replication` + `AF_ses_trend`'s `iml_loc_mun` specs for IADB-5.
 
 ---
 

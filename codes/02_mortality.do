@@ -2583,6 +2583,177 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 drop pop_mun_br
 di "Table exported to: $tables/appendix/AT5_BR_trimming.tex"
 
+*============================================================
+* APPENDIX TABLE: Size-Tercile Stratification (IADB-4 follow-up).
+* Oscar's original comment: population weights are a parametric way to
+* absorb size heterogeneity; complement with a non-parametric subsample-
+* by-size check. AT5_BR_trimming above answers a narrower version of
+* this (does progressively dropping the smallest municipalities move the
+* BR-REPLICATION coefficient on the BR SAMPLE). This table answers
+* Oscar's actual ask directly: does the effect DIFFER by municipality
+* size, using the MAIN End-of-year + fixed-denom T2 spec
+* (inten1999_fix/inten2005_fix, the coauthor-preferred construction,
+* PART 7) on the full HM sample, split into 3 size terciles (per the
+* user's own proposal, using terciles of pre-period, 1996, population
+* 65+ -- the same variable used for weighting). Both unweighted and
+* weighted estimates are reported within each tercile, so the reader can
+* see directly whether population weighting matters differently by
+* municipality size, addressing Oscar's specific concern.
+* Output: $tables/appendix/AT_size_tercile.tex
+*============================================================
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super popover65_
+duplicates drop cve_ent_mun_super, force
+_pctile popover65_, percentiles(33.33 66.67)
+local p33 = r(r1)
+local p67 = r(r2)
+di "Population 65+ (1996, HM sample) tercile cutoffs: p33=`p33', p67=`p67'"
+restore
+
+cap drop pop65_1996
+g aux = popover65_ if year == 1996
+bys cve_ent_mun_super: egen pop65_1996 = min(aux)
+drop aux
+
+cap drop size_tercile
+gen byte size_tercile = 1 if pop65_1996 <= `p33' & !missing(pop65_1996)
+replace size_tercile = 2 if pop65_1996 > `p33' & pop65_1996 <= `p67'
+replace size_tercile = 3 if pop65_1996 > `p67' & !missing(pop65_1996)
+label define size_tercile_lbl 1 "Small" 2 "Medium" 3 "Large", replace
+label values size_tercile size_tercile_lbl
+
+count if year==1996 & $sample_marg & size_tercile==1
+local n_small = r(N)
+count if year==1996 & $sample_marg & size_tercile==2
+local n_medium = r(N)
+count if year==1996 & $sample_marg & size_tercile==3
+local n_large = r(N)
+di "Size terciles (HM sample, 1996): Small=`n_small' munis, Medium=`n_medium' munis, Large=`n_large' munis"
+
+foreach pnl in p f m {
+	if "`pnl'" == "p" {
+		local osfx ""
+		local wv "popover65_"
+	}
+	else if "`pnl'" == "f" {
+		local osfx "f"
+		local wv "popover65_f"
+	}
+	else {
+		local osfx "m"
+		local wv "popover65_m"
+	}
+	local depvar emr65`osfx'
+
+	matrix results_sizeterc_`pnl' = J(6, 6, .)
+	matrix colnames results_sizeterc_`pnl' = "small_uw" "small_w" "medium_uw" "medium_w" "large_uw" "large_w"
+	matrix rownames results_sizeterc_`pnl' = "b99" "se99" "b05" "se05" "n_obs" "n_mun"
+
+	local col = 1
+	foreach terc in 1 2 3 {
+		foreach wgt in uw w {
+			if "`wgt'" == "uw" {
+				reghdfe `depvar' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+					if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			else {
+				reghdfe `depvar' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity [aw=`wv'] ///
+					if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			matrix results_sizeterc_`pnl'[1,`col'] = _b[1.post#c.inten1999_fix]
+			matrix results_sizeterc_`pnl'[2,`col'] = _se[1.post#c.inten1999_fix]
+			matrix results_sizeterc_`pnl'[3,`col'] = _b[1.post#c.inten2005_fix]
+			matrix results_sizeterc_`pnl'[4,`col'] = _se[1.post#c.inten2005_fix]
+			matrix results_sizeterc_`pnl'[5,`col'] = e(N)
+			distinct cve_ent_mun_super if e(sample)
+			matrix results_sizeterc_`pnl'[6,`col'] = r(ndistinct)
+			local col = `col' + 1
+		}
+	}
+}
+
+{
+	cap file close st
+	file open st using "$tables/appendix/AT_size_tercile.tex", write replace
+	file write st "\begin{tabular}{lcccccc} \hline \hline" _n
+	file write st "& \multicolumn{2}{c}{Small} & \multicolumn{2}{c}{Medium} & \multicolumn{2}{c}{Large} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
+	file write st "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ " _n
+	file write st "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+
+	foreach pnl in p f m {
+		if "`pnl'" == "p"      local plabel "Panel A: Pooled"
+		else if "`pnl'" == "f" local plabel "Panel B: Females"
+		else                    local plabel "Panel C: Males"
+
+		file write st "\underline{\textit{`plabel'}} \\ " _n
+
+		file write st "\textit{Intensity 1999 x Post}"
+		forval col = 1/6 {
+			local coef = results_sizeterc_`pnl'[1,`col']
+			local se   = results_sizeterc_`pnl'[2,`col']
+			local t    = abs(`coef'/`se')
+			if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
+			else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
+			else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
+			else                  file write st "& " %9.3f (`coef') ""
+		}
+		file write st " \\ " _n
+
+		file write st " "
+		forval col = 1/6 {
+			local se = results_sizeterc_`pnl'[2,`col']
+			file write st "& (" %9.3f (`se') ")"
+		}
+		file write st " \\ " _n
+		file write st "  & & & & & & \\ " _n
+
+		file write st "\textit{Intensity 2005 x Post}"
+		forval col = 1/6 {
+			local coef = results_sizeterc_`pnl'[3,`col']
+			local se   = results_sizeterc_`pnl'[4,`col']
+			local t    = abs(`coef'/`se')
+			if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
+			else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
+			else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
+			else                  file write st "& " %9.3f (`coef') ""
+		}
+		file write st " \\ " _n
+
+		file write st " "
+		forval col = 1/6 {
+			local se = results_sizeterc_`pnl'[4,`col']
+			file write st "& (" %9.3f (`se') ")"
+		}
+		file write st " \\ " _n
+		file write st "  & & & & & & \\ " _n
+
+		file write st "Obs"
+		forval col = 1/6 {
+			local n = results_sizeterc_`pnl'[5,`col']
+			file write st "& " %9.0fc (`n') ""
+		}
+		file write st " \\ " _n
+
+		file write st "No. Mun"
+		forval col = 1/6 {
+			local nmun = results_sizeterc_`pnl'[6,`col']
+			file write st "& " %9.0f (`nmun') ""
+		}
+		if "`pnl'" != "m" {
+			file write st " \\ " _n
+			file write st "  & & & & & & \\ " _n
+		}
+		else {
+			file write st " \\ " _n
+		}
+	}
+	file write st "\bottomrule" _n
+	file write st "\end{tabular}"
+	file close st
+}
+di "Table exported to: $tables/appendix/AT_size_tercile.tex"
+
 
 
 
@@ -3546,6 +3717,11 @@ di "D3 saturation diagnostics complete -- see log above for stayer availability 
 * saturation there is no meaningful never-treated group, so "control" in
 * every spec = below-threshold Intensity_1999 (a HIGH-VS-LOW contrast),
 * NOT treated-vs-never -- stated explicitly in the figure/table notes.
+*
+* Uses inten1999_fix (End-of-year numerator, fixed 1997 P&V denominator)
+* -- the coauthor-preferred main specification (PART 7), matching column
+* 3 of T2_b_mortality_fixeddenom -- rather than inten1999 (year-varying
+* denominator), which this block used before that decision.
 * Output: $figures/appendix/AF_binary_es.pdf, $tables/appendix/AT_binary_es.tex
 *============================================================
 
@@ -3554,19 +3730,19 @@ local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997"
 * Determine data-driven thresholds from the HM municipality cross-section
 preserve
 keep if year == 1996 & $sample_marg
-keep cve_ent_mun_super inten1999
+keep cve_ent_mun_super inten1999_fix
 duplicates drop cve_ent_mun_super, force
-su inten1999, detail
+su inten1999_fix, detail
 local thr_p50 = r(p50)
 local thr_p75 = r(p75)
-di "Median Intensity_1999 (HM sample): " %5.3f `thr_p50'
-di "75th percentile Intensity_1999 (HM sample): " %5.3f `thr_p75'
+di "Median Intensity_1999 (End-of-year, fixed denom, HM sample): " %5.3f `thr_p50'
+di "75th percentile Intensity_1999 (End-of-year, fixed denom, HM sample): " %5.3f `thr_p75'
 restore
 
 cap drop treated_15 treated_med treated_p75
-gen treated_15  = (inten1999 >= 0.15)      if !missing(inten1999)
-gen treated_med = (inten1999 >= `thr_p50') if !missing(inten1999)
-gen treated_p75 = (inten1999 >= `thr_p75') if !missing(inten1999)
+gen treated_15  = (inten1999_fix >= 0.15)      if !missing(inten1999_fix)
+gen treated_med = (inten1999_fix >= `thr_p50') if !missing(inten1999_fix)
+gen treated_p75 = (inten1999_fix >= `thr_p75') if !missing(inten1999_fix)
 
 foreach v in treated_15 treated_med treated_p75 {
     count if $sample_marg & year==1996 & `v'==1
@@ -3999,25 +4175,38 @@ di "A1 diagnostic: `n_nonmono' of `n_tot' HM municipalities are non-monotone und
 * items 1-4 and 7). This is the raw-data companion the user asked to
 * "resurface" -- unmodeled, population-weighted mean emr65 by year, one
 * line per group, across a threshold grid, to (a) visually pre-trend-
-* test the three groups with no modeling, and (b) show directly that the
+* test the groups with no modeling, and (b) show directly that the
 * low-low ("Never") cell is empty at 15% and only becomes populated at a
 * higher threshold, matching the count correction in PART 6(7).
 *
-* Groups use the FASE-cumulative, fixed-1997-denominator construction
-* (inten1999_fase_fix / inten2005_fase_fix) -- the monotonic measure --
-* so Early/Late-only/Never are well-defined and mutually exclusive:
-*   Early(c):     Intensity_1999_fase_fix >= c
-*   Late-only(c): Intensity_1999_fase_fix <  c  AND Intensity_2005_fase_fix >= c
-*   Never(c):     Intensity_2005_fase_fix <  c
+* Groups use inten1999_fix / inten2005_fix -- the End-of-year numerator,
+* fixed 1997 P&V denominator, the coauthor-preferred main construction
+* (PART 7, column 3 of T2_b_mortality_fixeddenom) -- NOT the FASE-
+* cumulative construction this block originally used. Switching to
+* End-of-year matters here specifically because it is NOT guaranteed
+* monotonic (25 HM municipalities have Intensity_2005 < Intensity_1999;
+* AT_crosswalk_supermun_diagnostic), so the ORIGINAL three-way sequential
+* assignment (each `replace' broadening the condition and overwriting
+* the previous one) would have silently mis-classified any municipality
+* that is high at 1999 but drops back below c by 2005 as "Never" instead
+* of flagging it -- exactly the kind of silent error the FASE-cumulative
+* version could not produce (nesting was guaranteed there). Fixed here by
+* using a genuine 4-way partition on the mutually-exclusive AND-conditions
+* of (Intensity_1999 >= c, Intensity_2005 >= c), adding an explicit
+* "High-Low" (non-monotone) cell rather than letting it fall through:
+*   Early(c):     Intensity_1999_fix >= c  AND Intensity_2005_fix >= c
+*   Late-only(c): Intensity_1999_fix <  c  AND Intensity_2005_fix >= c
+*   Never(c):     Intensity_1999_fix <  c  AND Intensity_2005_fix <  c
+*   High-Low(c):  Intensity_1999_fix >= c  AND Intensity_2005_fix <  c  (non-monotone)
 *
 * Thresholds are chosen OUTCOME-BLIND, per the credibility caveat in
 * PART 6(7): 15% (the a priori cut used elsewhere in this project), and
-* the median and upper-tercile of Intensity_1999_fase_fix in the 1996
-* HM cross-section (distribution-based, not chosen to maximize any
-* visible mortality gap). Population-weighted by popover65_, pooled
-* sample only for this first build (a female/male split, and an
-* unweighted companion panel, are natural extensions -- see PART 6(7)
-* and PART 6(2) on weighting -- not built here).
+* the median and upper-tercile of Intensity_1999_fix in the 1996 HM
+* cross-section (distribution-based, not chosen to maximize any visible
+* mortality gap). Population-weighted by popover65_, pooled sample only
+* for this first build (a female/male split, and an unweighted companion
+* panel, are natural extensions -- see PART 6(7) and PART 6(2) on
+* weighting -- not built here).
 * Output: $figures/appendix/AF_threshold_validation_15.pdf,
 *         $figures/appendix/AF_threshold_validation_median.pdf,
 *         $figures/appendix/AF_threshold_validation_tercile.pdf,
@@ -4026,9 +4215,9 @@ di "A1 diagnostic: `n_nonmono' of `n_tot' HM municipalities are non-monotone und
 preserve
 keep if $sample_marg & inrange(year, 1991, 2006)
 
-count if missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
-di "`r(N)' HM municipality-years dropped for missing FASE-fixed intensity in the threshold-validation figure"
-drop if missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
+count if missing(inten1999_fix) | missing(inten2005_fix)
+di "`r(N)' HM municipality-years dropped for missing End-of-year fixed-denom intensity in the threshold-validation figure"
+drop if missing(inten1999_fix) | missing(inten2005_fix)
 
 * --- Outcome-blind thresholds from the 1996 (pre-period) cross-section ---
 * NOTE: `summarize, detail` only stores the fixed percentiles p1/p5/p10/p25/
@@ -4037,10 +4226,10 @@ drop if missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
 * previously made every municipality satisfy "Intensity_2005 < c" and fall
 * into the Never group at the tercile threshold. Use _pctile, which
 * accepts arbitrary percentiles, instead.
-_pctile inten1999_fase_fix if year == 1996, percentiles(50 67)
+_pctile inten1999_fix if year == 1996, percentiles(50 67)
 local thresh_median  = r(r1)
 local thresh_tercile = r(r2)
-di "Threshold grid (Intensity_1999, FASE-cumulative fixed-denom, 1996 HM cross-section): 15% (a priori); median = `thresh_median'; upper tercile = `thresh_tercile'"
+di "Threshold grid (Intensity_1999, End-of-year fixed-denom, 1996 HM cross-section): 15% (a priori); median = `thresh_median'; upper tercile = `thresh_tercile'"
 
 foreach spec in 15 median tercile {
     if "`spec'" == "15" {
@@ -4058,10 +4247,11 @@ foreach spec in 15 median tercile {
 
     cap drop group_`spec'
     gen byte group_`spec' = .
-    replace group_`spec' = 1 if inten1999_fase_fix >= `c'
-    replace group_`spec' = 2 if inten1999_fase_fix <  `c' & inten2005_fase_fix >= `c'
-    replace group_`spec' = 3 if inten2005_fase_fix <  `c'
-    label define group_`spec'_lbl 1 "Early" 2 "Late-only" 3 "Never", replace
+    replace group_`spec' = 1 if inten1999_fix >= `c' & inten2005_fix >= `c'
+    replace group_`spec' = 2 if inten1999_fix <  `c' & inten2005_fix >= `c'
+    replace group_`spec' = 3 if inten1999_fix <  `c' & inten2005_fix <  `c'
+    replace group_`spec' = 4 if inten1999_fix >= `c' & inten2005_fix <  `c'
+    label define group_`spec'_lbl 1 "Early" 2 "Late-only" 3 "Never" 4 "High-Low (non-monotone)", replace
     label values group_`spec' group_`spec'_lbl
 
     * --- Cell counts (municipality-level, 1996 cross-section) ---
@@ -4071,7 +4261,9 @@ foreach spec in 15 median tercile {
     local n_late_`spec' = r(N)
     count if year == 1996 & group_`spec' == 3
     local n_never_`spec' = r(N)
-    di "Threshold `spec': Early=`n_early_`spec'', Late-only=`n_late_`spec'', Never=`n_never_`spec''"
+    count if year == 1996 & group_`spec' == 4
+    local n_hl_`spec' = r(N)
+    di "Threshold `spec': Early=`n_early_`spec'', Late-only=`n_late_`spec'', Never=`n_never_`spec'', High-Low=`n_hl_`spec''"
 
     * --- Raw population-weighted group means by year ---
     * NOTE: cannot use preserve/restore here -- Stata only allows one
@@ -4103,13 +4295,18 @@ foreach spec in 15 median tercile {
         local plotcmd `"`plotcmd' (connected emr65 year if group_`spec'==3, lcolor(red) mcolor(red) msymbol(square) msize(small))"'
         local legend_order `"`legend_order' `nser' "Never""'
     }
+    if `n_hl_`spec'' > 0 {
+        local nser = `nser' + 1
+        local plotcmd `"`plotcmd' (connected emr65 year if group_`spec'==4, lcolor(orange) mcolor(orange) msymbol(diamond) msize(small))"'
+        local legend_order `"`legend_order' `nser' "High-Low""'
+    }
 
     twoway `plotcmd', ///
         xline(1997, lcolor(gs8) lpattern(dash)) ///
         xtitle("Year", size(small)) ///
         ytitle("EMR 65+ (per 1,000)", size(small)) ///
         xlabel(1991(2)2006, labsize(small)) ylabel(, labsize(small)) ///
-        legend(order(`legend_order') cols(3) size(small) position(6) ring(1) region(lcolor(none))) ///
+        legend(order(`legend_order') cols(4) size(small) position(6) ring(1) region(lcolor(none))) ///
         graphregion(color(white)) plotregion(margin(l=1 r=1))
     graph export "$figures/appendix/AF_threshold_validation_`spec'.pdf", as(pdf) replace
     use `panel_snapshot_`spec'', clear
@@ -4121,9 +4318,10 @@ file open cc using "$tables/appendix/AT_threshold_validation_cellcounts.tex", wr
 file write cc "\begin{tabular}{lccc} \hline \hline" _n
 file write cc "& 15\% (a priori) & Median & Upper tercile \\ " _n
 file write cc "Threshold value & `clabel_15' & `clabel_median' & `clabel_tercile' \\ \toprule" _n
-file write cc "Early (Intensity{\textsubscript{1999}} \$\geq\$ c) & `n_early_15' & `n_early_median' & `n_early_tercile' \\ " _n
+file write cc "Early (Intensity{\textsubscript{1999}} \$\geq\$ c, Intensity{\textsubscript{2005}} \$\geq\$ c) & `n_early_15' & `n_early_median' & `n_early_tercile' \\ " _n
 file write cc "Late-only (Intensity{\textsubscript{1999}} \$<\$ c \$\leq\$ Intensity{\textsubscript{2005}}) & `n_late_15' & `n_late_median' & `n_late_tercile' \\ " _n
-file write cc "Never (Intensity{\textsubscript{2005}} \$<\$ c) & `n_never_15' & `n_never_median' & `n_never_tercile' \\ " _n
+file write cc "Never (Intensity{\textsubscript{1999}} \$<\$ c, Intensity{\textsubscript{2005}} \$<\$ c) & `n_never_15' & `n_never_median' & `n_never_tercile' \\ " _n
+file write cc "High-Low, non-monotone (Intensity{\textsubscript{1999}} \$\geq\$ c \$>\$ Intensity{\textsubscript{2005}}) & `n_hl_15' & `n_hl_median' & `n_hl_tercile' \\ " _n
 file write cc "\bottomrule" _n
 file write cc "\end{tabular}" _n
 file close cc
