@@ -2615,19 +2615,21 @@ label var im90_bin "1990 marginalization-index quintile (1=least, `nq_ses'=most 
 * the "locality-marginality interaction instead of the municipality one"
 * requested, and speaks to Eduardo's endogeneity concern at the within-
 * municipality locality-composition level (IADB-2/IADB-5) rather than
-* just the municipality-level scalar. Shares its source file (Base_
-* marginacion_localidad_90-10.dta) with the D0b locality-composition-
-* share control and the locality-level P&V Fig-2 analogue further below.
+* just the municipality-level scalar. Data prep (raw CSV import, cleaning,
+* geographic-code parsing) now lives in
+* 000.MI_and_pop_counts_interpolation_recoding.do, which outputs the
+* already-cleaned MI_loc_1995_recoded.dta (one row per locality: cve_ent,
+* cve_mun, cve_loc, cve_ent_mun_super, iml, TOT_VIV, POB_TOT). D0b and the
+* locality-level P&V Fig-2 analogue further below share this same file.
 *
 * Non-destructive: skips (iml_loc_mun stays entirely missing, and specs
-* 4-5 are dropped from AF_ses_trend's legend) if the file isn't found at
-* the guessed path -- mirrors D0b's own guard.
+* 4-5 are dropped from AF_ses_trend's legend) if the file isn't found --
+* mirrors D0b's own guard.
 *============================================================
-global pvdata "$data/01_dataprep"
 local locmun_ok = 0
-cap confirm file "$pvdata/Base_marginacion_localidad_90-10.dta"
+cap confirm file "$data/MI_loc_1995_recoded.dta"
 if _rc {
-    di as error "Locality-marginality municipal aggregate SKIPPED: could not find $pvdata/Base_marginacion_localidad_90-10.dta -- verify/adjust the pvdata path if needed."
+    di as error "Locality-marginality municipal aggregate SKIPPED: could not find $data/MI_loc_1995_recoded.dta -- run 000.MI_and_pop_counts_interpolation_recoding.do first."
 }
 else {
     local locmun_ok = 1
@@ -2635,37 +2637,12 @@ else {
 
 if `locmun_ok' {
     preserve
-    use "$pvdata/Base_marginacion_localidad_90-10.dta", clear
-    keep if año == 1995
-
-    rename CVE_ENT CVE_EDO
-    gen id = string(CVE_LOC, "%12.0f")
-    gen CVE_MUNICIPIO = real(substr(id, -7, 3))
-    gen CVE_LOCALIDAD = real(substr(id, -4, 4))
-    drop CVE_MUN CVE_LOC id
-    rename CVE_MUNICIPIO CVE_MUN
-    rename CVE_LOCALIDAD loc
-
-    cap confirm string variable TOT_VIV
-    if !_rc {
-        replace TOT_VIV = "." if TOT_VIV == "-"
-        destring TOT_VIV, replace
-    }
-    drop if missing(iml) | missing(POB_TOT)
+    use "$data/MI_loc_1995_recoded.dta", clear
+    drop if missing(iml) | missing(POB_TOT) | missing(cve_ent_mun_super)
 
     * Population-weighted mean locality marginality index, collapsed to
-    * the municipality (raw codes), then cross-walked to cve_ent_mun_super
-    * (same crosswalk file used throughout this project).
-    collapse (mean) iml [aw=POB_TOT], by(CVE_EDO CVE_MUN)
-    rename CVE_EDO cve_ent
-    rename CVE_MUN cve_mun
-    cap tostring cve_ent, replace format(%02.0f)
-    cap tostring cve_mun, replace format(%03.0f)
-    merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
-        keepusing(cve_ent_mun_super) nogenerate
-    count if missing(cve_ent_mun_super)
-    di "`r(N)' municipalities failed the cve_ent_mun_super crosswalk match in the locality-marginality aggregate"
-    drop if missing(cve_ent_mun_super)
+    * the municipality (cve_ent_mun_super, already harmonized upstream).
+    collapse (mean) iml [aw=POB_TOT], by(cve_ent_mun_super)
     rename iml iml_loc_mun
     duplicates drop cve_ent_mun_super, force
     label var iml_loc_mun "Municipality mean locality marginality index (1995, pop-weighted)"
@@ -3065,9 +3042,12 @@ di "Intensity snapshots now available for: 1997 1998 1999 2000 2001 2002 2003 20
 * beneficiary data (fams_fase_20134xloc_f.dta, the same source
 * 00.programs_beneficiaries_recoded.do collapses to the municipality
 * level for the rest of this project) crossed with the 1995 locality
-* marginality index (Base_marginacion_localidad_90-10.dta, the same file
-* the D0b locality-composition-share control and the iml_loc_mun
-* aggregate above use).
+* marginality index. Data prep (raw CSV import/cleaning/geographic-code
+* parsing) now lives in 000.MI_and_pop_counts_interpolation_recoding.do,
+* which outputs the already-cleaned MI_loc_1995_recoded.dta (one row per
+* locality: cve_ent, cve_mun, cve_loc, cve_ent_mun_super, iml, TOT_VIV,
+* POB_TOT) -- the same file the D0b locality-composition-share control
+* and the iml_loc_mun aggregate above use.
 *
 * Matches P&V's own Figure 2 construction (their paper, Fig. 2 note,
 * read directly from literature/Parker and Vogl 2023.pdf): sample
@@ -3080,14 +3060,13 @@ di "Intensity snapshots now available for: 1997 1998 1999 2000 2001 2002 2003 20
 *
 * Non-destructive: skips (figure isn't produced, panel (a) degrades to a
 * draft placeholder in the combined figure) if either source file isn't
-* found at the guessed path.
+* found.
 * Output: $figures/appendix/AF_pv_fig2_locality_replication.pdf
 *============================================================
-global pvdata "$data/01_dataprep"
 local locfig_ok = 0
-cap confirm file "$pvdata/Base_marginacion_localidad_90-10.dta"
+cap confirm file "$data/MI_loc_1995_recoded.dta"
 if _rc {
-    di as error "Locality-level Fig-2 analogue SKIPPED: could not find $pvdata/Base_marginacion_localidad_90-10.dta"
+    di as error "Locality-level Fig-2 analogue SKIPPED: could not find $data/MI_loc_1995_recoded.dta -- run 000.MI_and_pop_counts_interpolation_recoding.do first."
 }
 else {
     cap confirm file "$data/fams_fase_20134xloc_f.dta"
@@ -3103,21 +3082,8 @@ if `locfig_ok' {
     preserve
 
     * --- Locality marginality universe (base frame; enrollment merges on) ---
-    use "$pvdata/Base_marginacion_localidad_90-10.dta", clear
-    keep if año == 1995
-    rename CVE_ENT CVE_EDO
-    gen id = string(CVE_LOC, "%12.0f")
-    gen CVE_MUNICIPIO = real(substr(id, -7, 3))
-    gen CVE_LOCALIDAD = real(substr(id, -4, 4))
-    drop CVE_MUN CVE_LOC id
-    rename CVE_MUNICIPIO CVE_MUN
-    rename CVE_LOCALIDAD loc
+    use "$data/MI_loc_1995_recoded.dta", clear
 
-    cap confirm string variable TOT_VIV
-    if !_rc {
-        replace TOT_VIV = "." if TOT_VIV == "-"
-        destring TOT_VIV, replace
-    }
     count if missing(iml)
     di "`r(N)' localities missing iml -- dropped"
     drop if missing(iml)
@@ -3126,13 +3092,6 @@ if `locfig_ok' {
     drop if missing(TOT_VIV) | TOT_VIV < 10
     di "`c(N)' localities remain (P&V report 58,221)"
 
-    rename CVE_EDO cve_ent
-    rename CVE_MUN cve_mun
-    rename loc cve_loc
-    cap tostring cve_ent, replace format(%02.0f)
-    cap tostring cve_mun, replace format(%03.0f)
-    cap tostring cve_loc, replace format(%04.0f)
-    duplicates drop cve_ent cve_mun cve_loc, force
     tempfile loc_universe
     save `loc_universe'
 
@@ -5441,18 +5400,12 @@ di "`r(N)' HM municipality-year obs with FIXED-denominator Intensity_2005 clippe
 
 *============================================================
 * D0b (PARTIAL): P&V eq.(4) LOCALITY-COMPOSITION-SHARE CONTROL
-* Per user: the P&V replication package's raw data (including
-* Base_marginacion_localidad_90-10.dta, the 1990-2010 locality-level
-* CONAPO marginality index) is available in the user's Dropbox, same as
-* every other external data source in this project -- just needs a path.
-* SET THIS PATH before running:
-*------------------------------------------------------------
-global pvdata "$data/01_dataprep"
-* ^ best guess, mirroring P&V's own internal "$data/01_dataprep/..."
-*   convention reused against our existing $data root. ADJUST if the
-*   user's actual folder is elsewhere (e.g. a "3 replication package"
-*   subfolder, or a differently-named directory).
-*------------------------------------------------------------
+* Data prep (raw CSV import/cleaning/geographic-code parsing) now lives in
+* 000.MI_and_pop_counts_interpolation_recoding.do, which outputs the
+* already-cleaned MI_loc_1995_recoded.dta (one row per locality: cve_ent,
+* cve_mun, cve_loc, cve_ent_mun_super, iml, TOT_VIV, POB_TOT) -- the same
+* file the iml_loc_mun aggregate and the locality-level P&V Fig-2
+* analogue above use.
 *
 * Builds L^p_m: the share of each municipality's population living in
 * localities at each percentile of the NATIONAL locality-marginality
@@ -5461,27 +5414,18 @@ global pvdata "$data/01_dataprep"
 * 01_create_municipal_level_indicators.do" (lines ~358-383):
 *   egen iml_pctile = cut(iml), group(100)
 *   tab iml_pctile, gen(iml_pc)                      [locality-level 0/1 dummies]
-*   collapse iml_pc* [aw=POB_TOT], by(CVE_EDO CVE_MUN) [pop-weighted mean = share]
+*   collapse iml_pc* [aw=POB_TOT], by(cve_ent cve_mun) [pop-weighted mean = share]
 * This is the deeper fix for Eduardo's endogeneity concern beyond
 * AT_ses_trend (which only controls for MUNICIPALITY marginality percentile,
 * not the within-municipality DISTRIBUTION of locality-level poverty).
-*
-* NOTE ON SCOPE: this builds the CONTROL only (does not require locality-
-* level Progresa enrollment data). The actual P&V Figure-2 ANALOGUE (a
-* scatter/lpoly plot of locality-level enrollment ratio vs. locality
-* marginality percentile) additionally requires P&V's own locality-level
-* beneficiary panel (fams_fase_20134xloc_f.dta) -- confirm separately
-* whether that specific file is also in the copied data folder before
-* that companion figure can be built; the control below does not depend
-* on it.
 *============================================================
 * Non-destructive existence check: do NOT exit the whole do-file if the
-* path guess is wrong -- just skip this block and let the rest of the
+* file isn't found -- just skip this block and let the rest of the
 * script (T3, AT6, everything already built above) run normally.
 local d0b_ok = 0
-cap confirm file "$pvdata/Base_marginacion_localidad_90-10.dta"
+cap confirm file "$data/MI_loc_1995_recoded.dta"
 if _rc {
-    di as error "D0b SKIPPED: could not find $pvdata/Base_marginacion_localidad_90-10.dta -- verify/adjust the global pvdata path above and re-run this block only (nothing else in this file depends on it)."
+    di as error "D0b SKIPPED: could not find $data/MI_loc_1995_recoded.dta -- run 000.MI_and_pop_counts_interpolation_recoding.do first (nothing else in this file depends on it)."
 }
 else {
     local d0b_ok = 1
@@ -5489,27 +5433,8 @@ else {
 
 if `d0b_ok' {
     preserve
-    use "$pvdata/Base_marginacion_localidad_90-10.dta", clear
-    di "`c(N)' localities loaded (all years) from Base_marginacion_localidad_90-10.dta"
-
-    keep if año == 1995
-    di "`c(N)' localities in the 1995 cross-section"
-
-    * Same field parsing as P&V's own 04_rollout_locality.do: CVE_LOC packs
-    * municipality (3 digits) and locality (4 digits) into one numeric ID.
-    rename CVE_ENT CVE_EDO
-    gen id = string(CVE_LOC, "%12.0f")
-    gen CVE_MUNICIPIO = real(substr(id, -7, 3))
-    gen CVE_LOCALIDAD = real(substr(id, -4, 4))
-    drop CVE_MUN CVE_LOC id
-    rename CVE_MUNICIPIO CVE_MUN
-    rename CVE_LOCALIDAD loc
-
-    cap confirm string variable TOT_VIV
-    if !_rc {
-        replace TOT_VIV = "." if TOT_VIV == "-"
-        destring TOT_VIV, replace
-    }
+    use "$data/MI_loc_1995_recoded.dta", clear
+    di "`c(N)' localities loaded (1995 cross-section) from MI_loc_1995_recoded.dta"
 
     count if missing(iml)
     di "`r(N)' localities missing the continuous marginality index (iml) -- dropped from the percentile ranking"
@@ -5525,24 +5450,15 @@ if `d0b_ok' {
     di "`r(N)' localities missing POB_TOT (population weight) -- dropped before the population-weighted collapse"
     drop if missing(POB_TOT)
 
+    count if missing(cve_ent_mun_super)
+    di "`r(N)' localities missing the harmonized cve_ent_mun_super crosswalk match -- dropped before the population-weighted collapse"
+    drop if missing(cve_ent_mun_super)
+
     * Population-weighted collapse to municipality level: the mean of each
     * 0/1 percentile dummy, weighted by locality population, equals the
     * SHARE of the municipality's population living in that percentile bin.
-    collapse (mean) iml_pc* [aw=POB_TOT], by(CVE_EDO CVE_MUN)
-    di "`c(N)' municipalities (raw CVE_EDO/CVE_MUN codes) with locality-composition shares built"
-
-    * Cross-walk from raw state/municipality codes to our harmonized
-    * cve_ent_mun_super, reusing the SAME crosswalk file already used
-    * elsewhere in this project (e.g. the spmap figures above).
-    rename CVE_EDO cve_ent
-    rename CVE_MUN cve_mun
-    cap tostring cve_ent, replace format(%02.0f)
-    cap tostring cve_mun, replace format(%03.0f)
-    merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
-        keepusing(cve_ent_mun_super) nogenerate
-    count if missing(cve_ent_mun_super)
-    di "`r(N)' municipalities failed to match the cve_ent_mun_super crosswalk -- inspect cve_ent/cve_mun format (string vs numeric, zero-padding) if this count is large"
-    drop if missing(cve_ent_mun_super)
+    collapse (mean) iml_pc* [aw=POB_TOT], by(cve_ent_mun_super)
+    di "`c(N)' municipalities with locality-composition shares built"
 
     duplicates drop cve_ent_mun_super, force
     tempfile loc_shares

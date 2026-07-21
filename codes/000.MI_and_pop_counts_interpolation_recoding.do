@@ -325,3 +325,117 @@ save "$data/MI_mun_ipolate_recoded_`year'.dta", replace
 
 }
 }
+
+/***********************************************************
+2. LOCALITY-LEVEL MARGINATION INDEX (CONAPO), 1995 CROSS-SECTION
+Mirrors the cleaning spirit of the municipal-level block above (missing-
+marker handling, destringing, geographic-code parsing), and follows
+Parker & Vogl's (2023) own use of this index in their replication code
+(01_create_municipal_level_indicators.do / 04_rollout_locality.do):
+raw CVE_LOC packs municipality (3 digits) + locality (4 digits) into a
+single numeric ID. P&V use the raw locality/municipality codes directly
+and do NOT harmonize locality (or municipality) boundaries themselves --
+only the municipality piece is harmonized here, via the crosswalk already
+used elsewhere in this project (crosswalk_super_mun_id_1990.dta), so that
+downstream code needing to collapse locality-level rows up to our
+harmonized municipality id (the iml_loc_mun aggregate; the D0b locality-
+composition-share control) has cve_ent_mun_super ready to merge on.
+
+Only the 1995 cross-section is built here -- the baseline year every
+current downstream use in 02_mortality.do actually needs (D0b, the
+municipality-level iml_loc_mun/iml_loc_mun_bin aggregate, and the
+locality-level P&V Figure-2 replication all restrict to year==1995). A
+fuller 1995-2018 interpolation, analogous to the municipal block above,
+is not built since nothing currently consumes it -- extend this section
+the same way (tsset/tsfill/ipolate by cve_ent_mun_super or cve_loc) if a
+future use needs additional years.
+
+ASSUMPTION FLAG: the exact raw column names below (CVE_ENT, CVE_MUN,
+CVE_LOC, iml, TOT_VIV, POB_TOT, año) match what this project's existing
+code in 02_mortality.do already assumed for this file (D0b, iml_loc_mun,
+AF_pv_fig2_locality_replication) before this refactor. If `describe`
+after the import below shows different names, adjust the renames in this
+section only -- everything downstream in 02_mortality.do now reads the
+already-cleaned output file and does not need to change.
+
+INPUT: Base_marginacion_localidad_90-10.csv (in $data)
+OUTPUT: MI_loc_1995_recoded.dta -- one row per locality (cve_ent, cve_mun,
+cve_loc), with iml (locality marginality index), TOT_VIV (1995 dwelling
+count), POB_TOT (1995 population), and cve_ent_mun_super (harmonized
+municipality id, for collapsing to municipality level).
+*************************************************************/
+local locality = 1
+if `locality' == 1 {
+
+import delimited "$data/Base_marginacion_localidad_90-10.csv", clear varnames(1)
+
+* CONAPO's raw CSVs commonly encode missing as "-" or "N. D." rather than
+* a true empty/numeric missing -- same idiom as the municipal file above.
+* `import delimited` may read column names in either case depending on
+* the file/Stata version; the `cap rename` pairs below normalize both
+* possibilities to the CVE_ENT/CVE_MUN/CVE_LOC/TOT_VIV/POB_TOT/año
+* spelling the rest of this section (and, before this refactor, the
+* inline code in 02_mortality.do) expects.
+cap rename cve_ent CVE_ENT
+cap rename cve_mun CVE_MUN
+cap rename cve_loc CVE_LOC
+cap rename tot_viv TOT_VIV
+cap rename pob_tot POB_TOT
+cap rename ano año
+
+foreach var in iml TOT_VIV POB_TOT {
+    cap confirm string variable `var'
+    if !_rc {
+        replace `var' = "." if `var' == "-"
+        replace `var' = "." if `var' == "N. D."
+        replace `var' = "." if `var' == ""
+        destring `var', replace
+    }
+}
+
+keep if año == 1995
+di "`c(N)' localities in the 1995 cross-section (Base_marginacion_localidad_90-10.csv)"
+
+* CVE_LOC packs municipality (3 digits) + locality (4 digits) into one
+* numeric ID -- same field parsing P&V's own 04_rollout_locality.do uses,
+* and the same parsing previously applied inline (now removed) in
+* 02_mortality.do's D0b/iml_loc_mun/Fig-2-locality blocks.
+gen id = string(CVE_LOC, "%12.0f")
+gen CVE_MUNICIPIO = real(substr(id, -7, 3))
+gen CVE_LOCALIDAD = real(substr(id, -4, 4))
+drop CVE_MUN CVE_LOC id
+rename CVE_MUNICIPIO CVE_MUN
+rename CVE_LOCALIDAD loc
+
+count if missing(iml)
+di "`r(N)' localities missing the continuous marginality index (iml)"
+
+rename CVE_ENT cve_ent
+rename CVE_MUN cve_mun
+rename loc cve_loc
+cap tostring cve_ent, replace format(%02.0f)
+cap tostring cve_mun, replace format(%03.0f)
+cap tostring cve_loc, replace format(%04.0f)
+duplicates drop cve_ent cve_mun cve_loc, force
+
+* Harmonized municipality id -- our project's own addition (P&V do not
+* harmonize boundaries themselves), needed so downstream code can collapse
+* these locality-level rows up to our municipality panel's cve_ent_mun_super.
+merge m:1 cve_ent cve_mun using "$data/crosswalk_super_mun_id_1990.dta", ///
+    keepusing(cve_ent_mun_super) nogenerate
+count if missing(cve_ent_mun_super)
+di "`r(N)' localities failed to match the cve_ent_mun_super crosswalk on (cve_ent, cve_mun) -- kept as-is, but will be treated as missing municipality by any downstream collapse"
+
+keep cve_ent cve_mun cve_loc cve_ent_mun_super iml TOT_VIV POB_TOT
+order cve_ent cve_mun cve_loc cve_ent_mun_super iml TOT_VIV POB_TOT
+
+label var iml "Locality marginality index (1995, CONAPO)"
+label var TOT_VIV "Total dwellings (1995)"
+label var POB_TOT "Total population (1995)"
+label var cve_ent_mun_super "Harmonized municipality id (crosswalk_super_mun_id_1990)"
+
+sort cve_ent cve_mun cve_loc
+save "$data/MI_loc_1995_recoded.dta", replace
+di "Saved: $data/MI_loc_1995_recoded.dta"
+
+}
