@@ -2659,45 +2659,53 @@ if `locshare_ok' {
 
 *============================================================
 * APPENDIX FIGURE: AF_ses_trend (pooled / female / male)
-* Event study (beta_k = Intensity_1999 x year) across 5 SES trend specs:
+* Event study (beta_k = Intensity_1999 x year) across 6 SES trend specs:
 *   Series 1 (black,  solid):         Baseline (W+SP)
 *   Series 2 (red,    dash):          + Trend × im_mun_1990 (municipality index, continuous, linear trend)
 *   Series 3 (blue,   shortdash_dot): + Trend × 1990 marg.-index quintile (linear trend)
-*   Series 4 (green,  dash):          + Locality marg. %-ile shares (P&V 2023 eq. 4)
-*   Series 5 (purple, longdash):      + Municipality marg. %-ile FE (P&V 2023 eq. 3, exact replication)
+*   Series 4 (purple, longdash):      + Municipality marg. %-ile FE (P&V 2023 eq. 3, exact replication)
+*   Series 5 (green,  dash):          + Locality marg. %-ile shares, fully flexible year FE (P&V 2023 eq. 4, per the PAPER)
+*   Series 6 (orange, shortdash_dot): + Locality marg. %-ile shares, linear year trend (matching P&V's literal CODE)
 *
 * Series 2-3 are OUR OWN standard DiD pre-trend robustness checks (a
 * baseline covariate interacted with a linear calendar-year trend) --
 * useful in their own right, but NOT a literal P&V eq.-3 replication.
-* Series 5 below is the genuine eq.-3 replication, added alongside (not
+* Series 4 is the genuine eq.-3 replication, added alongside (not
 * replacing) series 2-3 so the linear-trend approximation and the true
 * P&V mechanic can be compared directly on the same figure.
 *
-* IMPORTANT, verified by reading 04_analysis2010.do character-by-
-* character (not just the paper text): P&V's eq.-3 and eq.-4 controls
-* use DIFFERENT functional forms for the cohort interaction, and their
-* eq.-4 does not replace eq.-3's term -- it ADDS to it. Confirmed
-* consistent across every occurrence in their file (~20 lines,
-* 0 exceptions):
-*   eq. 3 (municipality-percentile FE): a(MUN_PRE i.age97##i.margpct)
-*     -- i.age97 (WITH the i. prefix): FULLY FLEXIBLE cohort x
-*     percentile-bin fixed effect, no assumption about the shape of
-*     the time path within a bin.
-*   eq. 4 (locality-share control):    a(MUN_PRE i.age97#i.margpct age97##c.(iml_pc*))
-*     -- keeps the SAME i.age97#i.margpct FE from eq. 3, and ADDS
-*     age97##c.(iml_pc*) -- age97 WITHOUT the i. prefix, i.e.
-*     CONTINUOUS/LINEAR, interacted with the (continuous) locality
-*     shares. This is almost certainly deliberate: a fully flexible
-*     cohort x share-bin interaction would be exactly collinear with
-*     the cohort main effect (the shares sum to 1 for every
-*     municipality, so summing a full set of share-bin dummies within
-*     any given cohort exactly reproduces that cohort's dummy) --
-*     switching to a linear cohort trend for the shares avoids this.
+* Series 5-6 (locality shares): rereading 04_analysis2010.do character-
+* by-character revealed P&V's own CODE treats the eq.-4 locality-share
+* addition as a LINEAR cohort trend (age97##c.(iml_pc*), age97 WITHOUT
+* the i. prefix -- continuous), even though it is layered on top of the
+* SAME fully flexible eq.-3 FE (i.age97#i.margpct) rather than replacing
+* it, and even though the PAPER's written equation (4) subscripts the
+* locality-share coefficient by t just like eq. 3's, implying full
+* flexibility for both. Per the user: (a) do not combine the fully
+* flexible municipality-percentile FE and a fully flexible locality-
+* share interaction in the SAME regression -- too much to ask of this
+* panel's size; (b) follow the PAPER's stated equation for the locality-
+* share term (fully flexible year FE) as its own standalone spec, not
+* P&V's literal code; and (c) additionally keep the linear-trend
+* version (matching their literal code) as a separate spec, rather than
+* silently picking one. Hence series 5 and 6 below: same Lshare_pc*
+* construction, two different functional forms for the year
+* interaction, neither one combined with the municipality-percentile FE.
 *
-* Series 4 and 5 below mirror this exactly: Series 5 = the eq.-3 FE
-* alone; Series 4 = the SAME eq.-3 FE, PLUS the eq.-4 linear-trend-
-* times-locality-share addition on top (not the addition alone).
-* Substituting year_1995 for their age97 cohort variable and our
+* Series 5 (i.year_1995#c.(Lshare_pc*), absorbed): the 5 Lshare_pc*
+* share variables sum to 1 for every municipality, so for any given
+* year the 5 share-interaction columns are exactly collinear with that
+* year's own dummy -- reghdfe handles this the same way factor
+* variables handle a dummy-variable trap (silently dropping one
+* redundant column per year), so this runs fine; only 4 of 5 per-year
+* share slopes are separately identified, which does not affect the
+* extracted year_1995#c.inten1999 coefficients.
+* Series 6 (c.(Lshare_pc*)#c.year, explicit regressor, same style as
+* series 2-3): the analogous redundancy is milder here (a plain linear
+* trend, one column, already spanned by the year dummies elsewhere in
+* the model) and is handled the same way.
+*
+* Substituting year_1995 for P&V's age97 cohort variable and our
 * Lshare_pc* (000.MI_and_pop_counts_interpolation_recoding.do, section
 * 3 -- P&V's exact egen/tab/collapse mechanic, cutoff-restricted via
 * TablaEquivalencia.dta rather than crosswalk_super_loc_id_1995.dta,
@@ -2709,11 +2717,12 @@ if `locshare_ok' {
 * single per-municipality categorical assignment, not a vector of
 * shares that must sum to 1 and be jointly estimated).
 *
-* A sixth spec (quintile trend, EXCLUDING Intensity_2005) was removed --
-* dropping the later-phase control from a spec whose whole purpose is
-* isolating the early-phase coefficient net of later enrollment has no
-* causal interpretation (see PART 4/6 in research_project.md on why
-* Intensity_2005 is a necessary nuisance control, not an optional one).
+* A seventh spec (quintile trend, EXCLUDING Intensity_2005) was
+* removed -- dropping the later-phase control from a spec whose whole
+* purpose is isolating the early-phase coefficient net of later
+* enrollment has no causal interpretation (see PART 4/6 in
+* research_project.md on why Intensity_2005 is a necessary nuisance
+* control, not an optional one).
 * Output: AF_ses_trend.pdf / AF_ses_trend_f.pdf / AF_ses_trend_m.pdf
 *============================================================
 
@@ -2784,47 +2793,7 @@ foreach grp in p f m {
 		}
 	}
 
-	* Spec 4: + P&V (2023) equation-4 locality-marginality percentile-
-	* SHARE control (Table 2 columns (3)/(7)) -- their exact
-	* implementation (04_analysis2010.do: "a(MUN_PRE i.age97#i.margpct
-	* age97##c.(iml_pc*))") KEEPS the eq.-3 fully flexible cohort x
-	* municipality-percentile-bin FE (i.age97#i.margpct, WITH the i.
-	* prefix) AND ADDS a LINEAR cohort trend interacted with the
-	* locality shares (age97##c.(iml_pc*), age97 WITHOUT the i. prefix
-	* -- continuous, not a fully flexible interaction; see the header
-	* comment above for why: a fully flexible version would be exactly
-	* collinear with the cohort main effect, since the shares sum to 1).
-	* We mirror both pieces exactly: i.year_1995#i.margpct_pv (the
-	* carried-over eq.-3 FE) plus year_1995#c.(Lshare_pc*) (year_1995
-	* bare/continuous, matching their bare age97) for the new linear-
-	* trend-times-share addition. Guarded, since Lshare_pc* depends on
-	* the locality-share file being found (see the non-destructive
-	* guard above); on failure the series is left entirely missing
-	* rather than halting the figure.
-	forval pos = 1/16 {
-		local bes4_`pos'  = .
-		local sees4_`pos' = .
-	}
-	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
-		a(cve_ent_mun_super i.year_1995#i.margpct_pv year_1995#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
-	if _rc == 0 {
-		forval pos = 1/16 {
-			if `pos' == 6 {
-				local bes4_`pos'  = 0
-				local sees4_`pos' = 0
-			}
-			else {
-				local bes4_`pos'  = _b[`pos'.year_1995#c.inten1999]
-				local sees4_`pos' = _se[`pos'.year_1995#c.inten1999]
-			}
-		}
-	}
-	else {
-		di as error "Spec 4 (locality marg. %-ile shares, P&V eq. 4, `grp'): reghdfe failed (rc=`_rc'), likely Lshare_pc* unavailable -- series left blank"
-	}
-
-	* Spec 5: + P&V (2023) equation-3 municipality-marginality-percentile
+	* Spec 4: + P&V (2023) equation-3 municipality-marginality-percentile
 	* control (Table 2 columns (1)/(2)/(5)/(6)) -- their exact
 	* implementation (04_analysis2010.do: "a(MUN_PRE i.age97##i.margpct)",
 	* i.age97 WITH the i. prefix) absorbs the cohort-by-percentile-bin
@@ -2840,13 +2809,77 @@ foreach grp in p f m {
 		a(cve_ent_mun_super i.year_1995#i.margpct_pv) vce(cluster cve_ent_mun_super)
 	forval pos = 1/16 {
 		if `pos' == 6 {
-			local bes5_`pos'  = 0
-			local sees5_`pos' = 0
+			local bes4_`pos'  = 0
+			local sees4_`pos' = 0
 		}
 		else {
-			local bes5_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local sees5_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local bes4_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local sees4_`pos' = _se[`pos'.year_1995#c.inten1999]
 		}
+	}
+
+	* Spec 5: + P&V (2023) equation-4 locality-marginality percentile-
+	* SHARE control, PAPER version -- fully flexible year FE interacted
+	* with Lshare_pc*, matching the paper's written equation (4), where
+	* the locality-share coefficient is subscripted by t just like eq.
+	* 3's. NOT combined with the municipality-percentile FE (Spec 4) in
+	* the same regression -- per the user, asking for both
+	* simultaneously is too much given this panel's size. Guarded, since
+	* Lshare_pc* depends on the locality-share file being found (see the
+	* non-destructive guard above); on failure the series is left
+	* entirely missing rather than halting the figure.
+	forval pos = 1/16 {
+		local bes5_`pos'  = .
+		local sees5_`pos' = .
+	}
+	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
+		a(cve_ent_mun_super i.year_1995#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
+	if _rc == 0 {
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local bes5_`pos'  = 0
+				local sees5_`pos' = 0
+			}
+			else {
+				local bes5_`pos'  = _b[`pos'.year_1995#c.inten1999]
+				local sees5_`pos' = _se[`pos'.year_1995#c.inten1999]
+			}
+		}
+	}
+	else {
+		di as error "Spec 5 (locality marg. %-ile shares, fully flexible, P&V eq. 4 per paper, `grp'): reghdfe failed (rc=`_rc'), likely Lshare_pc* unavailable -- series left blank"
+	}
+
+	* Spec 6: + P&V (2023) equation-4 locality-marginality percentile-
+	* SHARE control, CODE version -- Lshare_pc* interacted with a LINEAR
+	* year trend, matching P&V's own literal 04_analysis2010.do syntax
+	* (age97##c.(iml_pc*), age97 WITHOUT the i. prefix -- continuous),
+	* entered as an explicit regressor in the same style as Specs 2-3
+	* (not absorbed), rather than combined with the municipality-
+	* percentile FE the way their actual code does. Guarded, same as
+	* Spec 5.
+	forval pos = 1/16 {
+		local bes6_`pos'  = .
+		local sees6_`pos' = .
+	}
+	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity c.(Lshare_pc*)#c.year [aw=`ywt'] if $sample_marg, ///
+		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if _rc == 0 {
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local bes6_`pos'  = 0
+				local sees6_`pos' = 0
+			}
+			else {
+				local bes6_`pos'  = _b[`pos'.year_1995#c.inten1999]
+				local sees6_`pos' = _se[`pos'.year_1995#c.inten1999]
+			}
+		}
+	}
+	else {
+		di as error "Spec 6 (locality marg. %-ile shares, linear trend, P&V eq. 4 per code, `grp'): reghdfe failed (rc=`_rc'), likely Lshare_pc* unavailable -- series left blank"
 	}
 
 	* --- Plot ---
@@ -2854,12 +2887,13 @@ foreach grp in p f m {
 	clear
 	set obs 16
 	gen yr_pos = _n
-	gen xpos_1 = yr_pos - 0.36
-	gen xpos_2 = yr_pos - 0.18
-	gen xpos_3 = yr_pos
-	gen xpos_4 = yr_pos + 0.18
-	gen xpos_5 = yr_pos + 0.36
-	foreach s in 1 2 3 4 5 {
+	gen xpos_1 = yr_pos - 0.375
+	gen xpos_2 = yr_pos - 0.225
+	gen xpos_3 = yr_pos - 0.075
+	gen xpos_4 = yr_pos + 0.075
+	gen xpos_5 = yr_pos + 0.225
+	gen xpos_6 = yr_pos + 0.375
+	foreach s in 1 2 3 4 5 6 {
 		gen b_s`s'  = .
 		gen hi_s`s' = .
 		gen lo_s`s' = .
@@ -2880,6 +2914,9 @@ foreach grp in p f m {
 		replace b_s5  = `bes5_`pos''                            if yr_pos == `pos'
 		replace hi_s5 = `bes5_`pos'' + 1.96 * `sees5_`pos''    if yr_pos == `pos'
 		replace lo_s5 = `bes5_`pos'' - 1.96 * `sees5_`pos''    if yr_pos == `pos'
+		replace b_s6  = `bes6_`pos''                            if yr_pos == `pos'
+		replace hi_s6 = `bes6_`pos'' + 1.96 * `sees6_`pos''    if yr_pos == `pos'
+		replace lo_s6 = `bes6_`pos'' - 1.96 * `sees6_`pos''    if yr_pos == `pos'
 	}
 	twoway ///
 		(rcap hi_s1 lo_s1 xpos_1, lcolor(`scol'%60) lwidth(vthin) lpattern(solid)) ///
@@ -2888,15 +2925,18 @@ foreach grp in p f m {
 		(scatter b_s2 xpos_2, mcolor(`scol') msymbol(square) msize(vsmall)) ///
 		(rcap hi_s3 lo_s3 xpos_3, lcolor(`scol'%60) lwidth(vthin) lpattern(shortdash_dot)) ///
 		(scatter b_s3 xpos_3, mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
-		(rcap hi_s4 lo_s4 xpos_4, lcolor(green%60) lwidth(vthin) lpattern(dash)) ///
-		(scatter b_s4 xpos_4, mcolor(green) msymbol(diamond) msize(vsmall)) ///
-		(rcap hi_s5 lo_s5 xpos_5, lcolor(purple%60) lwidth(vthin) lpattern(longdash)) ///
-		(scatter b_s5 xpos_5, mcolor(purple) msymbol(plus) msize(vsmall)) ///
+		(rcap hi_s4 lo_s4 xpos_4, lcolor(purple%60) lwidth(vthin) lpattern(longdash)) ///
+		(scatter b_s4 xpos_4, mcolor(purple) msymbol(plus) msize(vsmall)) ///
+		(rcap hi_s5 lo_s5 xpos_5, lcolor(green%60) lwidth(vthin) lpattern(dash)) ///
+		(scatter b_s5 xpos_5, mcolor(green) msymbol(diamond) msize(vsmall)) ///
+		(rcap hi_s6 lo_s6 xpos_6, lcolor(orange%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+		(scatter b_s6 xpos_6, mcolor(orange) msymbol(x) msize(vsmall)) ///
 		(line b_s1 xpos_1 if 1==0, lcolor(`scol') lpattern(solid) lwidth(thin) mcolor(`scol') msymbol(circle) msize(vsmall)) ///
 		(line b_s2 xpos_2 if 1==0, lcolor(`scol') lpattern(dash) lwidth(thin) mcolor(`scol') msymbol(square) msize(vsmall)) ///
 		(line b_s3 xpos_3 if 1==0, lcolor(`scol') lpattern(shortdash_dot) lwidth(thin) mcolor(`scol') msymbol(triangle) msize(vsmall)) ///
-		(line b_s4 xpos_4 if 1==0, lcolor(green) lpattern(dash) lwidth(thin) mcolor(green) msymbol(diamond) msize(vsmall)) ///
-		(line b_s5 xpos_5 if 1==0, lcolor(purple) lpattern(longdash) lwidth(thin) mcolor(purple) msymbol(plus) msize(vsmall)), ///
+		(line b_s4 xpos_4 if 1==0, lcolor(purple) lpattern(longdash) lwidth(thin) mcolor(purple) msymbol(plus) msize(vsmall)) ///
+		(line b_s5 xpos_5 if 1==0, lcolor(green) lpattern(dash) lwidth(thin) mcolor(green) msymbol(diamond) msize(vsmall)) ///
+		(line b_s6 xpos_6 if 1==0, lcolor(orange) lpattern(shortdash_dot) lwidth(thin) mcolor(orange) msymbol(x) msize(vsmall)), ///
 		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
 		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
 		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -2904,8 +2944,9 @@ foreach grp in p f m {
 		xtitle("") ///
 		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 		ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
-		legend(order(11 "Baseline (W+SP)" 12 "+ Trend x Marg. Index (muni, linear)" 13 "+ Trend x Quintile (muni, linear)" ///
-			14 "+ Locality marg. %-ile shares (P&V eq. 4)" 15 "+ Muni. marg. %-ile FE (P&V eq. 3)") ///
+		legend(order(13 "Baseline (W+SP)" 14 "+ Trend x Marg. Index (muni, linear)" 15 "+ Trend x Quintile (muni, linear)" ///
+			16 "+ Muni. marg. %-ile FE (P&V eq. 3)" 17 "+ Locality marg. %-ile shares, flexible (P&V eq. 4, paper)" ///
+			18 "+ Locality marg. %-ile shares, linear (P&V eq. 4, code)") ///
 			cols(2) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
