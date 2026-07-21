@@ -1018,6 +1018,23 @@ Two-item follow-up request: "Item 6 should only be for pooled. Also Add a column
 
 ---
 
+#### **PART 12: Two-binary version of the threshold model (D2b) — implements the "give the binarized design its own later-phase split" recommendation from PART 6(6)**
+
+User recalled PART 6(6)'s critique of the single-cut `D2`/`AT_binary_es` design and asked to implement the fix as an **additional** result (not a replacement), with the figure/table notes explicit about which thresholds are used, cross-referencing the existing table.
+
+**Background (PART 6(6)(a), quoted in code comments):** a pure `High_1999 = 1[Intensity_1999 >= c]` cut treats "low" as a control group, but since 0/1,119 HM municipalities ever cross 15% by 2006, the "low" group keeps enrolling through 2000–2005 — a static high-vs-low contrast conflates the early-phase effect with this later-phase catch-up. The recommended fix: give the binarized design its own later-phase split, i.e. **two** binary indicators mirroring the continuous T2 spec's two intensity variables, not one.
+
+**Implemented as new section D2b** (`codes/02_mortality.do`, immediately after D2/`AT_binary_es`, before the R² robustness section — same position class as D2, i.e. after `inten1999_fix`/`inten2005_fix` exist):
+- Built `treated05_15`/`treated05_med`/`treated05_p75` = $\mathbb{1}[\textit{Intensity}_{2005,\text{fix}} \geq c]$, using the **exact same three thresholds** already computed in D2 (15% a priori, `thr_p50`, `thr_p75` — the median/75th percentile of $\textit{Intensity}_{1999}$ in the 1996 HM cross-section), applied to $\textit{Intensity}_{2005}$ instead — matching the convention `AT_threshold_validation_cellcounts` already uses (same cutoff $c$ applied to both intensity years).
+- **Event-study companion** (`AF_binary_es_2bin_{15,med,p75}.pdf`, one panel per threshold, combined into a 3-subfigure figure `af:binary_es_2bin`): for each threshold, jointly estimates `c.treated_X##ib6.year_1995 c.treated05_X##ib6.year_1995 c.sp_intensity` and overlays both the $\textit{High}_{1999}$ (black) and $\textit{High}_{2005}$ (green) year-by-year coefficient series in the same panel, offset in x.
+- **Point-estimate companion table** (`AT_binary_es_2bin.tex`, `at:binary_es_2bin`): for each threshold, `emr65` on `c.treated_X#i.post c.treated05_X#i.post c.sp_intensity`, reporting both $\hat\beta$'s with SEs/stars, N, and the new $\textit{High}_{2005}$/$\textit{Low}_{2005}$ municipality counts. Reuses the `threshname1/2/3` locals from D2 so threshold labels are character-identical to `AT_binary_es`.
+- **Explicit threshold cross-referencing, per the user's ask:** both the table's and figure's `floatfoot` state in bold that the three thresholds are *exactly* those in Appendix Table~`at:binary_es` (15%, median, 75th percentile of $\textit{Intensity}_{1999}$, HM 1996 cross-section) and direct the reader there for the exact numeric cutoff values and the $\textit{High}_{1999}$/$\textit{Low}_{1999}$ counts, rather than duplicating them — only the new $\textit{High}_{2005}$/$\textit{Low}_{2005}$ counts are reported in the new table.
+- Wired into `tables_app.tex` (new table right after `at:binary_es`) and `figures_app.tex` (new figure right after `af:binary_es`). Placeholder `AT_binary_es_2bin.tex` written (blank cells; real values populate on next pipeline run); the three new figure PDFs don't exist yet and degrade to draft placeholders, same as other not-yet-run figures in this file.
+
+**Verified:** brace balance (1170/1170) and a three-pass `pdflatex` compile (59 pages, 0 undefined/changed references — a third pass was needed this round to clear a transient "Label(s) may have changed" warning from the new cross-references).
+
+---
+
 ### Pending: Pipeline Run for R² Validation
 
 **Next Step:** Run full pipeline with new beneficiary-source comparison active:

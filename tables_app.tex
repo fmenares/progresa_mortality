@@ -301,6 +301,21 @@ members. The second row reports the differential effect for households with elde
 \end{table}
 
 
+\begin{table}[H]
+\RawCaption%
+  {\caption{Two-Binary Version: High $\textit{Intensity}_{1999}$ and High $\textit{Intensity}_{2005}$, Threshold Sensitivity}
+   \label{at:binary_es_2bin}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.95}{
+      \input{tables/appendix/AT_binary_es_2bin}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports an additional result alongside Appendix Table~\ref{at:binary_es}: instead of a single high-vs-low indicator on $\textit{Intensity}_{1999}$ alone, it gives the binarized design its own later-phase split, with two binary indicators entered jointly -- $\textit{High}_{1999}=\mathbb{1}[\textit{Intensity}_{1999}\geq c]$ and $\textit{High}_{2005}=\mathbb{1}[\textit{Intensity}_{2005}\geq c]$ (both End-of-year numerator, fixed 1997 P\&V household denominator) -- each interacted with \textit{Post}, mirroring the two-intensity structure of the continuous specification in column~3 of Table~\ref{t:did_age_fixeddenom}. This addresses the concern that a single-cut binarization treats the below-threshold group as if it were an untreated control, when under program saturation that group keeps enrolling through 2000--2005; a static high-vs-low contrast on $\textit{Intensity}_{1999}$ alone would conflate the early-phase effect with this later-phase catch-up. \textbf{The three threshold rows use exactly the same cutoffs as Appendix Table~\ref{at:binary_es}} -- 15 percent (a priori); the highly-marginalized-sample median; and the 75th percentile of $\textit{Intensity}_{1999}$ -- applied to both $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$; see Table~\ref{at:binary_es} for the exact numeric threshold values and the $\textit{High}_{1999}$/$\textit{Low}_{1999}$ municipality counts, not repeated here. The High\textsubscript{2005}/Low\textsubscript{2005} columns report the number of municipalities above/below each threshold on $\textit{Intensity}_{2005}$ as of 1996. All specifications include Seguro Popular intensity, municipality and year fixed effects, and are weighted by the population aged 65 and older. The sample is restricted to highly marginalized municipalities. This is the point-estimate companion to the year-by-year event study in Appendix Figure~\ref{af:binary_es_2bin}. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+
+
 % \begin{landscape}
 % \begin{table}[H]
 % \RawCaption%

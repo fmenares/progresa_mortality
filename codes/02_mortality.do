@@ -3929,6 +3929,196 @@ foreach v in treated_15 treated_med treated_p75 {
 }
 di "Table exported to: $tables/appendix/AT_binary_es.tex"
 
+*============================================================
+* D2b: TWO-BINARY VERSION OF THE THRESHOLD MODEL (ADDITIONAL result
+* alongside D2 above -- does not replace it). Addresses the critique in
+* research_project.md (PART 6(6)(a) and its "Net recommendation"): a
+* single high-vs-low cut on Intensity_1999 alone treats "low" as if it
+* were a control group, but under saturation the low group keeps
+* enrolling through 2000-2005, so its own later-phase catch-up
+* contaminates the high-vs-low mortality gap ("the binarized version
+* needs its own later-phase split -- it collapses back to the
+* {Early, Late-only, Never} design, not a simpler alternative to it").
+* The fix: TWO binary indicators, mirroring the continuous T2
+* specification's two intensity variables, instead of one:
+*   High_1999 = 1[Intensity_1999_fix >= c]  (= treated_15/treated_med/
+*                                              treated_p75 from D2 above)
+*   High_2005 = 1[Intensity_2005_fix >= c]  (new: treated05_15/_med/_p75)
+* both entered as separate Post-interactions, giving the "low" group an
+* explicit later-phase escape route instead of collapsing it into a
+* single static contrast.
+*
+* Uses the SAME threshold grid as D2/AT_binary_es (15% a priori; median
+* and 75th percentile of Intensity_1999_fix, HM sample, 1996 cross-
+* section -- thr_p50/thr_p75 computed in D2 above), applied to BOTH
+* Intensity_1999 and Intensity_2005, matching the convention already
+* used in the Early/Late-only/Never/High-Low categorical design
+* (AT_threshold_validation_cellcounts). Appendix Table~at:binary_es
+* reports the exact numeric threshold values and the High_1999/Low_1999
+* municipality counts; this section's own table cross-references that
+* one rather than repeating them, and adds the new High_2005/Low_2005
+* counts.
+* Output: $figures/appendix/AF_binary_es_2bin_{15,med,p75}.pdf,
+*         $tables/appendix/AT_binary_es_2bin.tex
+*============================================================
+cap drop treated05_15 treated05_med treated05_p75
+gen treated05_15  = (inten2005_fix >= 0.15)      if !missing(inten2005_fix)
+gen treated05_med = (inten2005_fix >= `thr_p50') if !missing(inten2005_fix)
+gen treated05_p75 = (inten2005_fix >= `thr_p75') if !missing(inten2005_fix)
+
+foreach v in treated05_15 treated05_med treated05_p75 {
+    count if $sample_marg & year==1996 & `v'==1
+    local n1_`v' = r(N)
+    count if $sample_marg & year==1996 & `v'==0
+    local n0_`v' = r(N)
+    di "`v': `n1_`v'' high / `n0_`v'' low (HM municipalities, 1996)"
+}
+
+* --- Event study: for each threshold, overlay High_1999 and High_2005 ---
+foreach spec in 15 med p75 {
+    if "`spec'" == "15" {
+        local v99 treated_15
+        local v05 treated05_15
+        local panellabel "Threshold: 15%"
+    }
+    else if "`spec'" == "med" {
+        local v99 treated_med
+        local v05 treated05_med
+        local panellabel "Threshold: median"
+    }
+    else {
+        local v99 treated_p75
+        local v05 treated05_p75
+        local panellabel "Threshold: 75th percentile"
+    }
+
+    reghdfe emr65 c.`v99'##ib6.year_1995 c.`v05'##ib6.year_1995 c.sp_intensity ///
+        [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    forval pos = 1/16 {
+        if `pos' == 6 {
+            local b99_`pos'  = 0
+            local se99_`pos' = 0
+            local b05_`pos'  = 0
+            local se05_`pos' = 0
+        }
+        else {
+            local b99_`pos'  = _b[`pos'.year_1995#c.`v99']
+            local se99_`pos' = _se[`pos'.year_1995#c.`v99']
+            local b05_`pos'  = _b[`pos'.year_1995#c.`v05']
+            local se05_`pos' = _se[`pos'.year_1995#c.`v05']
+        }
+    }
+
+    preserve
+    clear
+    set obs 16
+    gen yr_pos = _n
+    gen xpos99 = yr_pos - 0.12
+    gen xpos05 = yr_pos + 0.12
+    gen b99  = .
+    gen hi99 = .
+    gen lo99 = .
+    gen b05  = .
+    gen hi05 = .
+    gen lo05 = .
+    forval pos = 1/16 {
+        replace b99  = `b99_`pos''                        if yr_pos == `pos'
+        replace hi99 = `b99_`pos'' + 1.96 * `se99_`pos'' if yr_pos == `pos'
+        replace lo99 = `b99_`pos'' - 1.96 * `se99_`pos'' if yr_pos == `pos'
+        replace b05  = `b05_`pos''                        if yr_pos == `pos'
+        replace hi05 = `b05_`pos'' + 1.96 * `se05_`pos'' if yr_pos == `pos'
+        replace lo05 = `b05_`pos'' - 1.96 * `se05_`pos'' if yr_pos == `pos'
+    }
+
+    twoway ///
+        (rcap hi99 lo99 xpos99, lcolor(black%60) lwidth(vthin)) ///
+        (scatter b99 xpos99, mcolor(black) msymbol(circle) msize(vsmall)) ///
+        (rcap hi05 lo05 xpos05, lcolor(green%60) lwidth(vthin)) ///
+        (scatter b05 xpos05, mcolor(green) msymbol(diamond) msize(vsmall)), ///
+        yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+        xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+        xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+        xscale(range(0.5 16.5)) ///
+        xtitle("") ///
+        ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+        ylabel(, grid gmin gmax labsize(small)) ///
+        title("`panellabel'", size(small)) ///
+        legend(order(2 "High Intensity 1999" 4 "High Intensity 2005") ///
+            cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
+        graphregion(color(white)) ///
+        plotregion(margin(l=1 r=1))
+    graph export "$figures/appendix/AF_binary_es_2bin_`spec'.pdf", as(pdf) replace
+    restore
+}
+di "Figures exported to: $figures/appendix/AF_binary_es_2bin_{15,med,p75}.pdf"
+
+*------------------------------------------------------------
+* Companion TABLE: two-binary Post-interaction estimates (mirrors D2's
+* AT_binary_es point-estimate companion, but reports BOTH
+* High_1999xPost and High_2005xPost together per threshold, rather than
+* the single coefficient in AT_binary_es). Reuses threshname1/2/3
+* (defined in D2 above) so the threshold labels match AT_binary_es
+* exactly. High_1999/Low_1999 counts are NOT repeated here -- see
+* Appendix Table~at:binary_es -- only the new High_2005/Low_2005 counts
+* are reported.
+* Output: $tables/appendix/AT_binary_es_2bin.tex
+*------------------------------------------------------------
+local i = 0
+foreach spec in 15 med p75 {
+    local ++i
+    if "`spec'" == "15" {
+        local v99 treated_15
+        local v05 treated05_15
+    }
+    else if "`spec'" == "med" {
+        local v99 treated_med
+        local v05 treated05_med
+    }
+    else {
+        local v99 treated_p75
+        local v05 treated05_p75
+    }
+    reghdfe emr65 c.`v99'#i.post c.`v05'#i.post c.sp_intensity ///
+        [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+
+    local aux : di %9.3f _b[1.post#c.`v99']
+    local tstat = abs(_b[1.post#c.`v99'] / _se[1.post#c.`v99'])
+    if      `tstat' >= 2.576 local b99t_`i' = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local b99t_`i' = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local b99t_`i' = trim("`aux'") + "*"
+    else                     local b99t_`i' = trim("`aux'")
+    local se99t_`i' : di %9.3f _se[1.post#c.`v99']
+
+    local aux : di %9.3f _b[1.post#c.`v05']
+    local tstat = abs(_b[1.post#c.`v05'] / _se[1.post#c.`v05'])
+    if      `tstat' >= 2.576 local b05t_`i' = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local b05t_`i' = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local b05t_`i' = trim("`aux'") + "*"
+    else                     local b05t_`i' = trim("`aux'")
+    local se05t_`i' : di %9.3f _se[1.post#c.`v05']
+
+    local Nt2_`i' : di %12.0fc e(N)
+}
+
+{
+    cap file close bin2
+    file open bin2 using "$tables/appendix/AT_binary_es_2bin.tex", write replace
+    file write bin2 "\begin{tabular}{lccccc} \hline \hline" _n
+    file write bin2 "Threshold & Intensity 1999 x Post & Intensity 2005 x Post & Obs & High\textsubscript{2005} & Low\textsubscript{2005} \\ \toprule" _n
+    file write bin2 "`threshname1' & `b99t_1' & `b05t_1' & `Nt2_1' & `n1_treated05_15' & `n0_treated05_15' \\ " _n
+    file write bin2 " & (`se99t_1') & (`se05t_1') & & & \\ " _n
+    file write bin2 "  & & & & & \\ " _n
+    file write bin2 "`threshname2' & `b99t_2' & `b05t_2' & `Nt2_2' & `n1_treated05_med' & `n0_treated05_med' \\ " _n
+    file write bin2 " & (`se99t_2') & (`se05t_2') & & & \\ " _n
+    file write bin2 "  & & & & & \\ " _n
+    file write bin2 "`threshname3' & `b99t_3' & `b05t_3' & `Nt2_3' & `n1_treated05_p75' & `n0_treated05_p75' \\ " _n
+    file write bin2 " & (`se99t_3') & (`se05t_3') & & & \\ " _n
+    file write bin2 "\bottomrule" _n
+    file write bin2 "\end{tabular}"
+    file close bin2
+}
+di "Table exported to: $tables/appendix/AT_binary_es_2bin.tex"
+
 
 *------------------------------------------------------------
 * Robustness R²: same fn.18-style check as above, but using the
