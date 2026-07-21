@@ -2599,6 +2599,7 @@ di "Table exported to: $tables/appendix/AT5_BR_trimming.tex"
 * weighted estimates are reported within each tercile, so the reader can
 * see directly whether population weighting matters differently by
 * municipality size, addressing Oscar's specific concern.
+* Pooled sample only, per coauthor request.
 * Output: $tables/appendix/AT_size_tercile.tex
 *============================================================
 preserve
@@ -2631,45 +2632,29 @@ count if year==1996 & $sample_marg & size_tercile==3
 local n_large = r(N)
 di "Size terciles (HM sample, 1996): Small=`n_small' munis, Medium=`n_medium' munis, Large=`n_large' munis"
 
-foreach pnl in p f m {
-	if "`pnl'" == "p" {
-		local osfx ""
-		local wv "popover65_"
-	}
-	else if "`pnl'" == "f" {
-		local osfx "f"
-		local wv "popover65_f"
-	}
-	else {
-		local osfx "m"
-		local wv "popover65_m"
-	}
-	local depvar emr65`osfx'
+matrix results_sizeterc = J(6, 6, .)
+matrix colnames results_sizeterc = "small_uw" "small_w" "medium_uw" "medium_w" "large_uw" "large_w"
+matrix rownames results_sizeterc = "b99" "se99" "b05" "se05" "n_obs" "n_mun"
 
-	matrix results_sizeterc_`pnl' = J(6, 6, .)
-	matrix colnames results_sizeterc_`pnl' = "small_uw" "small_w" "medium_uw" "medium_w" "large_uw" "large_w"
-	matrix rownames results_sizeterc_`pnl' = "b99" "se99" "b05" "se05" "n_obs" "n_mun"
-
-	local col = 1
-	foreach terc in 1 2 3 {
-		foreach wgt in uw w {
-			if "`wgt'" == "uw" {
-				reghdfe `depvar' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
-					if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-			}
-			else {
-				reghdfe `depvar' c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity [aw=`wv'] ///
-					if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-			}
-			matrix results_sizeterc_`pnl'[1,`col'] = _b[1.post#c.inten1999_fix]
-			matrix results_sizeterc_`pnl'[2,`col'] = _se[1.post#c.inten1999_fix]
-			matrix results_sizeterc_`pnl'[3,`col'] = _b[1.post#c.inten2005_fix]
-			matrix results_sizeterc_`pnl'[4,`col'] = _se[1.post#c.inten2005_fix]
-			matrix results_sizeterc_`pnl'[5,`col'] = e(N)
-			distinct cve_ent_mun_super if e(sample)
-			matrix results_sizeterc_`pnl'[6,`col'] = r(ndistinct)
-			local col = `col' + 1
+local col = 1
+foreach terc in 1 2 3 {
+	foreach wgt in uw w {
+		if "`wgt'" == "uw" {
+			reghdfe emr65 c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+				if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		}
+		else {
+			reghdfe emr65 c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity [aw=popover65_] ///
+				if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		matrix results_sizeterc[1,`col'] = _b[1.post#c.inten1999_fix]
+		matrix results_sizeterc[2,`col'] = _se[1.post#c.inten1999_fix]
+		matrix results_sizeterc[3,`col'] = _b[1.post#c.inten2005_fix]
+		matrix results_sizeterc[4,`col'] = _se[1.post#c.inten2005_fix]
+		matrix results_sizeterc[5,`col'] = e(N)
+		distinct cve_ent_mun_super if e(sample)
+		matrix results_sizeterc[6,`col'] = r(ndistinct)
+		local col = `col' + 1
 	}
 }
 
@@ -2681,73 +2666,59 @@ foreach pnl in p f m {
 	file write st "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ " _n
 	file write st "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 
-	foreach pnl in p f m {
-		if "`pnl'" == "p"      local plabel "Panel A: Pooled"
-		else if "`pnl'" == "f" local plabel "Panel B: Females"
-		else                    local plabel "Panel C: Males"
-
-		file write st "\underline{\textit{`plabel'}} \\ " _n
-
-		file write st "\textit{Intensity 1999 x Post}"
-		forval col = 1/6 {
-			local coef = results_sizeterc_`pnl'[1,`col']
-			local se   = results_sizeterc_`pnl'[2,`col']
-			local t    = abs(`coef'/`se')
-			if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
-			else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
-			else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
-			else                  file write st "& " %9.3f (`coef') ""
-		}
-		file write st " \\ " _n
-
-		file write st " "
-		forval col = 1/6 {
-			local se = results_sizeterc_`pnl'[2,`col']
-			file write st "& (" %9.3f (`se') ")"
-		}
-		file write st " \\ " _n
-		file write st "  & & & & & & \\ " _n
-
-		file write st "\textit{Intensity 2005 x Post}"
-		forval col = 1/6 {
-			local coef = results_sizeterc_`pnl'[3,`col']
-			local se   = results_sizeterc_`pnl'[4,`col']
-			local t    = abs(`coef'/`se')
-			if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
-			else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
-			else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
-			else                  file write st "& " %9.3f (`coef') ""
-		}
-		file write st " \\ " _n
-
-		file write st " "
-		forval col = 1/6 {
-			local se = results_sizeterc_`pnl'[4,`col']
-			file write st "& (" %9.3f (`se') ")"
-		}
-		file write st " \\ " _n
-		file write st "  & & & & & & \\ " _n
-
-		file write st "Obs"
-		forval col = 1/6 {
-			local n = results_sizeterc_`pnl'[5,`col']
-			file write st "& " %9.0fc (`n') ""
-		}
-		file write st " \\ " _n
-
-		file write st "No. Mun"
-		forval col = 1/6 {
-			local nmun = results_sizeterc_`pnl'[6,`col']
-			file write st "& " %9.0f (`nmun') ""
-		}
-		if "`pnl'" != "m" {
-			file write st " \\ " _n
-			file write st "  & & & & & & \\ " _n
-		}
-		else {
-			file write st " \\ " _n
-		}
+	file write st "\textit{Intensity 1999 x Post}"
+	forval col = 1/6 {
+		local coef = results_sizeterc[1,`col']
+		local se   = results_sizeterc[2,`col']
+		local t    = abs(`coef'/`se')
+		if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
+		else                  file write st "& " %9.3f (`coef') ""
 	}
+	file write st " \\ " _n
+
+	file write st " "
+	forval col = 1/6 {
+		local se = results_sizeterc[2,`col']
+		file write st "& (" %9.3f (`se') ")"
+	}
+	file write st " \\ " _n
+	file write st "  & & & & & & \\ " _n
+
+	file write st "\textit{Intensity 2005 x Post}"
+	forval col = 1/6 {
+		local coef = results_sizeterc[3,`col']
+		local se   = results_sizeterc[4,`col']
+		local t    = abs(`coef'/`se')
+		if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
+		else                  file write st "& " %9.3f (`coef') ""
+	}
+	file write st " \\ " _n
+
+	file write st " "
+	forval col = 1/6 {
+		local se = results_sizeterc[4,`col']
+		file write st "& (" %9.3f (`se') ")"
+	}
+	file write st " \\ " _n
+	file write st "  & & & & & & \\ " _n
+
+	file write st "Obs"
+	forval col = 1/6 {
+		local n = results_sizeterc[5,`col']
+		file write st "& " %9.0fc (`n') ""
+	}
+	file write st " \\ " _n
+
+	file write st "No. Mun"
+	forval col = 1/6 {
+		local nmun = results_sizeterc[6,`col']
+		file write st "& " %9.0f (`nmun') ""
+	}
+	file write st " \\ " _n
 	file write st "\bottomrule" _n
 	file write st "\end{tabular}"
 	file close st
@@ -3947,6 +3918,16 @@ replace inten2005_fix = 1 if inten2005_fix > 1 & !missing(inten2005_fix)
 label var inten1999_fix "Intensity 1999 (P&V-style fixed 1997 HH denominator)"
 label var inten2005_fix "Intensity 2005 (P&V-style fixed 1997 HH denominator)"
 
+* Persistent (panel-wide, not preserve-scoped) non-monotonicity flag: is
+* Intensity_2005 < Intensity_1999 under the End-of-year/fixed-denom
+* construction? inten1999_fix/inten2005_fix are already time-invariant
+* within municipality, so this flag is too. Used below both to add a
+* "drop non-monotone municipalities" column to T2_b_mortality_fixeddenom
+* (column 5) and as an additional series in the Figure_2_*_fixeddenom
+* event study.
+cap drop nonmonotone_mix
+gen byte nonmonotone_mix = (inten2005_fix < inten1999_fix) if !missing(inten1999_fix) & !missing(inten2005_fix)
+
 di "--- Correlation of current (year-varying-denom) vs. fixed-denom Intensity, HM sample, 1996 cross-section ---"
 corr inten1999 inten1999_fix if $sample_marg & year==1996
 corr inten2005 inten2005_fix if $sample_marg & year==1996
@@ -4946,8 +4927,14 @@ di "Table exported to: $tables/appendix/AT_intensity_correlations.tex"
 * (column 1) to see which one dominates the main DiD estimate:
 *   Col 1: Mixed numerator,  year-varying denom (current default)
 *   Col 2: FASE numerator,   year-varying denom (numerator fix alone)
-*   Col 3: Mixed numerator,  fixed 1997 P&V denom (denominator fix alone)
+*   Col 3: Mixed numerator,  fixed 1997 P&V denom (denominator fix alone,
+*          the coauthor-preferred main specification)
 *   Col 4: FASE numerator,   fixed 1997 P&V denom (both combined)
+*   Col 5: Same as Col 3, but dropping the `nonmonotone_mix' municipalities
+*          (Intensity_2005 < Intensity_1999 under this construction; see
+*          AT_crosswalk_supermun_diagnostic), since the End-of-year
+*          numerator is not guaranteed monotonic -- this checks whether
+*          those municipalities are driving the column 3 estimate.
 * Output: $tables/T2_b_mortality_fixeddenom.tex
 *============================================================
 foreach pnl in p f m {
@@ -4964,7 +4951,8 @@ foreach pnl in p f m {
         local wt65   popover65_m
     }
 
-    forval c = 1/4 {
+    forval c = 1/5 {
+        local extracond ""
         if `c' == 1 {
             local inten99v inten1999
             local inten05v inten2005
@@ -4977,9 +4965,14 @@ foreach pnl in p f m {
             local inten99v inten1999_fix
             local inten05v inten2005_fix
         }
-        else {
+        else if `c' == 4 {
             local inten99v inten1999_fase_fix
             local inten05v inten2005_fase_fix
+        }
+        else {
+            local inten99v inten1999_fix
+            local inten05v inten2005_fix
+            local extracond "& !nonmonotone_mix"
         }
 
         local b99_fd_`pnl'_`c'  ""
@@ -4989,7 +4982,7 @@ foreach pnl in p f m {
         local N_fd_`pnl'_`c'    ""
 
         cap noisily reghdfe `out65' c.`inten99v'#i.post c.`inten05v'#i.post c.sp_intensity ///
-            [aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            [aw=`wt65'] if $sample_marg `extracond', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
         if _rc == 0 & e(N) > 0 {
             local aux : di %12.3f _b[1.post#c.`inten99v']
             * Save the un-starred numeric coefficient under its own name --
@@ -5023,36 +5016,37 @@ foreach pnl in p f m {
 {
     cap file close fd
     file open fd using "$tables/T2_b_mortality_fixeddenom.tex", write replace
-    file write fd "\begin{tabular}{lcccc} \hline \hline" _n
-    file write fd "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
-    file write fd "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
-    file write fd "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+    file write fd "\begin{tabular}{lccccc} \hline \hline" _n
+    file write fd "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} & \\ " _n
+    file write fd "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} \\ " _n
+    file write fd "& & & & & \multicolumn{1}{c}{Excl.\ non-monotone} \\ " _n
+    file write fd "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ \toprule" _n
     file write fd "\underline{\textit{Panel A: Pooled}} \\ " _n
-    file write fd "\textit{Intensity 1999 x post} & `b99_fd_p_1' & `b99_fd_p_2' & `b99_fd_p_3' & `b99_fd_p_4' \\ " _n
-    file write fd " & (`se99_fd_p_1') & (`se99_fd_p_2') & (`se99_fd_p_3') & (`se99_fd_p_4') \\ " _n
-    file write fd "  & & & & \\ " _n
-    file write fd "\textit{Intensity 2005 x post} & `b05_fd_p_1' & `b05_fd_p_2' & `b05_fd_p_3' & `b05_fd_p_4' \\ " _n
-    file write fd " & (`se05_fd_p_1') & (`se05_fd_p_2') & (`se05_fd_p_3') & (`se05_fd_p_4') \\ " _n
-    file write fd "  & & & & \\ " _n
-    file write fd "Obs & `N_fd_p_1' & `N_fd_p_2' & `N_fd_p_3' & `N_fd_p_4' \\ " _n
-    file write fd "  & & & & \\ " _n
+    file write fd "\textit{Intensity 1999 x post} & `b99_fd_p_1' & `b99_fd_p_2' & `b99_fd_p_3' & `b99_fd_p_4' & `b99_fd_p_5' \\ " _n
+    file write fd " & (`se99_fd_p_1') & (`se99_fd_p_2') & (`se99_fd_p_3') & (`se99_fd_p_4') & (`se99_fd_p_5') \\ " _n
+    file write fd "  & & & & & \\ " _n
+    file write fd "\textit{Intensity 2005 x post} & `b05_fd_p_1' & `b05_fd_p_2' & `b05_fd_p_3' & `b05_fd_p_4' & `b05_fd_p_5' \\ " _n
+    file write fd " & (`se05_fd_p_1') & (`se05_fd_p_2') & (`se05_fd_p_3') & (`se05_fd_p_4') & (`se05_fd_p_5') \\ " _n
+    file write fd "  & & & & & \\ " _n
+    file write fd "Obs & `N_fd_p_1' & `N_fd_p_2' & `N_fd_p_3' & `N_fd_p_4' & `N_fd_p_5' \\ " _n
+    file write fd "  & & & & & \\ " _n
     file write fd "\underline{\textit{Panel B: Females}} \\ " _n
-    file write fd "\textit{Intensity 1999 x post} & `b99_fd_f_1' & `b99_fd_f_2' & `b99_fd_f_3' & `b99_fd_f_4' \\ " _n
-    file write fd " & (`se99_fd_f_1') & (`se99_fd_f_2') & (`se99_fd_f_3') & (`se99_fd_f_4') \\ " _n
-    file write fd "  & & & & \\ " _n
-    file write fd "\textit{Intensity 2005 x post} & `b05_fd_f_1' & `b05_fd_f_2' & `b05_fd_f_3' & `b05_fd_f_4' \\ " _n
-    file write fd " & (`se05_fd_f_1') & (`se05_fd_f_2') & (`se05_fd_f_3') & (`se05_fd_f_4') \\ " _n
-    file write fd "  & & & & \\ " _n
-    file write fd "Obs & `N_fd_f_1' & `N_fd_f_2' & `N_fd_f_3' & `N_fd_f_4' \\ " _n
-    file write fd "  & & & & \\ " _n
+    file write fd "\textit{Intensity 1999 x post} & `b99_fd_f_1' & `b99_fd_f_2' & `b99_fd_f_3' & `b99_fd_f_4' & `b99_fd_f_5' \\ " _n
+    file write fd " & (`se99_fd_f_1') & (`se99_fd_f_2') & (`se99_fd_f_3') & (`se99_fd_f_4') & (`se99_fd_f_5') \\ " _n
+    file write fd "  & & & & & \\ " _n
+    file write fd "\textit{Intensity 2005 x post} & `b05_fd_f_1' & `b05_fd_f_2' & `b05_fd_f_3' & `b05_fd_f_4' & `b05_fd_f_5' \\ " _n
+    file write fd " & (`se05_fd_f_1') & (`se05_fd_f_2') & (`se05_fd_f_3') & (`se05_fd_f_4') & (`se05_fd_f_5') \\ " _n
+    file write fd "  & & & & & \\ " _n
+    file write fd "Obs & `N_fd_f_1' & `N_fd_f_2' & `N_fd_f_3' & `N_fd_f_4' & `N_fd_f_5' \\ " _n
+    file write fd "  & & & & & \\ " _n
     file write fd "\underline{\textit{Panel C: Males}} \\ " _n
-    file write fd "\textit{Intensity 1999 x post} & `b99_fd_m_1' & `b99_fd_m_2' & `b99_fd_m_3' & `b99_fd_m_4' \\ " _n
-    file write fd " & (`se99_fd_m_1') & (`se99_fd_m_2') & (`se99_fd_m_3') & (`se99_fd_m_4') \\ " _n
-    file write fd "  & & & & \\ " _n
-    file write fd "\textit{Intensity 2005 x post} & `b05_fd_m_1' & `b05_fd_m_2' & `b05_fd_m_3' & `b05_fd_m_4' \\ " _n
-    file write fd " & (`se05_fd_m_1') & (`se05_fd_m_2') & (`se05_fd_m_3') & (`se05_fd_m_4') \\ " _n
-    file write fd "  & & & & \\ " _n
-    file write fd "Obs & `N_fd_m_1' & `N_fd_m_2' & `N_fd_m_3' & `N_fd_m_4' \\ " _n
+    file write fd "\textit{Intensity 1999 x post} & `b99_fd_m_1' & `b99_fd_m_2' & `b99_fd_m_3' & `b99_fd_m_4' & `b99_fd_m_5' \\ " _n
+    file write fd " & (`se99_fd_m_1') & (`se99_fd_m_2') & (`se99_fd_m_3') & (`se99_fd_m_4') & (`se99_fd_m_5') \\ " _n
+    file write fd "  & & & & & \\ " _n
+    file write fd "\textit{Intensity 2005 x post} & `b05_fd_m_1' & `b05_fd_m_2' & `b05_fd_m_3' & `b05_fd_m_4' & `b05_fd_m_5' \\ " _n
+    file write fd " & (`se05_fd_m_1') & (`se05_fd_m_2') & (`se05_fd_m_3') & (`se05_fd_m_4') & (`se05_fd_m_5') \\ " _n
+    file write fd "  & & & & & \\ " _n
+    file write fd "Obs & `N_fd_m_1' & `N_fd_m_2' & `N_fd_m_3' & `N_fd_m_4' & `N_fd_m_5' \\ " _n
     file write fd "\bottomrule" _n
     file write fd "\end{tabular}"
     file close fd
@@ -5126,6 +5120,13 @@ di "Table exported to: $tables/appendix/AT_power_mde.tex"
 * with the fixed 1997 household denominator. Mirrors the main Figure 2
 * code exactly (weighted + Seguro Popular event study, pooled/female/
 * male, ib6.year_1995 interactions, reference year 1996).
+*
+* Each panel overlays a second series (grey, offset in x) that re-runs the
+* same specification dropping the `nonmonotone_mix' municipalities
+* (Intensity_2005 < Intensity_1999 under this construction -- see
+* AT_crosswalk_supermun_diagnostic), matching column~(5) of
+* T2_b_mortality_fixeddenom, to check whether these municipalities drive
+* the year-by-year pattern.
 * Output: $figures/Figure_2_pooled_fixeddenom.pdf / _female_ / _male_
 *============================================================
 {
@@ -5168,6 +5169,25 @@ foreach grp in w f m {
         }
     }
 
+    cap noisily reghdfe `outcome' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
+        c.sp_intensity [aw=`wvar'] if $sample_marg & !nonmonotone_mix, a(cve_ent_mun_super) ///
+        vce(cluster cve_ent_mun_super)
+    local have_nm = (_rc == 0)
+    forval pos = 1/16 {
+        if `have_nm' == 0 {
+            local bnm_`pos'  = .
+            local senm_`pos' = .
+        }
+        else if `pos' == 6 {
+            local bnm_`pos'  = 0
+            local senm_`pos' = 0
+        }
+        else {
+            local bnm_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
+            local senm_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
+        }
+    }
+
     preserve
     clear
     set obs 16
@@ -5175,16 +5195,29 @@ foreach grp in w f m {
     gen b  = .
     gen hi = .
     gen lo = .
+    gen yr_pos_nm = yr_pos + 0.2
+    gen bnm  = .
+    gen hinm = .
+    gen lonm = .
     forval pos = 1/16 {
         replace b  = `bfd_`pos''                          if yr_pos == `pos'
         replace hi = `bfd_`pos'' + 1.96 * `sefd_`pos'' if yr_pos == `pos'
         replace lo = `bfd_`pos'' - 1.96 * `sefd_`pos'' if yr_pos == `pos'
+        if `have_nm' == 1 {
+            replace bnm  = `bnm_`pos''                            if yr_pos == `pos'
+            replace hinm = `bnm_`pos'' + 1.96 * `senm_`pos'' if yr_pos == `pos'
+            replace lonm = `bnm_`pos'' - 1.96 * `senm_`pos'' if yr_pos == `pos'
+        }
     }
     twoway ///
         (rcap hi lo yr_pos, ///
             lcolor(`gcolor'%60) lwidth(vthin)) ///
         (scatter b yr_pos, ///
-            mcolor(`gcolor') msymbol(`gsym') msize(vsmall)), ///
+            mcolor(`gcolor') msymbol(`gsym') msize(vsmall)) ///
+        (rcap hinm lonm yr_pos_nm, ///
+            lcolor(gs8%60) lwidth(vthin)) ///
+        (scatter bnm yr_pos_nm, ///
+            mcolor(gs8) msymbol(diamond) msize(vsmall)), ///
         yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
         xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
         xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -5192,7 +5225,8 @@ foreach grp in w f m {
         xtitle("") ///
         ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
         ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
-        legend(off) ///
+        legend(order(2 "All HM municipalities" 4 "Excl.\ non-monotone") ///
+            rows(1) size(vsmall) region(lstyle(none))) ///
         graphregion(color(white)) ///
         plotregion(margin(l=1 r=1))
     graph export "$figures/Figure_2_`gname'_fixeddenom.pdf", as(pdf) replace
