@@ -2689,6 +2689,7 @@ cap drop hh_tot2000
 g aux = hh_tot if year == 2000
 bys cve_ent_mun_super: egen hh_tot2000 = min(aux)
 drop aux
+cap drop hog1997_fixed
 gen hog1997_fixed = 0.3*hh_tot1990 + 0.7*hh_tot2000
 count if missing(hog1997_fixed)
 di "`r(N)' obs missing the fixed 1997 household base (0.3*HH1990+0.7*HH2000)"
@@ -3664,6 +3665,7 @@ cap drop hh_tot2000
 g aux = hh_tot if year == 2000
 bys cve_ent_mun_super: egen hh_tot2000 = min(aux)
 drop aux
+cap drop hog1997_fixed
 gen hog1997_fixed = 0.3*hh_tot1990 + 0.7*hh_tot2000
 count if missing(hog1997_fixed)
 di "`r(N)' obs missing the fixed 1997 household base (0.3*HH1990+0.7*HH2000)"
