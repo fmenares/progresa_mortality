@@ -3527,196 +3527,6 @@ restore
 di "D3 saturation diagnostics complete -- see log above for stayer availability and first-crossing spread."
 
 *============================================================
-* D2: BINARY HIGH-VS-LOW EVENT STUDY ON INTENSITY_1999 (Óscar's actual
-* final ask -- see the CLARIFICATION note above: he converged on
-* binarizing the FIXED 1999 intensity + plain single-break TWFE, not a
-* staggered-crossing csdid design). Mimics the current continuous design
-* with a binary "high vs low" 1999-intensity indicator instead, testing
-* robustness to the dose-response FUNCTIONAL FORM (drops linearity-in-
-* intensity). Does NOT itself resolve the forbidden-comparison question
-* -- the single 1997 break already does that, continuous or binary --
-* this is a transparency/functional-form robustness check, not an
-* identification fix.
-*
-* Threshold sensitivity grid: 15% (Óscar's own suggested cutoff), the
-* HM-sample median, and the 75th percentile of Intensity_1999. Under
-* saturation there is no meaningful never-treated group, so "control" in
-* every spec = below-threshold Intensity_1999 (a HIGH-VS-LOW contrast),
-* NOT treated-vs-never -- stated explicitly in the figure/table notes.
-*
-* Uses inten1999_fix (End-of-year numerator, fixed 1997 P&V denominator)
-* -- the coauthor-preferred main specification (PART 7), matching column
-* 3 of T2_b_mortality_fixeddenom -- rather than inten1999 (year-varying
-* denominator), which this block used before that decision.
-* Output: $figures/appendix/AF_binary_es.pdf, $tables/appendix/AT_binary_es.tex
-*============================================================
-
-local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-
-* Determine data-driven thresholds from the HM municipality cross-section
-preserve
-keep if year == 1996 & $sample_marg
-keep cve_ent_mun_super inten1999_fix
-duplicates drop cve_ent_mun_super, force
-su inten1999_fix, detail
-local thr_p50 = r(p50)
-local thr_p75 = r(p75)
-di "Median Intensity_1999 (End-of-year, fixed denom, HM sample): " %5.3f `thr_p50'
-di "75th percentile Intensity_1999 (End-of-year, fixed denom, HM sample): " %5.3f `thr_p75'
-restore
-
-cap drop treated_15 treated_med treated_p75
-gen treated_15  = (inten1999_fix >= 0.15)      if !missing(inten1999_fix)
-gen treated_med = (inten1999_fix >= `thr_p50') if !missing(inten1999_fix)
-gen treated_p75 = (inten1999_fix >= `thr_p75') if !missing(inten1999_fix)
-
-foreach v in treated_15 treated_med treated_p75 {
-    count if $sample_marg & year==1996 & `v'==1
-    local n1_`v' = r(N)
-    count if $sample_marg & year==1996 & `v'==0
-    local n0_`v' = r(N)
-    di "`v': `n1_`v'' high / `n0_`v'' low (HM municipalities, 1996)"
-}
-
-* Spec A: threshold = 15%
-reghdfe emr65 c.treated_15##ib6.year_1995 c.sp_intensity ///
-    [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-forval pos = 1/16 {
-    if `pos' == 6 {
-        local ba_`pos'  = 0
-        local sea_`pos' = 0
-    }
-    else {
-        local ba_`pos'  = _b[`pos'.year_1995#c.treated_15]
-        local sea_`pos' = _se[`pos'.year_1995#c.treated_15]
-    }
-}
-
-* Spec B: threshold = HM-sample median
-reghdfe emr65 c.treated_med##ib6.year_1995 c.sp_intensity ///
-    [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-forval pos = 1/16 {
-    if `pos' == 6 {
-        local bb_`pos'  = 0
-        local seb_`pos' = 0
-    }
-    else {
-        local bb_`pos'  = _b[`pos'.year_1995#c.treated_med]
-        local seb_`pos' = _se[`pos'.year_1995#c.treated_med]
-    }
-}
-
-* Spec C: threshold = HM-sample 75th percentile
-reghdfe emr65 c.treated_p75##ib6.year_1995 c.sp_intensity ///
-    [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-forval pos = 1/16 {
-    if `pos' == 6 {
-        local bc_`pos'  = 0
-        local sec_`pos' = 0
-    }
-    else {
-        local bc_`pos'  = _b[`pos'.year_1995#c.treated_p75]
-        local sec_`pos' = _se[`pos'.year_1995#c.treated_p75]
-    }
-}
-
-preserve
-clear
-set obs 16
-gen yr_pos = _n
-gen xpos_a = yr_pos - 0.18
-gen xpos_b = yr_pos
-gen xpos_c = yr_pos + 0.18
-foreach s in a b c {
-    gen b_`s'  = .
-    gen hi_`s' = .
-    gen lo_`s' = .
-}
-forval pos = 1/16 {
-    replace b_a  = `ba_`pos''                       if yr_pos == `pos'
-    replace hi_a = `ba_`pos'' + 1.96 * `sea_`pos'' if yr_pos == `pos'
-    replace lo_a = `ba_`pos'' - 1.96 * `sea_`pos'' if yr_pos == `pos'
-    replace b_b  = `bb_`pos''                       if yr_pos == `pos'
-    replace hi_b = `bb_`pos'' + 1.96 * `seb_`pos'' if yr_pos == `pos'
-    replace lo_b = `bb_`pos'' - 1.96 * `seb_`pos'' if yr_pos == `pos'
-    replace b_c  = `bc_`pos''                       if yr_pos == `pos'
-    replace hi_c = `bc_`pos'' + 1.96 * `sec_`pos'' if yr_pos == `pos'
-    replace lo_c = `bc_`pos'' - 1.96 * `sec_`pos'' if yr_pos == `pos'
-}
-
-twoway ///
-    (rcap hi_a lo_a xpos_a, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
-    (scatter b_a xpos_a, mcolor(black) msymbol(circle) msize(vsmall)) ///
-    (rcap hi_b lo_b xpos_b, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
-    (scatter b_b xpos_b, mcolor(red) msymbol(square) msize(vsmall)) ///
-    (rcap hi_c lo_c xpos_c, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
-    (scatter b_c xpos_c, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
-    (line b_a xpos_a if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
-    (line b_b xpos_b if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
-    (line b_c xpos_c if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
-    yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-    xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-    xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-    xscale(range(0.5 16.5)) ///
-    xtitle("") ///
-    ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-    ylabel(, grid gmin gmax labsize(small)) ///
-    legend(order(7 "Threshold: 15%" 8 "Threshold: median" 9 "Threshold: p75") ///
-        cols(3) size(small) position(6) ring(1) ///
-        region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-    graphregion(color(white)) ///
-    plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_binary_es.pdf", as(pdf) replace
-restore
-di "Figure exported to: $figures/appendix/AF_binary_es.pdf"
-
-*------------------------------------------------------------
-* Companion TABLE: standard Post-interaction estimate for each threshold,
-* mirroring the D1 companion-table pattern (point estimates + N + high/low
-* municipality counts, to accompany the year-by-year event study above).
-* Output: $tables/appendix/AT_binary_es.tex
-*------------------------------------------------------------
-local thr_p50_pct : di %4.1f `thr_p50'*100
-local thr_p75_pct : di %4.1f `thr_p75'*100
-local threshname1 "Threshold: 15\%"
-local threshname2 "Threshold: median (`thr_p50_pct'\%)"
-local threshname3 "Threshold: p75 (`thr_p75_pct'\%)"
-
-local i = 0
-foreach v in treated_15 treated_med treated_p75 {
-    local ++i
-    reghdfe emr65 c.`v'#i.post c.sp_intensity ///
-        [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-    local aux : di %9.3f _b[1.post#c.`v']
-    local tstat = abs(_b[1.post#c.`v'] / _se[1.post#c.`v'])
-    if      `tstat' >= 2.576 local bt_`i' = trim("`aux'") + "***"
-    else if `tstat' >= 1.960 local bt_`i' = trim("`aux'") + "**"
-    else if `tstat' >= 1.645 local bt_`i' = trim("`aux'") + "*"
-    else                     local bt_`i' = trim("`aux'")
-    local set_`i' : di %9.3f _se[1.post#c.`v']
-    local Nt_`i'  : di %12.0fc e(N)
-}
-
-{
-    cap file close bin
-    file open bin using "$tables/appendix/AT_binary_es.tex", write replace
-    file write bin "\begin{tabular}{lcccc} \hline \hline" _n
-    file write bin "Threshold & Intensity 1999 x Post & Obs & High & Low \\ \toprule" _n
-    file write bin "`threshname1' & `bt_1' & `Nt_1' & `n1_treated_15' & `n0_treated_15' \\ " _n
-    file write bin " & (`set_1') & & & \\ " _n
-    file write bin "  & & & & \\ " _n
-    file write bin "`threshname2' & `bt_2' & `Nt_2' & `n1_treated_med' & `n0_treated_med' \\ " _n
-    file write bin " & (`set_2') & & & \\ " _n
-    file write bin "  & & & & \\ " _n
-    file write bin "`threshname3' & `bt_3' & `Nt_3' & `n1_treated_p75' & `n0_treated_p75' \\ " _n
-    file write bin " & (`set_3') & & & \\ " _n
-    file write bin "\bottomrule" _n
-    file write bin "\end{tabular}"
-    file close bin
-}
-di "Table exported to: $tables/appendix/AT_binary_es.tex"
-
-*============================================================
 * ROBUSTNESS: P&V-STYLE FIXED-DENOMINATOR INTENSITY CONSTRUCTION
 * User is worried the R²(Intensity_1999~Intensity_2005)=0.16 (vs P&V's
 * 0.65) may reflect a denominator difference: our `intensity_new` divides
@@ -3928,6 +3738,197 @@ di "Table exported to: $tables/appendix/AT_size_tercile.tex"
 di "--- Correlation of current (year-varying-denom) vs. fixed-denom Intensity, HM sample, 1996 cross-section ---"
 corr inten1999 inten1999_fix if $sample_marg & year==1996
 corr inten2005 inten2005_fix if $sample_marg & year==1996
+
+*============================================================
+* D2: BINARY HIGH-VS-LOW EVENT STUDY ON INTENSITY_1999 (Óscar's actual
+* final ask -- see the CLARIFICATION note above: he converged on
+* binarizing the FIXED 1999 intensity + plain single-break TWFE, not a
+* staggered-crossing csdid design). Mimics the current continuous design
+* with a binary "high vs low" 1999-intensity indicator instead, testing
+* robustness to the dose-response FUNCTIONAL FORM (drops linearity-in-
+* intensity). Does NOT itself resolve the forbidden-comparison question
+* -- the single 1997 break already does that, continuous or binary --
+* this is a transparency/functional-form robustness check, not an
+* identification fix.
+*
+* Threshold sensitivity grid: 15% (Óscar's own suggested cutoff), the
+* HM-sample median, and the 75th percentile of Intensity_1999. Under
+* saturation there is no meaningful never-treated group, so "control" in
+* every spec = below-threshold Intensity_1999 (a HIGH-VS-LOW contrast),
+* NOT treated-vs-never -- stated explicitly in the figure/table notes.
+*
+* Uses inten1999_fix (End-of-year numerator, fixed 1997 P&V denominator)
+* -- the coauthor-preferred main specification (PART 7), matching column
+* 3 of T2_b_mortality_fixeddenom -- rather than inten1999 (year-varying
+* denominator), which this block used before that decision.
+* Output: $figures/appendix/AF_binary_es.pdf, $tables/appendix/AT_binary_es.tex
+*============================================================
+
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+* Determine data-driven thresholds from the HM municipality cross-section
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999_fix
+duplicates drop cve_ent_mun_super, force
+su inten1999_fix, detail
+local thr_p50 = r(p50)
+local thr_p75 = r(p75)
+di "Median Intensity_1999 (End-of-year, fixed denom, HM sample): " %5.3f `thr_p50'
+di "75th percentile Intensity_1999 (End-of-year, fixed denom, HM sample): " %5.3f `thr_p75'
+restore
+
+cap drop treated_15 treated_med treated_p75
+gen treated_15  = (inten1999_fix >= 0.15)      if !missing(inten1999_fix)
+gen treated_med = (inten1999_fix >= `thr_p50') if !missing(inten1999_fix)
+gen treated_p75 = (inten1999_fix >= `thr_p75') if !missing(inten1999_fix)
+
+foreach v in treated_15 treated_med treated_p75 {
+    count if $sample_marg & year==1996 & `v'==1
+    local n1_`v' = r(N)
+    count if $sample_marg & year==1996 & `v'==0
+    local n0_`v' = r(N)
+    di "`v': `n1_`v'' high / `n0_`v'' low (HM municipalities, 1996)"
+}
+
+* Spec A: threshold = 15%
+reghdfe emr65 c.treated_15##ib6.year_1995 c.sp_intensity ///
+    [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local ba_`pos'  = 0
+        local sea_`pos' = 0
+    }
+    else {
+        local ba_`pos'  = _b[`pos'.year_1995#c.treated_15]
+        local sea_`pos' = _se[`pos'.year_1995#c.treated_15]
+    }
+}
+
+* Spec B: threshold = HM-sample median
+reghdfe emr65 c.treated_med##ib6.year_1995 c.sp_intensity ///
+    [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local bb_`pos'  = 0
+        local seb_`pos' = 0
+    }
+    else {
+        local bb_`pos'  = _b[`pos'.year_1995#c.treated_med]
+        local seb_`pos' = _se[`pos'.year_1995#c.treated_med]
+    }
+}
+
+* Spec C: threshold = HM-sample 75th percentile
+reghdfe emr65 c.treated_p75##ib6.year_1995 c.sp_intensity ///
+    [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local bc_`pos'  = 0
+        local sec_`pos' = 0
+    }
+    else {
+        local bc_`pos'  = _b[`pos'.year_1995#c.treated_p75]
+        local sec_`pos' = _se[`pos'.year_1995#c.treated_p75]
+    }
+}
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_a = yr_pos - 0.18
+gen xpos_b = yr_pos
+gen xpos_c = yr_pos + 0.18
+foreach s in a b c {
+    gen b_`s'  = .
+    gen hi_`s' = .
+    gen lo_`s' = .
+}
+forval pos = 1/16 {
+    replace b_a  = `ba_`pos''                       if yr_pos == `pos'
+    replace hi_a = `ba_`pos'' + 1.96 * `sea_`pos'' if yr_pos == `pos'
+    replace lo_a = `ba_`pos'' - 1.96 * `sea_`pos'' if yr_pos == `pos'
+    replace b_b  = `bb_`pos''                       if yr_pos == `pos'
+    replace hi_b = `bb_`pos'' + 1.96 * `seb_`pos'' if yr_pos == `pos'
+    replace lo_b = `bb_`pos'' - 1.96 * `seb_`pos'' if yr_pos == `pos'
+    replace b_c  = `bc_`pos''                       if yr_pos == `pos'
+    replace hi_c = `bc_`pos'' + 1.96 * `sec_`pos'' if yr_pos == `pos'
+    replace lo_c = `bc_`pos'' - 1.96 * `sec_`pos'' if yr_pos == `pos'
+}
+
+twoway ///
+    (rcap hi_a lo_a xpos_a, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+    (scatter b_a xpos_a, mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (rcap hi_b lo_b xpos_b, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+    (scatter b_b xpos_b, mcolor(red) msymbol(square) msize(vsmall)) ///
+    (rcap hi_c lo_c xpos_c, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+    (scatter b_c xpos_c, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+    (line b_a xpos_a if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (line b_b xpos_b if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+    (line b_c xpos_c if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+    yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+    xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+    xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+    xscale(range(0.5 16.5)) ///
+    xtitle("") ///
+    ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+    ylabel(, grid gmin gmax labsize(small)) ///
+    legend(order(7 "Threshold: 15%" 8 "Threshold: median" 9 "Threshold: p75") ///
+        cols(3) size(small) position(6) ring(1) ///
+        region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+    graphregion(color(white)) ///
+    plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_binary_es.pdf", as(pdf) replace
+restore
+di "Figure exported to: $figures/appendix/AF_binary_es.pdf"
+
+*------------------------------------------------------------
+* Companion TABLE: standard Post-interaction estimate for each threshold,
+* mirroring the D1 companion-table pattern (point estimates + N + high/low
+* municipality counts, to accompany the year-by-year event study above).
+* Output: $tables/appendix/AT_binary_es.tex
+*------------------------------------------------------------
+local thr_p50_pct : di %4.1f `thr_p50'*100
+local thr_p75_pct : di %4.1f `thr_p75'*100
+local threshname1 "Threshold: 15\%"
+local threshname2 "Threshold: median (`thr_p50_pct'\%)"
+local threshname3 "Threshold: p75 (`thr_p75_pct'\%)"
+
+local i = 0
+foreach v in treated_15 treated_med treated_p75 {
+    local ++i
+    reghdfe emr65 c.`v'#i.post c.sp_intensity ///
+        [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    local aux : di %9.3f _b[1.post#c.`v']
+    local tstat = abs(_b[1.post#c.`v'] / _se[1.post#c.`v'])
+    if      `tstat' >= 2.576 local bt_`i' = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local bt_`i' = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local bt_`i' = trim("`aux'") + "*"
+    else                     local bt_`i' = trim("`aux'")
+    local set_`i' : di %9.3f _se[1.post#c.`v']
+    local Nt_`i'  : di %12.0fc e(N)
+}
+
+{
+    cap file close bin
+    file open bin using "$tables/appendix/AT_binary_es.tex", write replace
+    file write bin "\begin{tabular}{lcccc} \hline \hline" _n
+    file write bin "Threshold & Intensity 1999 x Post & Obs & High & Low \\ \toprule" _n
+    file write bin "`threshname1' & `bt_1' & `Nt_1' & `n1_treated_15' & `n0_treated_15' \\ " _n
+    file write bin " & (`set_1') & & & \\ " _n
+    file write bin "  & & & & \\ " _n
+    file write bin "`threshname2' & `bt_2' & `Nt_2' & `n1_treated_med' & `n0_treated_med' \\ " _n
+    file write bin " & (`set_2') & & & \\ " _n
+    file write bin "  & & & & \\ " _n
+    file write bin "`threshname3' & `bt_3' & `Nt_3' & `n1_treated_p75' & `n0_treated_p75' \\ " _n
+    file write bin " & (`set_3') & & & \\ " _n
+    file write bin "\bottomrule" _n
+    file write bin "\end{tabular}"
+    file close bin
+}
+di "Table exported to: $tables/appendix/AT_binary_es.tex"
+
 
 *------------------------------------------------------------
 * Robustness R²: same fn.18-style check as above, but using the
