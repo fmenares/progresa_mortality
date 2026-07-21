@@ -5,9 +5,13 @@ INPUT DATA:
 SUPER MUNICIPALITY
 use $ensanut/datasets/crosswalk_super_mun_id_2020.dta, clear
 SUPER LOCALITY
-crosswalk_super_loc_id_1995.dta
-(locality-level analogue of crosswalk_super_mun_id_1990.dta below --
-see section 3's own header for how it is used)
+crosswalk_super_loc_id_1995.dta -- locality-level analogue of
+crosswalk_super_mun_id_1990.dta below. NOT used by section 3 (it
+harmonizes through 2018, more than this project needs) -- section 3
+instead builds its own cutoff-restricted crosswalk directly from
+"3 replication package/02_dataanalysis_data/02_dataanalysis/
+TablaEquivalencia.DTA" (already in this repo); see section 3's own
+header for details.
 
 1. Municipality level Margination Indexes (MI) from CONAPO
 1.1 Base_Indice_de_marginacion_municipal_90-15.csv 
@@ -481,49 +485,41 @@ as high-dimensional fixed effects. 02_mortality.do mirrors this
 exactly, substituting our year_1995 event-time variable for their
 age97 cohort variable.
 
-HARMONIZATION: P&V match their Progresa/marginality locality files
-to each other (and across the one boundary-change window they need,
-2000-2005) via hand-matching plus a locality-splits-only
-"TablaEquivalencia" file (04_rollout_locality.do lines 50-92,
-190-234; per the user, the raw AGEEML change catalog is actually
-that same TablaEquivalencia source -- not what we use here). We
-instead harmonize locality boundary changes the SAME WAY the
-municipality panel already does (crosswalk merge to a harmonized
-id, then collapse split/merged units together), using the user's
-own locality-level crosswalk, crosswalk_super_loc_id_1995.dta --
-the direct locality-level analogue of crosswalk_super_mun_id_1990.dta
-(see 0.super_municipality_id_and_HH_data.do for that construction).
-An earlier version of this block instead DROPPED boundary-unstable
-localities (matching 00_locality_pop_interpolated.do's approach) --
-per the user, that reference file's method disregards the changes
-rather than reconciling them, so it is not used here.
+HARMONIZATION: the user's pre-built crosswalk_super_loc_id_1995.dta
+(id/sl_id/dup, 45,931 obs -- verified via `describe`/`list`) resolves
+locality boundary changes all the way through 2018. Per the user, we
+instead need to CONTROL the harmonization window ourselves, following
+P&V's own approach in 04_rollout_locality.do (lines 50-65): they use
+TablaEquivalencia's fecha_act (change date) to restrict to
+"only focus on splits between 2000 and 2005" (`keep if year<=2005`),
+since their study only needs harmonization through their own rollout
+window, not indefinitely into the future. We do the same, but build
+our OWN restricted crosswalk directly from TablaEquivalencia.DTA
+(already present in this repo -- "$codes/3 replication package/
+02_dataanalysis_data/02_dataanalysis/TablaEquivalencia.DTA", 148,259
+raw change records, columns cve_ent_ori/cve_mun_ori/cve_loc_ori
+[origin code] -> cve_ent_act/cve_mun_act/cve_loc_act [destination
+code], fecha_act, cgo_act, descrip -- confirmed present and readable
+in this sandbox) rather than crosswalk_super_loc_id_1995.dta, since
+the latter has no date information to restrict by.
 
-COVERAGE: harmonization needs to reach through 2006 (2010) per the
-user -- i.e., crosswalk_super_loc_id_1995.dta should already resolve
-locality splits/merges/reclassifications occurring after the 1995
-base year through at least 2006. Not independently verified here;
-confirm the crosswalk's actual year coverage matches what this
-project's panel needs (through the mortality panel's later years).
+CUTOFF: `loc_harmon_cutoff' below, defaulting to 2010 per the user
+("2005 or 2010 should be fine") -- easily changed to 2005 to match
+P&V's own choice exactly if preferred.
 
-VERIFIED SCHEMA (user-supplied `describe`/`list`, 45,931 obs, 3 vars):
-    id      str31   CVE_GEOEST -- raw 9-char locality code, no
-                     separators (2-digit cve_ent + 3-digit cve_mun +
-                     4-digit cve_loc concatenated, e.g. "010010001")
-    sl_id   str12   harmonized "super locality" id -- MANY raw `id`
-                     values can map to the same sl_id (e.g. raw ids
-                     010010001/010010114/010010124/010010394 all map
-                     to sl_id 010010001050), confirming this is the
-                     genuine many-to-one harmonization crosswalk.
-    dup     float   duplicate-match flag (analogous to P&V's own
-                     `dup` tag in their TablaEquivalencia handling)
-Sorted by id. Merge key is the concatenated 9-char string, NOT
-separate cve_ent/cve_mun/cve_loc columns -- built below to match
-exactly (cve_ent/cve_mun/cve_loc are already zero-padded strings
-from section 2 above, so simple concatenation reproduces the
-CVE_GEOEST format verbatim). Guarded with `cap noisily merge`: if
-the key still doesn't match (e.g. a formatting edge case), this
-block logs the failure and falls back to raw (unharmonized)
-locality codes rather than halting 000.do.
+FILTERING mirrors P&V's exact logic (04_rollout_locality.do lines
+66-80): drop records with no destination code (locality disappeared/
+was destroyed -- nothing to remap TO), no origin code (newly created/
+reactivated -- nothing to remap FROM), and pure name changes (origin
+== destination code, no actual reclassification). Verified via direct
+inspection of TablaEquivalencia.DTA in this sandbox: within
+year<=2010, this leaves 9,841 genuine origin->destination remaps, of
+which only 41 origin codes (out of 9,729 distinct) map to MULTIPLE
+destinations (genuine 1:many splits) -- these are excluded from the
+remap (no single destination is assignable without additional
+population-share context, mirroring the ambiguity P&V's own `dup` tag
+flags rather than silently resolves) and fall back to the raw code,
+same as any locality never reclassified within the window.
 
 OUTPUT: MI_locshare_1995_mun.dta -- one row per cve_ent_mun_super,
 with Lshare_pc1 ... Lshare_pc`nq_locshare' (population shares,
@@ -540,34 +536,78 @@ if _rc {
 }
 else {
 
+local loc_harmon_cutoff = 2010
+
+local tablaeq_ok = 0
+cap noisily confirm file "$codes/3 replication package/02_dataanalysis_data/02_dataanalysis/TablaEquivalencia.DTA"
+if _rc {
+    di as error "TablaEquivalencia.DTA not found at the expected repo path -- locality harmonization SKIPPED, falling back to raw (unharmonized) locality codes for this run."
+}
+else {
+    local tablaeq_ok = 1
+}
+
+if `tablaeq_ok' {
+    preserve
+    use "$codes/3 replication package/02_dataanalysis_data/02_dataanalysis/TablaEquivalencia.DTA", clear
+    gen year = real(substr(fecha_act, 1, 4))
+    keep if year <= `loc_harmon_cutoff'
+
+    * Exact P&V filtering (04_rollout_locality.do lines 66-75).
+    drop if cve_ent_act == ""
+    drop if cve_ent_ori == ""
+    drop if cve_ent_ori == cve_ent_act & cve_mun_ori == cve_mun_act & cve_loc_ori == cve_loc_act
+
+    egen id = concat(cve_ent_ori cve_mun_ori cve_loc_ori)
+    egen cve_loc_super = concat(cve_ent_act cve_mun_act cve_loc_act)
+
+    * Exclude 1:many splits (a single origin mapping to multiple
+    * destinations within the window) -- no single harmonized
+    * destination is assignable without additional context.
+    duplicates tag id, gen(dup_ori)
+    count if dup_ori > 0
+    di "`r(N)' TablaEquivalencia rows (year<=`loc_harmon_cutoff'') excluded as 1:many splits -- no single harmonized destination assignable"
+    drop if dup_ori > 0
+
+    keep id cve_loc_super
+    duplicates drop
+    cap noisily isid id
+    if _rc {
+        di as error "Unexpected duplicate origin ids remain in the restricted TablaEquivalencia remap after filtering (rc=`_rc') -- falling back to unharmonized locality codes for this run."
+        local tablaeq_ok = 0
+    }
+    else {
+        tempfile loc_remap
+        save `loc_remap'
+    }
+    restore
+}
+
 use "$data/MI_loc_1995_recoded.dta", clear
 drop if missing(iml) | missing(POB_TOT)
 
-* --- Harmonize RAW locality codes via the locality-level crosswalk,
-* same strategy as the municipality panel (crosswalk merge -> collapse
-* split/merged units together), rather than dropping unstable units. ---
+* --- Harmonize RAW locality codes via P&V's own TablaEquivalencia,
+* restricted to year<=`loc_harmon_cutoff' above -- same strategy as
+* the municipality panel (crosswalk to a harmonized id, then collapse
+* split/merged units together), not dropping unstable units. ---
 gen id = cve_ent + cve_mun + cve_loc
-cap noisily merge m:1 id using "$data/crosswalk_super_loc_id_1995.dta", ///
-    keepusing(sl_id) keep(1 3)
-if _rc {
-    di as error "crosswalk_super_loc_id_1995.dta merge FAILED (rc=`_rc') -- unexpected given the verified schema (id/sl_id/dup); check for a formatting edge case (e.g. leading/trailing spaces). Falling back to raw (unharmonized) locality codes so this block can still run."
-    gen cve_loc_super = id
+if `tablaeq_ok' {
+    merge m:1 id using `loc_remap', keep(1 3) nogenerate
+    count if missing(cve_loc_super)
+    di "`r(N)' localities were never reclassified within year<=`loc_harmon_cutoff'' (or were excluded as a 1:many split) -- keeping their own raw code as cve_loc_super"
+    replace cve_loc_super = id if missing(cve_loc_super)
 }
 else {
-    cap drop _merge
-    count if missing(sl_id)
-    di "`r(N)' localities failed to match the super-locality crosswalk (crosswalk_super_loc_id_1995.dta) -- falling back to the raw (unharmonized) locality id for those"
-    gen cve_loc_super = sl_id
-    replace cve_loc_super = id if missing(cve_loc_super)
-    drop sl_id
+    gen cve_loc_super = id
 }
 drop id
 
 {
     * Pop-weighted collapse to the HARMONIZED (municipality, locality)
     * pair -- same wtsum_iml/POB_TOT logic P&V use after their own
-    * equivalencia merge (04_rollout_locality.do lines 208-211), just
-    * driven by crosswalk_super_loc_id_1995.dta instead of TablaEquivalencia.
+    * TablaEquivalencia merge (04_rollout_locality.do lines 208-211),
+    * just cutoff-restricted to year<=`loc_harmon_cutoff' above instead
+    * of their own year<=2005.
     gen double wtsum_iml = iml * POB_TOT
     collapse (sum) wtsum_iml POB_TOT, by(cve_ent_mun_super cve_loc_super)
     gen iml = wtsum_iml / POB_TOT
