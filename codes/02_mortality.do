@@ -2584,151 +2584,6 @@ drop pop_mun_br
 di "Table exported to: $tables/appendix/AT5_BR_trimming.tex"
 
 *============================================================
-* APPENDIX TABLE: Size-Tercile Stratification (IADB-4 follow-up).
-* Oscar's original comment: population weights are a parametric way to
-* absorb size heterogeneity; complement with a non-parametric subsample-
-* by-size check. AT5_BR_trimming above answers a narrower version of
-* this (does progressively dropping the smallest municipalities move the
-* BR-REPLICATION coefficient on the BR SAMPLE). This table answers
-* Oscar's actual ask directly: does the effect DIFFER by municipality
-* size, using the MAIN End-of-year + fixed-denom T2 spec
-* (inten1999_fix/inten2005_fix, the coauthor-preferred construction,
-* PART 7) on the full HM sample, split into 3 size terciles (per the
-* user's own proposal, using terciles of pre-period, 1996, population
-* 65+ -- the same variable used for weighting). Both unweighted and
-* weighted estimates are reported within each tercile, so the reader can
-* see directly whether population weighting matters differently by
-* municipality size, addressing Oscar's specific concern.
-* Pooled sample only, per coauthor request.
-* Output: $tables/appendix/AT_size_tercile.tex
-*============================================================
-preserve
-keep if year == 1996 & $sample_marg
-keep cve_ent_mun_super popover65_
-duplicates drop cve_ent_mun_super, force
-_pctile popover65_, percentiles(33.33 66.67)
-local p33 = r(r1)
-local p67 = r(r2)
-di "Population 65+ (1996, HM sample) tercile cutoffs: p33=`p33', p67=`p67'"
-restore
-
-cap drop pop65_1996
-g aux = popover65_ if year == 1996
-bys cve_ent_mun_super: egen pop65_1996 = min(aux)
-drop aux
-
-cap drop size_tercile
-gen byte size_tercile = 1 if pop65_1996 <= `p33' & !missing(pop65_1996)
-replace size_tercile = 2 if pop65_1996 > `p33' & pop65_1996 <= `p67'
-replace size_tercile = 3 if pop65_1996 > `p67' & !missing(pop65_1996)
-label define size_tercile_lbl 1 "Small" 2 "Medium" 3 "Large", replace
-label values size_tercile size_tercile_lbl
-
-count if year==1996 & $sample_marg & size_tercile==1
-local n_small = r(N)
-count if year==1996 & $sample_marg & size_tercile==2
-local n_medium = r(N)
-count if year==1996 & $sample_marg & size_tercile==3
-local n_large = r(N)
-di "Size terciles (HM sample, 1996): Small=`n_small' munis, Medium=`n_medium' munis, Large=`n_large' munis"
-
-matrix results_sizeterc = J(6, 6, .)
-matrix colnames results_sizeterc = "small_uw" "small_w" "medium_uw" "medium_w" "large_uw" "large_w"
-matrix rownames results_sizeterc = "b99" "se99" "b05" "se05" "n_obs" "n_mun"
-
-local col = 1
-foreach terc in 1 2 3 {
-	foreach wgt in uw w {
-		if "`wgt'" == "uw" {
-			reghdfe emr65 c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
-				if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		else {
-			reghdfe emr65 c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity [aw=popover65_] ///
-				if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		matrix results_sizeterc[1,`col'] = _b[1.post#c.inten1999_fix]
-		matrix results_sizeterc[2,`col'] = _se[1.post#c.inten1999_fix]
-		matrix results_sizeterc[3,`col'] = _b[1.post#c.inten2005_fix]
-		matrix results_sizeterc[4,`col'] = _se[1.post#c.inten2005_fix]
-		matrix results_sizeterc[5,`col'] = e(N)
-		distinct cve_ent_mun_super if e(sample)
-		matrix results_sizeterc[6,`col'] = r(ndistinct)
-		local col = `col' + 1
-	}
-}
-
-{
-	cap file close st
-	file open st using "$tables/appendix/AT_size_tercile.tex", write replace
-	file write st "\begin{tabular}{lcccccc} \hline \hline" _n
-	file write st "& \multicolumn{2}{c}{Small} & \multicolumn{2}{c}{Medium} & \multicolumn{2}{c}{Large} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
-	file write st "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ " _n
-	file write st "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
-
-	file write st "\textit{Intensity 1999 x Post}"
-	forval col = 1/6 {
-		local coef = results_sizeterc[1,`col']
-		local se   = results_sizeterc[2,`col']
-		local t    = abs(`coef'/`se')
-		if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
-		else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
-		else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
-		else                  file write st "& " %9.3f (`coef') ""
-	}
-	file write st " \\ " _n
-
-	file write st " "
-	forval col = 1/6 {
-		local se = results_sizeterc[2,`col']
-		file write st "& (" %9.3f (`se') ")"
-	}
-	file write st " \\ " _n
-	file write st "  & & & & & & \\ " _n
-
-	file write st "\textit{Intensity 2005 x Post}"
-	forval col = 1/6 {
-		local coef = results_sizeterc[3,`col']
-		local se   = results_sizeterc[4,`col']
-		local t    = abs(`coef'/`se')
-		if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
-		else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
-		else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
-		else                  file write st "& " %9.3f (`coef') ""
-	}
-	file write st " \\ " _n
-
-	file write st " "
-	forval col = 1/6 {
-		local se = results_sizeterc[4,`col']
-		file write st "& (" %9.3f (`se') ")"
-	}
-	file write st " \\ " _n
-	file write st "  & & & & & & \\ " _n
-
-	file write st "Obs"
-	forval col = 1/6 {
-		local n = results_sizeterc[5,`col']
-		file write st "& " %9.0fc (`n') ""
-	}
-	file write st " \\ " _n
-
-	file write st "No. Mun"
-	forval col = 1/6 {
-		local nmun = results_sizeterc[6,`col']
-		file write st "& " %9.0f (`nmun') ""
-	}
-	file write st " \\ " _n
-	file write st "\bottomrule" _n
-	file write st "\end{tabular}"
-	file close st
-}
-di "Table exported to: $tables/appendix/AT_size_tercile.tex"
-
-
-
-
-*============================================================
 * im90_bin: P&V (2023)-style flexible baseline-SES trend indicator, bin
 * municipalities into quintiles of the 1990 marginalization index.
 * Retained here (the table this variable was originally built for,
@@ -3927,6 +3782,148 @@ label var inten2005_fix "Intensity 2005 (P&V-style fixed 1997 HH denominator)"
 * event study.
 cap drop nonmonotone_mix
 gen byte nonmonotone_mix = (inten2005_fix < inten1999_fix) if !missing(inten1999_fix) & !missing(inten2005_fix)
+
+* APPENDIX TABLE: Size-Tercile Stratification (IADB-4 follow-up).
+* Oscar's original comment: population weights are a parametric way to
+* absorb size heterogeneity; complement with a non-parametric subsample-
+* by-size check. AT5_BR_trimming above answers a narrower version of
+* this (does progressively dropping the smallest municipalities move the
+* BR-REPLICATION coefficient on the BR SAMPLE). This table answers
+* Oscar's actual ask directly: does the effect DIFFER by municipality
+* size, using the MAIN End-of-year + fixed-denom T2 spec
+* (inten1999_fix/inten2005_fix, the coauthor-preferred construction,
+* PART 7) on the full HM sample, split into 3 size terciles (per the
+* user's own proposal, using terciles of pre-period, 1996, population
+* 65+ -- the same variable used for weighting). Both unweighted and
+* weighted estimates are reported within each tercile, so the reader can
+* see directly whether population weighting matters differently by
+* municipality size, addressing Oscar's specific concern.
+* Pooled sample only, per coauthor request.
+* Output: $tables/appendix/AT_size_tercile.tex
+*============================================================
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super popover65_
+duplicates drop cve_ent_mun_super, force
+_pctile popover65_, percentiles(33.33 66.67)
+local p33 = r(r1)
+local p67 = r(r2)
+di "Population 65+ (1996, HM sample) tercile cutoffs: p33=`p33', p67=`p67'"
+restore
+
+cap drop pop65_1996
+g aux = popover65_ if year == 1996
+bys cve_ent_mun_super: egen pop65_1996 = min(aux)
+drop aux
+
+cap drop size_tercile
+gen byte size_tercile = 1 if pop65_1996 <= `p33' & !missing(pop65_1996)
+replace size_tercile = 2 if pop65_1996 > `p33' & pop65_1996 <= `p67'
+replace size_tercile = 3 if pop65_1996 > `p67' & !missing(pop65_1996)
+label define size_tercile_lbl 1 "Small" 2 "Medium" 3 "Large", replace
+label values size_tercile size_tercile_lbl
+
+count if year==1996 & $sample_marg & size_tercile==1
+local n_small = r(N)
+count if year==1996 & $sample_marg & size_tercile==2
+local n_medium = r(N)
+count if year==1996 & $sample_marg & size_tercile==3
+local n_large = r(N)
+di "Size terciles (HM sample, 1996): Small=`n_small' munis, Medium=`n_medium' munis, Large=`n_large' munis"
+
+matrix results_sizeterc = J(6, 6, .)
+matrix colnames results_sizeterc = "small_uw" "small_w" "medium_uw" "medium_w" "large_uw" "large_w"
+matrix rownames results_sizeterc = "b99" "se99" "b05" "se05" "n_obs" "n_mun"
+
+local col = 1
+foreach terc in 1 2 3 {
+	foreach wgt in uw w {
+		if "`wgt'" == "uw" {
+			reghdfe emr65 c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity ///
+				if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			reghdfe emr65 c.inten1999_fix#i.post c.inten2005_fix#i.post c.sp_intensity [aw=popover65_] ///
+				if $sample_marg & size_tercile==`terc', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		matrix results_sizeterc[1,`col'] = _b[1.post#c.inten1999_fix]
+		matrix results_sizeterc[2,`col'] = _se[1.post#c.inten1999_fix]
+		matrix results_sizeterc[3,`col'] = _b[1.post#c.inten2005_fix]
+		matrix results_sizeterc[4,`col'] = _se[1.post#c.inten2005_fix]
+		matrix results_sizeterc[5,`col'] = e(N)
+		distinct cve_ent_mun_super if e(sample)
+		matrix results_sizeterc[6,`col'] = r(ndistinct)
+		local col = `col' + 1
+	}
+}
+
+{
+	cap file close st
+	file open st using "$tables/appendix/AT_size_tercile.tex", write replace
+	file write st "\begin{tabular}{lcccccc} \hline \hline" _n
+	file write st "& \multicolumn{2}{c}{Small} & \multicolumn{2}{c}{Medium} & \multicolumn{2}{c}{Large} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
+	file write st "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ " _n
+	file write st "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+
+	file write st "\textit{Intensity 1999 x Post}"
+	forval col = 1/6 {
+		local coef = results_sizeterc[1,`col']
+		local se   = results_sizeterc[2,`col']
+		local t    = abs(`coef'/`se')
+		if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
+		else                  file write st "& " %9.3f (`coef') ""
+	}
+	file write st " \\ " _n
+
+	file write st " "
+	forval col = 1/6 {
+		local se = results_sizeterc[2,`col']
+		file write st "& (" %9.3f (`se') ")"
+	}
+	file write st " \\ " _n
+	file write st "  & & & & & & \\ " _n
+
+	file write st "\textit{Intensity 2005 x Post}"
+	forval col = 1/6 {
+		local coef = results_sizeterc[3,`col']
+		local se   = results_sizeterc[4,`col']
+		local t    = abs(`coef'/`se')
+		if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
+		else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
+		else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
+		else                  file write st "& " %9.3f (`coef') ""
+	}
+	file write st " \\ " _n
+
+	file write st " "
+	forval col = 1/6 {
+		local se = results_sizeterc[4,`col']
+		file write st "& (" %9.3f (`se') ")"
+	}
+	file write st " \\ " _n
+	file write st "  & & & & & & \\ " _n
+
+	file write st "Obs"
+	forval col = 1/6 {
+		local n = results_sizeterc[5,`col']
+		file write st "& " %9.0fc (`n') ""
+	}
+	file write st " \\ " _n
+
+	file write st "No. Mun"
+	forval col = 1/6 {
+		local nmun = results_sizeterc[6,`col']
+		file write st "& " %9.0f (`nmun') ""
+	}
+	file write st " \\ " _n
+	file write st "\bottomrule" _n
+	file write st "\end{tabular}"
+	file close st
+}
+di "Table exported to: $tables/appendix/AT_size_tercile.tex"
+
 
 di "--- Correlation of current (year-varying-denom) vs. fixed-denom Intensity, HM sample, 1996 cross-section ---"
 corr inten1999 inten1999_fix if $sample_marg & year==1996
