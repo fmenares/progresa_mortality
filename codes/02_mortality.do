@@ -2658,8 +2658,65 @@ if `locshare_ok' {
 }
 
 *============================================================
+* inten1999_fix / inten2005_fix: End-of-year numerator, P&V-style FIXED
+* 1997 household denominator (hog1997_fixed = 0.3*hh_tot1990 +
+* 0.7*hh_tot2000) -- the coauthor-preferred main specification per
+* research_project.md PART 7, already used in AT_binary_es,
+* AT_size_tercile, and the Figure_2_*_fixeddenom set. AF_ses_trend
+* below still ran on the year-varying-denominator inten1999/inten2005
+* until now.
+*
+* DUPLICATED (not moved) from this file's own later construction
+* (~line 3600, "P&V FIXED-DENOMINATOR ROBUSTNESS CHECK"), verbatim,
+* since AF_ses_trend runs earlier in the file's execution order and
+* moving ~1000 lines of intervening code to bring that block forward
+* would risk breaking whatever runs in between. hh_tot/hh_tot1990/
+* pgbenef_new/hog1997_fixed are not referenced anywhere before this
+* point in the file, so merging them in here does not collide with
+* anything upstream; the later block re-merges the same files and
+* recomputes the same values redundantly but harmlessly.
+*============================================================
+cap drop hh_tot hh_tot1990 pgbenef_new
+merge m:1 cve_ent_mun_super year using "$data/Temp_data/hhnum_recoded.dta", keepusing(hh_tot) nogenerate
+merge m:1 cve_ent_mun_super using "$data/Temp_data/hhnum_1990.dta", keepusing(hh_tot1990) nogenerate
+merge m:1 cve_ent_mun_super year using "$data/Temp_data/Progresa_benef_mun_recoded.dta", keepusing(pg_new) nogenerate
+rename pg_new pgbenef_new
+
+count if missing(hh_tot) | missing(hh_tot1990) | missing(pgbenef_new)
+di "`r(N)' obs missing hh_tot/hh_tot1990/pgbenef_new after merge -- check the Temp_data paths above if this count is large"
+
+cap drop hh_tot2000
+g aux = hh_tot if year == 2000
+bys cve_ent_mun_super: egen hh_tot2000 = min(aux)
+drop aux
+gen hog1997_fixed = 0.3*hh_tot1990 + 0.7*hh_tot2000
+count if missing(hog1997_fixed)
+di "`r(N)' obs missing the fixed 1997 household base (0.3*HH1990+0.7*HH2000)"
+
+cap drop pgbenef_1999 pgbenef_2005
+g aux = pgbenef_new if year == 1999
+bys cve_ent_mun_super: egen pgbenef_1999 = min(aux)
+drop aux
+g aux = pgbenef_new if year == 2005
+bys cve_ent_mun_super: egen pgbenef_2005 = min(aux)
+drop aux
+
+cap drop inten1999_fix inten2005_fix
+gen inten1999_fix = pgbenef_1999/hog1997_fixed
+gen inten2005_fix = pgbenef_2005/hog1997_fixed
+replace inten1999_fix = 1 if inten1999_fix > 1 & !missing(inten1999_fix)
+replace inten2005_fix = 1 if inten2005_fix > 1 & !missing(inten2005_fix)
+label var inten1999_fix "Intensity 1999 (P&V-style fixed 1997 HH denominator)"
+label var inten2005_fix "Intensity 2005 (P&V-style fixed 1997 HH denominator)"
+
+*============================================================
 * APPENDIX FIGURE: AF_ses_trend (pooled / female / male)
-* Event study (beta_k = Intensity_1999 x year) across 6 SES trend specs:
+* Event study (beta_k = Intensity_1999 x year) across 6 SES trend specs.
+* All 6 specs now use inten1999_fix/inten2005_fix (End-of-year numerator,
+* P&V-style fixed 1997 household denominator) instead of the year-varying-
+* denominator inten1999/inten2005 this figure ran on previously -- matching
+* the coauthor-preferred main specification (research_project.md PART 7),
+* already used in AT_binary_es, AT_size_tercile, and Figure_2_*_fixeddenom.
 *   Series 1 (black,  solid):         Baseline (W+SP)
 *   Series 2 (red,    dash):          + Trend × im_mun_1990 (municipality index, continuous, linear trend)
 *   Series 3 (blue,   shortdash_dot): + Trend × 1990 marg.-index quintile (linear trend)
@@ -2749,7 +2806,11 @@ foreach grp in p f m {
 	}
 
 	* Spec 1: Baseline (W+SP)
-	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	* Uses inten1999_fix/inten2005_fix (End-of-year numerator, P&V-style
+	* fixed 1997 HH denominator) -- the coauthor-preferred main
+	* specification (research_project.md PART 7), not the year-varying-
+	* denominator inten1999/inten2005 this figure ran on previously.
+	reghdfe `yout' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
 		c.sp_intensity [aw=`ywt'] if $sample_marg, a(cve_ent_mun_super) ///
 		vce(cluster cve_ent_mun_super)
 	forval pos = 1/16 {
@@ -2758,13 +2819,13 @@ foreach grp in p f m {
 			local sees1_`pos' = 0
 		}
 		else {
-			local bes1_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local sees1_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local bes1_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
+			local sees1_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
 		}
 	}
 
 	* Spec 2: + Trend × im_mun_1990
-	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	reghdfe `yout' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
 		c.sp_intensity c.im_mun_1990#c.year [aw=`ywt'] if $sample_marg, ///
 		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	forval pos = 1/16 {
@@ -2773,13 +2834,13 @@ foreach grp in p f m {
 			local sees2_`pos' = 0
 		}
 		else {
-			local bes2_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local sees2_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local bes2_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
+			local sees2_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
 		}
 	}
 
 	* Spec 3: + Trend × 1990 marginalization-index quintile (P&V 2023)
-	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	reghdfe `yout' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
 		c.sp_intensity i.im90_bin#c.year [aw=`ywt'] if $sample_marg, ///
 		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	forval pos = 1/16 {
@@ -2788,8 +2849,8 @@ foreach grp in p f m {
 			local sees3_`pos' = 0
 		}
 		else {
-			local bes3_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local sees3_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local bes3_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
+			local sees3_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
 		}
 	}
 
@@ -2804,7 +2865,7 @@ foreach grp in p f m {
 	* actually use for eq. 3. Added ALONGSIDE (not replacing) Specs 2-3's
 	* linear-trend approximations, so the true P&V mechanic and our own
 	* standard DiD pre-trend checks can be compared directly.
-	reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	reghdfe `yout' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
 		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
 		a(cve_ent_mun_super i.year_1995#i.margpct_pv) vce(cluster cve_ent_mun_super)
 	forval pos = 1/16 {
@@ -2813,8 +2874,8 @@ foreach grp in p f m {
 			local sees4_`pos' = 0
 		}
 		else {
-			local bes4_`pos'  = _b[`pos'.year_1995#c.inten1999]
-			local sees4_`pos' = _se[`pos'.year_1995#c.inten1999]
+			local bes4_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
+			local sees4_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
 		}
 	}
 
@@ -2832,7 +2893,7 @@ foreach grp in p f m {
 		local bes5_`pos'  = .
 		local sees5_`pos' = .
 	}
-	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	cap noisily reghdfe `yout' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
 		c.sp_intensity [aw=`ywt'] if $sample_marg, ///
 		a(cve_ent_mun_super i.year_1995#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
 	if _rc == 0 {
@@ -2842,8 +2903,8 @@ foreach grp in p f m {
 				local sees5_`pos' = 0
 			}
 			else {
-				local bes5_`pos'  = _b[`pos'.year_1995#c.inten1999]
-				local sees5_`pos' = _se[`pos'.year_1995#c.inten1999]
+				local bes5_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
+				local sees5_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
 			}
 		}
 	}
@@ -2863,7 +2924,7 @@ foreach grp in p f m {
 		local bes6_`pos'  = .
 		local sees6_`pos' = .
 	}
-	cap noisily reghdfe `yout' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	cap noisily reghdfe `yout' c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
 		c.sp_intensity c.(Lshare_pc*)#c.year [aw=`ywt'] if $sample_marg, ///
 		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if _rc == 0 {
@@ -2873,8 +2934,8 @@ foreach grp in p f m {
 				local sees6_`pos' = 0
 			}
 			else {
-				local bes6_`pos'  = _b[`pos'.year_1995#c.inten1999]
-				local sees6_`pos' = _se[`pos'.year_1995#c.inten1999]
+				local bes6_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
+				local sees6_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
 			}
 		}
 	}
