@@ -183,6 +183,19 @@ gen intensity_new_fix = pgbenef_new/hog1997_fixed
 replace intensity_new_fix = 1 if intensity_new_fix > 1 & !missing(intensity_new_fix)
 label var intensity_new_fix "Progresa penetration, year-varying numerator / fixed 1997 HH denominator"
 
+* Fixed-denominator counterpart of lag2_intensity_new (built in
+* 01_mortality_data.do from the year-varying intensity_new), for the
+* AT3_BR_replication fixed-denominator panel. Same bysort+[_n-1] lag
+* construction, applied to intensity_new_fix instead; sort first since
+* this file cannot assume the panel is still in the same order
+* 01_mortality_data.do left it in.
+sort cve_ent_mun_super year
+cap drop lag_intensity_new_fix lag2_intensity_new_fix
+bysort cve_ent_mun_super: gen lag_intensity_new_fix = intensity_new_fix[_n-1]
+bysort cve_ent_mun_super: gen lag2_intensity_new_fix = lag_intensity_new_fix[_n-1]
+drop lag_intensity_new_fix
+label var lag2_intensity_new_fix "2-yr lagged Progresa penetration, year-varying numerator / fixed 1997 HH denominator"
+
 *============================================================
 * TABLE 1: Descriptives
 * T1_descriptives_b.tex
@@ -2131,16 +2144,20 @@ foreach pnl in p m f {
 	local NBR_3_`pnl': di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunBR_3_`pnl': di %12.0fc `r(ndistinct)'
-	* panel d: lag1, W
-	reghdfe `outcome' lag_intensity_new [aw=`wvar'] if inrange(year, 1991, 2001) & $sample_br, ///
+	* panel d: lag2, W, FIXED 1997 P&V denominator (replaces the former
+	* 1-yr-lag panel per the coauthor's request: same 2-yr-lag/weighted
+	* structure as Panel C, but with the fixed-denominator intensity
+	* measure in place of the year-varying one, isolating the
+	* denominator choice's effect on the BR replication)
+	reghdfe `outcome' lag2_intensity_new_fix [aw=`wvar'] if inrange(year, 1992, 2002) & $sample_br, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	local aux: di %12.3f _b[lag_intensity_new]
-	local t = abs(_b[lag_intensity_new] / _se[lag_intensity_new])
+	local aux: di %12.3f _b[lag2_intensity_new_fix]
+	local t = abs(_b[lag2_intensity_new_fix] / _se[lag2_intensity_new_fix])
 	if      `t' >= 2.576 local bBR1_4_`pnl' = "`aux'***"
 	else if `t' >= 1.96  local bBR1_4_`pnl' = "`aux'**"
 	else if `t' >= 1.645 local bBR1_4_`pnl' = "`aux'*"
 	else                  local bBR1_4_`pnl' = "`aux'"
-	local seBR1_4_`pnl': di %12.3f _se[lag_intensity_new]
+	local seBR1_4_`pnl': di %12.3f _se[lag2_intensity_new_fix]
 	sum `outcome' if e(sample) & year  == 1996
 	local meanBR_4_`pnl': di %12.2fc `r(mean)'
 	local NBR_4_`pnl': di %12.0fc `e(N)'
@@ -2193,9 +2210,9 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 	file write sm "\textit{2-yr lagged Intensity} & `bBR2_3_p' & `bBR2_3_f' & `bBR2_3_m' \\ " _n
 	file write sm " & (`seBR2_3_p') & (`seBR2_3_f') & (`seBR2_3_m') \\ " _n
 	file write sm "  & & & \\ " _n
-	* Panel D: lag1, W
-	file write sm "\underline{\textit{Panel D: 1-yr Lag (Weighted)}}  \\ " _n
-	file write sm "\textit{1-yr lagged Intensity} & `bBR1_4_p' & `bBR1_4_f' & `bBR1_4_m' \\ " _n
+	* Panel D: lag2, W, fixed 1997 P&V denominator
+	file write sm "\underline{\textit{Panel D: Replication (Weighted, Fixed Denom.)}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR1_4_p' & `bBR1_4_f' & `bBR1_4_m' \\ " _n
 	file write sm " & (`seBR1_4_p') & (`seBR1_4_f') & (`seBR1_4_m') \\ " _n
 	file write sm "  & & & \\ " _n
 	* Panel E: lag3, W
@@ -3346,7 +3363,7 @@ di "Intensity snapshots now available for: 1997 1998 1999 2000 2001 2002 2003 20
 * Non-destructive: skips (figure isn't produced, panel (a) degrades to a
 * draft placeholder in the combined figure) if either source file isn't
 * found.
-* Output: $figures/appendix/AF_pv_fig2_locality_replication.pdf
+* Output: $figures/appendix/AF_enroll_loc_marg_pctile.pdf
 *============================================================
 local locfig_ok = 0
 cap confirm file "$data/MI_loc_1995_recoded.dta"
@@ -3443,9 +3460,9 @@ if `locfig_ok' {
             region(lcolor(none))) ///
         graphregion(color(white)) ///
         plotregion(margin(l=1 r=1))
-    graph export "$figures/appendix/AF_pv_fig2_locality_replication.pdf", as(pdf) replace
+    graph export "$figures/appendix/AF_enroll_loc_marg_pctile.pdf", as(pdf) replace
     restore
-    di "Figure exported to: $figures/appendix/AF_pv_fig2_locality_replication.pdf"
+    di "Figure exported to: $figures/appendix/AF_enroll_loc_marg_pctile.pdf"
 }
 
 *============================================================
@@ -3457,7 +3474,7 @@ if `locfig_ok' {
 * cross-section, matching P&V's own Figure 3 (drawn on all municipalities
 * nationwide, not just the HM analysis sample, to show the full targeting
 * gradient -- vertical category cutoffs are the point of that figure).
-* Output: $figures/appendix/AF_pv_fig3_replication.pdf
+* Output: $figures/appendix/AF_enroll_mun_marg_pctile.pdf
 *------------------------------------------------------------
 * ASSUMPTION TO VERIFY: inten1999/inten2005 are CUMULATIVE-through-year
 * snapshots (same convention as inten1997/1998/2000/2002 built above from
@@ -3511,9 +3528,9 @@ twoway ///
         region(lcolor(none))) ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_pv_fig3_replication.pdf", as(pdf) replace
+graph export "$figures/appendix/AF_enroll_mun_marg_pctile.pdf", as(pdf) replace
 restore
-di "Figure exported to: $figures/appendix/AF_pv_fig3_replication.pdf"
+di "Figure exported to: $figures/appendix/AF_enroll_mun_marg_pctile.pdf"
 
 *------------------------------------------------------------
 * fn.18-style R²: how much of Intensity_1999's variance does Intensity_2005
@@ -3942,26 +3959,6 @@ foreach terc in 1 2 3 {
 	file write st " \\ " _n
 	file write st "  & & & & & & \\ " _n
 
-	file write st "\textit{Intensity 2005 x Post}"
-	forval col = 1/6 {
-		local coef = results_sizeterc[3,`col']
-		local se   = results_sizeterc[4,`col']
-		local t    = abs(`coef'/`se')
-		if      `t' >= 2.576 file write st "& " %9.3f (`coef') "***"
-		else if `t' >= 1.96  file write st "& " %9.3f (`coef') "**"
-		else if `t' >= 1.645 file write st "& " %9.3f (`coef') "*"
-		else                  file write st "& " %9.3f (`coef') ""
-	}
-	file write st " \\ " _n
-
-	file write st " "
-	forval col = 1/6 {
-		local se = results_sizeterc[4,`col']
-		file write st "& (" %9.3f (`se') ")"
-	}
-	file write st " \\ " _n
-	file write st "  & & & & & & \\ " _n
-
 	file write st "Obs"
 	forval col = 1/6 {
 		local n = results_sizeterc[5,`col']
@@ -4200,7 +4197,7 @@ di "Table exported to: $tables/appendix/AT_binary_es.tex"
 * section -- thr_p50/thr_p75 computed in D2 above), applied to BOTH
 * Intensity_1999 and Intensity_2005, matching the convention already
 * used in the Early/Late-only/Never/High-Low categorical design
-* (AT_threshold_validation_cellcounts). Appendix Table~at:binary_es
+* (AT_threshold_categorical). Appendix Table~at:binary_es
 * reports the exact numeric threshold values and the High_1999/Low_1999
 * municipality counts; this section's own table cross-references that
 * one rather than repeating them, and adds the new High_2005/Low_2005
@@ -4221,93 +4218,97 @@ foreach v in treated05_15 treated05_med treated05_p75 {
     di "`v': `n1_`v'' high / `n0_`v'' low (HM municipalities, 1996)"
 }
 
-* --- Event study: for each threshold, overlay High_1999 and High_2005 ---
+* --- Event study: one combined graph, all 3 thresholds overlaid ---
+* High_2005 x year is still estimated in every regression below (it is
+* the later-phase/final-enrollment-status control this design needs,
+* mirroring Intensity_2005's role in the continuous main spec -- see
+* the coauthor's confirmed reading in the table note below), but its
+* coefficient is not plotted: like Intensity_2005 x post in the main
+* spec, it has no stand-alone interpretation of its own here.
 foreach spec in 15 med p75 {
     if "`spec'" == "15" {
         local v99 treated_15
         local v05 treated05_15
-        local panellabel "Threshold: 15%"
     }
     else if "`spec'" == "med" {
         local v99 treated_med
         local v05 treated05_med
-        local panellabel "Threshold: median"
     }
     else {
         local v99 treated_p75
         local v05 treated05_p75
-        local panellabel "Threshold: 75th percentile"
     }
 
     reghdfe emr65 c.`v99'##ib6.year_1995 c.`v05'##ib6.year_1995 c.sp_intensity ///
         [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
     forval pos = 1/16 {
         if `pos' == 6 {
-            local b99_`pos'  = 0
-            local se99_`pos' = 0
-            local b05_`pos'  = 0
-            local se05_`pos' = 0
+            local b2b_`spec'_`pos'  = 0
+            local se2b_`spec'_`pos' = 0
         }
         else {
-            local b99_`pos'  = _b[`pos'.year_1995#c.`v99']
-            local se99_`pos' = _se[`pos'.year_1995#c.`v99']
-            local b05_`pos'  = _b[`pos'.year_1995#c.`v05']
-            local se05_`pos' = _se[`pos'.year_1995#c.`v05']
+            local b2b_`spec'_`pos'  = _b[`pos'.year_1995#c.`v99']
+            local se2b_`spec'_`pos' = _se[`pos'.year_1995#c.`v99']
         }
     }
-
-    preserve
-    clear
-    set obs 16
-    gen yr_pos = _n
-    gen xpos99 = yr_pos - 0.12
-    gen xpos05 = yr_pos + 0.12
-    gen b99  = .
-    gen hi99 = .
-    gen lo99 = .
-    gen b05  = .
-    gen hi05 = .
-    gen lo05 = .
-    forval pos = 1/16 {
-        replace b99  = `b99_`pos''                        if yr_pos == `pos'
-        replace hi99 = `b99_`pos'' + 1.96 * `se99_`pos'' if yr_pos == `pos'
-        replace lo99 = `b99_`pos'' - 1.96 * `se99_`pos'' if yr_pos == `pos'
-        replace b05  = `b05_`pos''                        if yr_pos == `pos'
-        replace hi05 = `b05_`pos'' + 1.96 * `se05_`pos'' if yr_pos == `pos'
-        replace lo05 = `b05_`pos'' - 1.96 * `se05_`pos'' if yr_pos == `pos'
-    }
-
-    twoway ///
-        (rcap hi99 lo99 xpos99, lcolor(black%60) lwidth(vthin)) ///
-        (scatter b99 xpos99, mcolor(black) msymbol(circle) msize(vsmall)) ///
-        (rcap hi05 lo05 xpos05, lcolor(green%60) lwidth(vthin)) ///
-        (scatter b05 xpos05, mcolor(green) msymbol(diamond) msize(vsmall)), ///
-        yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-        xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-        xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-        xscale(range(0.5 16.5)) ///
-        xtitle("") ///
-        ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-        ylabel(, grid gmin gmax labsize(small)) ///
-        title("`panellabel'", size(small)) ///
-        legend(order(2 "High Intensity 1999" 4 "High Intensity 2005") ///
-            cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
-        graphregion(color(white)) ///
-        plotregion(margin(l=1 r=1))
-    graph export "$figures/appendix/AF_binary_es_2bin_`spec'.pdf", as(pdf) replace
-    restore
 }
-di "Figures exported to: $figures/appendix/AF_binary_es_2bin_{15,med,p75}.pdf"
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_15  = yr_pos - 0.18
+gen xpos_med = yr_pos
+gen xpos_p75 = yr_pos + 0.18
+foreach spec in 15 med p75 {
+    gen b_`spec'  = .
+    gen hi_`spec' = .
+    gen lo_`spec' = .
+}
+forval pos = 1/16 {
+    foreach spec in 15 med p75 {
+        replace b_`spec'  = `b2b_`spec'_`pos''                            if yr_pos == `pos'
+        replace hi_`spec' = `b2b_`spec'_`pos'' + 1.96 * `se2b_`spec'_`pos'' if yr_pos == `pos'
+        replace lo_`spec' = `b2b_`spec'_`pos'' - 1.96 * `se2b_`spec'_`pos'' if yr_pos == `pos'
+    }
+}
+
+twoway ///
+    (rcap hi_15 lo_15 xpos_15, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+    (scatter b_15 xpos_15, mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (rcap hi_med lo_med xpos_med, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+    (scatter b_med xpos_med, mcolor(red) msymbol(square) msize(vsmall)) ///
+    (rcap hi_p75 lo_p75 xpos_p75, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+    (scatter b_p75 xpos_p75, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+    (line b_15 xpos_15 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (line b_med xpos_med if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+    (line b_p75 xpos_p75 if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+    yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+    xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+    xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+    xscale(range(0.5 16.5)) ///
+    xtitle("") ///
+    ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+    ylabel(, grid gmin gmax labsize(small)) ///
+    legend(order(7 "Threshold: 15%" 8 "Threshold: median" 9 "Threshold: p75") ///
+        cols(3) size(small) position(6) ring(1) ///
+        region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+    graphregion(color(white)) ///
+    plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_binary_es_2bin.pdf", as(pdf) replace
+restore
+di "Figure exported to: $figures/appendix/AF_binary_es_2bin.pdf"
 
 *------------------------------------------------------------
 * Companion TABLE: two-binary Post-interaction estimates (mirrors D2's
-* AT_binary_es point-estimate companion, but reports BOTH
-* High_1999xPost and High_2005xPost together per threshold, rather than
-* the single coefficient in AT_binary_es). Reuses threshname1/2/3
-* (defined in D2 above) so the threshold labels match AT_binary_es
-* exactly. High_1999/Low_1999 counts are NOT repeated here -- see
-* Appendix Table~at:binary_es -- only the new High_2005/Low_2005 counts
-* are reported.
+* AT_binary_es point-estimate companion). High_2005xPost is still
+* estimated in every regression below (the later-phase/final-enrollment
+* control this design needs) but is not printed -- like Intensity_2005 x
+* post in the main spec, it has no stand-alone interpretation here.
+* Reuses threshname1/2/3 (defined in D2 above) so the threshold labels
+* match AT_binary_es exactly. High_1999/Low_1999 counts are NOT repeated
+* here -- see Appendix Table~at:binary_es -- only the new High_2005/
+* Low_2005 counts are reported.
 * Output: $tables/appendix/AT_binary_es_2bin.tex
 *------------------------------------------------------------
 local i = 0
@@ -4336,30 +4337,22 @@ foreach spec in 15 med p75 {
     else                     local b99t_`i' = trim("`aux'")
     local se99t_`i' : di %9.3f _se[1.post#c.`v99']
 
-    local aux : di %9.3f _b[1.post#c.`v05']
-    local tstat = abs(_b[1.post#c.`v05'] / _se[1.post#c.`v05'])
-    if      `tstat' >= 2.576 local b05t_`i' = trim("`aux'") + "***"
-    else if `tstat' >= 1.960 local b05t_`i' = trim("`aux'") + "**"
-    else if `tstat' >= 1.645 local b05t_`i' = trim("`aux'") + "*"
-    else                     local b05t_`i' = trim("`aux'")
-    local se05t_`i' : di %9.3f _se[1.post#c.`v05']
-
     local Nt2_`i' : di %12.0fc e(N)
 }
 
 {
     cap file close bin2
     file open bin2 using "$tables/appendix/AT_binary_es_2bin.tex", write replace
-    file write bin2 "\begin{tabular}{lccccc} \hline \hline" _n
-    file write bin2 "Threshold & Intensity 1999 x Post & Intensity 2005 x Post & Obs & High\textsubscript{2005} & Low\textsubscript{2005} \\ \toprule" _n
-    file write bin2 "`threshname1' & `b99t_1' & `b05t_1' & `Nt2_1' & `n1_treated05_15' & `n0_treated05_15' \\ " _n
-    file write bin2 " & (`se99t_1') & (`se05t_1') & & & \\ " _n
-    file write bin2 "  & & & & & \\ " _n
-    file write bin2 "`threshname2' & `b99t_2' & `b05t_2' & `Nt2_2' & `n1_treated05_med' & `n0_treated05_med' \\ " _n
-    file write bin2 " & (`se99t_2') & (`se05t_2') & & & \\ " _n
-    file write bin2 "  & & & & & \\ " _n
-    file write bin2 "`threshname3' & `b99t_3' & `b05t_3' & `Nt2_3' & `n1_treated05_p75' & `n0_treated05_p75' \\ " _n
-    file write bin2 " & (`se99t_3') & (`se05t_3') & & & \\ " _n
+    file write bin2 "\begin{tabular}{lcccc} \hline \hline" _n
+    file write bin2 "Threshold & Intensity 1999 x Post & Obs & High\textsubscript{2005} & Low\textsubscript{2005} \\ \toprule" _n
+    file write bin2 "`threshname1' & `b99t_1' & `Nt2_1' & `n1_treated05_15' & `n0_treated05_15' \\ " _n
+    file write bin2 " & (`se99t_1') & & & \\ " _n
+    file write bin2 "  & & & & \\ " _n
+    file write bin2 "`threshname2' & `b99t_2' & `Nt2_2' & `n1_treated05_med' & `n0_treated05_med' \\ " _n
+    file write bin2 " & (`se99t_2') & & & \\ " _n
+    file write bin2 "  & & & & \\ " _n
+    file write bin2 "`threshname3' & `b99t_3' & `Nt2_3' & `n1_treated05_p75' & `n0_treated05_p75' \\ " _n
+    file write bin2 " & (`se99t_3') & & & \\ " _n
     file write bin2 "\bottomrule" _n
     file write bin2 "\end{tabular}"
     file close bin2
@@ -4625,8 +4618,10 @@ di "A1 diagnostic: `n_nonmono' of `n_tot' HM municipalities are non-monotone und
 * weighting -- not built here).
 * Output: $figures/appendix/AF_threshold_validation_15.pdf,
 *         $figures/appendix/AF_threshold_validation_median.pdf,
-*         $figures/appendix/AF_threshold_validation_tercile.pdf,
-*         $tables/appendix/AT_threshold_validation_cellcounts.tex
+*         $figures/appendix/AF_threshold_validation_tercile.pdf
+* (the cell counts computed here feed AT_threshold_categorical.tex
+* below, not a separate table of their own -- see the note after this
+* foreach loop)
 *------------------------------------------------------------
 preserve
 keep if $sample_marg & inrange(year, 1991, 2006)
@@ -4821,22 +4816,14 @@ foreach spec in 15 median tercile {
     use `panel_snapshot_`spec'', clear
 }
 
-* --- Cell-count companion table (one row per group, one column per threshold) ---
-cap file close cc
-file open cc using "$tables/appendix/AT_threshold_validation_cellcounts.tex", write replace
-file write cc "\begin{tabular}{lccc} \hline \hline" _n
-file write cc "& 15\% (a priori) & Median & Upper tercile \\ " _n
-file write cc "Threshold value & `clabel_15' & `clabel_median' & `clabel_tercile' \\ \toprule" _n
-file write cc "Early (Intensity{\textsubscript{1999}} \$\geq\$ c, Intensity{\textsubscript{2005}} \$\geq\$ c) & `n_early_15' & `n_early_median' & `n_early_tercile' \\ " _n
-file write cc "Late-only (Intensity{\textsubscript{1999}} \$<\$ c \$\leq\$ Intensity{\textsubscript{2005}}) & `n_late_15' & `n_late_median' & `n_late_tercile' \\ " _n
-file write cc "Never (Intensity{\textsubscript{1999}} \$<\$ c, Intensity{\textsubscript{2005}} \$<\$ c) & `n_never_15' & `n_never_median' & `n_never_tercile' \\ " _n
-file write cc "High-Low, non-monotone (Intensity{\textsubscript{1999}} \$\geq\$ c \$>\$ Intensity{\textsubscript{2005}}) & `n_hl_15' & `n_hl_median' & `n_hl_tercile' \\ " _n
-file write cc "\bottomrule" _n
-file write cc "\end{tabular}" _n
-file close cc
+* NOTE: the former separate cell-count companion table
+* (AT_threshold_validation_cellcounts.tex) has been removed as redundant
+* with AT_threshold_categorical.tex below, which reports the identical
+* Early/Late-only/Never/High-Low counts (plus the threshold value row
+* added here to preserve that one piece of information this table alone
+* used to carry).
 
 di "Figures exported to: $figures/appendix/AF_threshold_validation_15.pdf, AF_threshold_validation_median.pdf, AF_threshold_validation_tercile.pdf"
-di "Table written to: $tables/appendix/AT_threshold_validation_cellcounts.tex"
 
 *------------------------------------------------------------
 * DOUBLE-THRESHOLD CATEGORICAL REGRESSION TABLE (PART 6, Proposal 1):
@@ -4864,6 +4851,7 @@ file write tc " & (`sethr_15_4') & (`sethr_median_4') & (`sethr_tercile_4') \\ "
 file write tc "  & & & \\ " _n
 file write tc "Obs & `Nthr_15' & `Nthr_median' & `Nthr_tercile' \\ " _n
 file write tc "  & & & \\ " _n
+file write tc "Threshold value & `clabel_15' & `clabel_median' & `clabel_tercile' \\ " _n
 file write tc "Early & `n_early_15' & `n_early_median' & `n_early_tercile' \\ " _n
 file write tc "Late-only & `n_late_15' & `n_late_median' & `n_late_tercile' \\ " _n
 file write tc "Never (base) & `n_never_15' & `n_never_median' & `n_never_tercile' \\ " _n
@@ -5190,9 +5178,9 @@ di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
 * 4 columns has a matching series here. Intensity_2005 is dropped (the
 * comparison here is about the construction of Intensity_1999 itself,
 * not the second phase).
-*   snap     : Mixed numerator,  year-varying denom (current default)
+*   snap     : Mixed numerator,  year-varying denom
 *   cum      : FASE numerator,   year-varying denom (numerator fix alone)
-*   snap_fix : Mixed numerator,  fixed 1997 P&V denom (denominator fix alone)
+*   snap_fix : Mixed numerator,  fixed 1997 P&V denom (main spec)
 *   cum_fix  : FASE numerator,   fixed 1997 P&V denom (both combined)
 * Output: $figures/appendix/Figure_2_all.pdf
 *============================================================
@@ -5277,8 +5265,8 @@ twoway ///
 	xtitle("") ///
 	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
 	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Mixed, year-varying (current)" 4 "FASE, year-varying" ///
-		6 "Mixed, fixed P&V" 8 "FASE, fixed P&V") ///
+	legend(order(2 "Mixed, year-varying" 4 "FASE, year-varying" ///
+		6 "Mixed, fixed P&V (main spec)" 8 "FASE, fixed P&V") ///
 		cols(2) size(small) position(6) ring(1) ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
