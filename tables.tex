@@ -14,20 +14,6 @@
 \end{table}
 
 
-% \begin{table}[H]
-% \RawCaption%
-%   {\caption[]{Effects of Progresa Enrollment Intensity on Mortality Rate by Sex}
-%    \label{t:did}}
-% \floatbox[{\captop}]{table}[\FBwidth]
-%   {}
-%   {\scalebox{0.88}{
-%       \input{tables/T2_mortality}
-%     }
-%     \vspace{-3mm}
-%     \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. Columns (1) and (2) report unweighted estimates without and with Seguro Popular intensity, respectively; columns (3) and (4) report estimates weighted by the population aged 65 and older without and with Seguro Popular intensity. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-%   }
-% \end{table}
-
 \begin{table}[H]
 \RawCaption%
   {\caption[]{\textcolor{red}{Effects of Progresa Enrollment Intensity on Older Adults' Mortality by Sex and Age Group}}
@@ -35,10 +21,10 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.88}{
-      \input{tables/T2_b_mortality}
+      \input{tables/T2_mortality}
     }
     \vspace{-3mm}
-    \floatfoot{\textcolor{red}{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the mortality rate for older adults per 1,000 inhabitants, disaggregated by age group. Columns~(1) and~(2) report estimates for ages 65 and older; column~(2) adds a municipality-specific linear time trend interacted with the continuous 1990 marginalization index. Columns~(3) and~(4) report estimates for ages 65--69 and 70 and older, respectively. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ captures the analogous effect for the later phase (2000--2005). The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities. All regressions include municipality and year fixed effects, Seguro Popular intensity, and are weighted by the population of the relevant age group. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{\textcolor{red}{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the mortality rate for older adults per 1,000 inhabitants, disaggregated by age group. Columns~(1) and~(2) report estimates for ages 65 and older; column~(2) adds a municipality-specific linear time trend interacted with the continuous 1990 marginalization index. Columns~(3) and~(4) report estimates for ages 65--69 and 70 and older, respectively. $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$ are constructed using the End-of-year numerator with a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$), following Parker and Vogl (2023) (see Appendix Table~\ref{t:did_age_fixeddenom}). $\textit{Intensity}_{1999} \times \textit{Post}$ captures the differential effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. $\textit{Intensity}_{2005} \times \textit{Post}$ is included in every regression as a control but is not reported, as it has no stand-alone interpretation in this specification. The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities. All regressions include municipality and year fixed effects, Seguro Popular intensity, and are weighted by the population of the relevant age group. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
   }
 \end{table}
 
