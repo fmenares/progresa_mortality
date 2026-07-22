@@ -4753,33 +4753,56 @@ foreach spec in 15 median tercile {
 
     * --- DOUBLE-THRESHOLD CATEGORICAL REGRESSION (PART 6, Proposal 1) ---
     * Must run BEFORE the collapse below, which destroys the municipality-
-    * year panel this needs. Base category = Never (ib3.), so Early/
-    * Late-only/High-Low are each read as a contrast against the low-low
-    * group. High-Low (non-monotone) is kept as its own category rather
-    * than dropped or folded into another group -- same reasoning as the
-    * raw-trends figure above: this construction is not guaranteed
-    * monotonic (25 HM municipalities per AT_crosswalk_supermun_diagnostic),
-    * so silently absorbing it elsewhere would repeat the exact
+    * year panel this needs. Base category = Never; Early/Late-only/
+    * High-Low are each read as a contrast against the low-low group.
+    * High-Low (non-monotone) is kept as its own category rather than
+    * dropped or folded into another group -- same reasoning as the raw-
+    * trends figure above: this construction is not guaranteed monotonic
+    * (25 HM municipalities per AT_crosswalk_supermun_diagnostic), so
+    * silently absorbing it elsewhere would repeat the exact
     * misclassification bug already found and fixed in that block.
-    cap noisily reghdfe emr65 ib3.group_`spec'#i.post c.sp_intensity ///
+    *
+    * The groups enter as EXPLICIT 0/1 dummies interacted with post as
+    * CONTINUOUS (c.d_g#i.post), with Never omitted as the base (no dummy),
+    * NOT as ib3.group#i.post. A factor#factor pure interaction omits the
+    * base level of BOTH factors, so the surviving term would be on 2.post
+    * (which is the PRE period here -- post is coded 2=pre, 1=post) and
+    * 1.post#group would not exist at all -- exactly the extraction pattern
+    * that fails silently. c.d_g#i.post matches how T2 (c.inten1999#i.post)
+    * and the binary event study (c.treated#i.post) recover 1.post as the
+    * post-period DiD coefficient (see the note at ~line 1864).
+    cap drop d_early_`spec' d_late_`spec' d_hl_`spec'
+    gen byte d_early_`spec' = (group_`spec' == 1)
+    gen byte d_late_`spec'  = (group_`spec' == 2)
+    gen byte d_hl_`spec'    = (group_`spec' == 4)
+
+    cap noisily reghdfe emr65 c.d_early_`spec'#i.post c.d_late_`spec'#i.post ///
+        c.d_hl_`spec'#i.post c.sp_intensity ///
         [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
     if _rc == 0 {
+        local Nthr_`spec' : di %12.0fc e(N)
         foreach g in 1 2 4 {
-            cap local aux : di %9.3f _b[`g'.group_`spec'#1.post]
-            if _rc {
-                local bthr_`spec'_`g' "n/a"
-                local sethr_`spec'_`g' "n/a"
-            }
-            else {
-                local tstat = abs(_b[`g'.group_`spec'#1.post] / _se[`g'.group_`spec'#1.post])
+            if `g' == 1 local dv d_early_`spec'
+            if `g' == 2 local dv d_late_`spec'
+            if `g' == 4 local dv d_hl_`spec'
+            cap local bcoef = _b[1.post#c.`dv']
+            local ok = (_rc == 0)
+            cap local scoef = _se[1.post#c.`dv']
+            local ok = `ok' & (_rc == 0)
+            if `ok' & `scoef' > 0 & `scoef' < . {
+                local aux : di %9.3f `bcoef'
+                local tstat = abs(`bcoef' / `scoef')
                 if      `tstat' >= 2.576 local bthr_`spec'_`g' = trim("`aux'") + "***"
                 else if `tstat' >= 1.960 local bthr_`spec'_`g' = trim("`aux'") + "**"
                 else if `tstat' >= 1.645 local bthr_`spec'_`g' = trim("`aux'") + "*"
                 else                     local bthr_`spec'_`g' = trim("`aux'")
-                local sethr_`spec'_`g' : di %9.3f _se[`g'.group_`spec'#1.post]
+                local sethr_`spec'_`g' : di %9.3f `scoef'
+            }
+            else {
+                local bthr_`spec'_`g'  "n/a"
+                local sethr_`spec'_`g' "n/a"
             }
         }
-        local Nthr_`spec' : di %12.0fc e(N)
     }
     else {
         di as error "Threshold-categorical regression `spec': reghdfe failed (rc=`_rc'), likely an empty/collinear category (e.g. Never at 15%) -- cells written as n/a"
@@ -4788,6 +4811,36 @@ foreach spec in 15 median tercile {
             local sethr_`spec'_`g' "n/a"
         }
         local Nthr_`spec' "n/a"
+    }
+
+    * --- EVENT-STUDY version: Early-vs-Never year-by-year path (the "b0"
+    * analog -- the early-adopter group's dynamic coefficient), stored for
+    * the 3-threshold overlay figure built after this loop. Full categorical
+    * (all three group dummies interacted with year), so Early is measured
+    * against the Never base exactly as in the point-estimate table above;
+    * only the Early path is extracted/plotted. Mirrors the binary event
+    * study's c.treated##ib6.year_1995 construction. ---
+    forval pos = 1/16 {
+        local bes_`spec'_`pos'  = .
+        local sees_`spec'_`pos' = .
+    }
+    cap noisily reghdfe emr65 c.d_early_`spec'##ib6.year_1995 ///
+        c.d_late_`spec'##ib6.year_1995 c.d_hl_`spec'##ib6.year_1995 c.sp_intensity ///
+        [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    if _rc == 0 {
+        forval pos = 1/16 {
+            if `pos' == 6 {
+                local bes_`spec'_`pos'  = 0
+                local sees_`spec'_`pos' = 0
+            }
+            else {
+                cap local bes_`spec'_`pos'  = _b[`pos'.year_1995#c.d_early_`spec']
+                cap local sees_`spec'_`pos' = _se[`pos'.year_1995#c.d_early_`spec']
+            }
+        }
+    }
+    else {
+        di as error "Threshold-categorical event study `spec': reghdfe failed (rc=`_rc') -- Early path left blank"
     }
 
     collapse (mean) emr65 [aw=popover65_], by(year group_`spec')
@@ -4881,6 +4934,70 @@ file write tc "\bottomrule" _n
 file write tc "\end{tabular}"
 file close tc
 di "Table written to: $tables/appendix/AT_threshold_categorical.tex"
+
+*------------------------------------------------------------
+* EVENT-STUDY OVERLAY: Early-vs-Never year-by-year coefficient (the "b0"
+* analog of the double-threshold categorical design), the three thresholds
+* (15% / median / upper tercile) overlaid on one figure -- the event-study
+* companion to AT_threshold_categorical (which reports the collapsed Post-
+* interaction point estimate). Directly parallels AF_binary_es, which does
+* the same 3-threshold overlay for the SINGLE-threshold binary design; this
+* is its double-threshold (Early = high on both 1999 and 2005 vs. the Never
+* base) counterpart. Reference year 1996. The bes_*/sees_* series were
+* stored per threshold in the loop above.
+*
+* Built from the stored locals only (no dependence on the current data), so
+* it is safe to clear here: the outer restore below repops the original
+* pre-preserve panel regardless of the working data's state.
+* Output: $figures/appendix/AF_threshold_categorical_es.pdf
+*------------------------------------------------------------
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_15  = yr_pos - 0.18
+gen xpos_med = yr_pos
+gen xpos_ter = yr_pos + 0.18
+foreach s in 15 med ter {
+    gen b_`s'  = .
+    gen hi_`s' = .
+    gen lo_`s' = .
+}
+forval pos = 1/16 {
+    replace b_15  = `bes_15_`pos''                            if yr_pos == `pos'
+    replace hi_15 = `bes_15_`pos'' + 1.96 * `sees_15_`pos''  if yr_pos == `pos'
+    replace lo_15 = `bes_15_`pos'' - 1.96 * `sees_15_`pos''  if yr_pos == `pos'
+    replace b_med  = `bes_median_`pos''                            if yr_pos == `pos'
+    replace hi_med = `bes_median_`pos'' + 1.96 * `sees_median_`pos''  if yr_pos == `pos'
+    replace lo_med = `bes_median_`pos'' - 1.96 * `sees_median_`pos''  if yr_pos == `pos'
+    replace b_ter  = `bes_tercile_`pos''                            if yr_pos == `pos'
+    replace hi_ter = `bes_tercile_`pos'' + 1.96 * `sees_tercile_`pos''  if yr_pos == `pos'
+    replace lo_ter = `bes_tercile_`pos'' - 1.96 * `sees_tercile_`pos''  if yr_pos == `pos'
+}
+twoway ///
+    (rcap hi_15 lo_15 xpos_15, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+    (scatter b_15 xpos_15, mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (rcap hi_med lo_med xpos_med, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+    (scatter b_med xpos_med, mcolor(red) msymbol(square) msize(vsmall)) ///
+    (rcap hi_ter lo_ter xpos_ter, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+    (scatter b_ter xpos_ter, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+    (line b_15 xpos_15 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+    (line b_med xpos_med if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+    (line b_ter xpos_ter if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+    yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+    xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+    xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+    xscale(range(0.5 16.5)) ///
+    xtitle("") ///
+    ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+    ylabel(, grid gmin gmax labsize(small)) ///
+    legend(order(7 "Threshold: 15%" 8 "Threshold: median" 9 "Threshold: upper tercile") ///
+        cols(3) size(small) position(6) ring(1) ///
+        region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+    graphregion(color(white)) ///
+    plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_threshold_categorical_es.pdf", as(pdf) replace
+di "Figure exported to: $figures/appendix/AF_threshold_categorical_es.pdf"
 
 restore
 
