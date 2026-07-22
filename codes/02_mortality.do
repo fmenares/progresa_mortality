@@ -4750,6 +4750,46 @@ foreach spec in 15 median tercile {
     * the municipality-year panel after each iteration's collapse.
     tempfile panel_snapshot_`spec'
     save `panel_snapshot_`spec'', replace
+
+    * --- DOUBLE-THRESHOLD CATEGORICAL REGRESSION (PART 6, Proposal 1) ---
+    * Must run BEFORE the collapse below, which destroys the municipality-
+    * year panel this needs. Base category = Never (ib3.), so Early/
+    * Late-only/High-Low are each read as a contrast against the low-low
+    * group. High-Low (non-monotone) is kept as its own category rather
+    * than dropped or folded into another group -- same reasoning as the
+    * raw-trends figure above: this construction is not guaranteed
+    * monotonic (25 HM municipalities per AT_crosswalk_supermun_diagnostic),
+    * so silently absorbing it elsewhere would repeat the exact
+    * misclassification bug already found and fixed in that block.
+    cap noisily reghdfe emr65 ib3.group_`spec'#i.post c.sp_intensity ///
+        [aw=popover65_] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    if _rc == 0 {
+        foreach g in 1 2 4 {
+            cap local aux : di %9.3f _b[`g'.group_`spec'#1.post]
+            if _rc {
+                local bthr_`spec'_`g' "n/a"
+                local sethr_`spec'_`g' "n/a"
+            }
+            else {
+                local tstat = abs(_b[`g'.group_`spec'#1.post] / _se[`g'.group_`spec'#1.post])
+                if      `tstat' >= 2.576 local bthr_`spec'_`g' = trim("`aux'") + "***"
+                else if `tstat' >= 1.960 local bthr_`spec'_`g' = trim("`aux'") + "**"
+                else if `tstat' >= 1.645 local bthr_`spec'_`g' = trim("`aux'") + "*"
+                else                     local bthr_`spec'_`g' = trim("`aux'")
+                local sethr_`spec'_`g' : di %9.3f _se[`g'.group_`spec'#1.post]
+            }
+        }
+        local Nthr_`spec' : di %12.0fc e(N)
+    }
+    else {
+        di as error "Threshold-categorical regression `spec': reghdfe failed (rc=`_rc'), likely an empty/collinear category (e.g. Never at 15%) -- cells written as n/a"
+        foreach g in 1 2 4 {
+            local bthr_`spec'_`g'  "n/a"
+            local sethr_`spec'_`g' "n/a"
+        }
+        local Nthr_`spec' "n/a"
+    }
+
     collapse (mean) emr65 [aw=popover65_], by(year group_`spec')
 
     * Build the plot and legend dynamically: skip empty groups (e.g. "Never"
@@ -4806,6 +4846,42 @@ file close cc
 
 di "Figures exported to: $figures/appendix/AF_threshold_validation_15.pdf, AF_threshold_validation_median.pdf, AF_threshold_validation_tercile.pdf"
 di "Table written to: $tables/appendix/AT_threshold_validation_cellcounts.tex"
+
+*------------------------------------------------------------
+* DOUBLE-THRESHOLD CATEGORICAL REGRESSION TABLE (PART 6, Proposal 1):
+* point-estimate companion to the raw-trends validation figure above,
+* using the SAME Early/Late-only/Never/High-Low classification and the
+* same 3-threshold grid. Base category = Never; Proposal 2 (drop
+* Late-only for a clean 2x2 against Never) is not used as the headline
+* here because Never is close to empty at the 15% threshold (n=2) --
+* keeping Late-only lets the design degrade gracefully across the grid
+* instead of failing at the a priori cutoff.
+* Output: $tables/appendix/AT_threshold_categorical.tex
+*------------------------------------------------------------
+cap file close tc
+file open tc using "$tables/appendix/AT_threshold_categorical.tex", write replace
+file write tc "\begin{tabular}{lccc} \hline \hline" _n
+file write tc "& \multicolumn{1}{c}{15\% (a priori)} & \multicolumn{1}{c}{Median} & \multicolumn{1}{c}{Upper tercile} \\ \toprule" _n
+file write tc "\textit{Early x Post} & `bthr_15_1' & `bthr_median_1' & `bthr_tercile_1' \\ " _n
+file write tc " & (`sethr_15_1') & (`sethr_median_1') & (`sethr_tercile_1') \\ " _n
+file write tc "  & & & \\ " _n
+file write tc "\textit{Late-only x Post} & `bthr_15_2' & `bthr_median_2' & `bthr_tercile_2' \\ " _n
+file write tc " & (`sethr_15_2') & (`sethr_median_2') & (`sethr_tercile_2') \\ " _n
+file write tc "  & & & \\ " _n
+file write tc "\textit{High-Low (non-monotone) x Post} & `bthr_15_4' & `bthr_median_4' & `bthr_tercile_4' \\ " _n
+file write tc " & (`sethr_15_4') & (`sethr_median_4') & (`sethr_tercile_4') \\ " _n
+file write tc "  & & & \\ " _n
+file write tc "Obs & `Nthr_15' & `Nthr_median' & `Nthr_tercile' \\ " _n
+file write tc "  & & & \\ " _n
+file write tc "Early & `n_early_15' & `n_early_median' & `n_early_tercile' \\ " _n
+file write tc "Late-only & `n_late_15' & `n_late_median' & `n_late_tercile' \\ " _n
+file write tc "Never (base) & `n_never_15' & `n_never_median' & `n_never_tercile' \\ " _n
+file write tc "High-Low (non-monotone) & `n_hl_15' & `n_hl_median' & `n_hl_tercile' \\ " _n
+file write tc "\bottomrule" _n
+file write tc "\end{tabular}"
+file close tc
+di "Table written to: $tables/appendix/AT_threshold_categorical.tex"
+
 restore
 
 *============================================================

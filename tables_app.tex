@@ -199,6 +199,20 @@
 
 \begin{table}[H]
 \RawCaption%
+  {\caption{Double-Threshold Categorical Design: Early/Late-Only/High-Low vs.\ Never}
+   \label{at:threshold_categorical}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/appendix/AT_threshold_categorical}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This is the point-estimate companion to the raw-trends validation figure and cell-count table above (Appendix Figure~\ref{af:threshold_validation}, Appendix Table~\ref{at:threshold_validation_cellcounts}), using the identical Early/Late-only/Never/High-Low classification and threshold grid. The estimating equation is $\textit{emr65}_{mt} = \beta_E \cdot \textit{Early}_m \times \textit{Post}_t + \beta_L \cdot \textit{Late-only}_m \times \textit{Post}_t + \beta_{HL} \cdot \textit{High-Low}_m \times \textit{Post}_t + \delta_m + \gamma_t + \varepsilon_{mt}$, with \textit{Never} as the omitted base category; all columns include Seguro Popular intensity, municipality and year fixed effects, and are weighted by the population aged 65 and older. \textit{Late-only} is retained as its own category rather than dropped, since \textit{Never} is nearly empty at the 15 percent threshold (2 municipalities) and only a clean comparison at the higher, distribution-based thresholds would support dropping it; keeping all groups lets the design degrade gracefully across the grid instead of failing at the a priori cutoff. \textit{High-Low} (non-monotone, possible only under the End-of-year numerator) is kept as its own category rather than folded into another group, for the same reason it is shown separately in Appendix Figure~\ref{af:threshold_validation}. Cells marked ``n/a'' indicate the regression could not be estimated at that threshold (e.g.\ an empty or collinear category). Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+
+\begin{table}[H]
+\RawCaption%
   {\caption{Saturation Diagnostics: Year-on-Year Enrollment Intensity Changes, Highly Marginalized Municipalities}
    \label{at:saturation_diagnostics}}
 \floatbox[{\captop}]{table}[\FBwidth]
