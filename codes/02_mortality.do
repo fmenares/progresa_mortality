@@ -3461,6 +3461,9 @@ di "R² of inten1999 ~ inten2005 (HM sample): `r2_1'   [P&V fn.18 benchmark: 0.6
 corr inten1999 inten2005
 local corr_eoy_yv : di %5.3f r(rho)
 
+corr inten1999 inten2005 [aw=popover65_]
+local corr_eoy_yv_w : di %5.3f r(rho)
+
 reg inten1999 inten2005 [aw=popover65_]
 local r2_2 : di %5.3f e(r2)
 di "R² of inten1999 ~ inten2005, weighted by pop 65+ (HM sample): `r2_2'   [P&V fn.18 benchmark: 0.65]"
@@ -3851,6 +3854,9 @@ di "R² of inten1999_fix ~ inten2005_fix (HM sample, FIXED denominator): `r2fix_
 corr inten1999_fix inten2005_fix
 local corr_eoy_fix : di %5.3f r(rho)
 
+corr inten1999_fix inten2005_fix [aw=popover65_]
+local corr_eoy_fix_w : di %5.3f r(rho)
+
 reg inten1999_fix inten2005_fix [aw=popover65_]
 local r2fix_2 : di %5.3f e(r2)
 di "R² of inten1999_fix ~ inten2005_fix, weighted by pop 65+ (FIXED denominator): `r2fix_2'   [P&V benchmark: 0.65]"
@@ -3940,6 +3946,18 @@ corr inten1999_fix inten1999_fase_fix if $sample_marg & year==1996
 local corr99_fix: di %5.3f r(rho)
 corr inten2005_fix inten2005_fase_fix if $sample_marg & year==1996
 local corr05_fix: di %5.3f r(rho)
+
+* Weighted companions (population aged 65+), for AT_intensity_correlations
+* Panel B -- same four correlations, weighted to match the main
+* regressions' weighting.
+corr inten1999 inten1999_fase [aw=popover65_] if $sample_marg & year==1996
+local corr99_w: di %5.3f r(rho)
+corr inten2005 inten2005_fase [aw=popover65_] if $sample_marg & year==1996
+local corr05_w: di %5.3f r(rho)
+corr inten1999_fix inten1999_fase_fix [aw=popover65_] if $sample_marg & year==1996
+local corr99_fix_w: di %5.3f r(rho)
+corr inten2005_fix inten2005_fase_fix [aw=popover65_] if $sample_marg & year==1996
+local corr05_fix_w: di %5.3f r(rho)
 
 *============================================================
 * CROSSWALK "SUPER-MUNICIPALITY" DIAGNOSTIC -- is the A1 non-monotonicity
@@ -4323,6 +4341,9 @@ di "R² of inten1999_fase ~ inten2005_fase (HM sample, FASE-only numerator, year
 corr inten1999_fase inten2005_fase
 local corr_cum_yv : di %5.3f r(rho)
 
+corr inten1999_fase inten2005_fase [aw=popover65_]
+local corr_cum_yv_w : di %5.3f r(rho)
+
 reg inten1999_fase inten2005_fase [aw=popover65_]
 local r2fase_yv_2 : di %5.3f e(r2)
 
@@ -4332,6 +4353,9 @@ di "R² of inten1999_fase_fix ~ inten2005_fase_fix (HM sample, FASE-only numerat
 
 corr inten1999_fase_fix inten2005_fase_fix
 local corr_cum_fix : di %5.3f r(rho)
+
+corr inten1999_fase_fix inten2005_fase_fix [aw=popover65_]
+local corr_cum_fix_w : di %5.3f r(rho)
 
 reg inten1999_fase_fix inten2005_fase_fix [aw=popover65_]
 local r2fase_fx_2 : di %5.3f e(r2)
@@ -4389,6 +4413,10 @@ restore
 *          relocated from the footer of T2_b_mortality_fixeddenom (per
 *          the coauthor's request to move it here), unchanged values
 *          (corr99/corr99_fix/corr05/corr05_fix, already computed above).
+* Panel A is unweighted; Panel B repeats all three rows weighted by the
+* population aged 65 and older, matching the main regressions' weighting
+* (corr_*_w/corr99_w/corr05_w/corr99_fix_w/corr05_fix_w, computed above
+* alongside their unweighted counterparts).
 * Column order matches T2_b_mortality_fixeddenom: (1) year-varying
 * denom/End-of-year, (2) year-varying/Cumulative, (3) fixed/End-of-year,
 * (4) fixed/Cumulative.
@@ -4400,10 +4428,18 @@ file write ic "\begin{tabular}{lcccc} \hline \hline" _n
 file write ic "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
 file write ic "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
 file write ic "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+file write ic "\underline{\textit{Panel A: Unweighted}}  \\ " _n
 file write ic "Corr(Intensity{\textsubscript{1999}}, Intensity{\textsubscript{2005}}) & `corr_eoy_yv' & `corr_cum_yv' & `corr_eoy_fix' & `corr_cum_fix' \\ " _n
-file write ic "\bottomrule" _n
+file write ic "  & & & & \\ " _n
 file write ic "Corr(End-of-year, Cumulative), 1999 & \multicolumn{2}{c}{`corr99'} & \multicolumn{2}{c}{`corr99_fix'} \\ " _n
 file write ic "Corr(End-of-year, Cumulative), 2005 & \multicolumn{2}{c}{`corr05'} & \multicolumn{2}{c}{`corr05_fix'} \\ " _n
+file write ic "  & & & & \\ " _n
+file write ic "\underline{\textit{Panel B: Weighted (pop 65+)}}  \\ " _n
+file write ic "Corr(Intensity{\textsubscript{1999}}, Intensity{\textsubscript{2005}}) & `corr_eoy_yv_w' & `corr_cum_yv_w' & `corr_eoy_fix_w' & `corr_cum_fix_w' \\ " _n
+file write ic "  & & & & \\ " _n
+file write ic "Corr(End-of-year, Cumulative), 1999 & \multicolumn{2}{c}{`corr99_w'} & \multicolumn{2}{c}{`corr99_fix_w'} \\ " _n
+file write ic "Corr(End-of-year, Cumulative), 2005 & \multicolumn{2}{c}{`corr05_w'} & \multicolumn{2}{c}{`corr05_fix_w'} \\ " _n
+file write ic "\bottomrule" _n
 file write ic "\end{tabular}"
 file close ic
 di "Table exported to: $tables/appendix/AT_intensity_correlations.tex"
