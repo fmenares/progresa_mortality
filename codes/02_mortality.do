@@ -4576,8 +4576,10 @@ di "Table exported to: $tables/T2_b_mortality_fixeddenom.tex"
 *============================================================
 * APPENDIX TABLE: AT_power_mde -- power/Minimum Detectable Effect (MDE)
 * summary for the Intensity_1999 x Post coefficient (beta_0 only, per
-* coauthor's request -- Intensity_2005 not needed) across all 4
-* numerator/denominator constructions of T2_b_mortality_fixeddenom,
+* coauthor's request -- Intensity_2005 not needed) across the End-of-year
+* and Cumulative numerator constructions under the year-varying
+* denominator (columns 1-2 of T2_b_mortality_fixeddenom; the fixed-1997-
+* denominator columns 3-4 are dropped per the coauthor's request),
 * benchmarked against Barham & Rowberry (2013). Reuses the coefficient/SE
 * locals already computed for T2_b_mortality_fixeddenom above (same
 * regressions; no new estimation).
@@ -4594,10 +4596,9 @@ local mde_mult = 2.80
 
 cap file close mde
 file open mde using "$tables/appendix/AT_power_mde.tex", write replace
-file write mde "\begin{tabular}{lcccc} \hline \hline" _n
-file write mde "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
-file write mde "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
-file write mde "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+file write mde "\begin{tabular}{lcc} \hline \hline" _n
+file write mde "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
+file write mde "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
 
 foreach pnl in p f m {
     if "`pnl'" == "p"      local plabel "Panel A: Pooled"
@@ -4606,24 +4607,24 @@ foreach pnl in p f m {
 
     file write mde "\underline{\textit{`plabel'}} \\ " _n
     file write mde "\textit{Intensity 1999 x post (\$\beta_0\$)}"
-    forval c = 1/4 {
+    forval c = 1/2 {
         file write mde " & `b99_fd_`pnl'_`c''"
     }
     file write mde " \\ " _n
 
     file write mde " "
-    forval c = 1/4 {
+    forval c = 1/2 {
         file write mde " & (`se99_fd_`pnl'_`c'')"
     }
     file write mde " \\ " _n
 
     file write mde "\textit{MDE (80\% power, two-sided 5\%)}"
-    forval c = 1/4 {
+    forval c = 1/2 {
         local mde_`pnl'_`c' : di %12.2f (`mde_mult' * real("`se99_fd_`pnl'_`c''"))
         file write mde " & `mde_`pnl'_`c''"
     }
     file write mde " \\ " _n
-    file write mde "  & & & & \\ " _n
+    file write mde "  & & \\ " _n
 }
 
 file write mde "\bottomrule" _n
