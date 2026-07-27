@@ -3,6 +3,8 @@
 *** moved out of 02_mortality.do per the coauthor's request (items formerly
 *** AF12-15 / AT15-17 in the appendix): the binary high-vs-low event study
 *** (D2/D2b) and the threshold-validation / threshold-categorical design.
+*** Also holds the intensity-construction time-series figure (former AF3,
+*** af:intensity_timeseries), moved here and dropped from the appendix tex.
 *** Loads the working panel checkpointed by 02_mortality.do right before
 *** this code used to run, so it needs no separate data-construction pass.
 *** ============================================================================================================
@@ -753,3 +755,55 @@ graph export "$figures/appendix/AF_threshold_categorical_es.pdf", as(pdf) replac
 di "Figure exported to: $figures/appendix/AF_threshold_categorical_es.pdf"
 
 restore
+
+*============================================================
+* APPENDIX FIGURE: Time series of the 4 intensity constructions,
+* 1997-2006, population-weighted (65+). Coauthor-requested; corrects an
+* earlier mis-specification in this conversation (a first version
+* proposed building the "End-of-year" series from the 1999/2005
+* snapshots) -- the correct End-of-year series is `intensity_new' itself,
+* the genuine year-by-year snapshot, unrelated to which intensity years
+* are used downstream. An unweighted companion was considered but
+* dropped: the weighted version is the relevant one for the analysis
+* sample (regressions are population-weighted throughout), so an
+* unweighted panel added a robustness check without a corresponding
+* need here.
+*
+* The 4 series (HM-sample weighted averages, by calendar year):
+*   (1) End-of-year, year-varying denom = intensity_new (= pgbenef_new/hh_tot)
+*   (2) Cumulative,  year-varying denom = pg_fase/hh_tot
+*   (3) End-of-year, fixed denom        = pgbenef_new/hog1997_fixed
+*   (4) Cumulative,  fixed denom        = pg_fase/hog1997_fixed
+* Output: $figures/appendix/AF_intensity_timeseries_w.pdf
+*------------------------------------------------------------
+preserve
+keep if $sample_marg & inrange(year, 1997, 2006)
+
+gen ts_eoy_yv  = intensity_new
+gen ts_cum_yv  = pg_fase / hh_tot
+gen ts_eoy_fix = pgbenef_new / hog1997_fixed
+gen ts_cum_fix = pg_fase / hog1997_fixed
+
+count if missing(ts_eoy_yv) | missing(ts_cum_yv) | missing(ts_eoy_fix) | missing(ts_cum_fix)
+di "`r(N)' HM municipality-years dropped for missing intensity in the time-series figure"
+drop if missing(ts_eoy_yv) | missing(ts_cum_yv) | missing(ts_eoy_fix) | missing(ts_cum_fix)
+
+collapse (mean) ts_eoy_yv ts_cum_yv ts_eoy_fix ts_cum_fix [aw=popover65_], by(year)
+
+twoway ///
+    (connected ts_eoy_yv year, lcolor(black) mcolor(black) msymbol(circle) msize(small)) ///
+    (connected ts_cum_yv year, lcolor(black) mcolor(black) msymbol(circle) msize(small) lpattern(dash)) ///
+    (connected ts_eoy_fix year, lcolor(red) mcolor(red) msymbol(triangle) msize(small)) ///
+    (connected ts_cum_fix year, lcolor(red) mcolor(red) msymbol(triangle) msize(small) lpattern(dash)), ///
+    xtitle("Year", size(small)) ///
+    ytitle("Mean Intensity", size(small)) ///
+    xlabel(1997(1)2006, labsize(small)) ylabel(, labsize(small)) ///
+    legend(order(1 "End-of-year, year-varying denom" 2 "Cumulative, year-varying denom" ///
+                 3 "End-of-year, fixed denom" 4 "Cumulative, fixed denom") ///
+           cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
+    graphregion(color(white)) plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF_intensity_timeseries_w.pdf", as(pdf) replace
+restore
+
+di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
+

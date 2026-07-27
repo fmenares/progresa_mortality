@@ -919,8 +919,11 @@ restore
 *============================================================
 * APPENDIX FIGURE 3-4: Event Study by Cause of Death (Our Sample, 1991-2006)
 * Figure_5_XXX_Marg.pdf — y-axis -9(3)9 for tb_card, -6(3)6 otherwise
+* Commented out (not disabled by mistake): already run, the PDFs on disk
+* are current -- uncomment only if the cause-of-death figures need to be
+* regenerated.
 *============================================================
-
+/*
 {
 local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 local samp_cond  "$sample_marg"
@@ -1033,6 +1036,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 
 } // end foreach cod
 } // end Marg block
+*/
 
 
 
@@ -1793,10 +1797,12 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 *============================================================
 * APPENDIX TABLE 1: Causes of Death (Weighted + SP spec)
 * AT1_cod_mortality.tex -- Pooled, Female, Male panels
-* Uncommented to run alongside the rest of the coauthor-requested
-* changes; the wyoung Romano-Wolf bootstrap (500 reps x 3 panels x 9
-* outcomes) is slow but is needed to regenerate AT1_cod_mortality.tex.
+* Commented out (not disabled by mistake): already run, the table on
+* disk is current -- the wyoung Romano-Wolf bootstrap (500 reps x 3
+* panels x 9 outcomes) is slow, so only uncomment and re-run this when
+* the underlying data or specification actually changes.
 *============================================================
+/*
 foreach grp in w f m {
 	if "`grp'" == "w" {
 		local wvar = "popover65_"
@@ -1939,6 +1945,7 @@ foreach grp in w f m {
 	file write sm "\end{tabular}"
 	file close sm
 }
+*/
 *============================================================
 * APPENDIX TABLE 2: Functional Form Robustness
 *============================================================
@@ -2276,8 +2283,11 @@ restore
 
 di "BR size cutoffs (older adults 65+): p10=`p10_br', p25=`p25_br' (sample: window $window, BR regression 1992-2002)"
 
-* Cols 2-3: pooled UW and W replication — self-contained so AT5 does not
-*           depend on AT3 locals (mirrors AT3 Panel B and Panel C, pooled)
+* Col 2: pooled unweighted replication — self-contained so AT5 does not
+*        depend on AT3 locals (mirrors AT3 Panel B, pooled). The weighted
+*        replication column (former column 3) was removed per the
+*        coauthor's request -- it is redundant with the weighted size-
+*        tercile columns added at the right end of this table below.
 reghdfe emr65 lag2_intensity_new if inrange(year, 1992, 2002) & $sample_br, ///
     a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 local aux: di %12.3f _b[lag2_intensity_new]
@@ -2292,21 +2302,6 @@ local meanBR_2_p: di %12.2fc `r(mean)'
 local NBR_2_p:    di %12.0fc `e(N)'
 distinct cve_ent_mun_super if e(sample)
 local NmunBR_2_p: di %12.0fc `r(ndistinct)'
-
-reghdfe emr65 lag2_intensity_new [aw=popover65_] if inrange(year, 1992, 2002) & $sample_br, ///
-    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-local aux: di %12.3f _b[lag2_intensity_new]
-local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
-if      `t' >= 2.576 local bBR2_3_p = "`aux'***"
-else if `t' >= 1.96  local bBR2_3_p = "`aux'**"
-else if `t' >= 1.645 local bBR2_3_p = "`aux'*"
-else                  local bBR2_3_p = "`aux'"
-local seBR2_3_p: di %12.3f _se[lag2_intensity_new]
-sum emr65 if e(sample) & year == 1996
-local meanBR_3_p: di %12.2fc `r(mean)'
-local NBR_3_p:    di %12.0fc `e(N)'
-distinct cve_ent_mun_super if e(sample)
-local NmunBR_3_p: di %12.0fc `r(ndistinct)'
 
 * Step 3: Run regressions — same unweighted lag-2 BR spec, pooled only
 
@@ -2391,12 +2386,32 @@ forval terc = 1/3 {
     quietly sum inten1999 if $sample_br & year == 1996 & size_tercile_br == `terc'
     local meanI99_AT5_terc`terc': di %6.1f r(mean) * 100
 }
+
+* Weighted companion to the tercile loop above (added at the coauthor's
+* request, at the right end of the table): same three size terciles,
+* same BR replication spec, weighted by population aged 65 and older.
+forval terc = 1/3 {
+    reghdfe emr65 lag2_intensity_new [aw=popover65_] ///
+        if inrange(year, 1992, 2002) & $sample_br & size_tercile_br == `terc', ///
+        a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    local aux: di %12.3f _b[lag2_intensity_new]
+    local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+    if      `t' >= 2.576 local bAT5_tercW`terc' = "`aux'***"
+    else if `t' >= 1.96  local bAT5_tercW`terc' = "`aux'**"
+    else if `t' >= 1.645 local bAT5_tercW`terc' = "`aux'*"
+    else                  local bAT5_tercW`terc' = "`aux'"
+    local seAT5_tercW`terc':   di %12.3f _se[lag2_intensity_new]
+    sum emr65 if e(sample) & year == 1996
+    local meanAT5_tercW`terc': di %12.2fc `r(mean)'
+    local NAT5_tercW`terc':    di %12.0fc `e(N)'
+    distinct cve_ent_mun_super if e(sample)
+    local NmunAT5_tercW`terc': di %12.0fc `r(ndistinct)'
+}
 drop pop_mun_br_terc size_tercile_br
 
 * Step 4: Write table
-* Cols 2-3 reuse locals from the AT3 block:
-*   Col 2 (UW replication):  bBR2_2_p, seBR2_2_p, meanBR_2_p, NBR_2_p, NmunBR_2_p
-*   Col 3 (W replication):   bBR2_3_p, seBR2_3_p, meanBR_3_p, NBR_3_p, NmunBR_3_p
+* Col 2 reuses a local from the AT3 block:
+*   Col 2 (Replication):  bBR2_2_p, seBR2_2_p, meanBR_2_p, NBR_2_p, NmunBR_2_p
 
 * Mean Intensity 1999 by sample (one obs per mun at year==1996)
 quietly sum inten1999 if $sample_br & year == 1996
@@ -2409,18 +2424,19 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 {
     cap file close sm
     file open sm using "$tables/appendix/AT5_BR_trimming.tex", write replace
-    file write sm "\begin{tabular}{lcccccccc} \hline \hline" _n
-    file write sm "& \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Full Sample}} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Size Terciles (UW)}} \\ \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-9}" _n
-    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication (UW)} & \multicolumn{1}{c}{Replication (W)} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
-    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}" _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} \\ \toprule " _n
-    file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bBR2_3_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
-    file write sm " & (1.040) & (`seBR2_2_p') & (`seBR2_3_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') \\ " _n
-    file write sm "  & & & & & & & & \\ " _n
-    file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanBR_3_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' \\ " _n
-    file write sm "Obs & 21,571 & `NBR_2_p' & `NBR_3_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' \\ " _n
-    file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunBR_3_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' \\ " _n
-    file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
+    file write sm "\begin{tabular}{lccccccccccc} \hline \hline" _n
+    file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{6}{c}{\textit{Size Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-11}" _n
+    file write sm "& & & & & \multicolumn{3}{c}{Unweighted} & \multicolumn{3}{c}{Weighted} \\ \cmidrule(lr){6-8} \cmidrule(lr){9-11}" _n
+    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
+    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}\cmidrule(lr){11-11}" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} & \multicolumn{1}{c}{(10)} \\ \toprule " _n
+    file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' & `bAT5_tercW1' & `bAT5_tercW2' & `bAT5_tercW3' \\ " _n
+    file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') & (`seAT5_tercW1') & (`seAT5_tercW2') & (`seAT5_tercW3') \\ " _n
+    file write sm "  & & & & & & & & & & \\ " _n
+    file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' & `meanAT5_tercW1' & `meanAT5_tercW2' & `meanAT5_tercW3' \\ " _n
+    file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' & `NAT5_tercW1' & `NAT5_tercW2' & `NAT5_tercW3' \\ " _n
+    file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' & `NmunAT5_tercW1' & `NmunAT5_tercW2' & `NmunAT5_tercW3' \\ " _n
+    file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
     file write sm "\bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
@@ -3631,7 +3647,7 @@ twoway ///
     xtitle("") ///
     ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
     ylabel(, grid gmin gmax labsize(small)) ///
-    legend(order(11 "No control (misspecified)" 12 "Control: Intensity 2005 (baseline)" 13 "Control: Intensity 2002" 14 "Control: Intensity 2004" 15 "Control: Intensity 2006") ///
+    legend(order(11 "No control" 12 "Control: Intensity 2005 (baseline)" 13 "Control: Intensity 2002" 14 "Control: Intensity 2004" 15 "Control: Intensity 2006") ///
         cols(2) size(small) position(6) ring(1) ///
         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
@@ -3809,16 +3825,6 @@ di "--- Correlation of current (year-varying-denom) vs. fixed-denom Intensity, H
 corr inten1999 inten1999_fix if $sample_marg & year==1996
 corr inten2005 inten2005_fix if $sample_marg & year==1996
 
-*============================================================
-* CHECKPOINT: the binary/threshold robustness checks that used to follow
-* here (D2/D2b binary event studies, and the threshold-validation/
-* threshold-categorical block) have been moved to codes/binary_and_robust.do
-* per the coauthor's request (AF12-15/AT15-17 out of the main appendix).
-* Save the fully-constructed working panel so that file can load it
-* directly rather than re-running the data construction above.
-*============================================================
-save "$data/Temp_data/working_panel_for_binary_and_robust.dta", replace
-
 /*
 D2/D2b (binary high-vs-low event study on Intensity_1999, and its
 two-binary companion) and the threshold-validation/threshold-categorical
@@ -3923,6 +3929,18 @@ replace inten1999_fase_fix = 1 if inten1999_fase_fix > 1 & !missing(inten1999_fa
 replace inten2005_fase_fix = 1 if inten2005_fase_fix > 1 & !missing(inten2005_fase_fix)
 label var inten1999_fase_fix "Intensity 1999 (FASE-only numerator, fixed P&V denom.)"
 label var inten2005_fase_fix "Intensity 2005 (FASE-only numerator, fixed P&V denom.)"
+
+*============================================================
+* CHECKPOINT: the binary/threshold robustness checks (D2/D2b binary event
+* studies, the threshold-validation/threshold-categorical block) and the
+* intensity-construction time-series figure (former AF3,
+* af:intensity_timeseries) have all been moved to codes/binary_and_robust.do
+* per the coauthor's request. Save the fully-constructed working panel --
+* including pg_fase/inten*_fase(_fix), needed by the time-series figure --
+* so that file can load it directly rather than re-running the data
+* construction above.
+*============================================================
+save "$data/Temp_data/working_panel_for_binary_and_robust.dta", replace
 
 *============================================================
 * Correlation between the two beneficiary-numerator constructions (used
@@ -4254,55 +4272,11 @@ restore
 di "Table exported to: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex"
 
 *============================================================
-* APPENDIX FIGURE: Time series of the 4 intensity constructions,
-* 1997-2006, population-weighted (65+). Coauthor-requested; corrects an
-* earlier mis-specification in this conversation (a first version
-* proposed building the "End-of-year" series from the 1999/2005
-* snapshots) -- the correct End-of-year series is `intensity_new' itself,
-* the genuine year-by-year snapshot, unrelated to which intensity years
-* are used downstream. An unweighted companion was considered but
-* dropped: the weighted version is the relevant one for the analysis
-* sample (regressions are population-weighted throughout), so an
-* unweighted panel added a robustness check without a corresponding
-* need here.
-*
-* The 4 series (HM-sample weighted averages, by calendar year):
-*   (1) End-of-year, year-varying denom = intensity_new (= pgbenef_new/hh_tot)
-*   (2) Cumulative,  year-varying denom = pg_fase/hh_tot
-*   (3) End-of-year, fixed denom        = pgbenef_new/hog1997_fixed
-*   (4) Cumulative,  fixed denom        = pg_fase/hog1997_fixed
-* Output: $figures/appendix/AF_intensity_timeseries_w.pdf
-*------------------------------------------------------------
-preserve
-keep if $sample_marg & inrange(year, 1997, 2006)
-
-gen ts_eoy_yv  = intensity_new
-gen ts_cum_yv  = pg_fase / hh_tot
-gen ts_eoy_fix = pgbenef_new / hog1997_fixed
-gen ts_cum_fix = pg_fase / hog1997_fixed
-
-count if missing(ts_eoy_yv) | missing(ts_cum_yv) | missing(ts_eoy_fix) | missing(ts_cum_fix)
-di "`r(N)' HM municipality-years dropped for missing intensity in the time-series figure"
-drop if missing(ts_eoy_yv) | missing(ts_cum_yv) | missing(ts_eoy_fix) | missing(ts_cum_fix)
-
-collapse (mean) ts_eoy_yv ts_cum_yv ts_eoy_fix ts_cum_fix [aw=popover65_], by(year)
-
-twoway ///
-    (connected ts_eoy_yv year, lcolor(black) mcolor(black) msymbol(circle) msize(small)) ///
-    (connected ts_cum_yv year, lcolor(black) mcolor(black) msymbol(circle) msize(small) lpattern(dash)) ///
-    (connected ts_eoy_fix year, lcolor(red) mcolor(red) msymbol(triangle) msize(small)) ///
-    (connected ts_cum_fix year, lcolor(red) mcolor(red) msymbol(triangle) msize(small) lpattern(dash)), ///
-    xtitle("Year", size(small)) ///
-    ytitle("Mean Intensity", size(small)) ///
-    xlabel(1997(1)2006, labsize(small)) ylabel(, labsize(small)) ///
-    legend(order(1 "End-of-year, year-varying denom" 2 "Cumulative, year-varying denom" ///
-                 3 "End-of-year, fixed denom" 4 "Cumulative, fixed denom") ///
-           cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
-    graphregion(color(white)) plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_intensity_timeseries_w.pdf", as(pdf) replace
-restore
-
-di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
+* NOTE: the intensity-construction time-series figure (former AF3,
+* AF_intensity_timeseries_w.pdf, af:intensity_timeseries) has moved to
+* codes/binary_and_robust.do per the coauthor's request -- see that file
+* for the unchanged code.
+*============================================================
 
 * NOTE: the former "event study for Intensity_1999 x year, ALL FOUR
 * intensity constructions overlaid" figure (Figure_2_all.pdf,
