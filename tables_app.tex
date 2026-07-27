@@ -93,23 +93,9 @@
       \input{tables/appendix/AT5_BR_trimming}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column (1) reproduces their original unweighted estimate; Column (2) reports our close replication. Column (3) adds population weights, which attenuates the estimate by approximately 50\% and reduces precision. \textcolor{red}{Columns~(4) and~(5) progressively trim the smallest municipalities, dropping those in the bottom 10\% and 25\% of the distribution of average older-adult (65+) population over 1992--2002; both are estimated unweighted, matching the specification of column~(2).} All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+    \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column (1) reproduces their original unweighted estimate; Column (2) reports our close replication. Column (3) adds population weights, which attenuates the estimate by approximately 50\% and reduces precision. \textcolor{red}{Columns~(4) and~(5) progressively trim the smallest municipalities, dropping those in the bottom 10\% and 25\% of the distribution of average older-adult (65+) population over 1992--2002; both are estimated unweighted, matching the specification of column~(2).} Columns~(6)--(8) instead split the BR sample into three equal-sized groups (terciles) by average older-adult (65+) population over 1992--2002 and estimate the same unweighted specification separately within each tercile, addressing the same municipality-size concern non-parametrically rather than by trimming. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 \newpage
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Stratification by Municipality Size}
-   \label{at:size_tercile}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.85}{
-      \input{tables/appendix/AT_size_tercile}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table addresses the concern (IADB comment 4) that trimming the smallest municipalities, as in Appendix Table~\ref{at:br_trimming}, discards observations rather than characterizing how the estimated effect varies with municipality size. Municipalities in the highly marginalized sample are split into three equal-sized groups (terciles) by their 1996 population aged 65 and older, and the main specification (column~3 of Table~\ref{t:did_age_fixeddenom}: $\textit{Intensity}_{1999} \times \textit{Post}$, both using the End-of-year numerator with Parker and Vogl's fixed 1997 household denominator, plus Seguro Popular intensity controls) is estimated separately within each tercile, both unweighted and weighted by the population aged 65 and older. $\textit{Intensity}_{2005} \times \textit{Post}$ is included in every regression as a control but is not reported, as it has no stand-alone interpretation in this specification. The outcome is the pooled mortality rate for adults aged 65 and older per 1,000 inhabitants. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
-\end{table}
-
 
 \begin{table}[H]
 \RawCaption%
