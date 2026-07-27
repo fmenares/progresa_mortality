@@ -3997,25 +3997,26 @@ restore
 *============================================================
 * A1 NON-MONOTONICITY DIAGNOSTIC: identifies HM municipalities where the
 * Mixed (snapshot) construction has Intensity_2005 < Intensity_1999
-* (research_project.md PART 6, A1 discussion), using the fixed 1997
-* household denominator (inten*_fix / inten*_fase_fix) so only the
-* numerator construction (mixed snapshot vs. FASE cumulative sum)
-* differs. Feeds the crosswalk "super-municipality" cross-tab below
-* (does the non-monotonicity concentrate among municipalities built from
-* 2+ origin INEGI codes, i.e. a boundary-aggregation artifact, rather
-* than real household attrition/migration?).
+* (research_project.md PART 6, A1 discussion), using the End-of-year
+* numerator over the year-varying household denominator (inten1999/
+* inten2005), the coauthors' main specification, so only the numerator
+* construction (mixed snapshot vs. FASE cumulative sum) differs. Feeds
+* the crosswalk "super-municipality" cross-tab below (does the
+* non-monotonicity concentrate among municipalities built from 2+ origin
+* INEGI codes, i.e. a boundary-aggregation artifact, rather than real
+* household attrition/migration?).
 * Output: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex
 *------------------------------------------------------------
 preserve
 keep if year == 1996 & $sample_marg
-keep cve_ent_mun_super inten1999_fix inten2005_fix inten1999_fase_fix inten2005_fase_fix
+keep cve_ent_mun_super inten1999 inten2005 inten1999_fase inten2005_fase
 duplicates drop cve_ent_mun_super, force
 
-count if missing(inten1999_fix) | missing(inten2005_fix) | missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
+count if missing(inten1999) | missing(inten2005) | missing(inten1999_fase) | missing(inten2005_fase)
 di "`r(N)' HM municipalities dropped for missing intensity values in the construction-comparison figure"
-drop if missing(inten1999_fix) | missing(inten2005_fix) | missing(inten1999_fase_fix) | missing(inten2005_fase_fix)
+drop if missing(inten1999) | missing(inten2005) | missing(inten1999_fase) | missing(inten2005_fase)
 
-gen byte nonmonotone_mix = (inten2005_fix < inten1999_fix)
+gen byte nonmonotone_mix = (inten2005 < inten1999)
 count if nonmonotone_mix
 local n_nonmono = r(N)
 local n_tot = _N
