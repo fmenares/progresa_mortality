@@ -330,9 +330,14 @@ order cve_ent_mun_super pg* ac_pg*  cc_pg* sp* cc_sp*
 *consolidating progresa beneficiaries: build BOTH variants side by side so
 *01_mortality_data.do can switch between them without re-running this file.
 *  _mixed : FASE for 1997, newProg_98_16 from 1998 onward (current default)
-*  _fase  : FASE only through 2005, newProg_98_16 from 2006 onward
-*           (matches Parker & Vogl 2023, which uses only the FASE file for
-*           the entire 1997-2005 period)
+*  _fase  : FASE only through 2012, newProg_98_16 from 2013 onward
+*           (matches Parker & Vogl 2023's own construction code, which
+*           builds benef1997-benef2012 as FASE rowtotals -- P&V's *published*
+*           analysis only reports snapshots through 2005, but their FASE
+*           source itself extends well past that, same as ours; the
+*           analysis period here only needs through 2006 anyway, so 2013+ is
+*           not load-bearing and just falls back to newProg for
+*           completeness rather than being left missing)
 g cc_pg_mun1997_mixed = cc_pg_mun1997_old
 g pg_mun1997_mixed    = pg_mun1997_old
 g cc_pg_mun1997_fase  = cc_pg_mun1997_old
@@ -347,21 +352,25 @@ g pg_mun`i'_mixed    = pg_mun`i'_new
 *** count -- unlike pg_mun`i'_new (newProg admin source), which is already a
 *** cumulative stock. For 1997 this doesn't matter (1997 is the program's
 *** first year, so the annual flow *is* the cumulative total), but for
-*** 1998-2005 the _fase variant needs an explicit running sum of the FASE
+*** 1998-2012 the _fase variant needs an explicit running sum of the FASE
 *** annual flows to produce a genuinely cumulative beneficiary count.
+*** pg_mun`i'_old only goes through 2013 (built earlier in this file from
+*** fams_fase_20134xloc_f.dta's FASE bimester variables), so the running
+*** sum stops at 2012 -- one year short of that ceiling -- and 2013+ falls
+*** back to the newProg admin source below.
 *** cc_pg_mun`i'_old is already cumulative (built as sum(pgbenef_old)/HH
 *** earlier in this file) and needs no adjustment.
 g pg_mun1997_cumfase = pg_mun1997_old
-forv i=1998/2005 {
+forv i=1998/2012 {
 local j = `i'-1
 g pg_mun`i'_cumfase = pg_mun`j'_cumfase + pg_mun`i'_old
 }
 
-forv i=1998/2005 {
+forv i=1998/2012 {
 g cc_pg_mun`i'_fase = cc_pg_mun`i'_old
 g pg_mun`i'_fase    = pg_mun`i'_cumfase
 }
-forv i=2006/2018 {
+forv i=2013/2018 {
 g cc_pg_mun`i'_fase = cc_pg_mun`i'_new
 g pg_mun`i'_fase    = pg_mun`i'_new
 }
@@ -370,8 +379,8 @@ drop pg_mun*_cumfase
 forv i=1997/2018 {
 la var pg_mun`i'_mixed "Progresa - mun - benef `i' (mixed: FASE 1997, newProg 1998+)"
 la var cc_pg_mun`i'_mixed "Progresa - mun - cumulative % covered `i' (mixed)"
-la var pg_mun`i'_fase "Progresa - mun - benef `i' (FASE-only through 2005, matches P&V)"
-la var cc_pg_mun`i'_fase "Progresa - mun - cumulative % covered `i' (FASE-only through 2005)"
+la var pg_mun`i'_fase "Progresa - mun - benef `i' (FASE-only through 2012, matches P&V's construction)"
+la var cc_pg_mun`i'_fase "Progresa - mun - cumulative % covered `i' (FASE-only through 2012)"
 }
 
 drop pg_mun*_old pg_mun*_new cc_pg_mun*_old cc_pg_mun*_new ac_pg_mun*_old

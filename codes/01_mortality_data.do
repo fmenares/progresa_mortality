@@ -27,9 +27,11 @@ set more off
 *** Beneficiary-source switch: which Progresa numerator to use for
 *** pg_mun/cc_pg_mun (built in 00.programs_beneficiaries_recoded.do).
 ***   "mixed" : FASE (1997) + newProg_98_16 (1998-2018) — DEFAULT.
-***   "fase"  : FASE only through 2005, newProg_98_16 from 2006 onward
-***             — matches Parker & Vogl (2023), which uses only the FASE
-***             file for the entire 1997-2005 period.
+***   "fase"  : FASE only through 2012, newProg_98_16 from 2013 onward
+***             — matches Parker & Vogl (2023)'s own construction code,
+***             which builds FASE rowtotals through 2012; their published
+***             analysis only reports snapshots through 2005, but this
+***             project's analysis window only needs through 2006 anyway.
 	global benef_source "mixed"
 
 *** ====================================================================================
