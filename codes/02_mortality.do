@@ -1790,14 +1790,12 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 } // end foreach cod
 } // end Marg short block
 
-/*
 *============================================================
 * APPENDIX TABLE 1: Causes of Death (Weighted + SP spec)
 * AT1_cod_mortality.tex -- Pooled, Female, Male panels
-* Commented out (not disabled by mistake): this block's wyoung
-* Romano-Wolf bootstrap (500 reps x 3 panels x 9 outcomes) takes too
-* long to run every time. Uncomment when you actually need to
-* regenerate AT1_cod_mortality.tex.
+* Uncommented to run alongside the rest of the coauthor-requested
+* changes; the wyoung Romano-Wolf bootstrap (500 reps x 3 panels x 9
+* outcomes) is slow but is needed to regenerate AT1_cod_mortality.tex.
 *============================================================
 foreach grp in w f m {
 	if "`grp'" == "w" {
@@ -1941,7 +1939,6 @@ foreach grp in w f m {
 	file write sm "\end{tabular}"
 	file close sm
 }
-*/
 *============================================================
 * APPENDIX TABLE 2: Functional Form Robustness
 *============================================================
