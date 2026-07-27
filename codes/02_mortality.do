@@ -3609,18 +3609,44 @@ restore
 * D1: EVENT STUDY (β_k, year-by-year) ON INTENSITY_1999 -- STABILITY
 * ACROSS DIFFERENT SECOND-PHASE CONTROLS.
 * Per user instruction: NOT a coefplot / spec-comparison summary. Reuses
-* the SAME event-study construction already used for AF_ses_trend (four
+* the SAME event-study construction already used for AF_ses_trend (five
 * overlaid series, offset x-positions, distinguishing line patterns) --
-* here the four series vary the SECOND-PHASE CONTROL rather than the SES
+* here the series vary the SECOND-PHASE CONTROL rather than the SES
 * trend. This traces the FULL year-by-year β_k profile on Intensity_1999
 * under each control choice, a more complete "mostly flat" check than a
-* single Post-interaction summary would be: do the four year-by-year
-* profiles overlay closely, or does the choice of second-phase control
-* change the dynamic shape of the early-phase effect?
+* single Post-interaction summary would be: do the year-by-year profiles
+* overlay closely, or does the choice of second-phase control change the
+* dynamic shape of the early-phase effect?
+*
+* Spec 0 (formerly the "Mixed, year-varying" series of the now-removed
+* Figure_2_all.pdf/af:intensity_construction_comparison) is a genuinely
+* WITHOUT-CONTROL specification -- Intensity_1999 x year alone, no
+* second-phase intensity control at all -- included as the first series
+* precisely to show the misspecification: how much the year-by-year
+* profile shifts once a cumulative/later-phase control (Specs 1-4) is
+* added on top of it.
 * Output: $figures/appendix/AF_beta0_stability.pdf
 *============================================================
 
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+* Spec 0: NO control -- Intensity_1999 x year alone (End-of-year
+* numerator, year-varying denominator), omitting any second-phase
+* intensity control. Shows the misspecified baseline that Specs 1-4
+* then correct by adding a later-phase control.
+reghdfe emr65 c.inten1999##ib6.year_1995 ///
+    c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+    vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+    if `pos' == 6 {
+        local b0_`pos'  = 0
+        local se0_`pos' = 0
+    }
+    else {
+        local b0_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se0_`pos' = _se[`pos'.year_1995#c.inten1999]
+    }
+}
 
 * Spec 1: baseline (current main spec) -- 2nd-phase control = Intensity_2005
 reghdfe emr65 c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
@@ -3686,16 +3712,20 @@ preserve
 clear
 set obs 16
 gen yr_pos = _n
-gen xpos_1 = yr_pos - 0.27
-gen xpos_2 = yr_pos - 0.09
-gen xpos_3 = yr_pos + 0.09
-gen xpos_4 = yr_pos + 0.27
-foreach s in 1 2 3 4 {
+gen xpos_0 = yr_pos - 0.36
+gen xpos_1 = yr_pos - 0.18
+gen xpos_2 = yr_pos
+gen xpos_3 = yr_pos + 0.18
+gen xpos_4 = yr_pos + 0.36
+foreach s in 0 1 2 3 4 {
     gen b_s`s'  = .
     gen hi_s`s' = .
     gen lo_s`s' = .
 }
 forval pos = 1/16 {
+    replace b_s0  = `b0_`pos''                          if yr_pos == `pos'
+    replace hi_s0 = `b0_`pos'' + 1.96 * `se0_`pos''    if yr_pos == `pos'
+    replace lo_s0 = `b0_`pos'' - 1.96 * `se0_`pos''    if yr_pos == `pos'
     replace b_s1  = `b1_`pos''                          if yr_pos == `pos'
     replace hi_s1 = `b1_`pos'' + 1.96 * `se1_`pos''    if yr_pos == `pos'
     replace lo_s1 = `b1_`pos'' - 1.96 * `se1_`pos''    if yr_pos == `pos'
@@ -3710,6 +3740,8 @@ forval pos = 1/16 {
     replace lo_s4 = `b4_`pos'' - 1.96 * `se4_`pos''    if yr_pos == `pos'
 }
 twoway ///
+    (rcap hi_s0 lo_s0 xpos_0, lcolor(red%60) lwidth(vthin) lpattern(solid)) ///
+    (scatter b_s0 xpos_0, mcolor(red) msymbol(x) msize(vsmall)) ///
     (rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
     (scatter b_s1 xpos_1, mcolor(black) msymbol(circle) msize(vsmall)) ///
     (rcap hi_s2 lo_s2 xpos_2, lcolor(black%60) lwidth(vthin) lpattern(dash)) ///
@@ -3718,6 +3750,7 @@ twoway ///
     (scatter b_s3 xpos_3, mcolor(black) msymbol(triangle) msize(vsmall)) ///
     (rcap hi_s4 lo_s4 xpos_4, lcolor(black%60) lwidth(vthin) lpattern(longdash)) ///
     (scatter b_s4 xpos_4, mcolor(black) msymbol(diamond) msize(vsmall)) ///
+    (line b_s0 xpos_0 if 1==0, lcolor(red) lpattern(solid) lwidth(thin) mcolor(red) msymbol(x) msize(vsmall)) ///
     (line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
     (line b_s2 xpos_2 if 1==0, lcolor(black) lpattern(dash) lwidth(thin) mcolor(black) msymbol(square) msize(vsmall)) ///
     (line b_s3 xpos_3 if 1==0, lcolor(black) lpattern(shortdash_dot) lwidth(thin) mcolor(black) msymbol(triangle) msize(vsmall)) ///
@@ -3729,7 +3762,7 @@ twoway ///
     xtitle("") ///
     ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
     ylabel(, grid gmin gmax labsize(small)) ///
-    legend(order(9 "Control: Intensity 2005 (baseline)" 10 "Control: Intensity 2002" 11 "Control: Intensity 2004" 12 "Control: Intensity 2006") ///
+    legend(order(11 "No control (misspecified)" 12 "Control: Intensity 2005 (baseline)" 13 "Control: Intensity 2002" 14 "Control: Intensity 2004" 15 "Control: Intensity 2006") ///
         cols(2) size(small) position(6) ring(1) ///
         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
@@ -5194,120 +5227,16 @@ restore
 
 di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
 
-*============================================================
-* APPENDIX FIGURE: event study for Intensity_1999 x year, ALL FOUR
-* intensity constructions overlaid on one set of axes (rather than four
-* separate small-multiple panels), so the beta_k profile's movement
-* across constructions is directly visible. Same design as Figure 2
-* (inten x year_1995 interactions), pooled sample, weighted + SP.
-* Crosses the same 2 numerator variants (mixed snapshot vs. FASE
-* cumulative) x 2 denominator choices (year-varying vs. fixed P&V-style)
-* as the merged T2_b_mortality_fixeddenom table, so each of that table's
-* 4 columns has a matching series here. Intensity_2005 is dropped (the
-* comparison here is about the construction of Intensity_1999 itself,
-* not the second phase).
-*   snap     : Mixed numerator,  year-varying denom
-*   cum      : FASE numerator,   year-varying denom (numerator fix alone)
-*   snap_fix : Mixed numerator,  fixed 1997 P&V denom (main spec)
-*   cum_fix  : FASE numerator,   fixed 1997 P&V denom (both combined)
-* Output: $figures/appendix/Figure_2_all.pdf
-*============================================================
-{
-local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-foreach v in snap cum snap_fix cum_fix {
-	if "`v'" == "snap" {
-		local inten99v inten1999
-	}
-	else if "`v'" == "cum" {
-		local inten99v inten1999_fase
-	}
-	else if "`v'" == "snap_fix" {
-		local inten99v inten1999_fix
-	}
-	else {
-		local inten99v inten1999_fase_fix
-	}
-
-	* Default every position to missing first, so a failed regression
-	* leaves valid (blank-plotting) locals behind instead of undefined
-	* macros that would break the "replace ... if yr_pos == `pos'" step
-	* below with an "if not found" error.
-	forval pos = 1/16 {
-		local b99_`v'_`pos'  = .
-		local se99_`v'_`pos' = .
-	}
-	cap noisily reghdfe emr65 c.`inten99v'##ib6.year_1995 ///
-		c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	if _rc == 0 {
-		forval pos = 1/16 {
-			if `pos' == 6 {
-				local b99_`v'_`pos'  = 0
-				local se99_`v'_`pos' = 0
-			}
-			else {
-				local b99_`v'_`pos'  = _b[`pos'.year_1995#c.`inten99v']
-				local se99_`v'_`pos' = _se[`pos'.year_1995#c.`inten99v']
-			}
-		}
-	}
-	else {
-		di as error "Variant `v': event-study reghdfe failed (rc=`_rc'), leaving cells blank"
-	}
-}
-
-preserve
-clear
-set obs 16
-gen yr_pos = _n
-* Four series dodged +/-0.27/+/-0.09 year-units (same spacing convention
-* as AF_ses_trend) so points/CIs don't overlap at each year.
-gen xpos_snap     = yr_pos - 0.27
-gen xpos_cum      = yr_pos - 0.09
-gen xpos_snap_fix = yr_pos + 0.09
-gen xpos_cum_fix  = yr_pos + 0.27
-foreach v in snap cum snap_fix cum_fix {
-	gen b_`v'  = .
-	gen hi_`v' = .
-	gen lo_`v' = .
-}
-forval pos = 1/16 {
-	foreach v in snap cum snap_fix cum_fix {
-		replace b_`v'  = `b99_`v'_`pos''                           if yr_pos == `pos'
-		replace hi_`v' = `b99_`v'_`pos'' + 1.96 * `se99_`v'_`pos'' if yr_pos == `pos'
-		replace lo_`v' = `b99_`v'_`pos'' - 1.96 * `se99_`v'_`pos'' if yr_pos == `pos'
-	}
-}
-twoway ///
-	(rcap hi_snap lo_snap xpos_snap, lcolor(black%60) lwidth(vthin)) ///
-	(scatter b_snap xpos_snap, mcolor(black) msymbol(circle) msize(vsmall)) ///
-	(rcap hi_cum lo_cum xpos_cum, lcolor(orange%60) lwidth(vthin)) ///
-	(scatter b_cum xpos_cum, mcolor(orange) msymbol(square) msize(vsmall)) ///
-	(rcap hi_snap_fix lo_snap_fix xpos_snap_fix, lcolor(blue%60) lwidth(vthin)) ///
-	(scatter b_snap_fix xpos_snap_fix, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
-	(rcap hi_cum_fix lo_cum_fix xpos_cum_fix, lcolor(green%60) lwidth(vthin)) ///
-	(scatter b_cum_fix xpos_cum_fix, mcolor(green) msymbol(diamond) msize(vsmall)), ///
-	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-	xscale(range(0.5 16.5)) ///
-	xtitle("") ///
-	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
-	ylabel(, grid gmin gmax labsize(small)) ///
-	legend(order(2 "Mixed, year-varying" 4 "FASE, year-varying" ///
-		6 "Mixed, fixed P&V (main spec)" 8 "FASE, fixed P&V") ///
-		cols(2) size(small) position(6) ring(1) ///
-		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-	graphregion(color(white)) ///
-	plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/Figure_2_all.pdf", as(pdf) replace
-restore
-}
-
-
-* NOTE: the former "companion to Figure_2_all.pdf, adding the SES/
-* marginality-trend control" figure (Figure_2_all_ses.pdf) has been
-* removed per the coauthor's request, along with its figures_app.tex
-* entry (label af:intensity_construction_comparison_ses).
+* NOTE: the former "event study for Intensity_1999 x year, ALL FOUR
+* intensity constructions overlaid" figure (Figure_2_all.pdf,
+* af:intensity_construction_comparison) has been removed per the
+* coauthor's request, along with its figures_app.tex entry. Its
+* year-varying/no-control ("Mixed, year-varying") series now lives on
+* as the new first series in AF_beta0_stability.pdf below, rather than
+* being dropped entirely -- see the "Spec 0" block there.
+* Figure_2_all_ses.pdf (a still-earlier companion figure) was already
+* removed in a prior pass, along with its figures_app.tex entry
+* (label af:intensity_construction_comparison_ses).
 
 *------------------------------------------------------------
 * CONSOLIDATED ROBUSTNESS R² TABLE (merges the former AT_pv_fig3_r2,
