@@ -3454,7 +3454,7 @@ di "Figure exported to: $figures/appendix/AF_enroll_mun_marg_pctile.pdf"
 *============================================================
 * NOTE: the fn.18-style R^2 computation (r2_1/r2_2, corr_eoy_yv/
 * corr_eoy_yv_w -- feeds the R^2-decomposition table, now in
-* codes/binary_and_robust.do) has moved there too -- see that file.
+* codes/binary_and_descriptives.do) has moved there too -- see that file.
 *============================================================
 
 
@@ -3627,7 +3627,7 @@ di "Figure exported to: $figures/appendix/AF_beta0_stability.pdf"
 *============================================================
 * NOTE: D3 (exact saturation diagnostics, AT_saturation_diagnostics.tex,
 * at:saturation_diagnostics, formerly AT12) has moved to
-* codes/binary_and_robust.do per the coauthor's request, along with its
+* codes/binary_and_descriptives.do per the coauthor's request, along with its
 * tables_app.tex entry. See research_project.md for a summary of its
 * findings.
 *============================================================
@@ -3718,7 +3718,7 @@ corr inten2005 inten2005_fix if $sample_marg & year==1996
 /*
 D2/D2b (binary high-vs-low event study on Intensity_1999, and its
 two-binary companion) and the threshold-validation/threshold-categorical
-block moved to codes/binary_and_robust.do -- see that file for the full
+block moved to codes/binary_and_descriptives.do -- see that file for the full
 code (unchanged from what was here). Output:
   $figures/appendix/AF_binary_es.pdf, $tables/appendix/AT_binary_es.tex
   $figures/appendix/AF_binary_es_2bin.pdf, $tables/appendix/AT_binary_es_2bin.tex
@@ -3731,7 +3731,7 @@ code (unchanged from what was here). Output:
 *============================================================
 * NOTE: the fixed-denominator R^2 computation (r2fix_1/r2fix_2,
 * corr_eoy_fix/corr_eoy_fix_w -- feeds the R^2-decomposition table, now
-* in codes/binary_and_robust.do) has moved there too -- see that file.
+* in codes/binary_and_descriptives.do) has moved there too -- see that file.
 *============================================================
 
 
@@ -3801,24 +3801,24 @@ label var inten2005_fase_fix "Intensity 2005 (FASE-only numerator, fixed P&V den
 * CHECKPOINT: the binary/threshold robustness checks (D2/D2b binary event
 * studies, the threshold-validation/threshold-categorical block) and the
 * intensity-construction time-series figure (former AF3,
-* af:intensity_timeseries) have all been moved to codes/binary_and_robust.do
+* af:intensity_timeseries) have all been moved to codes/binary_and_descriptives.do
 * per the coauthor's request. Save the fully-constructed working panel --
 * including pg_fase/inten*_fase(_fix), needed by the time-series figure --
 * so that file can load it directly rather than re-running the data
 * construction above.
 *============================================================
-save "$data/Temp_data/working_panel_for_binary_and_robust.dta", replace
+save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 
 *============================================================
 * NOTE: the corr99/corr05(_fix)(_w) correlations (used by the
-* intensity-correlations table, now in codes/binary_and_robust.do) have
+* intensity-correlations table, now in codes/binary_and_descriptives.do) have
 * moved there too -- see that file.
 *============================================================
 
 *============================================================
 * NOTE: the crosswalk super-municipality diagnostic (AT_crosswalk_
 * supermun_diagnostic.tex, at:crosswalk_supermun_diagnostic, formerly
-* AT11) has moved to codes/binary_and_robust.do per the coauthor's
+* AT11) has moved to codes/binary_and_descriptives.do per the coauthor's
 * request, along with its tables_app.tex entry. See research_project.md
 * for a summary of its findings.
 *============================================================
@@ -3827,7 +3827,7 @@ save "$data/Temp_data/working_panel_for_binary_and_robust.dta", replace
 * NOTE: the threshold-validation raw-trends figure (AF_threshold_validation_
 * {15,median,tercile}.pdf), the double-threshold categorical table
 * (AT_threshold_categorical.tex), and its event-study companion
-* (AF_threshold_categorical_es.pdf) have moved to codes/binary_and_robust.do
+* (AF_threshold_categorical_es.pdf) have moved to codes/binary_and_descriptives.do
 * per the coauthor's request -- see that file for the unchanged code.
 *============================================================
 
@@ -4015,7 +4015,7 @@ di "Table exported to: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex
 *============================================================
 * NOTE: the intensity-construction time-series figure (former AF3,
 * AF_intensity_timeseries_w.pdf, af:intensity_timeseries) has moved to
-* codes/binary_and_robust.do per the coauthor's request -- see that file
+* codes/binary_and_descriptives.do per the coauthor's request -- see that file
 * for the unchanged code.
 *============================================================
 
@@ -4034,143 +4034,20 @@ di "Table exported to: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex
 * NOTE: the consolidated R^2-decomposition table (AT_pv_r2_benefsource.tex,
 * at:pv_r2_benefsource, formerly AT8) and the intensity-correlations table
 * (AT_intensity_correlations.tex, at:intensity_correlations, formerly AT9)
-* have moved to codes/binary_and_robust.do per the coauthor's request,
+* have moved to codes/binary_and_descriptives.do per the coauthor's request,
 * along with their tables_app.tex entries. See research_project.md for
 * a summary of their findings.
 *============================================================
 
 *============================================================
-* MERGED ROBUSTNESS TABLE: T2_b_mortality_fixeddenom
-* Merges the former T2_b_mortality_fixeddenom (year-varying vs.\ fixed
-* P&V denominator, mixed numerator only, all 3 panels) with the former
-* appendix table AT_intensity_construction_comparison (mixed vs.\
-* FASE-cumulative numerator, year-varying denom only, pooled panel only)
-* into ONE table crossing BOTH choices for all three panels, so the
-* denominator fix, the numerator/beneficiary-source fix, and both
-* combined can each be judged against the current-default baseline
-* (column 1) to see which one dominates the main DiD estimate:
-*   Col 1: Mixed numerator,  year-varying denom (current default)
-*   Col 2: FASE numerator,   year-varying denom (numerator fix alone)
-*   Col 3: Mixed numerator,  fixed 1997 P&V denom (denominator fix alone,
-*          the coauthor-preferred main specification)
-*   Col 4: FASE numerator,   fixed 1997 P&V denom (both combined)
-*   Col 5: Same as Col 3, but dropping the `nonmonotone_mix' municipalities
-*          (Intensity_2005 < Intensity_1999 under this construction; see
-*          AT_crosswalk_supermun_diagnostic), since the End-of-year
-*          numerator is not guaranteed monotonic -- this checks whether
-*          those municipalities are driving the column 3 estimate.
-* Output: $tables/T2_b_mortality_fixeddenom.tex
+* NOTE: T3 (T2_b_mortality_fixeddenom.tex, t:did_age_fixeddenom) has
+* moved to codes/binary_and_descriptives.do per the coauthor's request,
+* along with its tables.tex entry.
 *============================================================
-foreach pnl in p f m {
-    if "`pnl'" == "p" {
-        local out65  emr65
-        local wt65   popover65_
-    }
-    else if "`pnl'" == "f" {
-        local out65  emr65f
-        local wt65   popover65_f
-    }
-    else {
-        local out65  emr65m
-        local wt65   popover65_m
-    }
-
-    forval c = 1/5 {
-        local extracond ""
-        if `c' == 1 {
-            local inten99v inten1999
-            local inten05v inten2005
-        }
-        else if `c' == 2 {
-            local inten99v inten1999_fase
-            local inten05v inten2005_fase
-        }
-        else if `c' == 3 {
-            local inten99v inten1999_fix
-            local inten05v inten2005_fix
-        }
-        else if `c' == 4 {
-            local inten99v inten1999_fase_fix
-            local inten05v inten2005_fase_fix
-        }
-        else {
-            local inten99v inten1999_fix
-            local inten05v inten2005_fix
-            local extracond "& !nonmonotone_mix"
-        }
-
-        local b99_fd_`pnl'_`c'  ""
-        local se99_fd_`pnl'_`c' ""
-        local b05_fd_`pnl'_`c'  ""
-        local se05_fd_`pnl'_`c' ""
-        local N_fd_`pnl'_`c'    ""
-
-        cap noisily reghdfe `out65' c.`inten99v'#i.post c.`inten05v'#i.post c.sp_intensity ///
-            [aw=`wt65'] if $sample_marg `extracond', a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-        if _rc == 0 & e(N) > 0 {
-            local aux : di %12.3f _b[1.post#c.`inten99v']
-            * Save the un-starred numeric coefficient under its own name --
-            * `aux' gets reused below for the Intensity_2005 coefficient, so
-            * a persistent copy is needed for the power/MDE table, which
-            * needs the raw number (not the significance-star-annotated
-            * display string in b99_fd_`pnl'_`c').
-            local b99num_fd_`pnl'_`c' "`aux'"
-            local t = abs(_b[1.post#c.`inten99v'] / _se[1.post#c.`inten99v'])
-            if      `t' >= 2.576 local b99_fd_`pnl'_`c' = "`aux'***"
-            else if `t' >= 1.96  local b99_fd_`pnl'_`c' = "`aux'**"
-            else if `t' >= 1.645 local b99_fd_`pnl'_`c' = "`aux'*"
-            else                  local b99_fd_`pnl'_`c' = "`aux'"
-            local se99_fd_`pnl'_`c' : di %12.3f _se[1.post#c.`inten99v']
-
-            local aux : di %12.3f _b[1.post#c.`inten05v']
-            local t = abs(_b[1.post#c.`inten05v'] / _se[1.post#c.`inten05v'])
-            if      `t' >= 2.576 local b05_fd_`pnl'_`c' = "`aux'***"
-            else if `t' >= 1.96  local b05_fd_`pnl'_`c' = "`aux'**"
-            else if `t' >= 1.645 local b05_fd_`pnl'_`c' = "`aux'*"
-            else                  local b05_fd_`pnl'_`c' = "`aux'"
-            local se05_fd_`pnl'_`c' : di %12.3f _se[1.post#c.`inten05v']
-            local N_fd_`pnl'_`c' : di %12.0fc e(N)
-        }
-        else {
-            di as error "Panel `pnl', construction `c': reghdfe failed or empty sample (rc=`_rc'), leaving cells blank"
-        }
-    }
-}
-
-{
-    cap file close fd
-    file open fd using "$tables/T2_b_mortality_fixeddenom.tex", write replace
-    file write fd "\begin{tabular}{lccccc} \hline \hline" _n
-    file write fd "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} & \\ " _n
-    file write fd "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} \\ " _n
-    file write fd "& & & & & \multicolumn{1}{c}{Excl.\ non-monotone} \\ " _n
-    file write fd "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ \toprule" _n
-    file write fd "\underline{\textit{Panel A: Pooled}} \\ " _n
-    file write fd "\textit{Intensity 1999 x post} & `b99_fd_p_1' & `b99_fd_p_2' & `b99_fd_p_3' & `b99_fd_p_4' & `b99_fd_p_5' \\ " _n
-    file write fd " & (`se99_fd_p_1') & (`se99_fd_p_2') & (`se99_fd_p_3') & (`se99_fd_p_4') & (`se99_fd_p_5') \\ " _n
-    file write fd "  & & & & & \\ " _n
-    file write fd "Obs & `N_fd_p_1' & `N_fd_p_2' & `N_fd_p_3' & `N_fd_p_4' & `N_fd_p_5' \\ " _n
-    file write fd "  & & & & & \\ " _n
-    file write fd "\underline{\textit{Panel B: Females}} \\ " _n
-    file write fd "\textit{Intensity 1999 x post} & `b99_fd_f_1' & `b99_fd_f_2' & `b99_fd_f_3' & `b99_fd_f_4' & `b99_fd_f_5' \\ " _n
-    file write fd " & (`se99_fd_f_1') & (`se99_fd_f_2') & (`se99_fd_f_3') & (`se99_fd_f_4') & (`se99_fd_f_5') \\ " _n
-    file write fd "  & & & & & \\ " _n
-    file write fd "Obs & `N_fd_f_1' & `N_fd_f_2' & `N_fd_f_3' & `N_fd_f_4' & `N_fd_f_5' \\ " _n
-    file write fd "  & & & & & \\ " _n
-    file write fd "\underline{\textit{Panel C: Males}} \\ " _n
-    file write fd "\textit{Intensity 1999 x post} & `b99_fd_m_1' & `b99_fd_m_2' & `b99_fd_m_3' & `b99_fd_m_4' & `b99_fd_m_5' \\ " _n
-    file write fd " & (`se99_fd_m_1') & (`se99_fd_m_2') & (`se99_fd_m_3') & (`se99_fd_m_4') & (`se99_fd_m_5') \\ " _n
-    file write fd "  & & & & & \\ " _n
-    file write fd "Obs & `N_fd_m_1' & `N_fd_m_2' & `N_fd_m_3' & `N_fd_m_4' & `N_fd_m_5' \\ " _n
-    file write fd "\bottomrule" _n
-    file write fd "\end{tabular}"
-    file close fd
-}
-di "Table exported to: $tables/T2_b_mortality_fixeddenom.tex"
 
 *============================================================
 * NOTE: the power/MDE table (AT_power_mde.tex, at:power_mde, formerly
-* AT10) has moved to codes/binary_and_robust.do per the coauthor's
+* AT10) has moved to codes/binary_and_descriptives.do per the coauthor's
 * request, along with its tables_app.tex entry. See research_project.md
 * for a summary of its findings.
 *============================================================

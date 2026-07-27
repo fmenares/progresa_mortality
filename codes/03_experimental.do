@@ -1027,28 +1027,67 @@ foreach ggrp in p m f {
         local N_`ggrp'_tvp`agecut'    : di %12.0fc e(N)
     }
 }
+
+* ADDITIONAL, per the user's request: same Ages 51+ Gertler comparison,
+* but using BASELINE age (age97, measured at the 1997 interview) instead
+* of contemporaneous age_nov99 -- the age definition this table used
+* before the contemporaneous-age switch described above. Added as a
+* direct check on whether the age definition itself, rather than the
+* wave-pooling construction, explains the remaining gap to Gertler's
+* (2000) reported N=15,399 and estimates.
+count if !missing(total_visits_pooled) & eligible==1 & age97>=51
+di "`r(N)' eligible obs (BASELINE age97>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399 and to the contemporaneous-age count above"
+
+foreach ggrp in p m f {
+    if "`ggrp'" == "p"      local gcondp97 "age97>=51"
+    else if "`ggrp'" == "m" local gcondp97 "gender==1 & age97>=51"
+    else                     local gcondp97 "gender==2 & age97>=51"
+
+    quietly sum total_visits_pooled if contba==0 & eligible==1 ///
+        & `gcondp97' & !missing(total_visits_pooled, contba, claveofi)
+    local cmn_`ggrp'_tvp51age97 : di %9.3f `r(mean)'
+
+    reghdfe total_visits_pooled contba ///
+        if eligible==1 & `gcondp97' & !missing(total_visits_pooled, contba, claveofi), ///
+        absorb(clavemun) vce(cluster claveofi)
+
+    di "  [total_visits POOLED 51+ baseline age97, g=`ggrp'] _b[contba] = " _b[contba] "  N=" e(N)
+
+    local aux : di %9.3f _b[contba]
+    local tstat = abs(_b[contba] / _se[contba])
+    if      `tstat' >= 2.576 local b99_`ggrp'_tvp51age97 = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local b99_`ggrp'_tvp51age97 = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local b99_`ggrp'_tvp51age97 = trim("`aux'") + "*"
+    else                     local b99_`ggrp'_tvp51age97 = trim("`aux'")
+    local se99_`ggrp'_tvp51age97 : di %9.3f _se[contba]
+    local N_`ggrp'_tvp51age97    : di %12.0fc e(N)
+}
 restore
 
 *============================================================
 * APPENDIX TABLE: Total health-facility visits, POOLED across the two 1999
 * ENCEL waves (June + November), age 65+ and age 51+ -- direct comparison
 * to Gertler (2000), Table 6, which pools the same two survey waves.
+* Columns (7)-(9) repeat the Ages 51+ Gertler comparison (columns 4-6)
+* using baseline age (age97) instead of contemporaneous age (age_nov99),
+* per the user's request to isolate whether the age definition explains
+* the remaining gap to Gertler's reported N/estimates.
 * Output: $tables/appendix/AT_gertler_pooled.tex
 *============================================================
 {
     cap file close gp
     file open gp using "$tables/appendix/AT_gertler_pooled.tex", write replace
-    file write gp "\begin{tabular}{lcccccc} \hline \hline" _n
-    file write gp "& \multicolumn{3}{c}{Ages 65+} & \multicolumn{3}{c}{Ages 51+ (Gertler 2000, Table 6)} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}" _n
-    file write gp "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} & \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ " _n
-    file write gp "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
-    file write gp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
-    file write gp "\textit{Treatment} & `b99_p_tvp65' & `b99_f_tvp65' & `b99_m_tvp65' & `b99_p_tvp51' & `b99_f_tvp51' & `b99_m_tvp51' \\ " _n
-    file write gp " & (`se99_p_tvp65') & (`se99_f_tvp65') & (`se99_m_tvp65') & (`se99_p_tvp51') & (`se99_f_tvp51') & (`se99_m_tvp51') \\ " _n
-    file write gp "  & & & & & & \\ " _n
-    file write gp "Control Mean & `cmn_p_tvp65' & `cmn_f_tvp65' & `cmn_m_tvp65' & `cmn_p_tvp51' & `cmn_f_tvp51' & `cmn_m_tvp51' \\ " _n
-    file write gp "Observations & `N_p_tvp65' & `N_f_tvp65' & `N_m_tvp65' & `N_p_tvp51' & `N_f_tvp51' & `N_m_tvp51' \\ " _n
-    file write gp "Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes \\ \bottomrule" _n
+    file write gp "\begin{tabular}{lccccccccc} \hline \hline" _n
+    file write gp "& \multicolumn{3}{c}{Ages 65+} & \multicolumn{3}{c}{Ages 51+ (Gertler 2000, contemp.\ age)} & \multicolumn{3}{c}{Ages 51+ (Gertler 2000, baseline age)} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
+    file write gp "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} & \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} & \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ " _n
+    file write gp "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
+    file write gp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+    file write gp "\textit{Treatment} & `b99_p_tvp65' & `b99_f_tvp65' & `b99_m_tvp65' & `b99_p_tvp51' & `b99_f_tvp51' & `b99_m_tvp51' & `b99_p_tvp51age97' & `b99_f_tvp51age97' & `b99_m_tvp51age97' \\ " _n
+    file write gp " & (`se99_p_tvp65') & (`se99_f_tvp65') & (`se99_m_tvp65') & (`se99_p_tvp51') & (`se99_f_tvp51') & (`se99_m_tvp51') & (`se99_p_tvp51age97') & (`se99_f_tvp51age97') & (`se99_m_tvp51age97') \\ " _n
+    file write gp "  & & & & & & & & & \\ " _n
+    file write gp "Control Mean & `cmn_p_tvp65' & `cmn_f_tvp65' & `cmn_m_tvp65' & `cmn_p_tvp51' & `cmn_f_tvp51' & `cmn_m_tvp51' & `cmn_p_tvp51age97' & `cmn_f_tvp51age97' & `cmn_m_tvp51age97' \\ " _n
+    file write gp "Observations & `N_p_tvp65' & `N_f_tvp65' & `N_m_tvp65' & `N_p_tvp51' & `N_f_tvp51' & `N_m_tvp51' & `N_p_tvp51age97' & `N_f_tvp51age97' & `N_m_tvp51age97' \\ " _n
+    file write gp "Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\ \bottomrule" _n
     file write gp "\end{tabular}"
     file close gp
 }

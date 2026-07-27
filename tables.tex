@@ -30,21 +30,6 @@
 
 \begin{table}[H]
 \RawCaption%
-  {\caption[]{Robustness: Beneficiary-Numerator and Household-Denominator Choice in the Intensity Construction}
-   \label{t:did_age_fixeddenom}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.82}{
-      \input{tables/T2_b_mortality_fixeddenom}
-    }
-    \vspace{-3mm}
-    \floatfoot{\textit{Notes:} This table reports the main difference-in-differences specification of Table~\ref{t:did_age} (ages 65 and older, weighted, with Seguro Popular intensity) under four constructions of $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2005}$, crossing the beneficiary-numerator choice (End-of-year vs.\ Cumulative) with the household-denominator choice (year-varying vs.\ fixed), separately for the pooled, female, and male samples (Panels A--C). Column~(1) reports the End-of-year numerator: enrolled households (FASE for 1997, the newer admin \texttt{newProg\_98\_16.dta} taken directly, with no summing, from 1998 on) taken as a point-in-time headcount, divided by each year's own municipal household count. Column~(2) replaces the numerator with the Cumulative construction, Parker and Vogl's (2023) own approach, a running sum of annual beneficiary counts, while keeping the year-varying denominator (numerator fix alone). Column~(3) keeps the End-of-year numerator but divides by a single, time-invariant household count fixed at an interpolated 1997 base ($0.3\times\text{HH}_{1990}+0.7\times\text{HH}_{2000}$). Column~(4) combines the Cumulative numerator with the fixed denominator, matching Parker and Vogl's (2023) construction exactly. Column~(5) repeats column~(3) but drops municipalities where $\textit{Intensity}_{2005} < \textit{Intensity}_{1999}$ under this construction (the End-of-year numerator does not guarantee monotonicity; see the crosswalk super-municipality non-monotonicity diagnostic in \texttt{codes/binary\_and\_robust.do}, summarized in \texttt{research\_project.md}). The sample is restricted to highly marginalized municipalities. All regressions include municipality and year fixed effects and Seguro Popular intensity. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-  }
-\end{table}
-
-
-\begin{table}[H]
-\RawCaption%
   {\caption[]{Effects of Progresa on Labor Supply and Living Arrangements of Elderly in Eligible Households}
    \label{t:combined_elderly}}
 \floatbox[{\captop}]{table}[\FBwidth]
@@ -68,6 +53,6 @@
       \input{tables/appendix/AT_gertler_pooled}
     }
     \vspace{-3mm}
-    \floatfoot{\textit{Notes:} This table reports the effect of Progresa on total health-facility visits in the past four weeks, pooling person-level records from both 1999 ENCEL evaluation waves (June and November) into a single cross-section, following Gertler (2000, Table~6), who pools the same two waves. The regression is treatment status (\textit{contba}) on total visits, restricted to eligible households, with municipality fixed effects. Columns~(1)--(3) restrict to age 65 and older (this paper's main sample, comparable to column~(5) of Table~\ref{t:combined_elderly}); columns~(4)--(6) restrict to age 51 and older, matching Gertler's (2000) age cutoff. Age is measured contemporaneously at the November 1999 interview, rather than at the 1997 baseline, in both cases; because the working panel does not retain a separate June 1999 round, this contemporaneous age is also used as an approximation for the June-wave records (the two waves are approximately five months apart). Compare column~(4)'s observation count to Gertler's reported $N=15{,}399$: pooling the two waves is expected to roughly double the single-wave sample used in Table~\ref{t:combined_elderly}. Standard errors are clustered at the locality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+    \floatfoot{\textit{Notes:} This table reports the effect of Progresa on total health-facility visits in the past four weeks, pooling person-level records from both 1999 ENCEL evaluation waves (June and November) into a single cross-section, following Gertler (2000, Table~6), who pools the same two waves. The regression is treatment status (\textit{contba}) on total visits, restricted to eligible households, with municipality fixed effects. Columns~(1)--(3) restrict to age 65 and older (this paper's main sample, comparable to column~(5) of Table~\ref{t:combined_elderly}); columns~(4)--(9) restrict to age 51 and older, matching Gertler's (2000) age cutoff, under two alternative age definitions. Columns~(4)--(6) measure age contemporaneously at the November 1999 interview, rather than at the 1997 baseline; because the working panel does not retain a separate June 1999 round, this contemporaneous age is also used as an approximation for the June-wave records (the two waves are approximately five months apart). Columns~(7)--(9) instead measure age at the 1997 baseline interview (\textit{age97}), matching the age convention used throughout the rest of this paper's tables, to isolate whether the age definition itself -- rather than the wave-pooling construction -- explains the remaining gap to Gertler's reported estimates. Compare column~(4)'s (or column~(7)'s) observation count to Gertler's reported $N=15{,}399$: pooling the two waves is expected to roughly double the single-wave sample used in Table~\ref{t:combined_elderly}. Standard errors are clustered at the locality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
