@@ -3437,19 +3437,18 @@ di "Figure exported to: $figures/appendix/AF_enroll_mun_marg_pctile.pdf"
 
 *------------------------------------------------------------
 * fn.18-style R²: how much of Intensity_1999's variance does Intensity_2005
-* explain, alone and with municipality-marginality-percentile controls
-* added. Run on the HM analysis sample (matches P&V's own "in sample
-* municipalities" wording for their 65%/67%/75% progression).
+* explain, unweighted and weighted by the population aged 65 and older
+* (matching the weighting used throughout the main regressions). Run on
+* the HM analysis sample (matches P&V's own "in sample municipalities"
+* wording for their 65%/67%/75% progression).
 *------------------------------------------------------------
 preserve
 keep if year == 1996 & $sample_marg
-keep cve_ent_mun_super inten1999 inten2005 im_mun_1990
+keep cve_ent_mun_super inten1999 inten2005 im_mun_1990 popover65_
 duplicates drop cve_ent_mun_super, force
 count
 local n_r2_mun = r(N)
 di "`n_r2_mun' HM municipalities in the correlation cross-section"
-
-xtile marg_pctile_bin_hm = im_mun_1990, nq(10)
 
 reg inten1999 inten2005
 local r2_1 : di %5.3f e(r2)
@@ -3462,10 +3461,9 @@ di "R² of inten1999 ~ inten2005 (HM sample): `r2_1'   [P&V fn.18 benchmark: 0.6
 corr inten1999 inten2005
 local corr_eoy_yv : di %5.3f r(rho)
 
-reg inten1999 inten2005 i.marg_pctile_bin_hm
+reg inten1999 inten2005 [aw=popover65_]
 local r2_2 : di %5.3f e(r2)
-di "R² of inten1999 ~ inten2005 + marg-percentile-decile FE (HM sample): `r2_2'   [P&V fn.18 benchmark + muni percentile: 0.67]"
-di "NOTE: P&V's third row (+ locality-marginality-share, -> 0.75) is DEFERRED pending locality-level marginality data (D0b)."
+di "R² of inten1999 ~ inten2005, weighted by pop 65+ (HM sample): `r2_2'   [P&V fn.18 benchmark: 0.65]"
 * r2_1/r2_2 (and n_r2_mun) are reused below, alongside r2fix_1/r2fix_2 (P&V
 * fixed-denominator robustness) and r2fase_yv_*/r2fase_fx_* (FASE-only
 * numerator robustness), in the single consolidated
@@ -3840,13 +3838,11 @@ code (unchanged from what was here). Output:
 *------------------------------------------------------------
 preserve
 keep if year == 1996 & $sample_marg
-keep cve_ent_mun_super inten1999_fix inten2005_fix im_mun_1990
+keep cve_ent_mun_super inten1999_fix inten2005_fix im_mun_1990 popover65_
 duplicates drop cve_ent_mun_super, force
 count
 local n_r2fix_mun = r(N)
 di "`n_r2fix_mun' HM municipalities in the fixed-denominator correlation cross-section"
-
-xtile marg_pctile_bin_hm_fix = im_mun_1990, nq(10)
 
 reg inten1999_fix inten2005_fix
 local r2fix_1 : di %5.3f e(r2)
@@ -3855,9 +3851,9 @@ di "R² of inten1999_fix ~ inten2005_fix (HM sample, FIXED denominator): `r2fix_
 corr inten1999_fix inten2005_fix
 local corr_eoy_fix : di %5.3f r(rho)
 
-reg inten1999_fix inten2005_fix i.marg_pctile_bin_hm_fix
+reg inten1999_fix inten2005_fix [aw=popover65_]
 local r2fix_2 : di %5.3f e(r2)
-di "R² + marg-percentile-decile FE (FIXED denominator): `r2fix_2'   [current: 0.275; P&V benchmark: 0.67]"
+di "R² of inten1999_fix ~ inten2005_fix, weighted by pop 65+ (FIXED denominator): `r2fix_2'   [P&V benchmark: 0.65]"
 restore
 
 *============================================================
@@ -4314,13 +4310,11 @@ di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
 *------------------------------------------------------------
 preserve
 keep if year == 1996 & $sample_marg
-keep cve_ent_mun_super inten1999_fase inten2005_fase inten1999_fase_fix inten2005_fase_fix im_mun_1990
+keep cve_ent_mun_super inten1999_fase inten2005_fase inten1999_fase_fix inten2005_fase_fix im_mun_1990 popover65_
 duplicates drop cve_ent_mun_super, force
 count
 local n_r2fase_mun = r(N)
 di "`n_r2fase_mun' HM municipalities in the FASE-only correlation cross-section"
-
-xtile marg_pctile_bin_hm_fase = im_mun_1990, nq(10)
 
 reg inten1999_fase inten2005_fase
 local r2fase_yv_1 : di %5.3f e(r2)
@@ -4329,7 +4323,7 @@ di "R² of inten1999_fase ~ inten2005_fase (HM sample, FASE-only numerator, year
 corr inten1999_fase inten2005_fase
 local corr_cum_yv : di %5.3f r(rho)
 
-reg inten1999_fase inten2005_fase i.marg_pctile_bin_hm_fase
+reg inten1999_fase inten2005_fase [aw=popover65_]
 local r2fase_yv_2 : di %5.3f e(r2)
 
 reg inten1999_fase_fix inten2005_fase_fix
@@ -4339,7 +4333,7 @@ di "R² of inten1999_fase_fix ~ inten2005_fase_fix (HM sample, FASE-only numerat
 corr inten1999_fase_fix inten2005_fase_fix
 local corr_cum_fix : di %5.3f r(rho)
 
-reg inten1999_fase_fix inten2005_fase_fix i.marg_pctile_bin_hm_fase
+reg inten1999_fase_fix inten2005_fase_fix [aw=popover65_]
 local r2fase_fx_2 : di %5.3f e(r2)
 
 * Decomposition: how much of the baseline-to-P&V R² gap does each fix close
@@ -4358,20 +4352,19 @@ di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `dd
     file open r2b using "$tables/appendix/AT_pv_r2_benefsource.tex", write replace
     file write r2b "\begin{tabular}{lcccc} \hline \hline" _n
     file write r2b "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed (P\&V) denom.} \\" _n
-    file write r2b "Numerator construction & R\textsuperscript{2} & + marg.\ pctile FE & R\textsuperscript{2} & + marg.\ pctile FE \\ \toprule" _n
+    file write r2b "Numerator construction & R\textsuperscript{2} & + weighted (pop 65+) & R\textsuperscript{2} & + weighted (pop 65+) \\ \toprule" _n
     file write r2b "End-of-year (current default) & `r2_1' & `r2_2' & `r2fix_1' & `r2fix_2' \\ " _n
     file write r2b "Cumulative (P\&V's numerator) & `r2fase_yv_1' & `r2fase_yv_2' & `r2fase_fx_1' & `r2fase_fx_2' \\ " _n
     file write r2b "  & & & & \\ " _n
     file write r2b "P\&V (2023) benchmark & \multicolumn{2}{c}{0.65} & \multicolumn{2}{c}{0.65} \\ " _n
-    file write r2b "\quad + marg.\ pctile FE benchmark & \multicolumn{2}{c}{0.67} & \multicolumn{2}{c}{0.67} \\ " _n
     file write r2b "\bottomrule" _n
     file write r2b "\multicolumn{5}{l}{\textit{Decomposition of \$\Delta R^2\$ vs.\ the current-default baseline (top-left cell):}} \\ " _n
-    file write r2b "\quad Denominator fix alone, no marg.\ FE & \multicolumn{4}{c}{`ddenom_1'} \\ " _n
-    file write r2b "\quad Denominator fix alone, + marg.\ FE & \multicolumn{4}{c}{`ddenom_2'} \\ " _n
-    file write r2b "\quad Numerator fix alone, no marg.\ FE & \multicolumn{4}{c}{`dnum_1'} \\ " _n
-    file write r2b "\quad Numerator fix alone, + marg.\ FE & \multicolumn{4}{c}{`dnum_2'} \\ " _n
-    file write r2b "\quad Both combined, no marg.\ FE & \multicolumn{4}{c}{`dboth_1'} \\ " _n
-    file write r2b "\quad Both combined, + marg.\ FE & \multicolumn{4}{c}{`dboth_2'} \\ " _n
+    file write r2b "\quad Denominator fix alone, unweighted & \multicolumn{4}{c}{`ddenom_1'} \\ " _n
+    file write r2b "\quad Denominator fix alone, weighted & \multicolumn{4}{c}{`ddenom_2'} \\ " _n
+    file write r2b "\quad Numerator fix alone, unweighted & \multicolumn{4}{c}{`dnum_1'} \\ " _n
+    file write r2b "\quad Numerator fix alone, weighted & \multicolumn{4}{c}{`dnum_2'} \\ " _n
+    file write r2b "\quad Both combined, unweighted & \multicolumn{4}{c}{`dboth_1'} \\ " _n
+    file write r2b "\quad Both combined, weighted & \multicolumn{4}{c}{`dboth_2'} \\ " _n
     file write r2b "No.\ HM municipalities & \multicolumn{4}{c}{`n_r2fase_mun'} \\ " _n
     file write r2b "\end{tabular}"
     file close r2b
@@ -4388,7 +4381,7 @@ restore
 *   Row 1: corr(Intensity_1999, Intensity_2005) WITHIN each of the 4
 *          constructions -- "R2 in terms of correlation" per the
 *          coauthor's request. This is the SIGNED companion to the
-*          no-marg-FE R2 column of AT_pv_r2_benefsource (for a simple
+*          unweighted R2 column of AT_pv_r2_benefsource (for a simple
 *          bivariate regression, R2 = corr^2, but R2 alone loses the
 *          sign, hence the separate `corr' calls added above rather
 *          than just taking sqrt(R2)).
