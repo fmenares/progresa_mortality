@@ -807,3 +807,510 @@ restore
 
 di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
 
+
+*============================================================
+* The following blocks (AT8-AT12 in the appendix numbering: R^2
+* decomposition, intensity correlations, power/MDE, crosswalk
+* super-municipality diagnostic, saturation diagnostics) moved here
+* per the coauthor's request. Their content is summarized in
+* research_project.md so the key findings survive as citable
+* footnote material even with the tables out of the appendix.
+*============================================================
+*------------------------------------------------------------
+* fn.18-style R²: how much of Intensity_1999's variance does Intensity_2005
+* explain, unweighted and weighted by the population aged 65 and older
+* (matching the weighting used throughout the main regressions). Run on
+* the HM analysis sample (matches P&V's own "in sample municipalities"
+* wording for their 65%/67%/75% progression).
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999 inten2005 im_mun_1990 popover65_
+duplicates drop cve_ent_mun_super, force
+count
+local n_r2_mun = r(N)
+di "`n_r2_mun' HM municipalities in the correlation cross-section"
+
+reg inten1999 inten2005
+local r2_1 : di %5.3f e(r2)
+di "R² of inten1999 ~ inten2005 (HM sample): `r2_1'   [P&V fn.18 benchmark: 0.65]"
+
+* Signed correlation companion to r2_1 -- coauthor requested a correlation
+* table (corr(Intensity_1999, Intensity_2005) within each construction) as
+* the "R2 in terms of correlation" complement to the R2 decomposition
+* table above. R2 alone loses the sign; take corr directly.
+corr inten1999 inten2005
+local corr_eoy_yv : di %5.3f r(rho)
+
+corr inten1999 inten2005 [aw=popover65_]
+local corr_eoy_yv_w : di %5.3f r(rho)
+
+reg inten1999 inten2005 [aw=popover65_]
+local r2_2 : di %5.3f e(r2)
+di "R² of inten1999 ~ inten2005, weighted by pop 65+ (HM sample): `r2_2'   [P&V fn.18 benchmark: 0.65]"
+* r2_1/r2_2 (and n_r2_mun) are reused below, alongside r2fix_1/r2fix_2 (P&V
+* fixed-denominator robustness) and r2fase_yv_*/r2fase_fx_* (FASE-only
+* numerator robustness), in the single consolidated
+* AT_pv_r2_benefsource table -- see the ROBUSTNESS: FASE-ONLY BENEFICIARY
+* SOURCE section for the merged table writer.
+restore
+
+*============================================================
+* D3: EXACT SATURATION DIAGNOSTICS (year-on-year Δintensity, "stayers",
+* first-crossing-15% distribution). With intensity now known for every
+* year (not interpolated between sparse snapshots), this settles whether
+* a continuous-treatment (dCDH-style) estimator has enough stayer/
+* not-yet-treated comparison units to be feasible, and whether a 15%
+* binarization threshold produces meaningful cohort spread.
+*============================================================
+preserve
+keep if $sample_marg & inrange(year, 1997, 2006)
+sort cve_ent_mun_super year
+
+by cve_ent_mun_super: gen delta_intensity = intensity_new - intensity_new[_n-1] if year == year[_n-1] + 1
+gen abs_delta = abs(delta_intensity)
+
+di "--- Year-on-year |Δintensity| distribution, HM sample, 1997-2006 ---"
+su abs_delta, detail
+local delta_mean : di %6.3f r(mean)
+local delta_p50   : di %6.3f r(p50)
+local delta_p90   : di %6.3f r(p90)
+
+count if abs_delta < 0.01 & !missing(abs_delta)
+local n_stayers = r(N)
+count if !missing(abs_delta)
+local n_total = r(N)
+local stayer_pct : di %5.1f 100*`n_stayers'/`n_total'
+di "Municipality-years with |Δintensity| < 1pp ('stayers'): `n_stayers' / `n_total' (`stayer_pct'%)"
+
+di "--- |Δintensity| by year ---"
+tabstat abs_delta, by(year) stat(mean p50 p90) format(%6.3f)
+
+* First year each municipality crosses 15% intensity (feeds D2's
+* threshold choice and checks cohort spread for any staggered-timing
+* estimator)
+gen crossed15 = year if intensity_new >= 0.15 & !missing(intensity_new)
+bys cve_ent_mun_super: egen first_cross15 = min(crossed15)
+
+* Save the full municipality-year panel before collapsing to one row per
+* municipality below -- we are already inside a preserve opened earlier in
+* D3, and Stata does not support a second, nested preserve/restore, so use
+* a tempfile instead to get back to the full panel afterward.
+tempfile d3_panel
+save `d3_panel'
+
+duplicates drop cve_ent_mun_super, force
+count
+local n_mun_hm = r(N)
+di "--- Distribution of first year crossing 15% intensity, HM sample ---"
+tab first_cross15
+count if first_cross15 <= 1999
+local n_cross_early = r(N)
+count if missing(first_cross15)
+local n_never_cross = r(N)
+di "`n_never_cross' HM municipalities NEVER cross 15% intensity by 2006"
+
+use `d3_panel', clear
+
+* Any HM municipality with near-zero intensity throughout the post period?
+bys cve_ent_mun_super: egen max_intensity_post = max(intensity_new) if inrange(year,1997,2006)
+count if max_intensity_post < 0.05 & inrange(year,1997,2006)
+local n_near_zero = r(N)
+di "`n_near_zero' HM municipality-years with max post-1997 intensity below 5% (near-zero penetration throughout)"
+
+{
+    cap file close sat
+    file open sat using "$tables/appendix/AT_saturation_diagnostics.tex", write replace
+    file write sat "\begin{tabular}{lc} \hline \hline" _n
+    file write sat "\multicolumn{2}{l}{\textit{Year-on-year \$|\Delta\$Intensity\$|\$, HM sample, 1997--2006}} \\ \toprule" _n
+    file write sat "Mean & `delta_mean' \\ " _n
+    file write sat "Median & `delta_p50' \\ " _n
+    file write sat "90th percentile & `delta_p90' \\ " _n
+    file write sat "Municipality-years, \$|\Delta\$Intensity\$|<\$1pp (\textit{stayers}) & `n_stayers' / `n_total' (`stayer_pct'\%) \\ " _n
+    file write sat "  & \\ " _n
+    file write sat "\multicolumn{2}{l}{\textit{First year crossing 15\% intensity}} \\ " _n
+    file write sat "Municipalities crossing by 1999 & `n_cross_early' / `n_mun_hm' \\ " _n
+    file write sat "Municipalities never crossing by 2006 & `n_never_cross' / `n_mun_hm' \\ " _n
+    file write sat "  & \\ " _n
+    file write sat "Municipality-years with max intensity \$<\$5\% (near-zero penetration) & `n_near_zero' \\ " _n
+    file write sat "\bottomrule" _n
+    file write sat "\end{tabular}"
+    file close sat
+}
+di "Table exported to: $tables/appendix/AT_saturation_diagnostics.tex"
+restore
+di "D3 saturation diagnostics complete -- see log above for stayer availability and first-crossing spread."
+
+*------------------------------------------------------------
+* Robustness R²: same fn.18-style check as above, but using the
+* fixed-denominator Intensity_1999/2005 instead of the year-varying-
+* denominator versions. r2fix_1/r2fix_2 (and n_r2fix_mun) feed into the
+* single consolidated AT_pv_r2_benefsource table below (ROBUSTNESS:
+* FASE-ONLY BENEFICIARY SOURCE section) rather than a separate table here.
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999_fix inten2005_fix im_mun_1990 popover65_
+duplicates drop cve_ent_mun_super, force
+count
+local n_r2fix_mun = r(N)
+di "`n_r2fix_mun' HM municipalities in the fixed-denominator correlation cross-section"
+
+reg inten1999_fix inten2005_fix
+local r2fix_1 : di %5.3f e(r2)
+di "R² of inten1999_fix ~ inten2005_fix (HM sample, FIXED denominator): `r2fix_1'   [current year-varying-denom version: 0.160; P&V benchmark: 0.65]"
+
+corr inten1999_fix inten2005_fix
+local corr_eoy_fix : di %5.3f r(rho)
+
+corr inten1999_fix inten2005_fix [aw=popover65_]
+local corr_eoy_fix_w : di %5.3f r(rho)
+
+reg inten1999_fix inten2005_fix [aw=popover65_]
+local r2fix_2 : di %5.3f e(r2)
+di "R² of inten1999_fix ~ inten2005_fix, weighted by pop 65+ (FIXED denominator): `r2fix_2'   [P&V benchmark: 0.65]"
+restore
+
+*============================================================
+* Correlation between the two beneficiary-numerator constructions (used
+* as a bottom-of-table diagnostic in the merged T2_b_mortality_fixeddenom
+* table below): inten1999/inten2005 (mixed source, point-in-time
+* headcount -- FASE 1997, then newProg_98_16 taken directly for 1998+;
+* not guaranteed monotonic since newProg_98_16 carries no stable household
+* ID across years) vs. inten1999_fase/inten2005_fase (Parker & Vogl's own
+* construction, a genuine running sum of annual FASE beneficiary counts,
+* giving a monotonic "ever enrolled by year Y" measure). Only FASE (an
+* annual flow) can be validly summed this way; a prior version of this
+* file summed the mixed/newProg series instead ("inten*_summix") and was
+* removed -- newProg_98_16 is already a status headcount, not a flow, so
+* summing it year-over-year double-counts continuing beneficiaries.
+*============================================================
+corr inten1999 inten1999_fase if $sample_marg & year==1996
+local corr99: di %5.3f r(rho)
+corr inten2005 inten2005_fase if $sample_marg & year==1996
+local corr05: di %5.3f r(rho)
+corr inten1999_fix inten1999_fase_fix if $sample_marg & year==1996
+local corr99_fix: di %5.3f r(rho)
+corr inten2005_fix inten2005_fase_fix if $sample_marg & year==1996
+local corr05_fix: di %5.3f r(rho)
+
+* Weighted companions (population aged 65+), for AT_intensity_correlations
+* Panel B -- same four correlations, weighted to match the main
+* regressions' weighting.
+corr inten1999 inten1999_fase [aw=popover65_] if $sample_marg & year==1996
+local corr99_w: di %5.3f r(rho)
+corr inten2005 inten2005_fase [aw=popover65_] if $sample_marg & year==1996
+local corr05_w: di %5.3f r(rho)
+corr inten1999_fix inten1999_fase_fix [aw=popover65_] if $sample_marg & year==1996
+local corr99_fix_w: di %5.3f r(rho)
+corr inten2005_fix inten2005_fase_fix [aw=popover65_] if $sample_marg & year==1996
+local corr05_fix_w: di %5.3f r(rho)
+
+
+*============================================================
+* CROSSWALK "SUPER-MUNICIPALITY" DIAGNOSTIC -- is the A1 non-monotonicity
+* (Intensity_2005 < Intensity_1999 under the Mixed construction) a
+* crosswalk-aggregation artifact rather than real household attrition?
+* research_project.md PART 3 flags municipality-boundary harmonization
+* (cve_ent_mun_super, built in 0.super_municipality_id_and_HH_data.do,
+* harmonizing ~100+ municipality splits/creations 1990-2020, mostly
+* Oaxaca/Chiapas) as an unverified candidate driver of the R2 gap vs.
+* Parker & Vogl; the same mechanism could independently produce A1/A3-
+* type symptoms if a super-municipality's component (origin) codes are
+* inconsistently present across years in the source admin data, with no
+* need for any real enrollment change.
+*
+* Uses the SAME crosswalk file as the map-figure code and the intensity-
+* construction blocks above (crosswalk_super_mun_id_1990.dta): one row
+* per origin (cve_ent, cve_mun) pair mapped to a harmonized
+* cve_ent_mun_super code. A "super-municipality" is one where 2+ distinct
+* origin pairs map to the same harmonized code; municipalities absent
+* from the crosswalk file had no boundary change and map 1:1 to
+* themselves (n_origin_mun = 1 by construction, matching the
+* "replace cve_ent_mun_super = cve_ent + cve_mun if ==''" convention
+* used elsewhere in this file).
+* Output: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex
+*------------------------------------------------------------
+preserve
+use "$data/crosswalk_super_mun_id_1990.dta", clear
+keep cve_ent cve_mun cve_ent_mun_super
+duplicates drop cve_ent cve_mun cve_ent_mun_super, force
+bys cve_ent_mun_super: gen n_origin_mun = _N
+duplicates drop cve_ent_mun_super, force
+keep cve_ent_mun_super n_origin_mun
+tempfile origin_counts
+save `origin_counts'
+restore
+
+*============================================================
+* A1 NON-MONOTONICITY DIAGNOSTIC: identifies HM municipalities where the
+* Mixed (snapshot) construction has Intensity_2005 < Intensity_1999
+* (research_project.md PART 6, A1 discussion), using the End-of-year
+* numerator over the year-varying household denominator (inten1999/
+* inten2005), the coauthors' main specification, so only the numerator
+* construction (mixed snapshot vs. FASE cumulative sum) differs. Feeds
+* the crosswalk "super-municipality" cross-tab below (does the
+* non-monotonicity concentrate among municipalities built from 2+ origin
+* INEGI codes, i.e. a boundary-aggregation artifact, rather than real
+* household attrition/migration?).
+* Output: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999 inten2005 inten1999_fase inten2005_fase
+duplicates drop cve_ent_mun_super, force
+
+count if missing(inten1999) | missing(inten2005) | missing(inten1999_fase) | missing(inten2005_fase)
+di "`r(N)' HM municipalities dropped for missing intensity values in the construction-comparison figure"
+drop if missing(inten1999) | missing(inten2005) | missing(inten1999_fase) | missing(inten2005_fase)
+
+gen byte nonmonotone_mix = (inten2005 < inten1999)
+count if nonmonotone_mix
+local n_nonmono = r(N)
+local n_tot = _N
+di "`n_nonmono' / `n_tot' HM municipalities have Intensity_2005 < Intensity_1999 under the Mixed (snapshot) construction -- candidates for the A1 'drop non-monotone municipalities' robustness trim"
+
+*------------------------------------------------------------
+* Crosswalk cross-tab: are the non-monotone-in-Mixed municipalities
+* disproportionately crosswalk "super-municipalities" (2+ origin codes
+* harmonized into one), suggesting a boundary-aggregation artifact
+* rather than real attrition/churn?
+*------------------------------------------------------------
+merge m:1 cve_ent_mun_super using `origin_counts', keep(master match) nogen
+replace n_origin_mun = 1 if missing(n_origin_mun)
+gen byte super_mun = (n_origin_mun >= 2)
+count if super_mun
+local n_super = r(N)
+di "`n_super' / `n_tot' HM municipalities are crosswalk 'super-municipalities' (2+ origin INEGI codes harmonized into one)"
+
+count if super_mun
+local n_super_tot = r(N)
+count if !super_mun
+local n_notsuper_tot = r(N)
+count if nonmonotone_mix & super_mun
+local n_nonmono_super = r(N)
+count if nonmonotone_mix & !super_mun
+local n_nonmono_notsuper = r(N)
+local pct_super    : di %4.1f 100*`n_nonmono_super'/`n_super_tot'
+local pct_notsuper : di %4.1f 100*`n_nonmono_notsuper'/`n_notsuper_tot'
+di "Non-monotone share among super-municipalities: `n_nonmono_super' / `n_super_tot' (`pct_super'%)"
+di "Non-monotone share among non-super municipalities: `n_nonmono_notsuper' / `n_notsuper_tot' (`pct_notsuper'%)"
+
+cap file close fd
+file open fd using "$tables/appendix/AT_crosswalk_supermun_diagnostic.tex", write replace
+file write fd "\begin{tabular}{lccc} \hline \hline" _n
+file write fd "& Non-monotone & Monotone & Total \\ " _n
+file write fd "& (Intensity{\textsubscript{2005}} \$<\$ Intensity{\textsubscript{1999}}, Mixed) & & \\ \toprule" _n
+file write fd "Super-municipality (2+ origin codes) & `n_nonmono_super' & `=`n_super_tot'-`n_nonmono_super'' & `n_super_tot' (`pct_super'\%) \\ " _n
+file write fd "Simple municipality (1 origin code) & `n_nonmono_notsuper' & `=`n_notsuper_tot'-`n_nonmono_notsuper'' & `n_notsuper_tot' (`pct_notsuper'\%) \\ " _n
+file write fd "\bottomrule" _n
+file write fd "Total & `n_nonmono' & `=`n_tot'-`n_nonmono'' & `n_tot' \\ " _n
+file write fd "\end{tabular}" _n
+file close fd
+di "Table written to: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex"
+restore
+
+di "A1 diagnostic: `n_nonmono' of `n_tot' HM municipalities are non-monotone under the Mixed construction"
+
+
+* CONSOLIDATED ROBUSTNESS R² TABLE (merges the former AT_pv_fig3_r2,
+* AT_pv_fig3_r2_fixeddenom, and AT_pv_r2_benefsource into one table):
+* 2 numerator variants (mixed snapshot -- current default; FASE-only
+* cumulative, P&V's numerator) x 2 denominator choices (year-varying;
+* fixed P&V-style), reusing r2_1/r2_2 (mixed snapshot, year-varying) and
+* r2fix_1/r2fix_2 (mixed snapshot, fixed) computed above, plus a
+* decomposition of how much of the R² gap to the P&V benchmark each fix
+* closes on its own vs. combined, so the numerator vs. denominator
+* choice can be judged separately.
+* Output: $tables/appendix/AT_pv_r2_benefsource.tex
+*------------------------------------------------------------
+preserve
+keep if year == 1996 & $sample_marg
+keep cve_ent_mun_super inten1999_fase inten2005_fase inten1999_fase_fix inten2005_fase_fix im_mun_1990 popover65_
+duplicates drop cve_ent_mun_super, force
+count
+local n_r2fase_mun = r(N)
+di "`n_r2fase_mun' HM municipalities in the FASE-only correlation cross-section"
+
+reg inten1999_fase inten2005_fase
+local r2fase_yv_1 : di %5.3f e(r2)
+di "R² of inten1999_fase ~ inten2005_fase (HM sample, FASE-only numerator, year-varying denom): `r2fase_yv_1'   [mixed/year-varying: `r2_1'; P&V benchmark: 0.65]"
+
+corr inten1999_fase inten2005_fase
+local corr_cum_yv : di %5.3f r(rho)
+
+corr inten1999_fase inten2005_fase [aw=popover65_]
+local corr_cum_yv_w : di %5.3f r(rho)
+
+reg inten1999_fase inten2005_fase [aw=popover65_]
+local r2fase_yv_2 : di %5.3f e(r2)
+
+reg inten1999_fase_fix inten2005_fase_fix
+local r2fase_fx_1 : di %5.3f e(r2)
+di "R² of inten1999_fase_fix ~ inten2005_fase_fix (HM sample, FASE-only numerator, FIXED denom): `r2fase_fx_1'   [mixed/fixed: `r2fix_1'; P&V benchmark: 0.65]"
+
+corr inten1999_fase_fix inten2005_fase_fix
+local corr_cum_fix : di %5.3f r(rho)
+
+corr inten1999_fase_fix inten2005_fase_fix [aw=popover65_]
+local corr_cum_fix_w : di %5.3f r(rho)
+
+reg inten1999_fase_fix inten2005_fase_fix [aw=popover65_]
+local r2fase_fx_2 : di %5.3f e(r2)
+
+* Decomposition: how much of the baseline-to-P&V R² gap does each fix close
+* on its own, vs. both combined, relative to the current-default
+* (Mixed numerator, year-varying denom) baseline in the top-left cell.
+local ddenom_1 : di %5.3f (real("`r2fix_1'")     - real("`r2_1'"))
+local ddenom_2 : di %5.3f (real("`r2fix_2'")     - real("`r2_2'"))
+local dnum_1   : di %5.3f (real("`r2fase_yv_1'") - real("`r2_1'"))
+local dnum_2   : di %5.3f (real("`r2fase_yv_2'") - real("`r2_2'"))
+local dboth_1  : di %5.3f (real("`r2fase_fx_1'") - real("`r2_1'"))
+local dboth_2  : di %5.3f (real("`r2fase_fx_2'") - real("`r2_2'"))
+di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `ddenom_1'/`ddenom_2'; numerator-fix-alone `dnum_1'/`dnum_2'; both-combined `dboth_1'/`dboth_2'"
+
+{
+    cap file close r2b
+    file open r2b using "$tables/appendix/AT_pv_r2_benefsource.tex", write replace
+    file write r2b "\begin{tabular}{lcccc} \hline \hline" _n
+    file write r2b "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed (P\&V) denom.} \\" _n
+    file write r2b "Numerator construction & R\textsuperscript{2} & + weighted (pop 65+) & R\textsuperscript{2} & + weighted (pop 65+) \\ \toprule" _n
+    file write r2b "End-of-year (current default) & `r2_1' & `r2_2' & `r2fix_1' & `r2fix_2' \\ " _n
+    file write r2b "Cumulative (P\&V's numerator) & `r2fase_yv_1' & `r2fase_yv_2' & `r2fase_fx_1' & `r2fase_fx_2' \\ " _n
+    file write r2b "  & & & & \\ " _n
+    file write r2b "P\&V (2023) benchmark & \multicolumn{2}{c}{0.65} & \multicolumn{2}{c}{0.65} \\ " _n
+    file write r2b "\bottomrule" _n
+    file write r2b "\multicolumn{5}{l}{\textit{Decomposition of \$\Delta R^2\$ vs.\ the current-default baseline (top-left cell):}} \\ " _n
+    file write r2b "\quad Denominator fix alone, unweighted & \multicolumn{4}{c}{`ddenom_1'} \\ " _n
+    file write r2b "\quad Denominator fix alone, weighted & \multicolumn{4}{c}{`ddenom_2'} \\ " _n
+    file write r2b "\quad Numerator fix alone, unweighted & \multicolumn{4}{c}{`dnum_1'} \\ " _n
+    file write r2b "\quad Numerator fix alone, weighted & \multicolumn{4}{c}{`dnum_2'} \\ " _n
+    file write r2b "\quad Both combined, unweighted & \multicolumn{4}{c}{`dboth_1'} \\ " _n
+    file write r2b "\quad Both combined, weighted & \multicolumn{4}{c}{`dboth_2'} \\ " _n
+    file write r2b "No.\ HM municipalities & \multicolumn{4}{c}{`n_r2fase_mun'} \\ " _n
+    file write r2b "\end{tabular}"
+    file close r2b
+}
+di "Table exported to: $tables/appendix/AT_pv_r2_benefsource.tex"
+restore
+
+*============================================================
+* APPENDIX TABLE: AT_intensity_correlations -- coauthor-requested
+* correlation table, requested as a complement to (not replacement for)
+* AT_pv_r2_benefsource's R2 decomposition, after the coauthor meeting
+* decision to use the End-of-year (not Cumulative) numerator as the main
+* specification. Two objects:
+*   Row 1: corr(Intensity_1999, Intensity_2005) WITHIN each of the 4
+*          constructions -- "R2 in terms of correlation" per the
+*          coauthor's request. This is the SIGNED companion to the
+*          unweighted R2 column of AT_pv_r2_benefsource (for a simple
+*          bivariate regression, R2 = corr^2, but R2 alone loses the
+*          sign, hence the separate `corr' calls added above rather
+*          than just taking sqrt(R2)).
+*   Rows 2-3: corr(End-of-year, Cumulative) at each snapshot year --
+*          relocated from the footer of T2_b_mortality_fixeddenom (per
+*          the coauthor's request to move it here), unchanged values
+*          (corr99/corr99_fix/corr05/corr05_fix, already computed above).
+* Panel A is unweighted; Panel B repeats all three rows weighted by the
+* population aged 65 and older, matching the main regressions' weighting
+* (corr_*_w/corr99_w/corr05_w/corr99_fix_w/corr05_fix_w, computed above
+* alongside their unweighted counterparts).
+* Column order matches T2_b_mortality_fixeddenom: (1) year-varying
+* denom/End-of-year, (2) year-varying/Cumulative, (3) fixed/End-of-year,
+* (4) fixed/Cumulative.
+* Output: $tables/appendix/AT_intensity_correlations.tex
+*------------------------------------------------------------
+cap file close ic
+file open ic using "$tables/appendix/AT_intensity_correlations.tex", write replace
+file write ic "\begin{tabular}{lcccc} \hline \hline" _n
+file write ic "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
+file write ic "& \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} & \multicolumn{1}{c}{End-of-year} & \multicolumn{1}{c}{Cumulative} \\ " _n
+file write ic "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+file write ic "\underline{\textit{Panel A: Unweighted}}  \\ " _n
+file write ic "Corr(Intensity{\textsubscript{1999}}, Intensity{\textsubscript{2005}}) & `corr_eoy_yv' & `corr_cum_yv' & `corr_eoy_fix' & `corr_cum_fix' \\ " _n
+file write ic "  & & & & \\ " _n
+file write ic "Corr(End-of-year, Cumulative), 1999 & \multicolumn{2}{c}{`corr99'} & \multicolumn{2}{c}{`corr99_fix'} \\ " _n
+file write ic "Corr(End-of-year, Cumulative), 2005 & \multicolumn{2}{c}{`corr05'} & \multicolumn{2}{c}{`corr05_fix'} \\ " _n
+file write ic "  & & & & \\ " _n
+file write ic "\underline{\textit{Panel B: Weighted (pop 65+)}}  \\ " _n
+file write ic "Corr(Intensity{\textsubscript{1999}}, Intensity{\textsubscript{2005}}) & `corr_eoy_yv_w' & `corr_cum_yv_w' & `corr_eoy_fix_w' & `corr_cum_fix_w' \\ " _n
+file write ic "  & & & & \\ " _n
+file write ic "Corr(End-of-year, Cumulative), 1999 & \multicolumn{2}{c}{`corr99_w'} & \multicolumn{2}{c}{`corr99_fix_w'} \\ " _n
+file write ic "Corr(End-of-year, Cumulative), 2005 & \multicolumn{2}{c}{`corr05_w'} & \multicolumn{2}{c}{`corr05_fix_w'} \\ " _n
+file write ic "\bottomrule" _n
+file write ic "\end{tabular}"
+file close ic
+di "Table exported to: $tables/appendix/AT_intensity_correlations.tex"
+
+
+*============================================================
+* APPENDIX TABLE: AT_power_mde -- power/Minimum Detectable Effect (MDE)
+* summary for the Intensity_1999 x Post coefficient (beta_0 only, per
+* coauthor's request -- Intensity_2005 not needed), End-of-year numerator
+* over the year-varying household denominator only. The Cumulative
+* numerator (former column 2) is dropped per the coauthor's request --
+* the End-of-year construction is the coauthors' main specification, so
+* only its MDE is informative going forward.
+* Self-contained: reruns its own small regression per panel here rather
+* than reusing T2_b_mortality_fixeddenom's locals, since that table is
+* built in 02_mortality.do and Stata locals do not survive across a
+* save/use boundary between do-files.
+* Benchmarked against Barham & Rowberry (2013). MDE = (t_power + t_alpha)
+* x SE, using the standard 80%-power/5%-two-sided multiplier 2.80. This
+* is a "can this design detect an effect of BR's magnitude" statement,
+* NOT a formal test that rules BR's estimate out -- BR's own -6.37 comes
+* from a different sample/spec (continuously-lagged intensity, BR-
+* incorporation sample), so the comparison is a magnitude benchmark, not
+* a nested test.
+* Output: $tables/appendix/AT_power_mde.tex
+*------------------------------------------------------------
+local mde_mult = 2.80
+
+foreach pnl in p f m {
+    if "`pnl'" == "p" {
+        local out65  emr65
+        local wt65   popover65_
+    }
+    else if "`pnl'" == "f" {
+        local out65  emr65f
+        local wt65   popover65_f
+    }
+    else {
+        local out65  emr65m
+        local wt65   popover65_m
+    }
+
+    reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+        [aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+    local aux : di %12.3f _b[1.post#c.inten1999]
+    local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+    if      `t' >= 2.576 local b99_mde_`pnl' = "`aux'***"
+    else if `t' >= 1.96  local b99_mde_`pnl' = "`aux'**"
+    else if `t' >= 1.645 local b99_mde_`pnl' = "`aux'*"
+    else                  local b99_mde_`pnl' = "`aux'"
+    local se99_mde_`pnl' : di %12.3f _se[1.post#c.inten1999]
+    local mde_`pnl' : di %12.2f (`mde_mult' * _se[1.post#c.inten1999])
+}
+
+cap file close mde
+file open mde using "$tables/appendix/AT_power_mde.tex", write replace
+file write mde "\begin{tabular}{lc} \hline \hline" _n
+file write mde "& \multicolumn{1}{c}{End-of-year} \\ " _n
+file write mde "& \multicolumn{1}{c}{(1)} \\ \toprule" _n
+
+foreach pnl in p f m {
+    if "`pnl'" == "p"      local plabel "Panel A: Pooled"
+    else if "`pnl'" == "f" local plabel "Panel B: Females"
+    else                    local plabel "Panel C: Males"
+
+    file write mde "\underline{\textit{`plabel'}} \\ " _n
+    file write mde "\textit{Intensity 1999 x post (\$\beta_0\$)} & `b99_mde_`pnl'' \\ " _n
+    file write mde " & (`se99_mde_`pnl'') \\ " _n
+    file write mde "\textit{MDE (80\% power, two-sided 5\%)} & `mde_`pnl'' \\ " _n
+    file write mde "  & \\ " _n
+}
+
+file write mde "\bottomrule" _n
+file write mde "\end{tabular}"
+file close mde
+di "Table exported to: $tables/appendix/AT_power_mde.tex"
