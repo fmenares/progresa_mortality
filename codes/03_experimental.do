@@ -140,8 +140,35 @@ clear
 
 use "$dataFolder/Panel1997_2017/Panel ENCEL 1997-2017 V2 0611.dta", replace
 
-// keep baseline, fall 1998 and fall 1999 
+// keep baseline, fall 1998 and fall 1999
 tab ronda
+
+*------------------------------------------------------------
+* JUNE 1999 (ronda==4) DEMOGRAPHIC ROSTER -- saved before the round
+* restriction below drops it.
+*
+* ronda==4 is deliberately NOT kept in the main panel: `year' is defined
+* only for rondas 1/3/5, and the whole file conditions on year==97/98/99,
+* so adding a fourth round here would silently change every other table.
+* But the Gertler (2000) Table 6 replication is a POOLED 1999 CROSS-
+* SECTION over the June and November waves, and for that each wave needs
+* (a) its own contemporaneous age and (b) its own respondent list. Having
+* a ronda==4 row IS the record that a person was enumerated in June.
+* Without this, the pooled block had to borrow November age as a proxy,
+* which left it missing for every June-only respondent.
+*------------------------------------------------------------
+preserve
+    keep if ronda==4
+    keep folio renglon edad
+    rename edad age_jun99
+    label var age_jun99 "Age at the June 1999 (ronda==4) interview"
+    gen byte in_june_roster = 1
+    label var in_june_roster "Person was enumerated in the June 1999 wave"
+    duplicates drop folio renglon, force
+    save "$tempFolder/june99_roster.dta", replace
+    di "`c(N)' person records in the June 1999 (ronda==4) roster"
+restore
+
 keep if ronda==1 |ronda==3 |ronda==5
 
 // keep only variables from these first three rounds, delete all variables which only have missing values
@@ -989,16 +1016,22 @@ foreach ggrp in p m f {
 * and reruns the cross-sectional treat-vs-control comparison, mirroring
 * Gertler's own pooling of the "third and fourth waves."
 *
-* AGE CUTOFF: uses CONTEMPORANEOUS age (age_nov99, observed at the actual
-* November 1999 interview) rather than baseline age97, per the prior
-* assessment of why the age97-based version undershoots Gertler's reported
-* N=15,399. CAVEAT: the working panel only keeps ronda==1/3/5 (1997, 1998,
-* Nov 1999) -- ronda==4 (June 1999) rows were deliberately excluded so as
-* not to disturb the rest of the file's year==99-based calculations (see
-* the total_visits_june block above) -- so there is no directly observed
-* "age in June 1999." age_nov99 is used as an approximation for the June-
-* wave records too (June and November 1999 are ~5 months apart, so this
-* only matters for people exactly at the age cutoff in that window).
+* AGE CUTOFF: each wave uses its OWN contemporaneous interview age
+* (age_wave) -- November records from ronda==5, June records from the
+* ronda==4 roster saved before the round restriction near the top of this
+* file. This replaces an earlier construction that applied November age to
+* the June records as a proxy; that proxy was missing for every June
+* respondent not re-interviewed in November, and because Stata treats
+* missing as larger than any number, those age-less records passed BOTH
+* the 51+ and the 65+ filters. Symptom to watch for if this regresses:
+* the 65+ N approaching the 51+ N (demographically they should differ by
+* roughly a factor of three).
+*
+* SAMPLE: each wave contributes only the people actually enumerated in
+* that wave. Non-visitors among them are genuine zeros (Gertler's Table 6
+* outcome is visits over the whole 51+ population, not just visitors), so
+* the zero-fill upstream is intentional -- but it must not extend to
+* household members who were never interviewed in that wave.
 *------------------------------------------------------------
 preserve
 * Person-level constants for the Nov-wave value and contemporaneous age
@@ -1011,17 +1044,49 @@ bys pid: keep if _n==1
 keep pid folio renglon age97 age_nov99 eligible contba gender clavemun claveofi ///
     total_visits_n99 total_visits_june
 
+*------------------------------------------------------------
+* Attach the June 1999 roster saved before the round restriction, giving
+* each wave its OWN contemporaneous age and its OWN respondent list.
+* in_june_roster==1 <=> the person actually had a June 1999 (ronda==4)
+* interview; in_nov_roster==1 <=> they had a November (ronda==5) one.
+*------------------------------------------------------------
+capture confirm file "$tempFolder/june99_roster.dta"
+if _rc {
+    di as error "june99_roster.dta not found -- rerun with \$rebuild_experimental_data = 1"
+    exit 601
+}
+merge 1:1 folio renglon using "$tempFolder/june99_roster.dta", ///
+    keepusing(age_jun99 in_june_roster) keep(master match) generate(_mjun)
+count if _mjun==3
+di "`r(N)' panel persons matched to a June 1999 roster record"
+drop _mjun
+replace in_june_roster = 0 if missing(in_june_roster)
+
+gen byte in_nov_roster = !missing(age_nov99)
+count if in_nov_roster==1
+di "`r(N)' panel persons with a November 1999 (ronda==5) record"
+
 * NOTE: Stata does not allow nested preserve/restore -- we are already
 * inside one preserve block (opened above), so build both wave files by
 * generating/dropping the wave-specific variables in place rather than
 * preserving again.
-gen total_visits_pooled = total_visits_n99
+*
+* Each wave keeps only its OWN respondents. Previously the June wave
+* carried a value for every panel member of any household appearing in
+* the June file -- including people last seen in 1997 -- and those had no
+* contemporaneous age, which then slipped through the age filter (see
+* below). Restricting to the wave's own roster is both the correct
+* cross-section and the fix for that leak.
+gen total_visits_pooled = total_visits_n99 if in_nov_roster==1
+gen age_wave = age_nov99
+label var age_wave "Age at this wave's own interview"
 gen wave99 = "n"
 tempfile wave_n
 save `wave_n'
 
-drop total_visits_pooled wave99
-gen total_visits_pooled = total_visits_june
+drop total_visits_pooled age_wave wave99
+gen total_visits_pooled = total_visits_june if in_june_roster==1
+gen age_wave = age_jun99
 gen wave99 = "m"
 tempfile wave_m
 save `wave_m'
@@ -1029,17 +1094,22 @@ save `wave_m'
 use `wave_n', clear
 append using `wave_m'
 di "`c(N)' person-wave records after stacking June + November 1999"
+tab wave99 if !missing(total_visits_pooled)
 
-count if !missing(total_visits_pooled) & eligible==1 & age_nov99>=51
-di "`r(N)' eligible obs (contemporaneous age>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
-count if !missing(total_visits_pooled) & eligible==1 & age_nov99>=65
-di "`r(N)' eligible obs (contemporaneous age>=65, both waves stacked)"
+* IMPORTANT: every age filter below is guarded with !missing(). In Stata a
+* missing value compares as LARGER than any number, so a bare
+* "age_wave>=51" is TRUE whenever age_wave is missing, which silently
+* swept every age-less record into BOTH the 51+ and 65+ samples.
+count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=51
+di "`r(N)' eligible obs (own-wave age>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
+count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=65
+di "`r(N)' eligible obs (own-wave age>=65, both waves stacked)"
 
 foreach ggrp in p m f {
     foreach agecut in 65 51 {
-        if "`ggrp'" == "p"      local gcondp "age_nov99>=`agecut'"
-        else if "`ggrp'" == "m" local gcondp "gender==1 & age_nov99>=`agecut'"
-        else                     local gcondp "gender==2 & age_nov99>=`agecut'"
+        if "`ggrp'" == "p"      local gcondp "!missing(age_wave) & age_wave>=`agecut'"
+        else if "`ggrp'" == "m" local gcondp "gender==1 & !missing(age_wave) & age_wave>=`agecut'"
+        else                     local gcondp "gender==2 & !missing(age_wave) & age_wave>=`agecut'"
 
         quietly sum total_visits_pooled if contba==0 & eligible==1 ///
             & `gcondp' & !missing(total_visits_pooled, contba, claveofi)
@@ -1069,13 +1139,17 @@ foreach ggrp in p m f {
 * direct check on whether the age definition itself, rather than the
 * wave-pooling construction, explains the remaining gap to Gertler's
 * (2000) reported N=15,399 and estimates.
-count if !missing(total_visits_pooled) & eligible==1 & age97>=51
+* CAVEAT: conditioning on age97 also implicitly conditions on being
+* present in the 1997 baseline -- a sample restriction Gertler does not
+* impose on a 1999 cross-section. These columns are a diagnostic on the
+* age definition, not an alternative specification.
+count if !missing(total_visits_pooled, age97) & eligible==1 & age97>=51
 di "`r(N)' eligible obs (BASELINE age97>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399 and to the contemporaneous-age count above"
 
 foreach ggrp in p m f {
-    if "`ggrp'" == "p"      local gcondp97 "age97>=51"
-    else if "`ggrp'" == "m" local gcondp97 "gender==1 & age97>=51"
-    else                     local gcondp97 "gender==2 & age97>=51"
+    if "`ggrp'" == "p"      local gcondp97 "!missing(age97) & age97>=51"
+    else if "`ggrp'" == "m" local gcondp97 "gender==1 & !missing(age97) & age97>=51"
+    else                     local gcondp97 "gender==2 & !missing(age97) & age97>=51"
 
     quietly sum total_visits_pooled if contba==0 & eligible==1 ///
         & `gcondp97' & !missing(total_visits_pooled, contba, claveofi)
