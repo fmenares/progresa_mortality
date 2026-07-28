@@ -408,7 +408,19 @@ label var total_visits "Total health facility visits (past 4 weeks)"
 
 di "--- Step 1: loading SPSS file ---"
 preserve
-import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav", clear
+* Cache a .dta mirror of the raw .sav so it can be opened directly in Stata
+* for inspection (e.g. `tab renglon`) without re-running the SPSS import.
+local sav_99n "$dataFolder/Bases97_03/Household/bd_rur_1999_n_socioeconomico_2005-07-06/socioec_encel_99n.sav"
+local dta_99n "$tempFolder/socioec_encel_99n.dta"
+if fileexists("`dta_99n'") {
+    use "`dta_99n'", clear
+    di "loaded cached .dta: `dta_99n'"
+}
+else {
+    import spss using "`sav_99n'", clear
+    save "`dta_99n'", replace
+    di "converted .sav -> .dta and cached: `dta_99n'"
+}
 keep folio n1390* n1410*
 tempfile spss_wide
 save `spss_wide'
@@ -439,7 +451,14 @@ foreach sn in 1 2 3 4 {
             rename n1390`sn'`k' renglon
             rename n1410`sn'`k' n_visits
             recast long folio renglon
-            drop if missing(renglon) | renglon <= 0 | renglon == 9
+            * NOTE: renglon is the household-roster line number of the person
+            * who used the service, NOT the household-level gate question's
+            * Yes/No/NR sentinel -- renglon==9 (and higher, up to household
+            * size, e.g. 25) is a legitimate roster position and must not be
+            * dropped as if it were "no response." Confirmed via
+            * `tab renglon` on the raw SPSS file, which shows real values up
+            * to 25. Only drop genuinely missing/non-positive renglon.
+            drop if missing(renglon) | renglon <= 0
             replace n_visits = . if n_visits >= 99
             append using `tv_acc'
             save `tv_acc', replace
@@ -491,18 +510,33 @@ di "`r(N)' obs in year==99 have non-missing total_visits (after zero-filling non
 *
 * ASSUMPTIONS carried over from the November block's conventions, not yet
 * independently verified for this file -- sanity-check if pooled N looks
-* off: (i) renglon==9 treated as a NS/NR sentinel and dropped, matching the
-* household-level gate question's 9=NR code; (ii) n_visits>=90 treated as
-* a top-coded/missing sentinel (no confirmed exact cutoff was found in the
-* codebook output shared so far -- only values 1-4 were observed in the
-* m15106a sample, so this is a conservative guess, not a confirmed code).
+* off: n_visits>=90 treated as a top-coded/missing sentinel (no confirmed
+* exact cutoff was found in the codebook output shared so far -- only
+* values 1-4 were observed in the m15106a sample, so this is a
+* conservative guess, not a confirmed code). NOTE: the renglon==9 drop
+* that used to be listed here as a carried-over assumption was confirmed
+* WRONG (renglon is a roster line number, not the gate question's NR
+* sentinel) and has been removed from both this block and the November
+* block above.
 *------------------------------------------------------------
 gen total_visits_june = .
 label var total_visits_june "Total health facility visits (past 4 weeks), June 1999 wave"
 
 di "--- June wave Step 1: loading SPSS file ---"
 preserve
-import spss using "$dataFolder/Bases97_03/Household/bd_rur_1999_m_socioeconomico_2005-07-06/socioec_encel_99m.sav", clear
+* Cache a .dta mirror of the raw .sav so it can be opened directly in Stata
+* for inspection without re-running the SPSS import.
+local sav_99m "$dataFolder/Bases97_03/Household/bd_rur_1999_m_socioeconomico_2005-07-06/socioec_encel_99m.sav"
+local dta_99m "$tempFolder/socioec_encel_99m.dta"
+if fileexists("`dta_99m'") {
+    use "`dta_99m'", clear
+    di "loaded cached .dta: `dta_99m'"
+}
+else {
+    import spss using "`sav_99m'", clear
+    save "`dta_99m'", replace
+    di "converted .sav -> .dta and cached: `dta_99m'"
+}
 keep folio m149* m151*
 tempfile spss_wide_m
 save `spss_wide_m'
@@ -532,7 +566,7 @@ foreach sn in 01 02 03 04 05 06 07 {
             rename m149`sn'`k' renglon
             rename m151`sn'`k' n_visits
             recast long folio renglon
-            drop if missing(renglon) | renglon <= 0 | renglon == 9
+            drop if missing(renglon) | renglon <= 0
             replace n_visits = . if n_visits >= 90
             append using `tv_acc_m'
             save `tv_acc_m', replace
