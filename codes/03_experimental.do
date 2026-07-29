@@ -1156,13 +1156,24 @@ count if !missing(age_wave) & age_wave>=51 & eligible==1 ///
     & !missing(total_visits_pooled, contba, claveofi)
 di "  `r(N)' ... and non-missing contba/claveofi = ESTIMATION SAMPLE (vs Gertler 15,399)"
 
-* The eligibility restriction is the single largest discretionary lever
-* here: if the step above costs more than the gap to 15,399, then whether
-* Gertler restricts to eligible households at all is the open question,
-* not the sample construction. Reported unrestricted for comparison.
+* NOT a lever: Gertler (2000, p.12) states the estimating equation is
+* run "on those eligible for PROGRESA benefits in control and treatment
+* communities", and his evaluation sample is itself a random draw of
+* ~19,000 households from PROGRESA-eligible households. So eligible==1 is
+* the right restriction and cannot explain a shortfall against 15,399.
+* Reported unrestricted only to size the step.
 count if !missing(age_wave) & age_wave>=51 ///
     & !missing(total_visits_pooled, contba, claveofi)
 di "  `r(N)' same, WITHOUT the eligible==1 restriction (diagnostic only)"
+
+* Raw SPSS person-row counts, for reference. Gertler's 15,399 is person-
+* WAVES pooled over the two rounds, i.e. roughly 7,700 people aged 51+ per
+* wave. If the rosters above are much smaller than these files, then the
+* panel is not covering the full surveyed population and that coverage
+* gap -- not any filter -- is what binds.
+di "--- raw SPSS person-row counts, for comparison with the rosters ---"
+describe using "$tempFolder/socioec_encel_99n.dta", short
+describe using "$tempFolder/socioec_encel_99m.dta", short
 
 count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=51
 di "`r(N)' eligible obs (own-wave age>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
