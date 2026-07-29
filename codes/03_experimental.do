@@ -144,29 +144,37 @@ use "$dataFolder/Panel1997_2017/Panel ENCEL 1997-2017 V2 0611.dta", replace
 tab ronda
 
 *------------------------------------------------------------
-* JUNE 1999 (ronda==4) DEMOGRAPHIC ROSTER -- saved before the round
-* restriction below drops it.
+* 1999 CROSS-SECTION ROSTERS (ronda==4 June, ronda==5 November) plus the
+* 1997 baseline round, saved BEFORE the two sample restrictions below.
 *
-* ronda==4 is deliberately NOT kept in the main panel: `year' is defined
-* only for rondas 1/3/5, and the whole file conditions on year==97/98/99,
-* so adding a fourth round here would silently change every other table.
-* But the Gertler (2000) Table 6 replication is a POOLED 1999 CROSS-
-* SECTION over the June and November waves, and for that each wave needs
-* (a) its own contemporaneous age and (b) its own respondent list. Having
-* a ronda==4 row IS the record that a person was enumerated in June.
-* Without this, the pooled block had to borrow November age as a proxy,
-* which left it missing for every June-only respondent.
+* WHY THIS IS SEPARATE. Everything else in this file is a 1997-cohort
+* PANEL/DiD design: it keeps rondas 1/3/5 and then drops post-1997
+* entrants (`newindiv'), which is exactly right for a difference-in-
+* differences on the baseline-eligible cohort -- you want a time-invariant
+* sample so composition cannot drift as people age or move in.
+*
+* The Gertler (2000) Table 6 replication is conceptually a DIFFERENT
+* OBJECT: a pooled 1999 CROSS-SECTION over the June and November waves,
+* including everyone enumerated in 1999 whether or not they were present
+* at baseline. Building it out of the cohort-restricted panel
+* mechanically caps its N below Gertler's reported 15,399, because every
+* post-1997 entrant (marriages-in, returning migrants, household splits)
+* has already been dropped. So the Gertler block builds from these
+* rosters instead, and shares no sample construction with the panel
+* tables.
+*
+* This preserve/restore writes files to disk and nothing else. It runs
+* before the round restriction and before the newindiv drop, and leaves
+* the in-memory dataset untouched, so no panel table is affected by it.
 *------------------------------------------------------------
 preserve
-    keep if ronda==4
-    keep folio renglon edad
-    rename edad age_jun99
-    label var age_jun99 "Age at the June 1999 (ronda==4) interview"
-    gen byte in_june_roster = 1
-    label var in_june_roster "Person was enumerated in the June 1999 wave"
-    duplicates drop folio renglon, force
-    save "$tempFolder/june99_roster.dta", replace
-    di "`c(N)' person records in the June 1999 (ronda==4) roster"
+    keep if inlist(ronda, 1, 4, 5)
+    keep folio folio_idper renglon ronda edad sexo pobre contba ///
+         cve_ent cve_mun cve_loc
+    label data "1997/Jun-99/Nov-99 rosters for the Gertler pooled cross-section"
+    save "$tempFolder/roster99_raw.dta", replace
+    di "--- rosters saved for the Gertler pooled cross-section ---"
+    tab ronda
 restore
 
 keep if ronda==1 |ronda==3 |ronda==5
@@ -459,6 +467,10 @@ duplicates drop folio, force
 gen byte in_spss99 = 1
 tempfile spss_folios
 save `spss_folios'
+* Permanent copy: the Gertler pooled cross-section is built from the 1999
+* rosters rather than the working panel, so it needs these outside the
+* tempfile scope. See the roster block near the top of this file.
+save "$tempFolder/spss_folios_nov.dta", replace
 di "`c(N)' unique folios in SPSS file"
 
 di "--- Step 2: building person-level visit records ---"
@@ -502,6 +514,7 @@ collapse (sum) total_visits=n_visits, by(folio renglon)
 di "`c(N)' unique persons with visit data (visitors only)"
 tempfile visits99
 save `visits99'
+save "$tempFolder/visits99_nov.dta", replace
 
 di "--- Step 4: merging into panel ---"
 restore
@@ -574,6 +587,7 @@ duplicates drop folio, force
 gen byte in_spss99m = 1
 tempfile spss_folios_m
 save `spss_folios_m'
+save "$tempFolder/spss_folios_jun.dta", replace
 di "`c(N)' unique folios in SPSS file (June)"
 
 di "--- June wave Step 2: building person-level visit records ---"
@@ -610,6 +624,7 @@ collapse (sum) total_visits_june=n_visits, by(folio renglon)
 di "`c(N)' unique persons with visit data, June wave (visitors only)"
 tempfile visits99m
 save `visits99m'
+save "$tempFolder/visits99_jun.dta", replace
 
 di "--- June wave Step 4: merging into panel ---"
 restore
@@ -1011,95 +1026,94 @@ foreach ggrp in p m f {
 
 *------------------------------------------------------------
 * POOLED 1999 WAVES (June + November): Gertler (2000) Table 6 comparison.
-* Stacks total_visits from both 1999 ENCEL waves -- June (total_visits_june)
-* and November (total_visits, at year==99) -- into one long person-wave file
-* and reruns the cross-sectional treat-vs-control comparison, mirroring
-* Gertler's own pooling of the "third and fourth waves."
 *
-* AGE CUTOFF: each wave uses its OWN contemporaneous interview age
-* (age_wave) -- November records from ronda==5, June records from the
-* ronda==4 roster saved before the round restriction near the top of this
-* file. This replaces an earlier construction that applied November age to
-* the June records as a proxy; that proxy was missing for every June
-* respondent not re-interviewed in November, and because Stata treats
-* missing as larger than any number, those age-less records passed BOTH
-* the 51+ and the 65+ filters. Symptom to watch for if this regresses:
-* the 65+ N approaching the 51+ N (demographically they should differ by
-* roughly a factor of three).
+* BUILT FROM THE 1999 ROSTERS, NOT FROM THE WORKING PANEL. Gertler pools
+* the "third and fourth waves" into a single 1999 cross-section. The
+* working panel cannot represent that object: it keeps only rondas 1/3/5
+* and then drops post-1997 entrants (`newindiv'), so everyone who joined a
+* household after baseline -- exactly the people a 1999 cross-section
+* should include -- has already been removed, mechanically capping N below
+* Gertler's reported 15,399. This block therefore rebuilds the sample from
+* the ronda==4/5 rosters saved near the top of this file and from the
+* visit files written by the two SPSS import blocks above.
 *
-* SAMPLE: each wave contributes only the people actually enumerated in
-* that wave. Non-visitors among them are genuine zeros (Gertler's Table 6
-* outcome is visits over the whole 51+ population, not just visitors), so
-* the zero-fill upstream is intentional -- but it must not extend to
-* household members who were never interviewed in that wave.
+* Nothing here feeds any other table. It runs inside preserve/restore and
+* replaces the dataset in memory with the roster build, so the panel is
+* restored untouched for the T3 code that follows.
+*
+* AGE: each wave uses its OWN interview age (age_wave) -- June from
+* ronda==4, November from ronda==5. Columns (7)-(9) use baseline age97
+* instead, linked through folio_idper: renglon is a within-wave roster
+* line number and can be reassigned across waves, so it is not a valid
+* cross-wave person key.
+*
+* Every age filter below is guarded with !missing(). Stata treats missing
+* as larger than any number, so a bare "age>=51" would sweep age-less
+* records into BOTH the 51+ and the 65+ samples. Symptom if that ever
+* regresses: the 65+ N approaching the 51+ N, when demographically they
+* should differ by roughly a factor of three.
+*
+* SAMPLE: each wave contributes the people it actually enumerated.
+* Non-visitors among them are genuine zeros -- Gertler's outcome is visits
+* over the whole 51+ population, not just visitors -- so the household
+* zero-fill is intentional, but it reaches only enumerated respondents.
 *------------------------------------------------------------
 preserve
-* Person-level constants for the Nov-wave value and contemporaneous age
-* (both currently only populated on year==99 rows); total_visits_june is
-* already round-invariant per person since it was merged in by
-* folio+renglon with no year condition.
-bys pid: egen total_visits_n99 = max(cond(year==99, total_visits, .))
-bys pid: egen age_nov99 = max(cond(year==99, age, .))
-bys pid: keep if _n==1
-keep pid folio renglon age97 age_nov99 eligible contba gender clavemun claveofi ///
-    total_visits_n99 total_visits_june
 
-*------------------------------------------------------------
-* Attach the June 1999 roster saved before the round restriction, giving
-* each wave its OWN contemporaneous age and its OWN respondent list.
-* in_june_roster==1 <=> the person actually had a June 1999 (ronda==4)
-* interview; in_nov_roster==1 <=> they had a November (ronda==5) one.
-*------------------------------------------------------------
-capture confirm file "$tempFolder/june99_roster.dta"
-if _rc {
-    di as error "june99_roster.dta not found -- rerun with \$rebuild_experimental_data = 1"
-    exit 601
+foreach f in roster99_raw visits99_nov spss_folios_nov visits99_jun spss_folios_jun {
+    capture confirm file "$tempFolder/`f'.dta"
+    if _rc {
+        di as error "`f'.dta not found -- rerun with \$rebuild_experimental_data = 1"
+        exit 601
+    }
 }
-merge 1:1 folio renglon using "$tempFolder/june99_roster.dta", ///
-    keepusing(age_jun99 in_june_roster) keep(master match) generate(_mjun)
-count if _mjun==3
-di "`r(N)' panel persons matched to a June 1999 roster record"
-drop _mjun
-replace in_june_roster = 0 if missing(in_june_roster)
 
-gen byte in_nov_roster = !missing(age_nov99)
-count if in_nov_roster==1
-di "`r(N)' panel persons with a November 1999 (ronda==5) record"
+use "$tempFolder/roster99_raw.dta", clear
 
-* NOTE: Stata does not allow nested preserve/restore -- we are already
-* inside one preserve block (opened above), so build both wave files by
-* generating/dropping the wave-specific variables in place rather than
-* preserving again.
-*
-* Each wave keeps only its OWN respondents. Previously the June wave
-* carried a value for every panel member of any household appearing in
-* the June file -- including people last seen in 1997 -- and those had no
-* contemporaneous age, which then slipped through the age filter (see
-* below). Restricting to the wave's own roster is both the correct
-* cross-section and the fix for that leak.
-gen total_visits_pooled = total_visits_n99 if in_nov_roster==1
-gen age_wave = age_nov99
+* Baseline age, carried across waves by the stable person ID.
+bys folio_idper: egen age97 = max(cond(ronda==1, edad, .))
+label var age97 "Age at the 1997 baseline interview"
+
+* One row per person-wave across the two 1999 waves.
+keep if inlist(ronda, 4, 5)
+gen str1 wave99 = cond(ronda==4, "m", "n")
+label var wave99 "1999 wave: m=June, n=November"
+gen age_wave = edad
 label var age_wave "Age at this wave's own interview"
-gen wave99 = "n"
-tempfile wave_n
-save `wave_n'
 
-drop total_visits_pooled age_wave wave99
-gen total_visits_pooled = total_visits_june if in_june_roster==1
-gen age_wave = age_jun99
-gen wave99 = "m"
-tempfile wave_m
-save `wave_m'
+* Eligibility, treatment and geography, defined as elsewhere in this file.
+egen eligible = mean(pobre), by(folio)
+replace contba = 0 if contba==2
+gen gender = sexo
+egen claveofi = group(cve_ent cve_mun cve_loc), label
+egen clavemun = group(cve_ent cve_mun), label
 
-use `wave_n', clear
-append using `wave_m'
-di "`c(N)' person-wave records after stacking June + November 1999"
+di "`c(N)' person-wave records in the 1999 rosters"
+tab wave99
+
+*--- Attach each wave's visit counts, keyed folio+renglon within that wave.
+gen total_visits_pooled = .
+
+merge m:1 folio renglon using "$tempFolder/visits99_nov.dta", ///
+    keepusing(total_visits) keep(master match) nogenerate
+merge m:1 folio using "$tempFolder/spss_folios_nov.dta", ///
+    keepusing(in_spss99) keep(master match) nogenerate
+replace total_visits_pooled = total_visits if wave99=="n"
+replace total_visits_pooled = 0 if wave99=="n" & missing(total_visits_pooled) & in_spss99==1
+drop total_visits in_spss99
+
+merge m:1 folio renglon using "$tempFolder/visits99_jun.dta", ///
+    keepusing(total_visits_june) keep(master match) nogenerate
+merge m:1 folio using "$tempFolder/spss_folios_jun.dta", ///
+    keepusing(in_spss99m) keep(master match) nogenerate
+replace total_visits_pooled = total_visits_june if wave99=="m"
+replace total_visits_pooled = 0 if wave99=="m" & missing(total_visits_pooled) & in_spss99m==1
+drop total_visits_june in_spss99m
+
+label var total_visits_pooled "Health-facility visits, past 4 weeks, this wave"
+di "--- pooled 1999 cross-section assembled ---"
 tab wave99 if !missing(total_visits_pooled)
 
-* IMPORTANT: every age filter below is guarded with !missing(). In Stata a
-* missing value compares as LARGER than any number, so a bare
-* "age_wave>=51" is TRUE whenever age_wave is missing, which silently
-* swept every age-less record into BOTH the 51+ and 65+ samples.
 count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=51
 di "`r(N)' eligible obs (own-wave age>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
 count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=65
@@ -1132,17 +1146,17 @@ foreach ggrp in p m f {
     }
 }
 
-* ADDITIONAL, per the user's request: same Ages 51+ Gertler comparison,
-* but using BASELINE age (age97, measured at the 1997 interview) instead
-* of contemporaneous age_nov99 -- the age definition this table used
-* before the contemporaneous-age switch described above. Added as a
-* direct check on whether the age definition itself, rather than the
-* wave-pooling construction, explains the remaining gap to Gertler's
-* (2000) reported N=15,399 and estimates.
-* CAVEAT: conditioning on age97 also implicitly conditions on being
-* present in the 1997 baseline -- a sample restriction Gertler does not
-* impose on a 1999 cross-section. These columns are a diagnostic on the
-* age definition, not an alternative specification.
+* Same Ages 51+ comparison, but using BASELINE age (age97, measured at the
+* 1997 interview) instead of each wave's own interview age. A direct check
+* on whether the age definition itself, rather than the sample
+* construction, moves the estimates.
+* CAVEAT: age97 is non-missing only for people who appear in ronda==1, so
+* conditioning on it also implicitly restricts to the 1997 baseline
+* population -- the very restriction this block was rebuilt to escape, and
+* one Gertler does not impose on a 1999 cross-section. Expect these
+* columns to carry a visibly smaller N than columns (4)-(6); that gap IS
+* the post-1997 entrant population. Diagnostic on the age definition, not
+* an alternative specification.
 count if !missing(total_visits_pooled, age97) & eligible==1 & age97>=51
 di "`r(N)' eligible obs (BASELINE age97>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399 and to the contemporaneous-age count above"
 
@@ -1176,10 +1190,10 @@ restore
 * APPENDIX TABLE: Total health-facility visits, POOLED across the two 1999
 * ENCEL waves (June + November), age 65+ and age 51+ -- direct comparison
 * to Gertler (2000), Table 6, which pools the same two survey waves.
-* Columns (7)-(9) repeat the Ages 51+ Gertler comparison (columns 4-6)
-* using baseline age (age97) instead of contemporaneous age (age_nov99),
-* per the user's request to isolate whether the age definition explains
-* the remaining gap to Gertler's reported N/estimates.
+* Columns (7)-(9) repeat the Ages 51+ comparison (columns 4-6) using
+* baseline age (age97) instead of each wave's own interview age, to
+* isolate whether the age definition explains any of the remaining gap to
+* Gertler's reported N and estimates.
 * Output: $tables/appendix/AT_gertler_pooled.tex
 *============================================================
 {
