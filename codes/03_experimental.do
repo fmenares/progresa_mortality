@@ -1613,7 +1613,7 @@ foreach yvar of local hh_outcomes {
 *============================================================
 * APPENDIX TABLE A.6: HH Expenditures by Elderly Presence / Older-Adults-
 * Only Household Eligibility. Two-panel table (merged per the coauthor's
-* request; previously two separate tables, AT6_expenditures_elderly.tex
+* request; previously two separate tables, AT8_expenditures_elderly.tex
 * and AT_elderly_transfer.tex):
 *   Panel A -- Elderly Presence: full eligible-household sample,
 *     differential by whether the household has an elderly member
@@ -1622,7 +1622,7 @@ foreach yvar of local hh_outcomes {
 *     only_elderly_base==1, differential by household ELIGIBILITY
 *     instead, since only eligible households receive the direct food
 *     transfer (apoyo alimentario) -- computed in the loop right below.
-* Output: $tables/appendix/AT6_expenditures_elderly.tex
+* Output: $tables/appendix/AT8_expenditures_elderly.tex
 *============================================================
 foreach yvar of local hh_outcomes {
     local col ""
@@ -1662,7 +1662,7 @@ foreach yvar of local hh_outcomes {
 
 {
     cap file close sm
-    file open sm using "$tables/appendix/AT6_expenditures_elderly.tex", write replace
+    file open sm using "$tables/appendix/AT8_expenditures_elderly.tex", write replace
     file write sm "\begin{tabular}{lcccc} \hline \hline" _n
     file write sm "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
     file write sm "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
@@ -1691,7 +1691,7 @@ foreach yvar of local hh_outcomes {
     file write sm "\end{tabular}"
     file close sm
 }
-di "Table exported to: $tables/appendix/AT6_expenditures_elderly.tex"
+di "Table exported to: $tables/appendix/AT8_expenditures_elderly.tex"
 cap erase "$tables/appendix/AT_elderly_transfer.tex"
 
 

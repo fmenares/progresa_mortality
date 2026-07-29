@@ -185,7 +185,7 @@ label var intensity_new_fix "Progresa penetration, year-varying numerator / fixe
 
 * Fixed-denominator counterpart of lag2_intensity_new (built in
 * 01_mortality_data.do from the year-varying intensity_new), for the
-* AT3_BR_replication fixed-denominator panel. Same bysort+[_n-1] lag
+* AT5_BR_replication fixed-denominator panel. Same bysort+[_n-1] lag
 * construction, applied to intensity_new_fix instead; sort first since
 * this file cannot assume the panel is still in the same order
 * 01_mortality_data.do left it in.
@@ -481,7 +481,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2c_inten1997_mort.png", as(png) replace width(1200)
+graph export "$figures/appendix/AF2c_inten1997_mort.png", as(png) replace width(1200)
 
 
 restore
@@ -594,8 +594,8 @@ foreach grp in w f m {
 * are dropped from the output, not from the model.
 * Col 1: Baseline (W+SP, emr65)
 * Col 2: + SES Trend × im_mun_1990 (cont) = AT_ses_trend col 2
-* Col 3: Ages 65-69 (baseline W+SP spec)  = AT_age_subgroups col 3
-* Col 4: Ages 70+   (baseline W+SP spec)  = AT_age_subgroups col 4
+* Col 3: Ages 65-69 (baseline W+SP spec)  = AT3_age_subgroups col 3
+* Col 4: Ages 70+   (baseline W+SP spec)  = AT3_age_subgroups col 4
 * Output: $tables/T2_mortality.tex
 *============================================================
 
@@ -835,7 +835,7 @@ if _rc {
 		cols(3) size(small) position(6) ring(1)) ///
 		graphregion(fcolor(white))
 }
-graph export "$figures/appendix/Figure_1_all.pdf", as(pdf) replace
+graph export "$figures/appendix/AF1_all.pdf", as(pdf) replace
 restore
 }
 *============================================================
@@ -892,7 +892,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2a_inten1999_all.png", as(png) replace width(1200)
+graph export "$figures/appendix/AF2a_inten1999_all.png", as(png) replace width(1200)
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
@@ -900,7 +900,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2b_inten2005_all.png", as(png) replace width(1200)
+graph export "$figures/appendix/AF2b_inten2005_all.png", as(png) replace width(1200)
 
 * ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -908,7 +908,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	fcolor(Blues2) ocolor(none ..) osize(vvthin ..) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
-graph export "$figures/appendix/Figure_2d_inten1997_mort_all.png", as(png) replace width(1200)
+graph export "$figures/appendix/AF2d_inten1997_mort_all.png", as(png) replace width(1200)
 
 
 
@@ -935,6 +935,20 @@ local pos_start = 1
 local pos_end   = 16
 
 foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+
+	* Output stem per cause of death: af:es_cod_marg_a (Appendix Figure
+	* AF4) takes cancer/diab/illdef/resp; af:es_cod_marg_b (AF5) takes
+	* card/infect/nutri/accid; tb_other isn't in either appendix figure,
+	* so it keeps its old Figure_3 stem (not part of the renumbered set).
+	if      "`cod'" == "tb_cancer" local af_stem "AF4a_tb_cancer_Marg"
+	else if "`cod'" == "tb_diab"   local af_stem "AF4b_tb_diab_Marg"
+	else if "`cod'" == "tb_illdef" local af_stem "AF4c_tb_illdef_Marg"
+	else if "`cod'" == "tb_resp"   local af_stem "AF4d_tb_resp_Marg"
+	else if "`cod'" == "tb_card"   local af_stem "AF5a_tb_card_Marg"
+	else if "`cod'" == "tb_infect" local af_stem "AF5b_tb_infect_Marg"
+	else if "`cod'" == "tb_nutri"  local af_stem "AF5c_tb_nutri_Marg"
+	else if "`cod'" == "tb_accid"  local af_stem "AF5d_tb_accid_Marg"
+	else                            local af_stem "Figure_3_`cod'_Marg"
 
 	foreach grp in w f m {
 		local reg_success_`grp' = 0
@@ -1031,7 +1045,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	}
 	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 	`twoway_cmd'
-	graph export "$figures/appendix/Figure_3_`cod'_Marg.pdf", as(pdf) replace
+	graph export "$figures/appendix/`af_stem'.pdf", as(pdf) replace
 	restore
 
 } // end foreach cod
@@ -1121,7 +1135,7 @@ twoway ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
 	plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/Figure_5a_uw.pdf", as(pdf) replace
+graph export "$figures/appendix/AF6b_uw.pdf", as(pdf) replace
 restore
 }
 
@@ -1258,9 +1272,9 @@ forval col = 1/4 {
 * Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5).
 * Reference year: 1996 (position 6 in year_1995 coding).
 * Output:
-*   Figure_7_ES_func_form_levels.pdf   — mortality rate in levels (per 1,000)
-*   Figure_7_ES_func_form_log.pdf      — log(mortality rate); zeros dropped
-*   Figure_7_ES_func_form_poisson.pdf  — death counts, ppmlhdfe, exp(b)-1
+*   AF6a_ES_func_form_levels.pdf   — mortality rate in levels (per 1,000)
+*   AF6c_ES_func_form_log.pdf      — log(mortality rate); zeros dropped
+*   AF6d_ES_func_form_poisson.pdf  — death counts, ppmlhdfe, exp(b)-1
 *============================================================
 
 {
@@ -1796,7 +1810,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 
 *============================================================
 * APPENDIX TABLE 1: Causes of Death (Weighted + SP spec)
-* AT1_cod_mortality.tex -- Pooled, Female, Male panels
+* AT2_cod_mortality.tex -- Pooled, Female, Male panels
 * Commented out (not disabled by mistake): already run, the table on
 * disk is current -- the wyoung Romano-Wolf bootstrap (500 reps x 3
 * panels x 9 outcomes) is slow, so only uncomment and re-run this when
@@ -1850,7 +1864,7 @@ quietly sum inten1999 if $sample_marg & year == 1996
 local meanI99_AT1cod: di %6.1f r(mean) * 100
 
 *------------------------------------------------------------
-* Romano-Wolf step-down correction for AT1_cod_mortality
+* Romano-Wolf step-down correction for AT2_cod_mortality
 * Family: 9 CoD outcomes; correction for Intensity1999xPost within each panel.
 * Package: ssc install wyoung   (Jones, Molitor & Reif, SJ 2019)
 * wyoung uses OUTCOMEVAR as placeholder in cmd(); the weight is embedded
@@ -1908,7 +1922,7 @@ foreach grp in w f m {
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT1_cod_mortality.tex", write replace
+	file open sm using "$tables/appendix/AT2_cod_mortality.tex", write replace
 	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write sm "& Cancer & Diab. & IllDef & Resp. & Card. & Infect. & Nutri. & Accid. & Other \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
@@ -2075,7 +2089,7 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT2_functional_forms.tex", write replace
+	file open sm using "$tables/appendix/AT4_functional_forms.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& Levels & Log & Poisson & AAMR \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
@@ -2197,7 +2211,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT3_BR_replication.tex", write replace
+	file open sm using "$tables/appendix/AT5_BR_replication.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}  " _n
@@ -2245,7 +2259,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 *============================================================
 * NOTE: the "BR Analysis" table (AT4_BR_robustness_emr65.tex, at:did_
 * robust_br2, formerly AT8) has been removed per the coauthor's request
-* -- it is redundant with AT4_BR_robustness_emr65_2002ctrl_eoy.tex
+* -- it is redundant with AT7_BR_robustness_emr65_2002ctrl_eoy.tex
 * (at:did_robust_br2_2002ctrl_eoy, AT9 below), whose unweighted/weighted
 * BR-sample and highly-marginalized-sample columns already supersede
 * this table's four columns, plus two more with an Intensity_2002
@@ -2261,7 +2275,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 * municipalities. Progressively drops municipalities below
 * the 10th, 25th, and 50th percentile of older-adult population.
 * Pooled only; same unweighted lag-2 spec as AT3 Panel B.
-* Output: $tables/appendix/AT5_BR_trimming.tex
+* Output: $tables/appendix/AT6_BR_trimming.tex
 *============================================================
 
 * Step 1: Compute municipality-level mean older-adult population
@@ -2395,7 +2409,7 @@ forval terc = 1/3 {
 * the weighted vs unweighted columns, since it reruns the SAME tercile
 * split with [aw=popover65_]), the weighted-vs-unweighted comparison is
 * already covered on the pooled/non-stratified BR replication in
-* AT3_BR_replication's Panel D, and the weights did not change the
+* AT5_BR_replication's Panel D, and the weights did not change the
 * qualitative pattern within any tercile. Keeping AT5 to the single
 * question its own header asks: is the result driven by municipality size.
 drop pop_mun_br_terc size_tercile_br
@@ -2414,9 +2428,9 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 
 {
     cap file close sm
-    file open sm using "$tables/appendix/AT5_BR_trimming.tex", write replace
-    file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
-    file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Size Terciles (Unweighted)}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
+    file open sm using "$tables/appendix/AT6_BR_trimming.tex", write replace
+    file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
+    file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Size Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
     file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule " _n
@@ -2433,7 +2447,7 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 }
 
 drop pop_mun_br
-di "Table exported to: $tables/appendix/AT5_BR_trimming.tex"
+di "Table exported to: $tables/appendix/AT6_BR_trimming.tex"
 
 *============================================================
 * im90_bin: P&V (2023)-style flexible baseline-SES trend indicator, bin
@@ -2636,7 +2650,7 @@ label var inten2005_fix "Intensity 2005 (P&V-style fixed 1997 HH denominator)"
 * enrollment has no causal interpretation (see PART 4/6 in
 * research_project.md on why Intensity_2005 is a necessary nuisance
 * control, not an optional one).
-* Output: AF_ses_trend.pdf / AF_ses_trend_f.pdf / AF_ses_trend_m.pdf
+* Output: AF7a_ses_trend.pdf / AF7b_ses_trend_f.pdf / AF7c_ses_trend_m.pdf
 *============================================================
 
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
@@ -2895,7 +2909,7 @@ foreach grp in p f m {
 }
 
 * Clean up generated SES baseline variables. im90_bin is intentionally
-* KEPT (not dropped) here: the T2_c/AT_ses_trend_summary block, later in
+* KEPT (not dropped) here: the T2_c/AT1_ses_trend_summary block, later in
 * this file, reuses this exact variable for its own SES-trend control
 * rather than rebuilding it from im_mun_1990/cve_ent_mun_super.
 foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
@@ -2923,7 +2937,7 @@ foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
 * Cols 5-6 are guarded (cap noisily), same as AF_ses_trend Specs 5-6:
 * if Lshare_pc* is unavailable, those columns are written as "n/a"
 * rather than halting the table.
-* Output: $tables/appendix/AT_ses_trend_summary.tex
+* Output: $tables/appendix/AT1_ses_trend_summary.tex
 *============================================================
 
 foreach pnl in p f m {
@@ -3057,7 +3071,7 @@ local meanI99_2c: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT_ses_trend_summary.tex", write replace
+	file open sm using "$tables/appendix/AT1_ses_trend_summary.tex", write replace
 	file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 
@@ -3097,7 +3111,7 @@ local meanI99_2c: di %6.1f r(mean) * 100
 	file write sm "\end{tabular}"
 	file close sm
 }
-di "Table exported to: $tables/appendix/AT_ses_trend_summary.tex"
+di "Table exported to: $tables/appendix/AT1_ses_trend_summary.tex"
 
 
 *============================================================
@@ -3105,7 +3119,7 @@ di "Table exported to: $tables/appendix/AT_ses_trend_summary.tex"
 * T2 col 4 specification: Weighted + Seguro Popular
 * Columns: (1) 50-64, (2) 65+, (3) 65-69, (4) 70+
 * Panels: Pooled, Females, Males
-* Output: $tables/appendix/AT_age_subgroups.tex
+* Output: $tables/appendix/AT3_age_subgroups.tex
 *============================================================
 
 * Construct 50-64 mortality rate and population weight
@@ -3180,7 +3194,7 @@ local meanI99_age: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT_age_subgroups.tex", write replace
+	file open sm using "$tables/appendix/AT3_age_subgroups.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Ages 50--64} & \multicolumn{1}{c}{Ages 65+} & \multicolumn{1}{c}{Ages 65--69} & \multicolumn{1}{c}{Ages 70+} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
@@ -3216,7 +3230,7 @@ local meanI99_age: di %6.1f r(mean) * 100
 	file write sm "\end{tabular}"
 	file close sm
 }
-di "Table exported to: $tables/appendix/AT_age_subgroups.tex"
+di "Table exported to: $tables/appendix/AT3_age_subgroups.tex"
 
 cap drop death5064 death5064f death5064m pop5064_ pop5064_f pop5064_m emr5064 emr5064f emr5064m
 
@@ -3272,7 +3286,7 @@ di "Intensity snapshots now available for: 1997 1998 1999 2000 2001 2002 2003 20
 * Non-destructive: skips (figure isn't produced, panel (a) degrades to a
 * draft placeholder in the combined figure) if either source file isn't
 * found.
-* Output: $figures/appendix/AF_enroll_loc_marg_pctile.pdf
+* Output: $figures/appendix/AF3a_enroll_loc_marg_pctile.pdf
 *============================================================
 local locfig_ok = 0
 cap confirm file "$data/MI_loc_1995_recoded.dta"
@@ -3369,9 +3383,9 @@ if `locfig_ok' {
             region(lcolor(none))) ///
         graphregion(color(white)) ///
         plotregion(margin(l=1 r=1))
-    graph export "$figures/appendix/AF_enroll_loc_marg_pctile.pdf", as(pdf) replace
+    graph export "$figures/appendix/AF3a_enroll_loc_marg_pctile.pdf", as(pdf) replace
     restore
-    di "Figure exported to: $figures/appendix/AF_enroll_loc_marg_pctile.pdf"
+    di "Figure exported to: $figures/appendix/AF3a_enroll_loc_marg_pctile.pdf"
 }
 
 *============================================================
@@ -3383,7 +3397,7 @@ if `locfig_ok' {
 * cross-section, matching P&V's own Figure 3 (drawn on all municipalities
 * nationwide, not just the HM analysis sample, to show the full targeting
 * gradient -- vertical category cutoffs are the point of that figure).
-* Output: $figures/appendix/AF_enroll_mun_marg_pctile.pdf
+* Output: $figures/appendix/AF3b_enroll_mun_marg_pctile.pdf
 *------------------------------------------------------------
 * ASSUMPTION TO VERIFY: inten1999/inten2005 are CUMULATIVE-through-year
 * snapshots (same convention as inten1997/1998/2000/2002 built above from
@@ -3437,9 +3451,9 @@ twoway ///
         region(lcolor(none))) ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_enroll_mun_marg_pctile.pdf", as(pdf) replace
+graph export "$figures/appendix/AF3b_enroll_mun_marg_pctile.pdf", as(pdf) replace
 restore
-di "Figure exported to: $figures/appendix/AF_enroll_mun_marg_pctile.pdf"
+di "Figure exported to: $figures/appendix/AF3b_enroll_mun_marg_pctile.pdf"
 
 *============================================================
 * NOTE: the fn.18-style R^2 computation (r2_1/r2_2, corr_eoy_yv/
@@ -3468,7 +3482,7 @@ di "Figure exported to: $figures/appendix/AF_enroll_mun_marg_pctile.pdf"
 * precisely to show the misspecification: how much the year-by-year
 * profile shifts once a cumulative/later-phase control (Specs 1-4) is
 * added on top of it.
-* Output: $figures/appendix/AF_beta0_stability.pdf
+* Output: $figures/appendix/AF8_beta0_stability.pdf
 *============================================================
 
 local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
@@ -3610,9 +3624,9 @@ twoway ///
         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_beta0_stability.pdf", as(pdf) replace
+graph export "$figures/appendix/AF8_beta0_stability.pdf", as(pdf) replace
 restore
-di "Figure exported to: $figures/appendix/AF_beta0_stability.pdf"
+di "Figure exported to: $figures/appendix/AF8_beta0_stability.pdf"
 
 *============================================================
 * NOTE: D3 (exact saturation diagnostics, AT_saturation_diagnostics.tex,
@@ -3696,7 +3710,7 @@ gen byte nonmonotone_mix = (inten2005_fix < inten1999_fix) if !missing(inten1999
 * HM-sample continuous specification, which isn't informative split by
 * municipality size for this project's own specification. The same
 * tercile-by-size idea, applied to the BR specification instead, now
-* lives as 3 additional columns in AT5_BR_trimming.tex above.
+* lives as 3 additional columns in AT6_BR_trimming.tex above.
 *============================================================
 
 
@@ -3822,7 +3836,7 @@ save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 *============================================================
 
 *============================================================
-* APPENDIX TABLE: AT4_BR_robustness_emr65_2002ctrl_eoy -- extends the
+* APPENDIX TABLE: AT7_BR_robustness_emr65_2002ctrl_eoy -- extends the
 * BR-adaptation robustness table with an Intensity_2002 x Post control
 * column per sample, using the End-of-year (Mixed numerator) +
 * year-varying municipal household denominator construction -- the
@@ -3842,7 +3856,7 @@ save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 * the coefficient move when a later, still-End-of-year, snapshot is
 * added), not as a "hold total eventual enrollment fixed" identification
 * argument.
-* Output: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex
+* Output: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex
 *------------------------------------------------------------
 * inten2002 (year-varying denominator) already exists, built earlier in
 * this file (~line 246) from intensity_new -- reused directly here, no
@@ -3933,7 +3947,7 @@ restore
 
 {
 	cap file close tbl3
-	file open tbl3 using "$tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex", write replace
+	file open tbl3 using "$tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex", write replace
 	file write tbl3 "\begin{tabular}{lcccccc} \hline \hline" _n
 	file write tbl3 "& \multicolumn{3}{c}{\textit{BR Sample}} & \multicolumn{3}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}" _n
 	file write tbl3 "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} \\ " _n
@@ -4000,7 +4014,7 @@ restore
 	file write tbl3 "\end{tabular}"
 	file close tbl3
 }
-di "Table exported to: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex"
+di "Table exported to: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex"
 
 *============================================================
 * NOTE: the intensity-construction time-series figure (former AF3,
@@ -4014,7 +4028,7 @@ di "Table exported to: $tables/appendix/AT4_BR_robustness_emr65_2002ctrl_eoy.tex
 * af:intensity_construction_comparison) has been removed per the
 * coauthor's request, along with its figures_app.tex entry. Its
 * year-varying/no-control ("Mixed, year-varying") series now lives on
-* as the new first series in AF_beta0_stability.pdf below, rather than
+* as the new first series in AF8_beta0_stability.pdf below, rather than
 * being dropped entirely -- see the "Spec 0" block there.
 * Figure_2_all_ses.pdf (a still-earlier companion figure) was already
 * removed in a prior pass, along with its figures_app.tex entry

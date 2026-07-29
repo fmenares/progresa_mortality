@@ -445,9 +445,9 @@ di "`r(N)' localities failed to match the cve_ent_mun_super crosswalk on (cve_en
 * panel (which never has a truly empty cve_ent_mun_super after its own
 * fallback) -- silently producing entirely missing Lshare_pc* for every
 * affected municipality once merged in 02_mortality.do. This is very
-* likely the source of the huge CIs originally flagged on AF_ses_trend
-* Spec 4 -- confirmed as a real merge-coverage bug, not just a modeling
-* choice.
+* likely the source of the huge CIs originally flagged on Appendix Figure
+* AF7a_ses_trend Spec 4 -- confirmed as a real merge-coverage bug, not
+* just a modeling choice.
 replace cve_ent_mun_super = cve_ent + cve_mun if missing(cve_ent_mun_super)
 
 keep cve_ent cve_mun cve_loc cve_ent_mun_super iml TOT_VIV POB_TOT
@@ -467,7 +467,7 @@ di "Saved: $data/MI_loc_1995_recoded.dta"
 /***********************************************************
 3. P&V (2023) EQUATION-4 LOCALITY-MARGINALITY PERCENTILE
 SHARES (L^p_m) -- FOR THE eq.-4 "LOCALITY-COMPOSITION-SHARE"
-TREND CONTROL IN 02_mortality.do's AF_ses_trend.
+TREND CONTROL IN 02_mortality.do's AF7a_ses_trend (Appendix Figure).
 
 NOT Figure 2 (the locality-level scatter/lpoly already built via
 AF_pv_fig2_locality_replication in 02_mortality.do): this is P&V's
