@@ -917,13 +917,9 @@ restore
 }
 
 *============================================================
-* APPENDIX FIGURE 3-4: Event Study by Cause of Death (Our Sample, 1991-2006)
-* Figure_5_XXX_Marg.pdf — y-axis -9(3)9 for tb_card, -6(3)6 otherwise
-* Commented out (not disabled by mistake): already run, the PDFs on disk
-* are current -- uncomment only if the cause-of-death figures need to be
-* regenerated.
+* APPENDIX FIGURES AF4/AF5: Event Study by Cause of Death (Our Sample, 1991-2006)
+* y-axis -9(3)9 for tb_card, -6(3)6 otherwise.
 *============================================================
-/*
 {
 local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 local samp_cond  "$sample_marg"
@@ -1050,7 +1046,6 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 
 } // end foreach cod
 } // end Marg block
-*/
 
 
 
@@ -1254,7 +1249,11 @@ forval col = 1/4 {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 
-	graph export "$figures/appendix/Figure_5_aamr_col`col'.pdf", as(pdf) replace
+	* col==4 is af:es_func_form Panel (e) in figures_app.tex (AF6e); cols
+	* 1-3 aren't part of any active appendix figure and keep their old stem.
+	if `col' == 4 local aamr_stem "AF6e_aamr_col4"
+	else           local aamr_stem "Figure_5_aamr_col`col'"
+	graph export "$figures/appendix/`aamr_stem'.pdf", as(pdf) replace
 	restore
 } // end forval col = 1/4
 
@@ -1293,15 +1292,15 @@ foreach ff in levels log poisson {
 	*--- Labels and filenames ---
 	if "`ff'" == "levels" {
 		local ytitle_ff "Mortality Rate, 65+ (per 1,000)"
-		local figname   "Figure_7_ES_func_form_levels"
+		local figname   "AF6a_ES_func_form_levels"
 	}
 	else if "`ff'" == "log" {
 		local ytitle_ff "% Change in Mortality Rate, 65+"
-		local figname   "Figure_7_ES_func_form_log"
+		local figname   "AF6c_ES_func_form_log"
 	}
 	else {
 		local ytitle_ff "Relative Change in Deaths (%)"
-		local figname   "Figure_7_ES_func_form_poisson"
+		local figname   "AF6d_ES_func_form_poisson"
 	}
 
 	*--- Regressions: one per sex group ---
@@ -1570,7 +1569,17 @@ foreach samp in `samples' {
             graphregion(color(white)) ///
             plotregion(margin(l=1 r=1))
 
-        graph export "$figures/appendix/Figure_6_`outcome'_`sample_label_`samp''.pdf", as(pdf) replace
+        * af:es_sample_compare (Appendix Figure AF9) uses only emr65f/emr65m
+        * x br/marg (the Females/Males, BR/HighMarg panels); every other
+        * outcome/sample combination isn't part of any active appendix
+        * figure and keeps its old Figure_6 stem.
+        local f6_stem "Figure_6_`outcome'_`sample_label_`samp''"
+        if      "`outcome'" == "emr65f" & "`samp'" == "br"   local f6_stem "AF9a_emr65f_BR"
+        else if "`outcome'" == "emr65f" & "`samp'" == "marg" local f6_stem "AF9b_emr65f_HighMarg"
+        else if "`outcome'" == "emr65m" & "`samp'" == "br"   local f6_stem "AF9c_emr65m_BR"
+        else if "`outcome'" == "emr65m" & "`samp'" == "marg" local f6_stem "AF9d_emr65m_HighMarg"
+
+        graph export "$figures/appendix/`f6_stem'.pdf", as(pdf) replace
 
         restore
     }
@@ -2661,18 +2670,21 @@ foreach grp in p f m {
 		local ywt  popover65_
 		local gsuf ""
 		local scol black
+		local sestrend_stem "AF7a_ses_trend"
 	}
 	else if "`grp'" == "f" {
 		local yout emr65f
 		local ywt  popover65_f
 		local gsuf "_f"
 		local scol red
+		local sestrend_stem "AF7b_ses_trend_f"
 	}
 	else {
 		local yout emr65m
 		local ywt  popover65_m
 		local gsuf "_m"
 		local scol blue
+		local sestrend_stem "AF7c_ses_trend_m"
 	}
 
 	* Spec 1: Baseline (W+SP), year-varying denominator -- the coauthors'
@@ -2904,7 +2916,7 @@ foreach grp in p f m {
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
-	graph export "$figures/appendix/AF_ses_trend`gsuf'.pdf", as(pdf) replace
+	graph export "$figures/appendix/`sestrend_stem'.pdf", as(pdf) replace
 	restore
 }
 
