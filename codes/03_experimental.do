@@ -416,6 +416,19 @@ label variable ing_hh "HH adult labor income"
  bys folio: egen only_elderly_base = max(cond(ronda==1, only_elderly, .))
  label variable only_elderly_base "HH had only elderly members at baseline (1997)"
 
+ * Permanent copy, keyed by folio only: only_elderly_base depends solely on
+ * ronda==1 household composition, which the newindiv drop below never
+ * touches (it removes individual post-1997 entrants, not whole
+ * households), so this value is identical whether read here or from the
+ * unrestricted roster. Saved so the Gertler-pooled cross-section (built
+ * from the 1999 rosters, not this cohort-restricted panel) can attach it
+ * by folio for the older-adults-only comparison in T3 columns (5)/(7).
+ preserve
+     keep folio only_elderly_base
+     duplicates drop folio, force
+     save "$tempFolder/only_elderly_base_roster.dta", replace
+ restore
+
  gen hhid=folio
  label variable hhid "Household ID"
  gen persid=idper
@@ -961,68 +974,15 @@ foreach yvar of local indiv_outcomes {
 restore
 
 *------------------------------------------------------------
-* Total visits: 1999 cross-section only (no 1997/1998 baseline)
-* Run separately for pooled, male, female; store locals for T3 col 5
+* T3 columns (5) and (7) -- total visits, all-eligible and elderly-only --
+* used to be computed HERE as a November-only, baseline-age97 cross-
+* section. Per the coauthor's decision to standardize on the pooled-wave,
+* contemporaneous-age sample settled on in the Gertler (2000) comparison
+* (Table t:gertler_pooled), those columns are now populated directly from
+* that construction below (locals b99_*_tv / b99_*_tveo etc. are aliased
+* from b99_*_tvp65 / b99_*_tveop once computed there), so this block was
+* deleted rather than left as unused dead code.
 *------------------------------------------------------------
-count if !missing(total_visits) & year==99 & eligible==1
-di "`r(N)' eligible obs with total_visits in year==99 (col 5 sample before age restriction)"
-
-foreach ggrp in p m f {
-    if "`ggrp'" == "p"      local gcond "age97>=65"
-    else if "`ggrp'" == "m" local gcond "gender==1 & age97>=65"
-    else                     local gcond "gender==2 & age97>=65"
-
-    quietly sum total_visits if year==99 & contba==0 & eligible==1 ///
-        & `gcond' & !missing(total_visits, contba, claveofi)
-    local cmn_`ggrp'_tv : di %9.3f `r(mean)'
-
-    reghdfe total_visits contba ///
-        if year==99 & eligible==1 & `gcond' ///
-        & !missing(total_visits, contba, claveofi), ///
-        absorb(clavemun) vce(cluster claveofi)
-
-    di "  [total_visits 65+, g=`ggrp'] _b[contba] = " _b[contba] "  N=" e(N)
-
-    local aux : di %9.3f _b[contba]
-    local tstat = abs(_b[contba] / _se[contba])
-    if      `tstat' >= 2.576 local b99_`ggrp'_tv = trim("`aux'") + "***"
-    else if `tstat' >= 1.960 local b99_`ggrp'_tv = trim("`aux'") + "**"
-    else if `tstat' >= 1.645 local b99_`ggrp'_tv = trim("`aux'") + "*"
-    else                     local b99_`ggrp'_tv = trim("`aux'")
-    local se99_`ggrp'_tv : di %9.3f _se[contba]
-    local N_`ggrp'_tv    : di %12.0fc e(N)
-}
-
-*------------------------------------------------------------
-* Total visits in ELDERLY-ONLY households (only_elderly_base==1, age 65+)
-* 1999 cross-section, municipality FE — the direct-transfer subsample analog
-* of the weekly-hours elderly-only column. Replaces the former age-51+ column.
-*------------------------------------------------------------
-foreach ggrp in p m f {
-    if "`ggrp'" == "p"      local gcondeo "age97>=65"
-    else if "`ggrp'" == "m" local gcondeo "gender==1 & age97>=65"
-    else                     local gcondeo "gender==2 & age97>=65"
-
-    quietly sum total_visits if year==99 & contba==0 & eligible==1 & only_elderly_base==1 ///
-        & `gcondeo' & !missing(total_visits, contba, claveofi)
-    local cmn_`ggrp'_tveo : di %9.3f `r(mean)'
-
-    reghdfe total_visits contba ///
-        if year==99 & eligible==1 & only_elderly_base==1 & `gcondeo' ///
-        & !missing(total_visits, contba, claveofi), ///
-        absorb(clavemun) vce(cluster claveofi)
-
-    di "  [total_visits elderly-only, g=`ggrp'] _b[contba] = " _b[contba] "  N=" e(N)
-
-    local aux   : di %9.3f _b[contba]
-    local tstat = abs(_b[contba] / _se[contba])
-    if      `tstat' >= 2.576 local b99_`ggrp'_tveo = trim("`aux'") + "***"
-    else if `tstat' >= 1.960 local b99_`ggrp'_tveo = trim("`aux'") + "**"
-    else if `tstat' >= 1.645 local b99_`ggrp'_tveo = trim("`aux'") + "*"
-    else                     local b99_`ggrp'_tveo = trim("`aux'")
-    local se99_`ggrp'_tveo : di %9.3f _se[contba]
-    local N_`ggrp'_tveo    : di %12.0fc e(N)
-}
 
 *------------------------------------------------------------
 * POOLED 1999 WAVES (June + November): Gertler (2000) Table 6 comparison.
@@ -1149,6 +1109,12 @@ label var total_visits_pooled "Health-facility visits, past 4 weeks, this wave"
 di "--- pooled 1999 cross-section assembled ---"
 tab wave99 if !missing(total_visits_pooled)
 
+* Attach the baseline-fixed elderly-only household flag, saved by folio
+* right after its construction in the main panel (see note there). Feeds
+* the T3 column (7) comparison below (older-adults-only households).
+merge m:1 folio using "$tempFolder/only_elderly_base_roster.dta", ///
+    keep(master match) nogenerate
+
 *------------------------------------------------------------
 * SAMPLE LADDER (age 51+). Prints how many records survive each
 * successive restriction, so any remaining gap to Gertler's reported
@@ -1230,6 +1196,48 @@ foreach ggrp in p m f {
         local se99_`ggrp'_tvp`agecut' : di %9.3f _se[contba]
         local N_`ggrp'_tvp`agecut'    : di %12.0fc e(N)
     }
+}
+
+* T3 columns (5) and (7): alias the age-65+ pooled result above onto the
+* names T3's write block already expects (b99_*_tv etc.), so T3 (and its
+* slide-table twin, which reuses the same locals) automatically report the
+* settled pooled two-wave, contemporaneous-age, eligible sample instead of
+* the deleted November-only, baseline-age construction.
+foreach ggrp in p m f {
+    local b99_`ggrp'_tv   "`b99_`ggrp'_tvp65'"
+    local se99_`ggrp'_tv  "`se99_`ggrp'_tvp65'"
+    local cmn_`ggrp'_tv   "`cmn_`ggrp'_tvp65'"
+    local N_`ggrp'_tv     "`N_`ggrp'_tvp65'"
+}
+
+* Column (7): same pooled two-wave, contemporaneous-age, age 65+ sample,
+* additionally restricted to older-adults-only households
+* (only_elderly_base==1) -- the direct-transfer subsample analog of the
+* weekly-hours elderly-only column, matching what the deleted block used
+* to compute except now built from the Gertler-comparison construction.
+foreach ggrp in p m f {
+    if "`ggrp'" == "p"      local gcondeop "!missing(age_wave) & age_wave>=65"
+    else if "`ggrp'" == "m" local gcondeop "gender==1 & !missing(age_wave) & age_wave>=65"
+    else                     local gcondeop "gender==2 & !missing(age_wave) & age_wave>=65"
+
+    quietly sum total_visits_pooled if contba==0 & eligible==1 & only_elderly_base==1 ///
+        & `gcondeop' & !missing(total_visits_pooled, contba, claveofi)
+    local cmn_`ggrp'_tveo : di %9.3f `r(mean)'
+
+    reghdfe total_visits_pooled contba ///
+        if eligible==1 & only_elderly_base==1 & `gcondeop' & !missing(total_visits_pooled, contba, claveofi), ///
+        absorb(clavemun) vce(cluster claveofi)
+
+    di "  [total_visits POOLED elderly-only 65+, g=`ggrp'] _b[contba] = " _b[contba] "  N=" e(N)
+
+    local aux : di %9.3f _b[contba]
+    local tstat = abs(_b[contba] / _se[contba])
+    if      `tstat' >= 2.576 local b99_`ggrp'_tveo = trim("`aux'") + "***"
+    else if `tstat' >= 1.960 local b99_`ggrp'_tveo = trim("`aux'") + "**"
+    else if `tstat' >= 1.645 local b99_`ggrp'_tveo = trim("`aux'") + "*"
+    else                     local b99_`ggrp'_tveo = trim("`aux'")
+    local se99_`ggrp'_tveo : di %9.3f _se[contba]
+    local N_`ggrp'_tveo    : di %12.0fc e(N)
 }
 
 * Same Ages 51+ comparison, but using BASELINE age (age97, measured at the
