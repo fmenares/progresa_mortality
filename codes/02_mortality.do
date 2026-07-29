@@ -1818,14 +1818,11 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 } // end Marg short block
 
 *============================================================
-* APPENDIX TABLE 1: Causes of Death (Weighted + SP spec)
+* APPENDIX TABLE: Causes of Death (Weighted + SP spec)
 * AT2_cod_mortality.tex -- Pooled, Female, Male panels
-* Commented out (not disabled by mistake): already run, the table on
-* disk is current -- the wyoung Romano-Wolf bootstrap (500 reps x 3
-* panels x 9 outcomes) is slow, so only uncomment and re-run this when
-* the underlying data or specification actually changes.
+* NOTE: the wyoung Romano-Wolf bootstrap (500 reps x 3 panels x 9
+* outcomes) is slow.
 *============================================================
-/*
 foreach grp in w f m {
 	if "`grp'" == "w" {
 		local wvar = "popover65_"
@@ -1968,7 +1965,6 @@ foreach grp in w f m {
 	file write sm "\end{tabular}"
 	file close sm
 }
-*/
 *============================================================
 * APPENDIX TABLE 2: Functional Form Robustness
 *============================================================
