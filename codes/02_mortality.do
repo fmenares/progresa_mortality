@@ -2387,26 +2387,17 @@ forval terc = 1/3 {
     local meanI99_AT5_terc`terc': di %6.1f r(mean) * 100
 }
 
-* Weighted companion to the tercile loop above (added at the coauthor's
-* request, at the right end of the table): same three size terciles,
-* same BR replication spec, weighted by population aged 65 and older.
-forval terc = 1/3 {
-    reghdfe emr65 lag2_intensity_new [aw=popover65_] ///
-        if inrange(year, 1992, 2002) & $sample_br & size_tercile_br == `terc', ///
-        a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-    local aux: di %12.3f _b[lag2_intensity_new]
-    local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
-    if      `t' >= 2.576 local bAT5_tercW`terc' = "`aux'***"
-    else if `t' >= 1.96  local bAT5_tercW`terc' = "`aux'**"
-    else if `t' >= 1.645 local bAT5_tercW`terc' = "`aux'*"
-    else                  local bAT5_tercW`terc' = "`aux'"
-    local seAT5_tercW`terc':   di %12.3f _se[lag2_intensity_new]
-    sum emr65 if e(sample) & year == 1996
-    local meanAT5_tercW`terc': di %12.2fc `r(mean)'
-    local NAT5_tercW`terc':    di %12.0fc `e(N)'
-    distinct cve_ent_mun_super if e(sample)
-    local NmunAT5_tercW`terc': di %12.0fc `r(ndistinct)'
-}
+* A weighted companion to the tercile loop above used to sit here (added
+* at the coauthor's request, at the right end of the table): same three
+* size terciles, same BR replication spec, weighted by population aged 65
+* and older. Removed per the coauthor's follow-up decision -- it tested a
+* weighting question, not a size question (identical Obs/No. Mun across
+* the weighted vs unweighted columns, since it reruns the SAME tercile
+* split with [aw=popover65_]), the weighted-vs-unweighted comparison is
+* already covered on the pooled/non-stratified BR replication in
+* AT3_BR_replication's Panel D, and the weights did not change the
+* qualitative pattern within any tercile. Keeping AT5 to the single
+* question its own header asks: is the result driven by municipality size.
 drop pop_mun_br_terc size_tercile_br
 
 * Step 4: Write table
@@ -2424,19 +2415,18 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 {
     cap file close sm
     file open sm using "$tables/appendix/AT5_BR_trimming.tex", write replace
-    file write sm "\begin{tabular}{lccccccccccc} \hline \hline" _n
-    file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{6}{c}{\textit{Size Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-11}" _n
-    file write sm "& & & & & \multicolumn{3}{c}{Unweighted} & \multicolumn{3}{c}{Weighted} \\ \cmidrule(lr){6-8} \cmidrule(lr){9-11}" _n
-    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
-    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}\cmidrule(lr){11-11}" _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} & \multicolumn{1}{c}{(10)} \\ \toprule " _n
-    file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' & `bAT5_tercW1' & `bAT5_tercW2' & `bAT5_tercW3' \\ " _n
-    file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') & (`seAT5_tercW1') & (`seAT5_tercW2') & (`seAT5_tercW3') \\ " _n
-    file write sm "  & & & & & & & & & & \\ " _n
-    file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' & `meanAT5_tercW1' & `meanAT5_tercW2' & `meanAT5_tercW3' \\ " _n
-    file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' & `NAT5_tercW1' & `NAT5_tercW2' & `NAT5_tercW3' \\ " _n
-    file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' & `NmunAT5_tercW1' & `NmunAT5_tercW2' & `NmunAT5_tercW3' \\ " _n
-    file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
+    file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
+    file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Size Terciles (Unweighted)}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
+    file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
+    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule " _n
+    file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
+    file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') \\ " _n
+    file write sm "  & & & & & & & \\ " _n
+    file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' \\ " _n
+    file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' \\ " _n
+    file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' \\ " _n
+    file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
     file write sm "\bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
