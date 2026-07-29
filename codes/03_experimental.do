@@ -1086,6 +1086,17 @@ label var age97 "Age at the 1997 baseline interview"
 egen eligible = mean(pobre), by(folio)
 label var eligible "Eligible for program"
 
+* DIAGNOSTIC: Gertler (2000) states ~78% of households in an experimental
+* locality were classified eligible. If pobre's raw coding or value labels
+* are not a clean 0/1 (e.g. an inverted indicator, or more than two
+* categories), egen's household mean would silently produce a much lower
+* eligible==1 rate than the true share -- which would show up exactly as
+* the sample ladder's biggest single cut. Checked here, once, on ronda==1
+* rows only, where pobre is actually recorded.
+di "--- pobre / eligible diagnostic (ronda==1 rows, where pobre is recorded) ---"
+tab pobre if ronda==1
+tab eligible if ronda==1
+
 * Sex has the same problem: it is essentially only recorded at the
 * baseline interview, so reading it straight off the ronda==4/5 rows left
 * it missing for ~96% of them and collapsed the Females/Males columns to a
