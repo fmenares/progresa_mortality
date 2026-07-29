@@ -1611,10 +1611,9 @@ foreach yvar of local hh_outcomes {
 }
 
 *============================================================
-* APPENDIX TABLE A.6: HH Expenditures by Elderly Presence / Older-Adults-
+* APPENDIX TABLE: HH Expenditures by Elderly Presence / Older-Adults-
 * Only Household Eligibility. Two-panel table (merged per the coauthor's
-* request; previously two separate tables, AT8_expenditures_elderly.tex
-* and AT_elderly_transfer.tex):
+* request; previously two separate tables, now merged into one file):
 *   Panel A -- Elderly Presence: full eligible-household sample,
 *     differential by whether the household has an elderly member
 *     (elderly97), computed just above.
@@ -1692,7 +1691,6 @@ foreach yvar of local hh_outcomes {
     file close sm
 }
 di "Table exported to: $tables/appendix/AT8_expenditures_elderly.tex"
-cap erase "$tables/appendix/AT_elderly_transfer.tex"
 
 
 
