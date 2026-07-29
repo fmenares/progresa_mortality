@@ -3,7 +3,7 @@
        log:  C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appe
 > ndix/gertler_pooled_diagnostics.log
   log type:  text
- opened on:  29 Jul 2026, 11:54:29
+ opened on:  29 Jul 2026, 12:02:32
 
 . 
 . foreach f in roster99_raw visits99_nov spss_folios_nov visits99_jun spss_folios_jun
@@ -252,6 +252,27 @@ for program |      Freq.     Percent        Cum.
 
 . di "  `r(N)' ... with non-missing gender (drives the Females/Males columns)"
   31256 ... with non-missing gender (drives the Females/Males columns)
+
+. * Split the eligibility step in two before applying it, since the
+. * baseline eligible rate (tab eligible if ronda==1, above) is ~59% but
+. * only ~37% of the age-51+ subsample comes out eligible==1 -- a bigger
+. * gap than the clean pobre coding can explain on its own. Distinguish
+. * "genuinely classified non-poor" from "eligible is simply missing here"
+. * (e.g. an elderly person's household split off to a new folio after
+. * baseline, one with no linked ronda==1 pobre value of its own).
+. count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & !missi
+> ng(gender) & eligible==0
+  19,813
+
+. di "  `r(N)' of those ... classified NON-poor (eligible==0, genuine)"
+  19813 of those ... classified NON-poor (eligible==0, genuine)
+
+. count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & !missi
+> ng(gender) & missing(eligible)
+  97
+
+. di "  `r(N)' of those ... eligible is MISSING (no linked baseline pobre value)"
+  97 of those ... eligible is MISSING (no linked baseline pobre value)
 
 . count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & eligib
 > le==1
