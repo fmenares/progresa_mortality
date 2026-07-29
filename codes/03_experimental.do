@@ -1083,6 +1083,19 @@ label var age97 "Age at the 1997 baseline interview"
 egen eligible = mean(pobre), by(folio)
 label var eligible "Eligible for program"
 
+* Sex has the same problem: it is essentially only recorded at the
+* baseline interview, so reading it straight off the ronda==4/5 rows left
+* it missing for ~96% of them and collapsed the Females/Males columns to a
+* few dozen observations. Fill it across rounds by the stable person ID,
+* exactly as the panel does (egen mean(sexo), by(folio_idper)), and do it
+* here while ronda==1 is still in the dataset.
+egen gender = mean(sexo), by(folio_idper)
+* egen ..., by() treats missing folio_idper as one single group, which
+* would average unrelated people together; blank those rather than assign
+* a meaningless value. Fall back to the row's own sexo where present.
+replace gender = sexo if missing(folio_idper)
+label var gender "Gender M=1 F=2"
+
 * One row per person-wave across the two 1999 waves.
 keep if inlist(ronda, 4, 5)
 gen str1 wave99 = cond(ronda==4, "m", "n")
@@ -1090,11 +1103,9 @@ label var wave99 "1999 wave: m=June, n=November"
 gen age_wave = edad
 label var age_wave "Age at this wave's own interview"
 
-* Treatment and geography, defined as elsewhere in this file. contba and
-* the geography codes are community-level and time-invariant, so unlike
-* pobre they are populated on every round and are safe to build here.
+* Treatment and geography are community-level and populated on every
+* round, so unlike pobre/sexo they are safe to build after the keep.
 replace contba = 0 if contba==2
-gen gender = sexo
 egen claveofi = group(cve_ent cve_mun cve_loc), label
 egen clavemun = group(cve_ent cve_mun), label
 
@@ -1123,6 +1134,35 @@ drop total_visits_june in_spss99m
 label var total_visits_pooled "Health-facility visits, past 4 weeks, this wave"
 di "--- pooled 1999 cross-section assembled ---"
 tab wave99 if !missing(total_visits_pooled)
+
+*------------------------------------------------------------
+* SAMPLE LADDER (age 51+). Prints how many records survive each
+* successive restriction, so any remaining gap to Gertler's reported
+* N=15,399 can be attributed to a specific step rather than guessed at.
+* Read it top to bottom: the big drop is the binding constraint.
+*------------------------------------------------------------
+di "--- sample ladder, age 51+ ---"
+count
+di "  `r(N)' person-wave records in the two 1999 rosters"
+count if !missing(age_wave) & age_wave>=51
+di "  `r(N)' with own-wave age 51+"
+count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled)
+di "  `r(N)' ... whose household is covered by that wave's SPSS file"
+count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & !missing(gender)
+di "  `r(N)' ... with non-missing gender (drives the Females/Males columns)"
+count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & eligible==1
+di "  `r(N)' ... and eligible==1"
+count if !missing(age_wave) & age_wave>=51 & eligible==1 ///
+    & !missing(total_visits_pooled, contba, claveofi)
+di "  `r(N)' ... and non-missing contba/claveofi = ESTIMATION SAMPLE (vs Gertler 15,399)"
+
+* The eligibility restriction is the single largest discretionary lever
+* here: if the step above costs more than the gap to 15,399, then whether
+* Gertler restricts to eligible households at all is the open question,
+* not the sample construction. Reported unrestricted for comparison.
+count if !missing(age_wave) & age_wave>=51 ///
+    & !missing(total_visits_pooled, contba, claveofi)
+di "  `r(N)' same, WITHOUT the eligible==1 restriction (diagnostic only)"
 
 count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=51
 di "`r(N)' eligible obs (own-wave age>=51, both waves stacked) with non-missing pooled total_visits -- compare to Gertler (2000) N=15,399"
