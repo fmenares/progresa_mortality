@@ -185,7 +185,7 @@ label var intensity_new_fix "Progresa penetration, year-varying numerator / fixe
 
 * Fixed-denominator counterpart of lag2_intensity_new (built in
 * 01_mortality_data.do from the year-varying intensity_new), for the
-* AT5_AT3_BR_replication fixed-denominator panel. Same bysort+[_n-1] lag
+* AT5_BR_replication fixed-denominator panel. Same bysort+[_n-1] lag
 * construction, applied to intensity_new_fix instead; sort first since
 * this file cannot assume the panel is still in the same order
 * 01_mortality_data.do left it in.
@@ -940,14 +940,14 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	* AF4) takes cancer/diab/illdef/resp; af:es_cod_marg_b (AF5) takes
 	* card/infect/nutri/accid; tb_other isn't in either appendix figure,
 	* so it keeps its old Figure_3 stem (not part of the renumbered set).
-	if      "`cod'" == "tb_cancer" local af_stem "AF4a_F3_tb_cancer_Marg"
-	else if "`cod'" == "tb_diab"   local af_stem "AF4b_F3_tb_diab_Marg"
-	else if "`cod'" == "tb_illdef" local af_stem "AF4c_F3_tb_illdef_Marg"
-	else if "`cod'" == "tb_resp"   local af_stem "AF4d_F3_tb_resp_Marg"
-	else if "`cod'" == "tb_card"   local af_stem "AF5a_F3_tb_card_Marg"
-	else if "`cod'" == "tb_infect" local af_stem "AF5b_F3_tb_infect_Marg"
-	else if "`cod'" == "tb_nutri"  local af_stem "AF5c_F3_tb_nutri_Marg"
-	else if "`cod'" == "tb_accid"  local af_stem "AF5d_F3_tb_accid_Marg"
+	if      "`cod'" == "tb_cancer" local af_stem "AF4a_tb_cancer_Marg"
+	else if "`cod'" == "tb_diab"   local af_stem "AF4b_tb_diab_Marg"
+	else if "`cod'" == "tb_illdef" local af_stem "AF4c_tb_illdef_Marg"
+	else if "`cod'" == "tb_resp"   local af_stem "AF4d_tb_resp_Marg"
+	else if "`cod'" == "tb_card"   local af_stem "AF5a_tb_card_Marg"
+	else if "`cod'" == "tb_infect" local af_stem "AF5b_tb_infect_Marg"
+	else if "`cod'" == "tb_nutri"  local af_stem "AF5c_tb_nutri_Marg"
+	else if "`cod'" == "tb_accid"  local af_stem "AF5d_tb_accid_Marg"
 	else                            local af_stem "Figure_3_`cod'_Marg"
 
 	foreach grp in w f m {
@@ -1135,7 +1135,7 @@ twoway ///
 		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 	graphregion(color(white)) ///
 	plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF6b_F5a_uw.pdf", as(pdf) replace
+graph export "$figures/appendix/AF6b_uw.pdf", as(pdf) replace
 restore
 }
 
@@ -1272,9 +1272,9 @@ forval col = 1/4 {
 * Sample: highly marginalized municipalities (gm_mun_1990 == 4 | 5).
 * Reference year: 1996 (position 6 in year_1995 coding).
 * Output:
-*   AF6a_F7_ES_func_form_levels.pdf   — mortality rate in levels (per 1,000)
-*   AF6c_F7_ES_func_form_log.pdf      — log(mortality rate); zeros dropped
-*   AF6d_F7_ES_func_form_poisson.pdf  — death counts, ppmlhdfe, exp(b)-1
+*   AF6a_ES_func_form_levels.pdf   — mortality rate in levels (per 1,000)
+*   AF6c_ES_func_form_log.pdf      — log(mortality rate); zeros dropped
+*   AF6d_ES_func_form_poisson.pdf  — death counts, ppmlhdfe, exp(b)-1
 *============================================================
 
 {
@@ -1810,7 +1810,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 
 *============================================================
 * APPENDIX TABLE 1: Causes of Death (Weighted + SP spec)
-* AT2_AT1_cod_mortality.tex -- Pooled, Female, Male panels
+* AT2_cod_mortality.tex -- Pooled, Female, Male panels
 * Commented out (not disabled by mistake): already run, the table on
 * disk is current -- the wyoung Romano-Wolf bootstrap (500 reps x 3
 * panels x 9 outcomes) is slow, so only uncomment and re-run this when
@@ -1864,7 +1864,7 @@ quietly sum inten1999 if $sample_marg & year == 1996
 local meanI99_AT1cod: di %6.1f r(mean) * 100
 
 *------------------------------------------------------------
-* Romano-Wolf step-down correction for AT2_AT1_cod_mortality
+* Romano-Wolf step-down correction for AT2_cod_mortality
 * Family: 9 CoD outcomes; correction for Intensity1999xPost within each panel.
 * Package: ssc install wyoung   (Jones, Molitor & Reif, SJ 2019)
 * wyoung uses OUTCOMEVAR as placeholder in cmd(); the weight is embedded
@@ -1922,7 +1922,7 @@ foreach grp in w f m {
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT2_AT1_cod_mortality.tex", write replace
+	file open sm using "$tables/appendix/AT2_cod_mortality.tex", write replace
 	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
 	file write sm "& Cancer & Diab. & IllDef & Resp. & Card. & Infect. & Nutri. & Accid. & Other \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
@@ -2089,7 +2089,7 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT4_AT2_functional_forms.tex", write replace
+	file open sm using "$tables/appendix/AT4_functional_forms.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& Levels & Log & Poisson & AAMR \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
@@ -2211,7 +2211,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
-	file open sm using "$tables/appendix/AT5_AT3_BR_replication.tex", write replace
+	file open sm using "$tables/appendix/AT5_BR_replication.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}  " _n
@@ -2259,7 +2259,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 *============================================================
 * NOTE: the "BR Analysis" table (AT4_BR_robustness_emr65.tex, at:did_
 * robust_br2, formerly AT8) has been removed per the coauthor's request
-* -- it is redundant with AT7_AT4_BR_robustness_emr65_2002ctrl_eoy.tex
+* -- it is redundant with AT7_BR_robustness_emr65_2002ctrl_eoy.tex
 * (at:did_robust_br2_2002ctrl_eoy, AT9 below), whose unweighted/weighted
 * BR-sample and highly-marginalized-sample columns already supersede
 * this table's four columns, plus two more with an Intensity_2002
@@ -2275,7 +2275,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 * municipalities. Progressively drops municipalities below
 * the 10th, 25th, and 50th percentile of older-adult population.
 * Pooled only; same unweighted lag-2 spec as AT3 Panel B.
-* Output: $tables/appendix/AT6_AT5_BR_trimming.tex
+* Output: $tables/appendix/AT6_BR_trimming.tex
 *============================================================
 
 * Step 1: Compute municipality-level mean older-adult population
@@ -2409,7 +2409,7 @@ forval terc = 1/3 {
 * the weighted vs unweighted columns, since it reruns the SAME tercile
 * split with [aw=popover65_]), the weighted-vs-unweighted comparison is
 * already covered on the pooled/non-stratified BR replication in
-* AT5_AT3_BR_replication's Panel D, and the weights did not change the
+* AT5_BR_replication's Panel D, and the weights did not change the
 * qualitative pattern within any tercile. Keeping AT5 to the single
 * question its own header asks: is the result driven by municipality size.
 drop pop_mun_br_terc size_tercile_br
@@ -2428,7 +2428,7 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 
 {
     cap file close sm
-    file open sm using "$tables/appendix/AT6_AT5_BR_trimming.tex", write replace
+    file open sm using "$tables/appendix/AT6_BR_trimming.tex", write replace
     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
     file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Size Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
     file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
@@ -2447,7 +2447,7 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 }
 
 drop pop_mun_br
-di "Table exported to: $tables/appendix/AT6_AT5_BR_trimming.tex"
+di "Table exported to: $tables/appendix/AT6_BR_trimming.tex"
 
 *============================================================
 * im90_bin: P&V (2023)-style flexible baseline-SES trend indicator, bin
@@ -3710,7 +3710,7 @@ gen byte nonmonotone_mix = (inten2005_fix < inten1999_fix) if !missing(inten1999
 * HM-sample continuous specification, which isn't informative split by
 * municipality size for this project's own specification. The same
 * tercile-by-size idea, applied to the BR specification instead, now
-* lives as 3 additional columns in AT6_AT5_BR_trimming.tex above.
+* lives as 3 additional columns in AT6_BR_trimming.tex above.
 *============================================================
 
 
@@ -3836,7 +3836,7 @@ save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 *============================================================
 
 *============================================================
-* APPENDIX TABLE: AT7_AT4_BR_robustness_emr65_2002ctrl_eoy -- extends the
+* APPENDIX TABLE: AT7_BR_robustness_emr65_2002ctrl_eoy -- extends the
 * BR-adaptation robustness table with an Intensity_2002 x Post control
 * column per sample, using the End-of-year (Mixed numerator) +
 * year-varying municipal household denominator construction -- the
@@ -3856,7 +3856,7 @@ save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 * the coefficient move when a later, still-End-of-year, snapshot is
 * added), not as a "hold total eventual enrollment fixed" identification
 * argument.
-* Output: $tables/appendix/AT7_AT4_BR_robustness_emr65_2002ctrl_eoy.tex
+* Output: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex
 *------------------------------------------------------------
 * inten2002 (year-varying denominator) already exists, built earlier in
 * this file (~line 246) from intensity_new -- reused directly here, no
@@ -3947,7 +3947,7 @@ restore
 
 {
 	cap file close tbl3
-	file open tbl3 using "$tables/appendix/AT7_AT4_BR_robustness_emr65_2002ctrl_eoy.tex", write replace
+	file open tbl3 using "$tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex", write replace
 	file write tbl3 "\begin{tabular}{lcccccc} \hline \hline" _n
 	file write tbl3 "& \multicolumn{3}{c}{\textit{BR Sample}} & \multicolumn{3}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}" _n
 	file write tbl3 "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} \\ " _n
@@ -4014,7 +4014,7 @@ restore
 	file write tbl3 "\end{tabular}"
 	file close tbl3
 }
-di "Table exported to: $tables/appendix/AT7_AT4_BR_robustness_emr65_2002ctrl_eoy.tex"
+di "Table exported to: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex"
 
 *============================================================
 * NOTE: the intensity-construction time-series figure (former AF3,

@@ -33,7 +33,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.76}{
-      \input{tables/appendix/AT2_AT1_cod_mortality}
+      \input{tables/appendix/AT2_cod_mortality}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table presents cause-specific difference-in-differences estimates for the main highly marginalized sample over 1991--2006. Each column corresponds to a specific cause of death. \textit{Progresa} enrollment intensity is interacted with the post-1997 dummy following equation~(\ref{eq:did}). Panel~A reports pooled estimates; Panel~B reports estimates for females; Panel~C reports estimates for males. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects, control for Seguro Popular intensity, and are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
@@ -60,7 +60,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.84}{
-      \input{tables/appendix/AT4_AT2_functional_forms}
+      \input{tables/appendix/AT4_functional_forms}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table assesses robustness of the main DiD estimates to functional form and outcome definition. Column (1) reports the baseline specification using the mortality rate in levels (weighted). Column (2) uses the natural log of the mortality rate; reported coefficients are multiplied by 100 and express the approximate percentage change in the mortality rate per unit increase in Progresa intensity. Column (3) uses Poisson pseudo-maximum likelihood with raw death counts as the outcome and population weights; reported coefficients are computed as $(\exp(\hat{\beta})-1)\times 100$ and express the percentage change in death counts per unit increase in intensity. Column (4) replaces the mortality rate with the Age-Adjusted Mortality Rate (AAMR), which directly standardizes for the age structure of each municipality's elderly population, using the population-weighted specification with Seguro Popular intensity controls. All specifications include municipality and year fixed effects and are weighted by the population aged 65 and older. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
@@ -76,7 +76,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.95}{
-      \input{tables/appendix/AT5_AT3_BR_replication}
+      \input{tables/appendix/AT5_BR_replication}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Row (A) reproduces their original unweighted estimate using a two-year lagged intensity variable and the BR sample (municipalities incorporated in 1998 or 1999); row (B) reports our close replication. Row (C) adds population weights, which attenuates the estimate by approximately 50\% and reduces precision. Row (D) repeats row (C) (two-year lag, weighted) but replaces the year-varying-denominator intensity measure with the End-of-year numerator over Parker and Vogl's (2023) fixed 1997 household denominator, isolating the effect of the denominator choice on the BR replication. Row (E) replaces the two-year lag with a three-year lag (year-varying denominator, weighted). All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
@@ -90,7 +90,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.85}{
-      \input{tables/appendix/AT6_AT5_BR_trimming}
+      \input{tables/appendix/AT6_BR_trimming}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column~(1) reproduces their original unweighted estimate; column~(2) reports our close replication, unweighted. Columns~(3)--(4) progressively trim the smallest municipalities, dropping those in the bottom 10\% and 25\% of the distribution of average older-adult (65+) population over 1992--2002, both estimated unweighted, matching column~(2). Columns~(5)--(7) instead split the BR sample into three equal-sized groups (terciles) by average older-adult (65+) population over 1992--2002 and estimate the same unweighted specification separately within each tercile, addressing the same municipality-size concern non-parametrically rather than by trimming. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
@@ -104,7 +104,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.8}{
-      \input{tables/appendix/AT7_AT4_BR_robustness_emr65_2002ctrl_eoy}
+      \input{tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table applies the interaction design of equation~(\ref{eq:didadapted}) to both the Barham-Rowberry sample and the full highly marginalized sample, using $\textit{Intensity}_{1999} \times \textit{Post}$ as the treatment variable over a 1992--2002 window, with $\textit{Intensity}_{1999}$ and $\textit{Intensity}_{2002}$ using the End-of-year numerator over the year-varying municipal household denominator, the coauthors' main specification. The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Columns~(1)/(4) and~(2)/(5) report unweighted and weighted estimates for the Barham-Rowberry and full highly marginalized samples, respectively; columns~(3) and~(6) additionally control for $\textit{Intensity}_{2002} \times \textit{Post}$; the End-of-year construction does not guarantee that $\textit{Intensity}_{2002}$ nests $\textit{Intensity}_{1999}$ (see the crosswalk super-municipality non-monotonicity diagnostic in \texttt{codes/binary\_and\_descriptives.do}, summarized in \texttt{research\_project.md}), so this control should be read as a same-construction robustness check rather than a ``hold total eventual enrollment fixed'' identification argument. Panel~A reports pooled estimates; Panel~B reports estimates for females; Panel~C reports estimates for males. All regressions include municipality and year fixed effects and Seguro Popular intensity controls. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
@@ -162,7 +162,7 @@
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
   {\scalebox{0.99}{
-      \input{tables/appendix/AT8_AT6_expenditures_elderly}
+      \input{tables/appendix/AT8_expenditures_elderly}
     }
     \vspace{-3mm}
     \floatfoot{Notes: This table reports difference-in-differences estimates, using 1998 as baseline, of the effect of Progresa on household expenditure outcomes. Columns~(1)--(2) report log food expenditure and the food expenditure share; columns~(3)--(4) report log health expenditure and the health expenditure share. Panel~A restricts to eligible households and stratifies by the presence of elderly members: the first row reports the treatment effect for households without elderly members, and the second row reports the differential effect for households with elderly members (i.e., the interaction term). Panel~B restricts to \textit{older-adults-only households} (households whose 1997 composition consists only of members aged 65 and older, with no children or working-age adults present) and instead stratifies by household eligibility: the first row reports the treatment effect for ineligible households, and the second row reports the differential effect for eligible households. Because only eligible (poor) households receive the transfer, Panel~B's differential isolates the role of the direct food transfer (\textit{apoyo alimentario}) among households where the elderly member is surely the recipient. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level (Panel~A) or locality level (Panel~B) and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
