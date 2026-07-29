@@ -1074,6 +1074,15 @@ use "$tempFolder/roster99_raw.dta", clear
 bys folio_idper: egen age97 = max(cond(ronda==1, edad, .))
 label var age97 "Age at the 1997 baseline interview"
 
+* Eligibility (pobre) is only recorded at the 1997 baseline interview, not
+* re-collected each round -- so this MUST be computed while ronda==1 rows
+* are still in the dataset, using the same by(folio) mean as elsewhere in
+* this file. Doing it after the ronda==4/5 keep below left pobre missing
+* for every remaining row, making eligible entirely missing and every
+* "if eligible==1" regression sample empty ("insufficient observations").
+egen eligible = mean(pobre), by(folio)
+label var eligible "Eligible for program"
+
 * One row per person-wave across the two 1999 waves.
 keep if inlist(ronda, 4, 5)
 gen str1 wave99 = cond(ronda==4, "m", "n")
@@ -1081,8 +1090,9 @@ label var wave99 "1999 wave: m=June, n=November"
 gen age_wave = edad
 label var age_wave "Age at this wave's own interview"
 
-* Eligibility, treatment and geography, defined as elsewhere in this file.
-egen eligible = mean(pobre), by(folio)
+* Treatment and geography, defined as elsewhere in this file. contba and
+* the geography codes are community-level and time-invariant, so unlike
+* pobre they are populated on every round and are safe to build here.
 replace contba = 0 if contba==2
 gen gender = sexo
 egen claveofi = group(cve_ent cve_mun cve_loc), label
