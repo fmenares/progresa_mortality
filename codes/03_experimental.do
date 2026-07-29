@@ -1060,6 +1060,9 @@ foreach ggrp in p m f {
 *------------------------------------------------------------
 preserve
 
+cap log close gertler
+log using "$tables/appendix/gertler_pooled_diagnostics.log", replace text name(gertler)
+
 foreach f in roster99_raw visits99_nov spss_folios_nov visits99_jun spss_folios_jun {
     capture confirm file "$tempFolder/`f'.dta"
     if _rc {
@@ -1245,6 +1248,10 @@ foreach ggrp in p m f {
     local se99_`ggrp'_tvp51age97 : di %9.3f _se[contba]
     local N_`ggrp'_tvp51age97    : di %12.0fc e(N)
 }
+
+cap log close gertler
+di "Gertler pooled-sample diagnostics written to: $tables/appendix/gertler_pooled_diagnostics.log"
+
 restore
 
 *============================================================
