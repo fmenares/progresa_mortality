@@ -1164,6 +1164,17 @@ count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled)
 di "  `r(N)' ... whose household is covered by that wave's SPSS file"
 count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & !missing(gender)
 di "  `r(N)' ... with non-missing gender (drives the Females/Males columns)"
+* Split the eligibility step in two before applying it, since the
+* baseline eligible rate (tab eligible if ronda==1, above) is ~59% but
+* only ~37% of the age-51+ subsample comes out eligible==1 -- a bigger
+* gap than the clean pobre coding can explain on its own. Distinguish
+* "genuinely classified non-poor" from "eligible is simply missing here"
+* (e.g. an elderly person's household split off to a new folio after
+* baseline, one with no linked ronda==1 pobre value of its own).
+count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & !missing(gender) & eligible==0
+di "  `r(N)' of those ... classified NON-poor (eligible==0, genuine)"
+count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & !missing(gender) & missing(eligible)
+di "  `r(N)' of those ... eligible is MISSING (no linked baseline pobre value)"
 count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & eligible==1
 di "  `r(N)' ... and eligible==1"
 count if !missing(age_wave) & age_wave>=51 & eligible==1 ///
