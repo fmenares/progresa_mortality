@@ -1,0 +1,617 @@
+-------------------------------------------------------------------------------------
+      name:  gertler
+       log:  C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appe
+> ndix/gertler_pooled_diagnostics.log
+  log type:  text
+ opened on:  29 Jul 2026, 11:43:15
+
+. 
+. foreach f in roster99_raw visits99_nov spss_folios_nov visits99_jun spss_folios_jun
+>  {
+  2.     capture confirm file "$tempFolder/`f'.dta"
+  3.     if _rc {
+  4.         di as error "`f'.dta not found -- rerun with \$rebuild_experimental_data
+>  = 1"
+  5.         exit 601
+  6.     }
+  7. }
+
+. 
+. use "$tempFolder/roster99_raw.dta", clear
+(1997/Jun-99/Nov-99 rosters for the Gertler pooled cross-section)
+
+. 
+. * Baseline age, carried across waves by the stable person ID.
+. bys folio_idper: egen age97 = max(cond(ronda==1, edad, .))
+(42,499 missing values generated)
+
+. label var age97 "Age at the 1997 baseline interview"
+
+. 
+. * Eligibility (pobre) is only recorded at the 1997 baseline interview, not
+. * re-collected each round -- so this MUST be computed while ronda==1 rows
+. * are still in the dataset, using the same by(folio) mean as elsewhere in
+. * this file. Doing it after the ronda==4/5 keep below left pobre missing
+. * for every remaining row, making eligible entirely missing and every
+. * "if eligible==1" regression sample empty ("insufficient observations").
+. egen eligible = mean(pobre), by(folio)
+(16,845 missing values generated)
+
+. label var eligible "Eligible for program"
+
+. 
+. * Sex has the same problem: it is essentially only recorded at the
+. * baseline interview, so reading it straight off the ronda==4/5 rows left
+. * it missing for ~96% of them and collapsed the Females/Males columns to a
+. * few dozen observations. Fill it across rounds by the stable person ID,
+. * exactly as the panel does (egen mean(sexo), by(folio_idper)), and do it
+. * here while ronda==1 is still in the dataset.
+. egen gender = mean(sexo), by(folio_idper)
+(41,972 missing values generated)
+
+. * egen ..., by() treats missing folio_idper as one single group, which
+. * would average unrelated people together; blank those rather than assign
+. * a meaningless value. Fall back to the row's own sexo where present.
+. replace gender = sexo if missing(folio_idper)
+(0 real changes made)
+
+. label var gender "Gender M=1 F=2"
+
+. 
+. * One row per person-wave across the two 1999 waves.
+. keep if inlist(ronda, 4, 5)
+(125,467 observations deleted)
+
+. gen str1 wave99 = cond(ronda==4, "m", "n")
+
+. label var wave99 "1999 wave: m=June, n=November"
+
+. gen age_wave = edad
+(14,322 missing values generated)
+
+. label var age_wave "Age at this wave's own interview"
+
+. 
+. * Treatment and geography are community-level and populated on every
+. * round, so unlike pobre/sexo they are safe to build after the keep.
+. replace contba = 0 if contba==2
+(104,505 real changes made)
+
+. egen claveofi = group(cve_ent cve_mun cve_loc), label
+
+. egen clavemun = group(cve_ent cve_mun), label
+
+. 
+. di "`c(N)' person-wave records in the 1999 rosters"
+264315 person-wave records in the 1999 rosters
+
+. tab wave99
+
+ 1999 wave: |
+    m=June, |
+ n=November |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          m |    128,934       48.78       48.78
+          n |    135,381       51.22      100.00
+------------+-----------------------------------
+      Total |    264,315      100.00
+
+. 
+. *--- Attach each wave's visit counts, keyed folio+renglon within that wave.
+. gen total_visits_pooled = .
+(264,315 missing values generated)
+
+. 
+. merge m:1 folio renglon using "$tempFolder/visits99_nov.dta", ///
+>     keepusing(total_visits) keep(master match) nogenerate
+(variable renglon was float, now double to accommodate using data's values)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       255,905
+        from master                   255,905  
+        from using                          0  
+
+    Matched                             8,410  
+    -----------------------------------------
+
+. merge m:1 folio using "$tempFolder/spss_folios_nov.dta", ///
+>     keepusing(in_spss99) keep(master match) nogenerate
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                           264,315  
+    -----------------------------------------
+
+. replace total_visits_pooled = total_visits if wave99=="n"
+(4,582 real changes made)
+
+. replace total_visits_pooled = 0 if wave99=="n" & missing(total_visits_pooled) & in_
+> spss99==1
+(130,799 real changes made)
+
+. drop total_visits in_spss99
+
+. 
+. merge m:1 folio renglon using "$tempFolder/visits99_jun.dta", ///
+>     keepusing(total_visits_june) keep(master match) nogenerate
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                       255,516
+        from master                   255,516  
+        from using                          0  
+
+    Matched                             8,799  
+    -----------------------------------------
+
+. merge m:1 folio using "$tempFolder/spss_folios_jun.dta", ///
+>     keepusing(in_spss99m) keep(master match) nogenerate
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         3,777
+        from master                     3,777  
+        from using                          0  
+
+    Matched                           260,538  
+    -----------------------------------------
+
+. replace total_visits_pooled = total_visits_june if wave99=="m"
+(4,577 real changes made)
+
+. replace total_visits_pooled = 0 if wave99=="m" & missing(total_visits_pooled) & in_
+> spss99m==1
+(124,357 real changes made)
+
+. drop total_visits_june in_spss99m
+
+. 
+. label var total_visits_pooled "Health-facility visits, past 4 weeks, this wave"
+
+. di "--- pooled 1999 cross-section assembled ---"
+--- pooled 1999 cross-section assembled ---
+
+. tab wave99 if !missing(total_visits_pooled)
+
+ 1999 wave: |
+    m=June, |
+ n=November |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          m |    128,934       48.78       48.78
+          n |    135,381       51.22      100.00
+------------+-----------------------------------
+      Total |    264,315      100.00
+
+. 
+. *------------------------------------------------------------
+. * SAMPLE LADDER (age 51+). Prints how many records survive each
+. * successive restriction, so any remaining gap to Gertler's reported
+. * N=15,399 can be attributed to a specific step rather than guessed at.
+. * Read it top to bottom: the big drop is the binding constraint.
+. *------------------------------------------------------------
+. di "--- sample ladder, age 51+ ---"
+--- sample ladder, age 51+ ---
+
+. count
+  264,315
+
+. di "  `r(N)' person-wave records in the two 1999 rosters"
+  264315 person-wave records in the two 1999 rosters
+
+. count if !missing(age_wave) & age_wave>=51
+  33,616
+
+. di "  `r(N)' with own-wave age 51+"
+  33616 with own-wave age 51+
+
+. count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled)
+  33,616
+
+. di "  `r(N)' ... whose household is covered by that wave's SPSS file"
+  33616 ... whose household is covered by that wave's SPSS file
+
+. count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & !missi
+> ng(gender)
+  31,256
+
+. di "  `r(N)' ... with non-missing gender (drives the Females/Males columns)"
+  31256 ... with non-missing gender (drives the Females/Males columns)
+
+. count if !missing(age_wave) & age_wave>=51 & !missing(total_visits_pooled) & eligib
+> le==1
+  11,647
+
+. di "  `r(N)' ... and eligible==1"
+  11647 ... and eligible==1
+
+. count if !missing(age_wave) & age_wave>=51 & eligible==1 ///
+>     & !missing(total_visits_pooled, contba, claveofi)
+  11,647
+
+. di "  `r(N)' ... and non-missing contba/claveofi = ESTIMATION SAMPLE (vs Gertler 15
+> ,399)"
+  11647 ... and non-missing contba/claveofi = ESTIMATION SAMPLE (vs Gertler 15,399)
+
+. 
+. * NOT a lever: Gertler (2000, p.12) states the estimating equation is
+. * run "on those eligible for PROGRESA benefits in control and treatment
+. * communities", and his evaluation sample is itself a random draw of
+. * ~19,000 households from PROGRESA-eligible households. So eligible==1 is
+. * the right restriction and cannot explain a shortfall against 15,399.
+. * Reported unrestricted only to size the step.
+. count if !missing(age_wave) & age_wave>=51 ///
+>     & !missing(total_visits_pooled, contba, claveofi)
+  33,616
+
+. di "  `r(N)' same, WITHOUT the eligible==1 restriction (diagnostic only)"
+  33616 same, WITHOUT the eligible==1 restriction (diagnostic only)
+
+. 
+. * Raw SPSS person-row counts, for reference. Gertler's 15,399 is person-
+. * WAVES pooled over the two rounds, i.e. roughly 7,700 people aged 51+ per
+. * wave. If the rosters above are much smaller than these files, then the
+. * panel is not covering the full surveyed population and that coverage
+. * gap -- not any filter -- is what binds.
+. di "--- raw SPSS person-row counts, for comparison with the rosters ---"
+--- raw SPSS person-row counts, for comparison with the rosters ---
+
+. describe using "$tempFolder/socioec_encel_99n.dta", short
+
+Contains data                                 
+ Observations:       139,424                  28 Jul 2026 10:34
+    Variables:           990                  
+Sorted by: 
+
+. describe using "$tempFolder/socioec_encel_99m.dta", short
+
+Contains data                                 
+ Observations:       132,806                  28 Jul 2026 10:38
+    Variables:         1,162                  
+Sorted by: 
+
+. 
+. count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=51
+  11,647
+
+. di "`r(N)' eligible obs (own-wave age>=51, both waves stacked) with non-missing poo
+> led total_visits -- compare to Gertler (2000) N=15,399"
+11647 eligible obs (own-wave age>=51, both waves stacked) with non-missing pooled tot
+> al_visits -- compare to Gertler (2000) N=15,399
+
+. count if !missing(total_visits_pooled, age_wave) & eligible==1 & age_wave>=65
+  4,701
+
+. di "`r(N)' eligible obs (own-wave age>=65, both waves stacked)"
+4701 eligible obs (own-wave age>=65, both waves stacked)
+
+. 
+. foreach ggrp in p m f {
+  2.     foreach agecut in 65 51 {
+  3.         if "`ggrp'" == "p"      local gcondp "!missing(age_wave) & age_wave>=`ag
+> ecut'"
+  4.         else if "`ggrp'" == "m" local gcondp "gender==1 & !missing(age_wave) & a
+> ge_wave>=`agecut'"
+  5.         else                     local gcondp "gender==2 & !missing(age_wave) & 
+> age_wave>=`agecut'"
+  6. 
+.         quietly sum total_visits_pooled if contba==0 & eligible==1 ///
+>             & `gcondp' & !missing(total_visits_pooled, contba, claveofi)
+  7.         local cmn_`ggrp'_tvp`agecut' : di %9.3f `r(mean)'
+  8. 
+.         reghdfe total_visits_pooled contba ///
+>             if eligible==1 & `gcondp' & !missing(total_visits_pooled, contba, clave
+> ofi), ///
+>             absorb(clavemun) vce(cluster claveofi)
+  9. 
+.         di "  [total_visits POOLED `agecut'+, g=`ggrp'] _b[contba] = " _b[contba] "
+>   N=" e(N)
+ 10. 
+.         local aux : di %9.3f _b[contba]
+ 11.         local tstat = abs(_b[contba] / _se[contba])
+ 12.         if      `tstat' >= 2.576 local b99_`ggrp'_tvp`agecut' = trim("`aux'") + 
+> "***"
+ 13.         else if `tstat' >= 1.960 local b99_`ggrp'_tvp`agecut' = trim("`aux'") + 
+> "**"
+ 14.         else if `tstat' >= 1.645 local b99_`ggrp'_tvp`agecut' = trim("`aux'") + 
+> "*"
+ 15.         else                     local b99_`ggrp'_tvp`agecut' = trim("`aux'")
+ 16.         local se99_`ggrp'_tvp`agecut' : di %9.3f _se[contba]
+ 17.         local N_`ggrp'_tvp`agecut'    : di %12.0fc e(N)
+ 18.     }
+ 19. }
+(dropped 1 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =      4,700
+Absorbing 1 HDFE group                            F(   1,    456) =       0.29
+Statistics robust to heteroskedasticity           Prob > F        =     0.5897
+                                                  R-squared       =     0.0306
+                                                  Adj R-squared   =    -0.0085
+                                                  Within R-sq.    =     0.0001
+Number of clusters (claveofi) =        457        Root MSE        =     0.6968
+
+                             (Std. err. adjusted for 457 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |  -.0232475   .0430734    -0.54   0.590    -.1078945    .0613994
+       _cons |    .119233   .0311367     3.83   0.000     .0580438    .1804221
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       182           0         182     |
+-----------------------------------------------------+
+  [total_visits POOLED 65+, g=p] _b[contba] = -.02324753  N=4700
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =     11,647
+Absorbing 1 HDFE group                            F(   1,    494) =       0.18
+Statistics robust to heteroskedasticity           Prob > F        =     0.6704
+                                                  R-squared       =     0.0159
+                                                  Adj R-squared   =    -0.0002
+                                                  Within R-sq.    =     0.0000
+Number of clusters (claveofi) =        495        Root MSE        =     0.6485
+
+                             (Std. err. adjusted for 495 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |    .008037   .0188739     0.43   0.670    -.0290461    .0451201
+       _cons |    .092251   .0133295     6.92   0.000     .0660614    .1184405
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       188           0         188     |
+-----------------------------------------------------+
+  [total_visits POOLED 51+, g=p] _b[contba] = .00803698  N=11647
+(dropped 8 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =      2,220
+Absorbing 1 HDFE group                            F(   1,    396) =       0.53
+Statistics robust to heteroskedasticity           Prob > F        =     0.4653
+                                                  R-squared       =     0.0625
+                                                  Adj R-squared   =    -0.0137
+                                                  Within R-sq.    =     0.0008
+Number of clusters (claveofi) =        397        Root MSE        =     0.8789
+
+                             (Std. err. adjusted for 397 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |  -.0756102   .1034483    -0.73   0.465    -.2789868    .1277664
+       _cons |   .1526601    .076207     2.00   0.046     .0028394    .3024809
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       167           0         167     |
+-----------------------------------------------------+
+  [total_visits POOLED 65+, g=m] _b[contba] = -.07561021  N=2220
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,841
+Absorbing 1 HDFE group                            F(   1,    484) =       0.09
+Statistics robust to heteroskedasticity           Prob > F        =     0.7636
+                                                  R-squared       =     0.0272
+                                                  Adj R-squared   =    -0.0051
+                                                  Within R-sq.    =     0.0000
+Number of clusters (claveofi) =        485        Root MSE        =     0.6463
+
+                             (Std. err. adjusted for 485 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |  -.0104924   .0348733    -0.30   0.764    -.0790141    .0580293
+       _cons |   .0900016   .0262439     3.43   0.001     .0384356    .1415675
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       188           0         188     |
+-----------------------------------------------------+
+  [total_visits POOLED 51+, g=m] _b[contba] = -.01049241  N=5841
+(dropped 7 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =      2,278
+Absorbing 1 HDFE group                            F(   1,    395) =       0.09
+Statistics robust to heteroskedasticity           Prob > F        =     0.7633
+                                                  R-squared       =     0.0608
+                                                  Adj R-squared   =    -0.0136
+                                                  Within R-sq.    =     0.0000
+Number of clusters (claveofi) =        396        Root MSE        =     0.4961
+
+                             (Std. err. adjusted for 396 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |   .0080648   .0267665     0.30   0.763    -.0445577    .0606874
+       _cons |    .104003   .0169324     6.14   0.000     .0707141     .137292
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       167           0         167     |
+-----------------------------------------------------+
+  [total_visits POOLED 65+, g=f] _b[contba] = .00806483  N=2278
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,500
+Absorbing 1 HDFE group                            F(   1,    474) =       0.56
+Statistics robust to heteroskedasticity           Prob > F        =     0.4563
+                                                  R-squared       =     0.0299
+                                                  Adj R-squared   =    -0.0037
+                                                  Within R-sq.    =     0.0001
+Number of clusters (claveofi) =        475        Root MSE        =     0.6682
+
+                             (Std. err. adjusted for 475 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |   .0190552    .025556     0.75   0.456    -.0311619    .0692723
+       _cons |   .1033668    .016823     6.14   0.000     .0703099    .1364236
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       184           0         184     |
+-----------------------------------------------------+
+  [total_visits POOLED 51+, g=f] _b[contba] = .01905522  N=5500
+
+. 
+. * Same Ages 51+ comparison, but using BASELINE age (age97, measured at the
+. * 1997 interview) instead of each wave's own interview age. A direct check
+. * on whether the age definition itself, rather than the sample
+. * construction, moves the estimates.
+. * CAVEAT: age97 is non-missing only for people who appear in ronda==1, so
+. * conditioning on it also implicitly restricts to the 1997 baseline
+. * population -- the very restriction this block was rebuilt to escape, and
+. * one Gertler does not impose on a 1999 cross-section. Expect these
+. * columns to carry a visibly smaller N than columns (4)-(6); that gap IS
+. * the post-1997 entrant population. Diagnostic on the age definition, not
+. * an alternative specification.
+. count if !missing(total_visits_pooled, age97) & eligible==1 & age97>=51
+  10,630
+
+. di "`r(N)' eligible obs (BASELINE age97>=51, both waves stacked) with non-missing p
+> ooled total_visits -- compare to Gertler (2000) N=15,399 and to the contemporaneous
+> -age count above"
+10630 eligible obs (BASELINE age97>=51, both waves stacked) with non-missing pooled t
+> otal_visits -- compare to Gertler (2000) N=15,399 and to the contemporaneous-age co
+> unt above
+
+. 
+. foreach ggrp in p m f {
+  2.     if "`ggrp'" == "p"      local gcondp97 "!missing(age97) & age97>=51"
+  3.     else if "`ggrp'" == "m" local gcondp97 "gender==1 & !missing(age97) & age97>
+> =51"
+  4.     else                     local gcondp97 "gender==2 & !missing(age97) & age97
+> >=51"
+  5. 
+.     quietly sum total_visits_pooled if contba==0 & eligible==1 ///
+>         & `gcondp97' & !missing(total_visits_pooled, contba, claveofi)
+  6.     local cmn_`ggrp'_tvp51age97 : di %9.3f `r(mean)'
+  7. 
+.     reghdfe total_visits_pooled contba ///
+>         if eligible==1 & `gcondp97' & !missing(total_visits_pooled, contba, claveof
+> i), ///
+>         absorb(clavemun) vce(cluster claveofi)
+  8. 
+.     di "  [total_visits POOLED 51+ baseline age97, g=`ggrp'] _b[contba] = " _b[cont
+> ba] "  N=" e(N)
+  9. 
+.     local aux : di %9.3f _b[contba]
+ 10.     local tstat = abs(_b[contba] / _se[contba])
+ 11.     if      `tstat' >= 2.576 local b99_`ggrp'_tvp51age97 = trim("`aux'") + "***"
+ 12.     else if `tstat' >= 1.960 local b99_`ggrp'_tvp51age97 = trim("`aux'") + "**"
+ 13.     else if `tstat' >= 1.645 local b99_`ggrp'_tvp51age97 = trim("`aux'") + "*"
+ 14.     else                     local b99_`ggrp'_tvp51age97 = trim("`aux'")
+ 15.     local se99_`ggrp'_tvp51age97 : di %9.3f _se[contba]
+ 16.     local N_`ggrp'_tvp51age97    : di %12.0fc e(N)
+ 17. }
+(dropped 1 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =     10,629
+Absorbing 1 HDFE group                            F(   1,    487) =       0.13
+Statistics robust to heteroskedasticity           Prob > F        =     0.7208
+                                                  R-squared       =     0.0161
+                                                  Adj R-squared   =    -0.0015
+                                                  Within R-sq.    =     0.0000
+Number of clusters (claveofi) =        488        Root MSE        =     0.6110
+
+                             (Std. err. adjusted for 488 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |    -.00721   .0201629    -0.36   0.721    -.0468271     .032407
+       _cons |   .0962599   .0148389     6.49   0.000     .0671038     .125416
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       187           0         187     |
+-----------------------------------------------------+
+  [total_visits POOLED 51+ baseline age97, g=p] _b[contba] = -.00721005  N=10629
+(dropped 1 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,418
+Absorbing 1 HDFE group                            F(   1,    475) =       0.49
+Statistics robust to heteroskedasticity           Prob > F        =     0.4850
+                                                  R-squared       =     0.0309
+                                                  Adj R-squared   =    -0.0036
+                                                  Within R-sq.    =     0.0002
+Number of clusters (claveofi) =        476        Root MSE        =     0.6383
+
+                             (Std. err. adjusted for 476 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |  -.0283336   .0405416    -0.70   0.485    -.1079967    .0513295
+       _cons |   .0963094     .03037     3.17   0.002     .0366332    .1559856
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       186           0         186     |
+-----------------------------------------------------+
+  [total_visits POOLED 51+ baseline age97, g=m] _b[contba] = -.02833363  N=5418
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,205
+Absorbing 1 HDFE group                            F(   1,    469) =       0.02
+Statistics robust to heteroskedasticity           Prob > F        =     0.8878
+                                                  R-squared       =     0.0334
+                                                  Adj R-squared   =    -0.0020
+                                                  Within R-sq.    =     0.0000
+Number of clusters (claveofi) =        470        Root MSE        =     0.5823
+
+                             (Std. err. adjusted for 470 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |   .0032255   .0228435     0.14   0.888    -.0416628    .0481138
+       _cons |   .1034968   .0162034     6.39   0.000     .0716565    .1353371
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |       184           0         184     |
+-----------------------------------------------------+
+  [total_visits POOLED 51+ baseline age97, g=f] _b[contba] = .00322549  N=5205
+
+. 
+. cap log close gertler

@@ -9,7 +9,6 @@ wordcount.tex
 *.aux
 *.bbl
 *.blg
-*.log
 *.out
 *.toc
 *.lof
