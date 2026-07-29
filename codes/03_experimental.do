@@ -1611,39 +1611,18 @@ foreach yvar of local hh_outcomes {
 }
 
 *============================================================
-* APPENDIX TABLE A.6: HH Expenditures by Elderly Presence, Eligible Households
+* APPENDIX TABLE A.6: HH Expenditures by Elderly Presence / Older-Adults-
+* Only Household Eligibility. Two-panel table (merged per the coauthor's
+* request; previously two separate tables, AT6_expenditures_elderly.tex
+* and AT_elderly_transfer.tex):
+*   Panel A -- Elderly Presence: full eligible-household sample,
+*     differential by whether the household has an elderly member
+*     (elderly97), computed just above.
+*   Panel B -- Older-Adults-Only Household: restricted to
+*     only_elderly_base==1, differential by household ELIGIBILITY
+*     instead, since only eligible households receive the direct food
+*     transfer (apoyo alimentario) -- computed in the loop right below.
 * Output: $tables/appendix/AT6_expenditures_elderly.tex
-*============================================================
-
-{
-    cap file close sm
-    file open sm using "$tables/appendix/AT6_expenditures_elderly.tex", write replace
-    file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-    file write sm "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
-    file write sm "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
-    file write sm "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
-    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
-    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
-    file write sm "\textit{Treatment \$\times\$ 1999 (no elderly)} & `b99_food' & `b99_pf' & `b99_med' & `b99_pm' \\ " _n
-    file write sm " & (`se99_food') & (`se99_pf') & (`se99_med') & (`se99_pm') \\ " _n
-    file write sm "  & & & & \\ " _n
-    file write sm "\textit{Differential (elderly HH)} & `b99e_food' & `b99e_pf' & `b99e_med' & `b99e_pm' \\ " _n
-    file write sm " & (`se99e_food') & (`se99e_pf') & (`se99e_med') & (`se99e_pm') \\ " _n
-    file write sm "  & & & & \\ " _n
-    file write sm "Control Mean (1998) & `cmn98_food' & `cmn98_pf' & `cmn98_med' & `cmn98_pm' \\ " _n
-    file write sm "Observations & `N_at6_food' & `N_at6_pf' & `N_at6_med' & `N_at6_pm' \\ \bottomrule" _n
-    file write sm "\end{tabular}"
-    file close sm
-}
-
-*============================================================
-* APPENDIX TABLE: Same layout as AT6 (HH food/health expenditures) but on
-* OLDER-ADULTS-ONLY households (only_elderly_base==1), with the differential
-* by ELIGIBILITY (eligible vs. ineligible) instead of elderly presence. Only
-* eligible households receive the direct food transfer, so the eligible
-* differential isolates its role. DiD (year x treat x elig), base 1998,
-* municipality FE, SEs clustered at locality.
-* Output: $tables/appendix/AT_elderly_transfer.tex
 *============================================================
 foreach yvar of local hh_outcomes {
     local col ""
@@ -1682,26 +1661,38 @@ foreach yvar of local hh_outcomes {
 }
 
 {
-    cap file close et
-    file open et using "$tables/appendix/AT_elderly_transfer.tex", write replace
-    file write et "\begin{tabular}{lcccc} \hline \hline" _n
-    file write et "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
-    file write et "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
-    file write et "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
-    file write et "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
-    file write et "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
-    file write et "\textit{Treatment \$\times\$ 1999 (ineligible)} & `b_et_food' & `b_et_pf' & `b_et_med' & `b_et_pm' \\ " _n
-    file write et " & (`se_et_food') & (`se_et_pf') & (`se_et_med') & (`se_et_pm') \\ " _n
-    file write et "  & & & & \\ " _n
-    file write et "\textit{Differential (eligible)} & `be_et_food' & `be_et_pf' & `be_et_med' & `be_et_pm' \\ " _n
-    file write et " & (`see_et_food') & (`see_et_pf') & (`see_et_med') & (`see_et_pm') \\ " _n
-    file write et "  & & & & \\ " _n
-    file write et "Control Mean (1998) & `cmn_et_food' & `cmn_et_pf' & `cmn_et_med' & `cmn_et_pm' \\ " _n
-    file write et "Observations & `N_et_food' & `N_et_pf' & `N_et_med' & `N_et_pm' \\ \bottomrule" _n
-    file write et "\end{tabular}"
-    file close et
+    cap file close sm
+    file open sm using "$tables/appendix/AT6_expenditures_elderly.tex", write replace
+    file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+    file write sm "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
+    file write sm "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+    file write sm "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
+    file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
+    file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+    file write sm "\underline{\textit{Panel A: Elderly Presence}} \\ " _n
+    file write sm "\textit{Treatment \$\times\$ 1999 (no elderly)} & `b99_food' & `b99_pf' & `b99_med' & `b99_pm' \\ " _n
+    file write sm " & (`se99_food') & (`se99_pf') & (`se99_med') & (`se99_pm') \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "\textit{Differential (elderly HH)} & `b99e_food' & `b99e_pf' & `b99e_med' & `b99e_pm' \\ " _n
+    file write sm " & (`se99e_food') & (`se99e_pf') & (`se99e_med') & (`se99e_pm') \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "Control Mean (1998) & `cmn98_food' & `cmn98_pf' & `cmn98_med' & `cmn98_pm' \\ " _n
+    file write sm "Observations & `N_at6_food' & `N_at6_pf' & `N_at6_med' & `N_at6_pm' \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "\underline{\textit{Panel B: Older-Adults-Only Household}} \\ " _n
+    file write sm "\textit{Treatment \$\times\$ 1999 (ineligible)} & `b_et_food' & `b_et_pf' & `b_et_med' & `b_et_pm' \\ " _n
+    file write sm " & (`se_et_food') & (`se_et_pf') & (`se_et_med') & (`se_et_pm') \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "\textit{Differential (eligible)} & `be_et_food' & `be_et_pf' & `be_et_med' & `be_et_pm' \\ " _n
+    file write sm " & (`see_et_food') & (`see_et_pf') & (`see_et_med') & (`see_et_pm') \\ " _n
+    file write sm "  & & & & \\ " _n
+    file write sm "Control Mean (1998) & `cmn_et_food' & `cmn_et_pf' & `cmn_et_med' & `cmn_et_pm' \\ " _n
+    file write sm "Observations & `N_et_food' & `N_et_pf' & `N_et_med' & `N_et_pm' \\ \bottomrule" _n
+    file write sm "\end{tabular}"
+    file close sm
 }
-di "Table exported to: $tables/appendix/AT_elderly_transfer.tex"
+di "Table exported to: $tables/appendix/AT6_expenditures_elderly.tex"
+cap erase "$tables/appendix/AT_elderly_transfer.tex"
 
 
 
