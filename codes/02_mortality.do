@@ -3414,25 +3414,25 @@ if `locfig_ok' {
 *============================================================
 preserve
 keep if year == 1996
-keep cve_ent_mun_super inten1999 inten2005 im_mun_1990 gm_mun_1990
+keep cve_ent_mun_super inten1999_fix inten2005_fix im_mun_1990 gm_mun_1990
 duplicates drop cve_ent_mun_super, force
 di "`c(N)' municipalities in the all-Mexico cross-section"
 
-count if missing(inten1999) | missing(inten2005) | missing(im_mun_1990)
-di "`r(N)' municipalities dropped for missing inten1999/inten2005/im_mun_1990"
-drop if missing(inten1999) | missing(inten2005) | missing(im_mun_1990)
+count if missing(inten1999_fix) | missing(inten2005_fix) | missing(im_mun_1990)
+di "`r(N)' municipalities dropped for missing inten1999_fix/inten2005_fix/im_mun_1990"
+drop if missing(inten1999_fix) | missing(inten2005_fix) | missing(im_mun_1990)
 
 * Phase-specific (incremental) enrollment ratios, matching P&V's own
 * construction (their Figs. 2-3 plot NEW enrollment during each phase,
-* not cumulative totals): phase 1 = inten1999 (cumulative through
+* not cumulative totals): phase 1 = inten1999_fix (cumulative through
 * 1999, ~= increment since baseline was ~0 pre-1997); phase 2 = the
-* increment ADDED after 1999, i.e. inten2005 - inten1999 (NOT
-* cumulative inten2005). Uses the year-varying HH denominator, matching
-* the main specification used throughout the rest of the paper.
-gen phase1_new = inten1999
-gen phase2_new = inten2005 - inten1999
+* increment ADDED after 1999, i.e. inten2005_fix - inten1999_fix (NOT
+* cumulative inten2005_fix). Uses the End-of-year numerator with the
+* fixed 1997 P&V denominator, the coauthor-preferred main specification.
+gen phase1_new = inten1999_fix
+gen phase2_new = inten2005_fix - inten1999_fix
 count if phase2_new < 0
-di "`r(N)' municipalities with inten2005 < inten1999 -- should be ~0 if both are cumulative snapshots of the same process; investigate construction if this count is large"
+di "`r(N)' municipalities with inten2005_fix < inten1999_fix -- should be ~0 if both are cumulative snapshots of the same process; investigate construction if this count is large"
 replace phase2_new = 0 if phase2_new < 0
 
 * Percentile bins of the municipality marginality index (P&V: "each
