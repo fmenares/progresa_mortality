@@ -3466,7 +3466,7 @@ di "Figure exported to: $figures/appendix/AF3b_enroll_mun_marg_pctile.pdf"
 *============================================================
 * NOTE: the fn.18-style R^2 computation (r2_1/r2_2, corr_eoy_yv/
 * corr_eoy_yv_w -- feeds the R^2-decomposition table, now in
-* codes/binary_and_descriptives.do) has moved there too -- see that file.
+* codes/04_extra_robustness.do) has moved there too -- see that file.
 *============================================================
 
 
@@ -3639,7 +3639,7 @@ di "Figure exported to: $figures/appendix/AF8_beta0_stability.pdf"
 *============================================================
 * NOTE: D3 (exact saturation diagnostics, AT_saturation_diagnostics.tex,
 * at:saturation_diagnostics, formerly AT12) has moved to
-* codes/binary_and_descriptives.do per the coauthor's request, along with its
+* codes/04_extra_robustness.do per the coauthor's request, along with its
 * tables_app.tex entry. See research_project.md for a summary of its
 * findings.
 *============================================================
@@ -3730,7 +3730,7 @@ corr inten2005 inten2005_fix if $sample_marg & year==1996
 /*
 D2/D2b (binary high-vs-low event study on Intensity_1999, and its
 two-binary companion) and the threshold-validation/threshold-categorical
-block moved to codes/binary_and_descriptives.do -- see that file for the full
+block moved to codes/04_extra_robustness.do -- see that file for the full
 code (unchanged from what was here). Output:
   $figures/appendix/AF_binary_es.pdf, $tables/appendix/AT_binary_es.tex
   $figures/appendix/AF_binary_es_2bin.pdf, $tables/appendix/AT_binary_es_2bin.tex
@@ -3743,7 +3743,7 @@ code (unchanged from what was here). Output:
 *============================================================
 * NOTE: the fixed-denominator R^2 computation (r2fix_1/r2fix_2,
 * corr_eoy_fix/corr_eoy_fix_w -- feeds the R^2-decomposition table, now
-* in codes/binary_and_descriptives.do) has moved there too -- see that file.
+* in codes/04_extra_robustness.do) has moved there too -- see that file.
 *============================================================
 
 
@@ -3813,7 +3813,7 @@ label var inten2005_fase_fix "Intensity 2005 (FASE-only numerator, fixed P&V den
 * CHECKPOINT: the binary/threshold robustness checks (D2/D2b binary event
 * studies, the threshold-validation/threshold-categorical block) and the
 * intensity-construction time-series figure (former AF3,
-* af:intensity_timeseries) have all been moved to codes/binary_and_descriptives.do
+* af:intensity_timeseries) have all been moved to codes/04_extra_robustness.do
 * per the coauthor's request. Save the fully-constructed working panel --
 * including pg_fase/inten*_fase(_fix), needed by the time-series figure --
 * so that file can load it directly rather than re-running the data
@@ -3823,14 +3823,14 @@ save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 
 *============================================================
 * NOTE: the corr99/corr05(_fix)(_w) correlations (used by the
-* intensity-correlations table, now in codes/binary_and_descriptives.do) have
+* intensity-correlations table, now in codes/04_extra_robustness.do) have
 * moved there too -- see that file.
 *============================================================
 
 *============================================================
 * NOTE: the crosswalk super-municipality diagnostic (AT_crosswalk_
 * supermun_diagnostic.tex, at:crosswalk_supermun_diagnostic, formerly
-* AT11) has moved to codes/binary_and_descriptives.do per the coauthor's
+* AT11) has moved to codes/04_extra_robustness.do per the coauthor's
 * request, along with its tables_app.tex entry. See research_project.md
 * for a summary of its findings.
 *============================================================
@@ -3839,7 +3839,7 @@ save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 * NOTE: the threshold-validation raw-trends figure (AF_threshold_validation_
 * {15,median,tercile}.pdf), the double-threshold categorical table
 * (AT_threshold_categorical.tex), and its event-study companion
-* (AF_threshold_categorical_es.pdf) have moved to codes/binary_and_descriptives.do
+* (AF_threshold_categorical_es.pdf) have moved to codes/04_extra_robustness.do
 * per the coauthor's request -- see that file for the unchanged code.
 *============================================================
 
@@ -4027,7 +4027,7 @@ di "Table exported to: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex
 *============================================================
 * NOTE: the intensity-construction time-series figure (former AF3,
 * AF_intensity_timeseries_w.pdf, af:intensity_timeseries) has moved to
-* codes/binary_and_descriptives.do per the coauthor's request -- see that file
+* codes/04_extra_robustness.do per the coauthor's request -- see that file
 * for the unchanged code.
 *============================================================
 
@@ -4046,20 +4046,20 @@ di "Table exported to: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex
 * NOTE: the consolidated R^2-decomposition table (AT_pv_r2_benefsource.tex,
 * at:pv_r2_benefsource, formerly AT8) and the intensity-correlations table
 * (AT_intensity_correlations.tex, at:intensity_correlations, formerly AT9)
-* have moved to codes/binary_and_descriptives.do per the coauthor's request,
+* have moved to codes/04_extra_robustness.do per the coauthor's request,
 * along with their tables_app.tex entries. See research_project.md for
 * a summary of their findings.
 *============================================================
 
 *============================================================
 * NOTE: T3 (T2_b_mortality_fixeddenom.tex, t:did_age_fixeddenom) has
-* moved to codes/binary_and_descriptives.do per the coauthor's request,
+* moved to codes/04_extra_robustness.do per the coauthor's request,
 * along with its tables.tex entry.
 *============================================================
 
 *============================================================
 * NOTE: the power/MDE table (AT_power_mde.tex, at:power_mde, formerly
-* AT10) has moved to codes/binary_and_descriptives.do per the coauthor's
+* AT10) has moved to codes/04_extra_robustness.do per the coauthor's
 * request, along with its tables_app.tex entry. See research_project.md
 * for a summary of its findings.
 *============================================================

@@ -1,7 +1,8 @@
 *** ============================================================================================================
-*** TOPIC: Binary/threshold robustness checks and descriptive/diagnostic
-*** tables and figures for Progresa Intensity_1999, moved out of
-*** 02_mortality.do per the coauthor's requests over several sessions.
+*** TOPIC: Extra robustness / binary-threshold checks and descriptive-
+*** diagnostic tables and figures for Progresa Intensity_1999, moved out
+*** of 02_mortality.do per the coauthor's requests over several sessions.
+*** Renamed from binary_and_descriptives.do to 04_extra_robustness.do.
 *** Currently holds: the binary high-vs-low event study (D2/D2b) and the
 *** threshold-validation/threshold-categorical design (formerly AF12-15/
 *** AT15-17); the intensity-construction time-series figure (former AF3,
@@ -10,6 +11,15 @@
 *** saturation diagnostics tables (formerly appendix tables A.8-A.12).
 *** Loads the working panel checkpointed by 02_mortality.do right before
 *** this code used to run, so it needs no separate data-construction pass.
+***
+*** STATUS: all table (`file open/write/close') and figure
+*** (`graph export') output has been commented out below -- this file no
+*** longer writes any .tex/.pdf into tables/appendix or figures/appendix.
+*** All underlying regressions (reghdfe/reg/corr) and `di' diagnostics
+*** still run as before and stream to the log file opened right below, so
+*** the numeric results remain available for review without regenerating
+*** any paper exhibit. Uncomment a block's `graph export'/`file open...
+*** file close' lines to restore that output.
 *** ============================================================================================================
 cls
 clear
@@ -30,6 +40,9 @@ set more off
 }
 
 global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
+
+cap log close _all
+log using "$codes/04_extra_robustness_log.log", replace text
 
 use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
 
@@ -173,7 +186,7 @@ twoway ///
         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_binary_es.pdf", as(pdf) replace
+* graph export "$figures/appendix/AF_binary_es.pdf", as(pdf) replace
 restore
 di "Figure exported to: $figures/appendix/AF_binary_es.pdf"
 
@@ -204,6 +217,7 @@ foreach v in treated_15 treated_med treated_p75 {
     local Nt_`i'  : di %12.0fc e(N)
 }
 
+/*
 {
     cap file close bin
     file open bin using "$tables/appendix/AT_binary_es.tex", write replace
@@ -221,6 +235,7 @@ foreach v in treated_15 treated_med treated_p75 {
     file write bin "\end{tabular}"
     file close bin
 }
+*/
 di "Table exported to: $tables/appendix/AT_binary_es.tex"
 
 *============================================================
@@ -345,7 +360,7 @@ twoway ///
         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_binary_es_2bin.pdf", as(pdf) replace
+* graph export "$figures/appendix/AF_binary_es_2bin.pdf", as(pdf) replace
 restore
 di "Figure exported to: $figures/appendix/AF_binary_es_2bin.pdf"
 
@@ -390,6 +405,7 @@ foreach spec in 15 med p75 {
     local Nt2_`i' : di %12.0fc e(N)
 }
 
+/*
 {
     cap file close bin2
     file open bin2 using "$tables/appendix/AT_binary_es_2bin.tex", write replace
@@ -407,6 +423,7 @@ foreach spec in 15 med p75 {
     file write bin2 "\end{tabular}"
     file close bin2
 }
+*/
 di "Table exported to: $tables/appendix/AT_binary_es_2bin.tex"
 
 
@@ -644,7 +661,7 @@ foreach spec in 15 median tercile {
         xlabel(1991(2)2006, labsize(small)) ylabel(, labsize(small)) ///
         legend(order(`legend_order') cols(4) size(small) position(6) ring(1) region(lcolor(none))) ///
         graphregion(color(white)) plotregion(margin(l=1 r=1))
-    graph export "$figures/appendix/AF_threshold_validation_`spec'.pdf", as(pdf) replace
+    * graph export "$figures/appendix/AF_threshold_validation_`spec'.pdf", as(pdf) replace
     use `panel_snapshot_`spec'', clear
 }
 
@@ -668,6 +685,7 @@ di "Figures exported to: $figures/appendix/AF_threshold_validation_15.pdf, AF_th
 * instead of failing at the a priori cutoff.
 * Output: $tables/appendix/AT_threshold_categorical.tex
 *------------------------------------------------------------
+/*
 cap file close tc
 file open tc using "$tables/appendix/AT_threshold_categorical.tex", write replace
 file write tc "\begin{tabular}{lccc} \hline \hline" _n
@@ -691,6 +709,7 @@ file write tc "High-Low (non-monotone) & `n_hl_15' & `n_hl_median' & `n_hl_terci
 file write tc "\bottomrule" _n
 file write tc "\end{tabular}"
 file close tc
+*/
 di "Table written to: $tables/appendix/AT_threshold_categorical.tex"
 
 *------------------------------------------------------------
@@ -754,7 +773,7 @@ twoway ///
         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_threshold_categorical_es.pdf", as(pdf) replace
+* graph export "$figures/appendix/AF_threshold_categorical_es.pdf", as(pdf) replace
 di "Figure exported to: $figures/appendix/AF_threshold_categorical_es.pdf"
 
 restore
@@ -805,7 +824,7 @@ twoway ///
                  3 "End-of-year, fixed denom" 4 "Cumulative, fixed denom") ///
            cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
     graphregion(color(white)) plotregion(margin(l=1 r=1))
-graph export "$figures/appendix/AF_intensity_timeseries_w.pdf", as(pdf) replace
+* graph export "$figures/appendix/AF_intensity_timeseries_w.pdf", as(pdf) replace
 restore
 
 di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
@@ -921,6 +940,7 @@ count if max_intensity_post < 0.05 & inrange(year,1997,2006)
 local n_near_zero = r(N)
 di "`n_near_zero' HM municipality-years with max post-1997 intensity below 5% (near-zero penetration throughout)"
 
+/*
 {
     cap file close sat
     file open sat using "$tables/appendix/AT_saturation_diagnostics.tex", write replace
@@ -940,6 +960,7 @@ di "`n_near_zero' HM municipality-years with max post-1997 intensity below 5% (n
     file write sat "\end{tabular}"
     file close sat
 }
+*/
 di "Table exported to: $tables/appendix/AT_saturation_diagnostics.tex"
 restore
 di "D3 saturation diagnostics complete -- see log above for stayer availability and first-crossing spread."
@@ -1099,6 +1120,7 @@ local pct_notsuper : di %4.1f 100*`n_nonmono_notsuper'/`n_notsuper_tot'
 di "Non-monotone share among super-municipalities: `n_nonmono_super' / `n_super_tot' (`pct_super'%)"
 di "Non-monotone share among non-super municipalities: `n_nonmono_notsuper' / `n_notsuper_tot' (`pct_notsuper'%)"
 
+/*
 cap file close fd
 file open fd using "$tables/appendix/AT_crosswalk_supermun_diagnostic.tex", write replace
 file write fd "\begin{tabular}{lccc} \hline \hline" _n
@@ -1110,6 +1132,7 @@ file write fd "\bottomrule" _n
 file write fd "Total & `n_nonmono' & `=`n_tot'-`n_nonmono'' & `n_tot' \\ " _n
 file write fd "\end{tabular}" _n
 file close fd
+*/
 di "Table written to: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex"
 restore
 
@@ -1172,6 +1195,7 @@ local dboth_1  : di %5.3f (real("`r2fase_fx_1'") - real("`r2_1'"))
 local dboth_2  : di %5.3f (real("`r2fase_fx_2'") - real("`r2_2'"))
 di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `ddenom_1'/`ddenom_2'; numerator-fix-alone `dnum_1'/`dnum_2'; both-combined `dboth_1'/`dboth_2'"
 
+/*
 {
     cap file close r2b
     file open r2b using "$tables/appendix/AT_pv_r2_benefsource.tex", write replace
@@ -1194,6 +1218,7 @@ di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `dd
     file write r2b "\end{tabular}"
     file close r2b
 }
+*/
 di "Table exported to: $tables/appendix/AT_pv_r2_benefsource.tex"
 restore
 
@@ -1223,6 +1248,7 @@ restore
 * (4) fixed/Cumulative.
 * Output: $tables/appendix/AT_intensity_correlations.tex
 *------------------------------------------------------------
+/*
 cap file close ic
 file open ic using "$tables/appendix/AT_intensity_correlations.tex", write replace
 file write ic "\begin{tabular}{lcccc} \hline \hline" _n
@@ -1243,6 +1269,7 @@ file write ic "Corr(End-of-year, Cumulative), 2005 & \multicolumn{2}{c}{`corr05_
 file write ic "\bottomrule" _n
 file write ic "\end{tabular}"
 file close ic
+*/
 di "Table exported to: $tables/appendix/AT_intensity_correlations.tex"
 
 
@@ -1295,6 +1322,7 @@ foreach pnl in p f m {
     local mde_`pnl' : di %12.2f (`mde_mult' * _se[1.post#c.inten1999])
 }
 
+/*
 cap file close mde
 file open mde using "$tables/appendix/AT_power_mde.tex", write replace
 file write mde "\begin{tabular}{lc} \hline \hline" _n
@@ -1316,6 +1344,7 @@ foreach pnl in p f m {
 file write mde "\bottomrule" _n
 file write mde "\end{tabular}"
 file close mde
+*/
 di "Table exported to: $tables/appendix/AT_power_mde.tex"
 
 *============================================================
@@ -1422,6 +1451,7 @@ foreach pnl in p f m {
     }
 }
 
+/*
 {
     cap file close fd
     file open fd using "$tables/T2_b_mortality_fixeddenom.tex", write replace
@@ -1451,4 +1481,7 @@ foreach pnl in p f m {
     file write fd "\end{tabular}"
     file close fd
 }
-di "Table exported to: $tables/T2_b_mortality_fixeddenom.tex"
+*/
+di "Table (commented out) would have been exported to: $tables/T2_b_mortality_fixeddenom.tex"
+
+log close
