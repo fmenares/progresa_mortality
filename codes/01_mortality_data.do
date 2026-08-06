@@ -35,6 +35,38 @@ set more off
 	global benef_source "mixed"
 
 *** ====================================================================================
+*** SAMPLE LADDER DIAGNOSTIC
+*** Records how many distinct municipalities survive each screen, so the gap
+*** between Barham & Rowberry's reported sample size and ours can be attributed
+*** to a specific step rather than asserted. Counts are appended to
+*** $codes/01_sample_ladder.log by the -ladder- program below; the file is
+*** recreated on each run.
+*** ====================================================================================
+	capture program drop ladder
+	program define ladder
+		syntax , STEP(string)
+		tempvar tag
+		egen `tag' = tag(cve_ent_mun_super)
+		quietly count if `tag'
+		local nmun = r(N)
+		quietly count
+		local nobs = r(N)
+		di as txt "[LADDER] `step': `nmun' municipalities, `nobs' observations"
+		quietly {
+			file open _ldr using "$codes/01_sample_ladder.log", write append
+			file write _ldr "`step'" _tab "`nmun'" _tab "`nobs'" _n
+			file close _ldr
+		}
+	end
+
+	capture erase "$codes/01_sample_ladder.log"
+	quietly {
+		file open _ldr using "$codes/01_sample_ladder.log", write replace
+		file write _ldr "step" _tab "municipalities" _tab "observations" _n
+		file close _ldr
+	}
+
+*** ====================================================================================
 *** 0. Margination Index & POP data (1990, 2000, 2005, 2010)- used Felipe/Jorge's data
 *** ====================================================================================
 	use "$data/MI_mun_ipolate_recoded_1990.dta", clear
@@ -657,6 +689,7 @@ set more off
 	*   full : original behavior — require all 29 years (1990-2018) present.
 	*   prog/br : require complete coverage only WITHIN the analytic window,
 	*             which retains more municipalities (recovers the BR sample).
+	ladder, step("before population-completeness screen")
 	if "$window" == "full" {
 		bysort cve_ent_mun_super: gen num=1
 		bysort cve_ent_mun_super: gen num_cum=sum(num)
@@ -671,6 +704,7 @@ set more off
 		keep if _nyr_w == $nyears
 		drop _nyr_w
 	}
+	ladder, step("after population-completeness screen (window=$window)")
 	save "$data/Temp_data/Pop_agegrp_mun_recoded.dta", replace
 
 
@@ -860,6 +894,7 @@ set more off
 ***	full : original behavior — require all 28 years (1990-2017).
 ***	prog/br : require a complete panel within the chosen window.
 	capture drop num*
+	ladder, step("before balanced-panel screen")
 	if "$window" == "full" {
 		bysort cve_ent_mun_super: gen num=1
 		bysort cve_ent_mun_super: gen num_cum=sum(num)
@@ -875,6 +910,7 @@ set more off
 		keep if num_total == $nyears
 		drop _yr1 num_total
 	}
+	ladder, step("after balanced-panel screen (window=$window)")
 	
 	* Baseline older-adult population at the window's first year (1990 under
 	* full/prog; 1992 under the BR window, where 1990-91 are out of sample).
@@ -891,6 +927,34 @@ set more off
 	
 	* Save a window-specific master; also keep the canonical name under the
 	* default "full" window so other scripts are unaffected unless a window is chosen.
+	ladder, step("final analysis panel")
+
+*** Composition of the final panel along the two dimensions that define the
+*** Barham & Rowberry comparison sample: marginality grade and the year a
+*** municipality first records positive Progresa enrollment. The BR sample is
+*** the 1998/1999 entrants (global br_phase); adding 1997 entrants is the
+*** "1997_1999" variant. Both counts are logged so the contribution of the
+*** phase definition can be separated from the completeness screens above.
+	preserve
+		quietly {
+			bysort cve_ent_mun_super: keep if _n==1
+			file open _ldr using "$codes/01_sample_ladder.log", write append
+			file write _ldr _n "-- composition of the final panel --" _n
+			count
+			file write _ldr "all municipalities" _tab "`r(N)'" _n
+			count if gm_mun_1990==4 | gm_mun_1990==5
+			file write _ldr "highly marginalized (grade 4 or 5)" _tab "`r(N)'" _n
+			count if inrange(inten_start_year,1997,1999)
+			file write _ldr "first enrollment 1997-1999" _tab "`r(N)'" _n
+			count if inten_start_year==1997
+			file write _ldr "  of which first enrollment 1997" _tab "`r(N)'" _n
+			count if inten_start_year==1998 | inten_start_year==1999
+			file write _ldr "  of which first enrollment 1998-1999 (BR sample)" _tab "`r(N)'" _n
+			file close _ldr
+		}
+		di as txt "[LADDER] final-panel composition written to $codes/01_sample_ladder.log"
+	restore
+
 	save "$data/aamr_regression_municipality_gender_tb${master_suffix}.dta", replace
 	if "$window" == "full" {
 		save "$data/aamr_regression_municipality_gender_tb.dta", replace
