@@ -3498,7 +3498,13 @@ local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997"
 * Spec 0: NO control -- Intensity_1999 x year alone (End-of-year
 * numerator, year-varying denominator), omitting any second-phase
 * intensity control. Shows the misspecified baseline that Specs 1-4
-* then correct by adding a later-phase control.
+* then correct by adding a later-phase control. Intermediate snapshots
+* (e.g. 2002) are deliberately NOT tested here: mid-phase the roll-out is
+* still ramping up, so such a control absorbs part of the early-phase
+* variation the design is meant to isolate. Following Parker & Vogl
+* (2023), 2005 marks the close of the second roll-out phase, so the
+* endpoint is probed only locally, with the adjacent 2004 and 2006
+* snapshots.
 reghdfe emr65 c.inten1999##ib6.year_1995 ///
     c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
     vce(cluster cve_ent_mun_super)
@@ -3514,7 +3520,7 @@ forval pos = 1/16 {
 }
 
 * Spec 1: baseline (current main spec) -- 2nd-phase control = Intensity_2005
-reghdfe emr65 c.inten1999_fix##ib6.year_1995 c.inten2005_fix##ib6.year_1995 ///
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
     c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
     vce(cluster cve_ent_mun_super)
 forval pos = 1/16 {
@@ -3523,13 +3529,13 @@ forval pos = 1/16 {
         local se1_`pos' = 0
     }
     else {
-        local b1_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
-        local se1_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
+        local b1_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se1_`pos' = _se[`pos'.year_1995#c.inten1999]
     }
 }
 
-* Spec 2: 2nd-phase control = Intensity_2002 (later intermediate snapshot)
-reghdfe emr65 c.inten1999_fix##ib6.year_1995 c.inten2002_fix##ib6.year_1995 ///
+* Spec 2: 2nd-phase control = Intensity_2004 (adjacent to the 2005 endpoint)
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2004##ib6.year_1995 ///
     c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
     vce(cluster cve_ent_mun_super)
 forval pos = 1/16 {
@@ -3538,13 +3544,13 @@ forval pos = 1/16 {
         local se2_`pos' = 0
     }
     else {
-        local b2_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
-        local se2_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
+        local b2_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se2_`pos' = _se[`pos'.year_1995#c.inten1999]
     }
 }
 
-* Spec 3: 2nd-phase control = Intensity_2004 (later intermediate snapshot)
-reghdfe emr65 c.inten1999_fix##ib6.year_1995 c.inten2004_fix##ib6.year_1995 ///
+* Spec 3: 2nd-phase control = Intensity_2006 (adjacent to the 2005 endpoint)
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2006##ib6.year_1995 ///
     c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
     vce(cluster cve_ent_mun_super)
 forval pos = 1/16 {
@@ -3553,23 +3559,8 @@ forval pos = 1/16 {
         local se3_`pos' = 0
     }
     else {
-        local b3_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
-        local se3_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
-    }
-}
-
-* Spec 4: 2nd-phase control = Intensity_2006 (end-of-window snapshot)
-reghdfe emr65 c.inten1999_fix##ib6.year_1995 c.inten2006_fix##ib6.year_1995 ///
-    c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
-    vce(cluster cve_ent_mun_super)
-forval pos = 1/16 {
-    if `pos' == 6 {
-        local b4_`pos'  = 0
-        local se4_`pos' = 0
-    }
-    else {
-        local b4_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
-        local se4_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
+        local b3_`pos'  = _b[`pos'.year_1995#c.inten1999]
+        local se3_`pos' = _se[`pos'.year_1995#c.inten1999]
     }
 }
 
@@ -3577,12 +3568,11 @@ preserve
 clear
 set obs 16
 gen yr_pos = _n
-gen xpos_0 = yr_pos - 0.36
-gen xpos_1 = yr_pos - 0.18
-gen xpos_2 = yr_pos
-gen xpos_3 = yr_pos + 0.18
-gen xpos_4 = yr_pos + 0.36
-foreach s in 0 1 2 3 4 {
+gen xpos_0 = yr_pos - 0.27
+gen xpos_1 = yr_pos - 0.09
+gen xpos_2 = yr_pos + 0.09
+gen xpos_3 = yr_pos + 0.27
+foreach s in 0 1 2 3 {
     gen b_s`s'  = .
     gen hi_s`s' = .
     gen lo_s`s' = .
@@ -3597,12 +3587,9 @@ forval pos = 1/16 {
     replace b_s2  = `b2_`pos''                          if yr_pos == `pos'
     replace hi_s2 = `b2_`pos'' + 1.96 * `se2_`pos''    if yr_pos == `pos'
     replace lo_s2 = `b2_`pos'' - 1.96 * `se2_`pos''    if yr_pos == `pos'
-    replace b_s3  = `b3_`pos''                          if yr_pos == `pos'
-    replace hi_s3 = `b3_`pos'' + 1.96 * `se3_`pos''    if yr_pos == `pos'
-    replace lo_s3 = `b3_`pos'' - 1.96 * `se3_`pos''    if yr_pos == `pos'
-    replace b_s4  = `b4_`pos''                          if yr_pos == `pos'
-    replace hi_s4 = `b4_`pos'' + 1.96 * `se4_`pos''    if yr_pos == `pos'
-    replace lo_s4 = `b4_`pos'' - 1.96 * `se4_`pos''    if yr_pos == `pos'
+    replace b_s3  = `b2_`pos''                          if yr_pos == `pos'
+    replace hi_s3 = `b2_`pos'' + 1.96 * `se2_`pos''    if yr_pos == `pos'
+    replace lo_s3 = `b2_`pos'' - 1.96 * `se2_`pos''    if yr_pos == `pos'
 }
 twoway ///
     (rcap hi_s0 lo_s0 xpos_0, lcolor(red%60) lwidth(vthin) lpattern(solid)) ///
@@ -3613,13 +3600,10 @@ twoway ///
     (scatter b_s2 xpos_2, mcolor(black) msymbol(square) msize(vsmall)) ///
     (rcap hi_s3 lo_s3 xpos_3, lcolor(black%60) lwidth(vthin) lpattern(shortdash_dot)) ///
     (scatter b_s3 xpos_3, mcolor(black) msymbol(triangle) msize(vsmall)) ///
-    (rcap hi_s4 lo_s4 xpos_4, lcolor(black%60) lwidth(vthin) lpattern(longdash)) ///
-    (scatter b_s4 xpos_4, mcolor(black) msymbol(diamond) msize(vsmall)) ///
     (line b_s0 xpos_0 if 1==0, lcolor(red) lpattern(solid) lwidth(thin) mcolor(red) msymbol(x) msize(vsmall)) ///
     (line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
     (line b_s2 xpos_2 if 1==0, lcolor(black) lpattern(dash) lwidth(thin) mcolor(black) msymbol(square) msize(vsmall)) ///
-    (line b_s3 xpos_3 if 1==0, lcolor(black) lpattern(shortdash_dot) lwidth(thin) mcolor(black) msymbol(triangle) msize(vsmall)) ///
-    (line b_s4 xpos_4 if 1==0, lcolor(black) lpattern(longdash) lwidth(thin) mcolor(black) msymbol(diamond) msize(vsmall)), ///
+    (line b_s3 xpos_3 if 1==0, lcolor(black) lpattern(shortdash_dot) lwidth(thin) mcolor(black) msymbol(triangle) msize(vsmall)), ///
     yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
     xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
     xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
@@ -3627,7 +3611,7 @@ twoway ///
     xtitle("") ///
     ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
     ylabel(, grid gmin gmax labsize(small)) ///
-    legend(order(11 "No control" 12 "Control: Intensity 2005 (baseline)" 13 "Control: Intensity 2002" 14 "Control: Intensity 2004" 15 "Control: Intensity 2006") ///
+    legend(order(9 "No control" 10 "Control: Intensity 2005 (baseline)" 11 "Control: Intensity 2004" 12 "Control: Intensity 2006") ///
         cols(2) size(small) position(6) ring(1) ///
         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
     graphregion(color(white)) ///
