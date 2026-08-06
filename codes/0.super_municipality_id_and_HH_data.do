@@ -211,6 +211,35 @@ foreach year in 1995 1990 {
 	if `year' == 1996 {
 		local year = 1995
 	}
+
+	* ------------------------------------------------------------------
+	* CROSSWALK SUMMARY. Reports how much boundary harmonization this
+	* crosswalk actually performs: how many raw INEGI municipality codes it
+	* covers, how many harmonized super-municipality units they collapse to,
+	* and how many of those units are built from two or more origin codes.
+	* The difference is the number of municipalities lost to harmonization
+	* alone, before any completeness or sample screen is applied downstream
+	* (see the harmonization ladder in 000./00. and the sample ladder in
+	* 01_mortality_data.do). AT_crosswalk_supermun_diagnostic, built in
+	* 04_extra_robustness.do, reports the same quantity restricted to the
+	* highly marginalized analysis sample.
+	* ------------------------------------------------------------------
+	quietly {
+		preserve
+		tempvar traw tsup norigin
+		egen `traw' = tag(cve_ent cve_mun)
+		count if `traw'
+		local n_raw = r(N)
+		bysort cve_ent_mun_super: gen `norigin' = _N
+		egen `tsup' = tag(cve_ent_mun_super)
+		count if `tsup'
+		local n_sup = r(N)
+		count if `tsup' & `norigin' >= 2
+		local n_multi = r(N)
+		restore
+	}
+	di as txt "[CROSSWALK `year'] `n_raw' raw municipality codes -> `n_sup' harmonized units; `n_multi' units built from 2+ origin codes; `=`n_raw'-`n_sup'' municipalities merged away by harmonization"
+
 	save $r01/FinalData/crosswalks/municipality_level/crosswalk_super_mun_id_`year'.dta, replace
 }
 }

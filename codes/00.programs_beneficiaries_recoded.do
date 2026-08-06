@@ -53,6 +53,49 @@ if c(username)=="root" {
 	global data "/home/user/progresa_mortality/data/"
 	global SP   "/home/user/progresa_mortality/data/"
 }
+if c(username)=="root"    global codes "/home/user/progresa_mortality/codes/"
+if c(username)=="FELIPEME" global codes "C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\"
+
+*** ====================================================================================
+*** HARMONIZATION LADDER DIAGNOSTIC
+*** Every input series in this pipeline is collapsed from raw INEGI municipality
+*** codes (cve_ent, cve_mun) onto harmonized "super-municipality" units
+*** (cve_ent_mun_super) via crosswalk_super_mun_id_*.dta. Where two or more raw
+*** codes map to one harmonized unit, the collapse reduces the municipality count.
+*** That reduction happens BEFORE 01_mortality_data.do runs, so it is invisible to
+*** the sample ladder in that file. -harmladder- records the raw and harmonized
+*** counts at each collapse so the contribution of boundary harmonization to the
+*** final municipality count can be measured rather than assumed. Companion
+*** evidence: AT_crosswalk_supermun_diagnostic (built in 04_extra_robustness.do)
+*** reports how many analysis-sample municipalities are multi-origin units.
+*** ====================================================================================
+	capture program drop harmladder
+	program define harmladder
+		syntax , STEP(string) FILE(string)
+		tempvar _traw _tsup
+		quietly {
+			egen `_traw' = tag(cve_ent cve_mun)
+			count if `_traw'
+			local raw = r(N)
+			egen `_tsup' = tag(cve_ent_mun_super)
+			count if `_tsup'
+			local sup = r(N)
+		}
+		local merged = `raw' - `sup'
+		di as txt "[HARMLADDER] `step': `raw' raw municipality codes -> `sup' harmonized units (`merged' merged away)"
+		quietly {
+			capture confirm file "`file'"
+			if _rc {
+				file open _hl using "`file'", write replace
+				file write _hl "step" _tab "raw_codes" _tab "harmonized_units" _tab "merged_away" _n
+				file close _hl
+			}
+			file open _hl using "`file'", write append
+			file write _hl "`step'" _tab "`raw'" _tab "`sup'" _tab "`merged'" _n
+			file close _hl
+		}
+	end
+
 if c(username)=="FELIPEME" {
 	global data "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality/data/"
 	global SP   "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
@@ -145,6 +188,7 @@ drop if _==2
 *6 municipality changes occurred after 2018
 replace cve_ent_mun_super = cve_ent_mun if _!=3
 drop  _
+harmladder, step("00: Progresa beneficiaries -- before collapse") file("$codes/harmonization_ladder.log")
 collapse (sum) pgbenef*, by(cve_ent_mun_super)
 
 misstable sum pg*
@@ -172,6 +216,7 @@ drop if _==2
 *11 changes in municipalities occured after 2017
 replace cve_ent_mun_super = cve_ent_mun if _!=3
 drop  _
+harmladder, step("00: Seguro Popular beneficiaries -- before collapse") file("$codes/harmonization_ladder.log")
 collapse (sum) spbene* , by(cve_ent_mun_super)
 
 

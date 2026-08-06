@@ -1032,7 +1032,24 @@ local corr05_fix_w: di %5.3f r(rho)
 
 
 *============================================================
-* CROSSWALK "SUPER-MUNICIPALITY" DIAGNOSTIC -- is the A1 non-monotonicity
+* CROSSWALK "SUPER-MUNICIPALITY" DIAGNOSTIC
+*
+* NOTE ON THE SAMPLE-SIZE LADDER: this block reports how many municipalities
+* in the HM ANALYSIS SAMPLE are multi-origin harmonized units. It is the
+* sample-restricted counterpart to two upstream diagnostics added for the
+* Barham-Rowberry municipality-count comparison:
+*   - 0.super_municipality_id_and_HH_data.do prints a [CROSSWALK yyyy] line
+*     when each crosswalk is built, giving raw codes -> harmonized units
+*     nationally;
+*   - 000. and 00. write $codes/harmonization_ladder.log, recording the same
+*     counts at each collapse of an input series onto cve_ent_mun_super;
+*   - 01_mortality_data.do writes $codes/01_sample_ladder.log, recording
+*     municipalities surviving each completeness/balance screen plus the
+*     final panel's composition by marginality grade and first-enrollment year.
+* Together these separate boundary harmonization from panel-completeness
+* screening from the phase-in definition as sources of the gap to BR's 1,961.
+*
+* Original purpose below -- is the A1 non-monotonicity
 * (Intensity_2005 < Intensity_1999 under the Mixed construction) a
 * crosswalk-aggregation artifact rather than real household attrition?
 * research_project.md PART 3 flags municipality-boundary harmonization
