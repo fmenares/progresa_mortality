@@ -1,0 +1,13 @@
+step	municipalities	observations
+before population-completeness screen	2375	68636
+after population-completeness screen (window=full)	2353	68237
+before balanced-panel screen	2353	65884
+after balanced-panel screen (window=full)	2353	65884
+final analysis panel	2353	65884
+
+-- composition of the final panel --
+all municipalities	2353
+highly marginalized (grade 4 or 5)	1119
+first enrollment 1997-1999	1985
+  of which first enrollment 1997	563
+  of which first enrollment 1998-1999 (BR sample)	1422

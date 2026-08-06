@@ -3,7 +3,7 @@
        log:  C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appe
 > ndix/gertler_pooled_diagnostics.log
   log type:  text
- opened on:  29 Jul 2026, 12:02:32
+ opened on:  29 Jul 2026, 19:35:03
 
 . 
 . foreach f in roster99_raw visits99_nov spss_folios_nov visits99_jun spss_folios_jun
@@ -217,6 +217,22 @@ for program |      Freq.     Percent        Cum.
           n |    135,381       51.22      100.00
 ------------+-----------------------------------
       Total |    264,315      100.00
+
+. 
+. * Attach the baseline-fixed elderly-only household flag, saved by folio
+. * right after its construction in the main panel (see note there). Feeds
+. * the T3 column (7) comparison below (older-adults-only households).
+. merge m:1 folio using "$tempFolder/only_elderly_base_roster.dta", ///
+>     keep(master match) nogenerate
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        16,845
+        from master                    16,845  
+        from using                          0  
+
+    Matched                           247,470  
+    -----------------------------------------
 
 . 
 . *------------------------------------------------------------
@@ -535,6 +551,136 @@ Absorbed degrees of freedom:
     clavemun |       184           0         184     |
 -----------------------------------------------------+
   [total_visits POOLED 51+, g=f] _b[contba] = .01905522  N=5500
+
+. 
+. * T3 columns (5) and (7): alias the age-65+ pooled result above onto the
+. * names T3's write block already expects (b99_*_tv etc.), so T3 (and its
+. * slide-table twin, which reuses the same locals) automatically report the
+. * settled pooled two-wave, contemporaneous-age, eligible sample instead of
+. * the deleted November-only, baseline-age construction.
+. foreach ggrp in p m f {
+  2.     local b99_`ggrp'_tv   "`b99_`ggrp'_tvp65'"
+  3.     local se99_`ggrp'_tv  "`se99_`ggrp'_tvp65'"
+  4.     local cmn_`ggrp'_tv   "`cmn_`ggrp'_tvp65'"
+  5.     local N_`ggrp'_tv     "`N_`ggrp'_tvp65'"
+  6. }
+
+. 
+. * Column (7): same pooled two-wave, contemporaneous-age, age 65+ sample,
+. * additionally restricted to older-adults-only households
+. * (only_elderly_base==1) -- the direct-transfer subsample analog of the
+. * weekly-hours elderly-only column, matching what the deleted block used
+. * to compute except now built from the Gertler-comparison construction.
+. foreach ggrp in p m f {
+  2.     if "`ggrp'" == "p"      local gcondeop "!missing(age_wave) & age_wave>=65"
+  3.     else if "`ggrp'" == "m" local gcondeop "gender==1 & !missing(age_wave) & age
+> _wave>=65"
+  4.     else                     local gcondeop "gender==2 & !missing(age_wave) & ag
+> e_wave>=65"
+  5. 
+.     quietly sum total_visits_pooled if contba==0 & eligible==1 & only_elderly_base=
+> =1 ///
+>         & `gcondeop' & !missing(total_visits_pooled, contba, claveofi)
+  6.     local cmn_`ggrp'_tveo : di %9.3f `r(mean)'
+  7. 
+.     reghdfe total_visits_pooled contba ///
+>         if eligible==1 & only_elderly_base==1 & `gcondeop' & !missing(total_visits_
+> pooled, contba, claveofi), ///
+>         absorb(clavemun) vce(cluster claveofi)
+  8. 
+.     di "  [total_visits POOLED elderly-only 65+, g=`ggrp'] _b[contba] = " _b[contba
+> ] "  N=" e(N)
+  9. 
+.     local aux : di %9.3f _b[contba]
+ 10.     local tstat = abs(_b[contba] / _se[contba])
+ 11.     if      `tstat' >= 2.576 local b99_`ggrp'_tveo = trim("`aux'") + "***"
+ 12.     else if `tstat' >= 1.960 local b99_`ggrp'_tveo = trim("`aux'") + "**"
+ 13.     else if `tstat' >= 1.645 local b99_`ggrp'_tveo = trim("`aux'") + "*"
+ 14.     else                     local b99_`ggrp'_tveo = trim("`aux'")
+ 15.     local se99_`ggrp'_tveo : di %9.3f _se[contba]
+ 16.     local N_`ggrp'_tveo    : di %12.0fc e(N)
+ 17. }
+(dropped 9 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =        627
+Absorbing 1 HDFE group                            F(   1,    159) =       0.53
+Statistics robust to heteroskedasticity           Prob > F        =     0.4677
+                                                  R-squared       =     0.4294
+                                                  Adj R-squared   =     0.3248
+                                                  Within R-sq.    =     0.0029
+Number of clusters (claveofi) =        160        Root MSE        =     1.0815
+
+                             (Std. err. adjusted for 160 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |  -.1989725   .2733378    -0.73   0.468    -.7388137    .3408687
+       _cons |   .3320431   .1782725     1.86   0.064    -.0200444    .6841306
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |        97           0          97     |
+-----------------------------------------------------+
+  [total_visits POOLED elderly-only 65+, g=p] _b[contba] = -.19897247  N=627
+(dropped 13 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =        312
+Absorbing 1 HDFE group                            F(   1,    127) =       0.97
+Statistics robust to heteroskedasticity           Prob > F        =     0.3261
+                                                  R-squared       =     0.4851
+                                                  Adj R-squared   =     0.3007
+                                                  Within R-sq.    =     0.0147
+Number of clusters (claveofi) =        128        Root MSE        =     1.4644
+
+                             (Std. err. adjusted for 128 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |  -.5766442   .5849061    -0.99   0.326    -1.734068    .5807795
+       _cons |   .6018869   .3972503     1.52   0.132    -.1841997    1.387973
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |        82           0          82     |
+-----------------------------------------------------+
+  [total_visits POOLED elderly-only 65+, g=m] _b[contba] = -.57664418  N=312
+(dropped 13 singleton observations)
+(MWFE estimator converged in 1 iterations)
+
+HDFE Linear regression                            Number of obs   =        291
+Absorbing 1 HDFE group                            F(   1,    111) =       0.52
+Statistics robust to heteroskedasticity           Prob > F        =     0.4723
+                                                  R-squared       =     0.1886
+                                                  Adj R-squared   =    -0.0893
+                                                  Within R-sq.    =     0.0016
+Number of clusters (claveofi) =        112        Root MSE        =     0.6892
+
+                             (Std. err. adjusted for 112 clusters in claveofi)
+------------------------------------------------------------------------------
+             |               Robust
+total_visi~d | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      contba |   .0975111   .1351961     0.72   0.472     -.170389    .3654111
+       _cons |    .140337   .0885785     1.58   0.116    -.0351872    .3158611
+------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+    clavemun |        74           0          74     |
+-----------------------------------------------------+
+  [total_visits POOLED elderly-only 65+, g=f] _b[contba] = .09751106  N=291
 
 . 
 . * Same Ages 51+ comparison, but using BASELINE age (age97, measured at the
