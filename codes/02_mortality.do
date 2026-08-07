@@ -2208,6 +2208,33 @@ foreach pnl in p m f {
 	local NBR_5_`pnl': di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunBR_5_`pnl': di %12.0fc `r(ndistinct)'
+
+	* Panel F: lag2, UW, INCLUSIVE phase window (municipalities first
+	* enrolling 1997-1999 rather than 1998-1999 only). Secondary robustness,
+	* NOT a replacement for Panel B. Barham and Rowberry restrict to 1998/99
+	* entrants and report 1,961 municipalities; applying their stated rule to
+	* our enrollment series yields only 1,422, while widening the window to
+	* include 1997 entrants yields 1,985 -- within about 1% of their count.
+	* Because the definitions coincide ("incorporated the year the first
+	* locality was phased in"), the gap is a difference in the underlying
+	* enrollment series rather than in the sample rule, so this panel shows
+	* the replication is not sensitive to which of the two municipality sets
+	* is used.
+	reghdfe `outcome' lag2_intensity_new if inrange(year, 1992, 2002) & ///
+		inrange(inten_start_year, 1997, 1999), ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[lag2_intensity_new]
+	local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+	if      `t' >= 2.576 local bBR2_6_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bBR2_6_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bBR2_6_`pnl' = "`aux'*"
+	else                  local bBR2_6_`pnl' = "`aux'"
+	local seBR2_6_`pnl': di %12.3f _se[lag2_intensity_new]
+	sum `outcome' if e(sample) & year  == 1996
+	local meanBR_6_`pnl': di %12.2fc `r(mean)'
+	local NBR_6_`pnl': di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunBR_6_`pnl': di %12.0fc `r(ndistinct)'
 }
 
 * Mean Intensity 1999 for AT3 — BR sample, displayed as %
@@ -2249,6 +2276,15 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 	file write sm "\underline{\textit{Panel E: 3-yr Lag (Weighted)}}  \\ " _n
 	file write sm "\textit{3-yr lagged Intensity} & `bBR3_5_p' & `bBR3_5_f' & `bBR3_5_m' \\ " _n
 	file write sm " & (`seBR3_5_p') & (`seBR3_5_f') & (`seBR3_5_m') \\ " _n
+	file write sm "  & & & \\ " _n
+	* Panel F: lag2, UW, inclusive 1997-1999 phase window (secondary check on
+	* the municipality-count gap to BR; see the block above)
+	file write sm "\underline{\textit{Panel F: Replication, 1997--1999 Phase Window (Unweighted)}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_6_p' & `bBR2_6_f' & `bBR2_6_m' \\ " _n
+	file write sm " & (`seBR2_6_p') & (`seBR2_6_f') & (`seBR2_6_m') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Obs (1997--1999 window) & `NBR_6_p' & `NBR_6_f' & `NBR_6_m' \\ " _n
+	file write sm "No. Mun (1997--1999 window) & `NmunBR_6_p' & `NmunBR_6_f' & `NmunBR_6_m' \\ " _n
 	file write sm "  & & & \\ " _n
 	file write sm "Mean 1996 & `meanBR_5_p' & `meanBR_5_f' & `meanBR_5_m' \\ " _n
 	file write sm "Obs & `NBR_5_p' & `NBR_5_f' & `NBR_5_m' \\ " _n
