@@ -461,6 +461,42 @@ Paper: *Do CCT Programs (Really) Reduce Mortality? Ten-Year Evidence from Mexico
 
 ---
 
+## Anticipated JDE Referee Comments — Status Tracker
+
+> Internal pre-submission review (Aug 2026). Separate from the conference and IADB
+> trackers. Prefix **REF-#**. Severity: **S** = could drive reject/major revision,
+> **M** = moderate, **L** = minor/loose end. Update status and record the paragraph
+> or file changed when resolved.
+
+| # | Sev | Issue | Where | Status |
+|---|---|---|---|---|
+| REF-1 | S | Identification concession is never resolved. P30 reports pre-program variability "raising concerns about the strength of the parallel trends assumption"; P39 reports "clear differential pre-trends" in the BR male panel. Nothing later says how much weight the design can bear, yet the paper still reports estimates throughout. | P30, P39, P40 | **Open** |
+| REF-2 | S | Circular reasoning in the cause-of-death paragraph. P31 concludes the cause-specific results are "consistent with the aggregate null" while the same paragraph reports that cancer — a placebo — is the only cause surviving Romano-Wolf, and reads that as evidence of residual differential trends. Evidence of contamination is folded into confirmation of the conclusion. | P31 | **Open** |
+| REF-3 | S | MDE footnote overstates what the design can do. It claims "enough power to detect meaningful effects" (MDE 4.10), but the paper's own preferred short-run estimate is -1.660 and the elasticity argument runs on -2.343 — both well inside the non-detectable range. | P40 fn | **Open** |
+| REF-4 | M | P34 asserts "This confirms that data and procedural differences are not the source of the divergence" while its own footnote documents a 27% municipality gap of unresolved origin. "Confirms" is too strong. | P34 | **Open** |
+| REF-5 | M | Truncated sentence: P32 ends mid-clause ("...what matters is conditioning on the second phase,"). | P32 | **Open** |
+| REF-6 | M | P38 claims sensitivity "to both sample composition and weighting", but BR-sample weighted (-1.660, SE 0.807) and HM-sample weighted (-1.563, SE 1.261) agree to within 0.1. The difference is precision, not sample. The accurate version is more favorable to the paper. | P38 | **Open** |
+| REF-7 | M | P31 attributes BR's short-run reduction to "diabetes and infectious diseases" only. BR also report nutrition/anemia (-1.66, 15%), their second-largest effect. | P31 | **Open** |
+| REF-8 | M | Orphaned commented-out text sits between two live sentences mid-paragraph; the surviving list still names ill-defined causes while their discussion has been removed. | P31 / main.tex ~L222 | **Open** |
+| REF-9 | M | Conclusion drops the mechanisms synthesis to a single clause, while the elasticity comparison (a secondary exercise) gets more space than the primary mechanism evidence. | P46-P47 | **Open** |
+| REF-10 | L | MXN $800 / US $90 PPP in P9: year and conversion basis still unverified against Gertler (2004) or Parker & Todd (2017). | P9 | **Open** |
+| REF-11 | L | P17 promises "robustness checks across socioeconomic strata trends" but the SES-trend evidence appears only as a passing cite to af:ses_trend in P30; the point-estimate companion table is commented out. | P17, P30 | **Open** |
+| REF-12 | L | `GerardNaritomiSilva` (Econometrica, cash transfers and the local economy) is in the bibliography but uncited. Would support a local-GE channel the paper does not currently discuss. | bibliography.bib | **Open** |
+| REF-13 | L | Migration (IADB-7) is entirely commented out — no response to a documented confounder in a mortality paper. | main.tex ~L254-258 | **Open** |
+| REF-14 | L | Exhibits say "Elderly" (Table 3 and A.7 captions) while the text says "older adults". | tables.tex, tables_app.tex | **Open** |
+
+**Resolved during this review:** BR municipality-count discrepancy documented and defused
+(P34 footnote + AT5 Panel D on the 1997-1999 window); ITT footnote corrected; cause
+classification note restored; Gertler cross-section citation switched to the IFPRI
+report; 8 typos; word count reconciled to texcount (6,063 total / 4,917 excluding
+footnotes).
+
+**Assessed as sound, no action needed:** exhibit hygiene (every label cited, every
+`\ref` resolves, every `\cite` key present, all files brace-balanced); the
+forbidden-comparison argument in P35; the population-tercile gradient in P38.
+
+---
+
 ## IADB Presentation Comments (HBL Series) — Status Tracker
 
 > **Separate from the "Conference Discussant Comments" tracker above.** These are from the **IADB HBL-Series seminar** ("Do CCT Programs Really (Reduce) Mortality? Ten-Year Evidence from Mexico"), summarized from a Spanish transcript (source: `literature/Resumen_Comentarios_HBL_Progresa.docx`, itself a Copilot-Opus summary — treat wording as paraphrase, not verbatim quotes). Translated/condensed to English and contextualized against the current codebase. Prefix **IADB-#** and tag by commentator to keep them distinct. Several overlap with issues already worked in the conference tracker (cross-refs noted).

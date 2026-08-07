@@ -2267,24 +2267,22 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 	file write sm "\textit{2-yr lagged Intensity} & `bBR2_3_p' & `bBR2_3_f' & `bBR2_3_m' \\ " _n
 	file write sm " & (`seBR2_3_p') & (`seBR2_3_f') & (`seBR2_3_m') \\ " _n
 	file write sm "  & & & \\ " _n
-	* Panel D: lag2, W, fixed 1997 P&V denominator
-	file write sm "\underline{\textit{Panel D: Replication (Weighted, Fixed Denom.)}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & `bBR1_4_p' & `bBR1_4_f' & `bBR1_4_m' \\ " _n
-	file write sm " & (`seBR1_4_p') & (`seBR1_4_f') & (`seBR1_4_m') \\ " _n
+	* Panel D: lag2, UW, INCLUSIVE 1997-1999 phase window. Replaces the former
+	* fixed-1997-denominator panel, whose result is instead summarized in the
+	* main text footnote. BR restrict to 1998/1999 entrants and report 1,961
+	* municipalities; the same rule here yields 1,422, while widening the
+	* window to 1997 entrants yields 1,985 -- within ~1% of their count. This
+	* panel shows the replication is not sensitive to which set is used.
+	file write sm "\underline{\textit{Panel D: Replication, 1997--1999 Phase Window (Unweighted)}}  \\ " _n
+	file write sm "\textit{2-yr lagged Intensity} & `bBR2_6_p' & `bBR2_6_f' & `bBR2_6_m' \\ " _n
+	file write sm " & (`seBR2_6_p') & (`seBR2_6_f') & (`seBR2_6_m') \\ " _n
+	file write sm "Obs (1997--1999 window) & `NBR_6_p' & `NBR_6_f' & `NBR_6_m' \\ " _n
+	file write sm "No.\ Mun (1997--1999 window) & `NmunBR_6_p' & `NmunBR_6_f' & `NmunBR_6_m' \\ " _n
 	file write sm "  & & & \\ " _n
 	* Panel E: lag3, W
 	file write sm "\underline{\textit{Panel E: 3-yr Lag (Weighted)}}  \\ " _n
 	file write sm "\textit{3-yr lagged Intensity} & `bBR3_5_p' & `bBR3_5_f' & `bBR3_5_m' \\ " _n
 	file write sm " & (`seBR3_5_p') & (`seBR3_5_f') & (`seBR3_5_m') \\ " _n
-	file write sm "  & & & \\ " _n
-	* Panel F: lag2, UW, inclusive 1997-1999 phase window (secondary check on
-	* the municipality-count gap to BR; see the block above)
-	file write sm "\underline{\textit{Panel F: Replication, 1997--1999 Phase Window (Unweighted)}}  \\ " _n
-	file write sm "\textit{2-yr lagged Intensity} & `bBR2_6_p' & `bBR2_6_f' & `bBR2_6_m' \\ " _n
-	file write sm " & (`seBR2_6_p') & (`seBR2_6_f') & (`seBR2_6_m') \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "Obs (1997--1999 window) & `NBR_6_p' & `NBR_6_f' & `NBR_6_m' \\ " _n
-	file write sm "No. Mun (1997--1999 window) & `NmunBR_6_p' & `NmunBR_6_f' & `NmunBR_6_m' \\ " _n
 	file write sm "  & & & \\ " _n
 	file write sm "Mean 1996 & `meanBR_5_p' & `meanBR_5_f' & `meanBR_5_m' \\ " _n
 	file write sm "Obs & `NBR_5_p' & `NBR_5_f' & `NBR_5_m' \\ " _n
