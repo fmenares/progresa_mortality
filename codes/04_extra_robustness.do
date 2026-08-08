@@ -1540,46 +1540,90 @@ g lpopover65   = log(popover65_)
 g lpopover65_m = log(popover65_m)
 g lpopover65_f = log(popover65_f)
 
-* FIX 1 (addresses the coauthor's question on using the same year-varying
-* household denominator that Intensity itself is built from, with
-* population on the LHS): a 4th column expressing the 65+ count as a rate
-* over hh_tot -- the same denominator underlying inten1999/inten2005
-* (intensity_new = pgbenef_new/hh_tot in 01_mortality_data.do). Levels,
-* Log and Poisson all leave the LHS in raw population counts, which mixes
-* the "did the 65+ population change" question with "is this a bigger
-* municipality"; expressing it per 100 households nets that out using
-* exactly the denominator basis the treatment variable already uses, and
-* is a more direct fourth check of the same out-migration/attrition
-* concern the note ascribes to this table.
-cap drop popshare65_p popshare65_m popshare65_f
-g popshare65_p = 100 * popover65_  / hh_tot
-g popshare65_m = 100 * popover65_m / hh_tot
-g popshare65_f = 100 * popover65_f / hh_tot
-label var popshare65_p "65+ population per 100 households (pooled)"
-label var popshare65_m "65+ population per 100 households (male)"
-label var popshare65_f "65+ population per 100 households (female)"
+*------------------------------------------------------------
+* FIX 1 (REVISED per the coauthor): which INTENSITY DENOMINATOR the
+* migration test uses, as a switch.
+*
+* The earlier version of this fix put the adjustment on the LHS (65+
+* population per 100 households). That was the wrong side of the
+* regression and is withdrawn: if Progresa induced general out-migration,
+* BOTH popover65_ and hh_tot fall together, the ratio is roughly
+* unchanged, and the test reports a comforting null precisely in the case
+* it is supposed to catch. A common denominator shared with the outcome
+* masks migration; it does not control for it.
+*
+* The contamination this table actually has to worry about is on the
+* RHS. Our default treatment variable is a snapshot of
+* intensity_new = pgbenef_new/hh_tot (01_mortality_data.do) taken at
+* 1999 / 2005 -- so the denominator is a household count measured AFTER
+* the program started. Any program-induced change in household counts
+* therefore enters the regressor itself, which is circular in a
+* regression whose whole purpose is to ask whether the program moved
+* population. Fixing the denominator to a pre-determined base removes
+* that channel, which is the coauthor's point and is the right fix.
+*
+* Options ($mig_intensity):
+*   "yearvar"  : inten1999/inten2005 -- snapshot-year (post-program)
+*                household denominator. The main design's own variable;
+*                keep as the default so this table stays comparable to
+*                every other exhibit, but it is the contaminated one.
+*   "pv_fixed" : inten1999_fix/inten2005_fix -- Parker & Vogl-style single
+*                fixed base hog1997_fixed = 0.3*HH1990 + 0.7*HH2000,
+*                built in 02_mortality.do and carried in the checkpoint.
+*                Same denominator for both snapshots, so it cannot move
+*                with the outcome year. CAVEAT: it interpolates using the
+*                2000 census, which is already post-program, so it is
+*                fixed but not strictly pre-determined.
+*   "pre1990"  : pgbenef_*/hh_tot1990 -- the 1990 census household count,
+*                seven years before rollout. Strictly pre-determined, so
+*                no program-induced population change can enter the
+*                regressor at all. This is the cleanest denominator for
+*                THIS table specifically (it is not proposed as a change
+*                to the main mortality specification).
+*------------------------------------------------------------
+global mig_intensity "yearvar"
+*global mig_intensity "pv_fixed"
+*global mig_intensity "pre1990"
+
+if "$mig_intensity" == "pv_fixed" {
+	global mig99 inten1999_fix
+	global mig05 inten2005_fix
+}
+else if "$mig_intensity" == "pre1990" {
+	cap drop inten1999_fix90 inten2005_fix90
+	gen inten1999_fix90 = pgbenef_1999/hh_tot1990
+	gen inten2005_fix90 = pgbenef_2005/hh_tot1990
+	replace inten1999_fix90 = 1 if inten1999_fix90 > 1 & !missing(inten1999_fix90)
+	replace inten2005_fix90 = 1 if inten2005_fix90 > 1 & !missing(inten2005_fix90)
+	label var inten1999_fix90 "Intensity 1999 (fixed 1990-census HH denominator)"
+	label var inten2005_fix90 "Intensity 2005 (fixed 1990-census HH denominator)"
+	global mig99 inten1999_fix90
+	global mig05 inten2005_fix90
+}
+else {
+	global mig99 inten1999
+	global mig05 inten2005
+}
+di "Migration robustness intensity construction: $mig_intensity  (99: $mig99 , 05: $mig05 )"
 
 foreach pnl in p m f {
 	if "`pnl'" == "p" {
 		local outcome  popover65_
 		local loutcome lpopover65
-		local shoutcome popshare65_p
 	}
 	else if "`pnl'" == "m" {
 		local outcome  popover65_m
 		local loutcome lpopover65_m
-		local shoutcome popshare65_m
 	}
 	else {
 		local outcome  popover65_f
 		local loutcome lpopover65_f
-		local shoutcome popshare65_f
 	}
 
 	* Pre-initialize every cell this loop can fill, so a failed regression
 	* leaves a visible "n/a" rather than a silently blank/misaligned
 	* LaTeX cell (matches the _rc-check pattern used elsewhere in this file).
-	foreach c in 1 2 3 4 {
+	foreach c in 1 2 3 {
 		local bMG99_`pnl'_`c'   "n/a"
 		local seMG99_`pnl'_`c'  "n/a"
 		local bMG05_`pnl'_`c'   "n/a"
@@ -1590,24 +1634,24 @@ foreach pnl in p m f {
 	}
 
 	* col 1: Levels (unweighted)
-	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+	reghdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
 		if $sample_marg & year>=1991 & year<=2006, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
-		local aux: di %12.3f _b[1.post#c.inten1999]
-		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		local aux: di %12.3f _b[1.post#c.${mig99}]
+		local t = abs(_b[1.post#c.${mig99}] / _se[1.post#c.${mig99}])
 		if      `t' >= 2.576 local bMG99_`pnl'_1 = "`aux'***"
 		else if `t' >= 1.96  local bMG99_`pnl'_1 = "`aux'**"
 		else if `t' >= 1.645 local bMG99_`pnl'_1 = "`aux'*"
 		else                  local bMG99_`pnl'_1 = "`aux'"
-		local seMG99_`pnl'_1: di %12.3f _se[1.post#c.inten1999]
-		local aux: di %12.3f _b[1.post#c.inten2005]
-		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		local seMG99_`pnl'_1: di %12.3f _se[1.post#c.${mig99}]
+		local aux: di %12.3f _b[1.post#c.${mig05}]
+		local t = abs(_b[1.post#c.${mig05}] / _se[1.post#c.${mig05}])
 		if      `t' >= 2.576 local bMG05_`pnl'_1 = "`aux'***"
 		else if `t' >= 1.96  local bMG05_`pnl'_1 = "`aux'**"
 		else if `t' >= 1.645 local bMG05_`pnl'_1 = "`aux'*"
 		else                  local bMG05_`pnl'_1 = "`aux'"
-		local seMG05_`pnl'_1: di %12.3f _se[1.post#c.inten2005]
+		local seMG05_`pnl'_1: di %12.3f _se[1.post#c.${mig05}]
 		sum `outcome' if e(sample) & post == 2
 		local meanMG_`pnl'_1: di %12.0fc `r(mean)'
 		local NMG_`pnl'_1:    di %12.0fc `e(N)'
@@ -1617,24 +1661,24 @@ foreach pnl in p m f {
 	else di as error "Migration robustness, panel `pnl', col 1 (Levels): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 
 	* col 2: Log (unweighted)
-	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
+	reghdfe `loutcome' c.${mig99}#i.post c.${mig05}#i.post ///
 		if $sample_marg & year>=1991 & year<=2006, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
-		local aux: di %12.3f _b[1.post#c.inten1999]
-		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		local aux: di %12.3f _b[1.post#c.${mig99}]
+		local t = abs(_b[1.post#c.${mig99}] / _se[1.post#c.${mig99}])
 		if      `t' >= 2.576 local bMG99_`pnl'_2 = "`aux'***"
 		else if `t' >= 1.96  local bMG99_`pnl'_2 = "`aux'**"
 		else if `t' >= 1.645 local bMG99_`pnl'_2 = "`aux'*"
 		else                  local bMG99_`pnl'_2 = "`aux'"
-		local seMG99_`pnl'_2: di %12.3f _se[1.post#c.inten1999]
-		local aux: di %12.3f _b[1.post#c.inten2005]
-		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		local seMG99_`pnl'_2: di %12.3f _se[1.post#c.${mig99}]
+		local aux: di %12.3f _b[1.post#c.${mig05}]
+		local t = abs(_b[1.post#c.${mig05}] / _se[1.post#c.${mig05}])
 		if      `t' >= 2.576 local bMG05_`pnl'_2 = "`aux'***"
 		else if `t' >= 1.96  local bMG05_`pnl'_2 = "`aux'**"
 		else if `t' >= 1.645 local bMG05_`pnl'_2 = "`aux'*"
 		else                  local bMG05_`pnl'_2 = "`aux'"
-		local seMG05_`pnl'_2: di %12.3f _se[1.post#c.inten2005]
+		local seMG05_`pnl'_2: di %12.3f _se[1.post#c.${mig05}]
 		sum `loutcome' if e(sample) & post == 2
 		local meanMG_`pnl'_2: di %12.2f `r(mean)'
 		local NMG_`pnl'_2:    di %12.0fc `e(N)'
@@ -1649,19 +1693,19 @@ foreach pnl in p m f {
 	else di as error "Migration robustness, panel `pnl', col 2 (Log): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 
 	* col 3: Poisson (count outcome)
-	ppmlhdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+	ppmlhdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
 		if $sample_marg & year>=1991 & year<=2006, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
-		local aux: di %12.3f exp(_b[1.post#c.inten1999])-1
-		local seMG99_`pnl'_3: di %12.3f exp(_b[1.post#c.inten1999])*_se[1.post#c.inten1999]
+		local aux: di %12.3f exp(_b[1.post#c.${mig99}])-1
+		local seMG99_`pnl'_3: di %12.3f exp(_b[1.post#c.${mig99}])*_se[1.post#c.${mig99}]
 		local t = abs(`aux' / `seMG99_`pnl'_3')
 		if      `t' >= 2.576 local bMG99_`pnl'_3 = "`aux'***"
 		else if `t' >= 1.96  local bMG99_`pnl'_3 = "`aux'**"
 		else if `t' >= 1.645 local bMG99_`pnl'_3 = "`aux'*"
 		else                  local bMG99_`pnl'_3 = "`aux'"
-		local aux: di %12.3f exp(_b[1.post#c.inten2005])-1
-		local seMG05_`pnl'_3: di %12.3f exp(_b[1.post#c.inten2005])*_se[1.post#c.inten2005]
+		local aux: di %12.3f exp(_b[1.post#c.${mig05}])-1
+		local seMG05_`pnl'_3: di %12.3f exp(_b[1.post#c.${mig05}])*_se[1.post#c.${mig05}]
 		local t = abs(`aux' / `seMG05_`pnl'_3')
 		if      `t' >= 2.576 local bMG05_`pnl'_3 = "`aux'***"
 		else if `t' >= 1.96  local bMG05_`pnl'_3 = "`aux'**"
@@ -1675,72 +1719,45 @@ foreach pnl in p m f {
 	}
 	else di as error "Migration robustness, panel `pnl', col 3 (Poisson): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 
-	* col 4 (NEW, FIX 1): 65+ population per 100 households, same
-	* year-varying household denominator as inten1999/inten2005
-	reghdfe `shoutcome' c.inten1999#i.post c.inten2005#i.post ///
-		if $sample_marg & year>=1991 & year<=2006, ///
-		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-	if !_rc & e(N) > 0 {
-		local aux: di %12.3f _b[1.post#c.inten1999]
-		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-		if      `t' >= 2.576 local bMG99_`pnl'_4 = "`aux'***"
-		else if `t' >= 1.96  local bMG99_`pnl'_4 = "`aux'**"
-		else if `t' >= 1.645 local bMG99_`pnl'_4 = "`aux'*"
-		else                  local bMG99_`pnl'_4 = "`aux'"
-		local seMG99_`pnl'_4: di %12.3f _se[1.post#c.inten1999]
-		local aux: di %12.3f _b[1.post#c.inten2005]
-		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
-		if      `t' >= 2.576 local bMG05_`pnl'_4 = "`aux'***"
-		else if `t' >= 1.96  local bMG05_`pnl'_4 = "`aux'**"
-		else if `t' >= 1.645 local bMG05_`pnl'_4 = "`aux'*"
-		else                  local bMG05_`pnl'_4 = "`aux'"
-		local seMG05_`pnl'_4: di %12.3f _se[1.post#c.inten2005]
-		sum `shoutcome' if e(sample) & post == 2
-		local meanMG_`pnl'_4: di %12.2f `r(mean)'
-		local NMG_`pnl'_4:    di %12.0fc `e(N)'
-		distinct cve_ent_mun_super if e(sample)
-		local NmunMG_`pnl'_4: di %12.0fc `r(ndistinct)'
-	}
-	else di as error "Migration robustness, panel `pnl', col 4 (Pop/100HH): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 }
 
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT_migration_robustness.tex", write replace
-	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-	file write sm "& Levels & Log & Poisson & Pop/100 HH \\ " _n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& Levels & Log & Poisson \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_p_1' & `bMG99_p_2' & `bMG99_p_3' & `bMG99_p_4' \\ " _n
-	file write sm "  & (`seMG99_p_1') & (`seMG99_p_2') & (`seMG99_p_3') & (`seMG99_p_4') \\ " _n
-	file write sm "   & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_p_1' & `bMG05_p_2' & `bMG05_p_3' & `bMG05_p_4' \\ " _n
-	file write sm " & (`seMG05_p_1') & (`seMG05_p_2') & (`seMG05_p_3') & (`seMG05_p_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' & `meanMG_p_4' \\ " _n
-	file write sm "  & & & &  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_p_1' & `bMG99_p_2' & `bMG99_p_3' \\ " _n
+	file write sm "  & (`seMG99_p_1') & (`seMG99_p_2') & (`seMG99_p_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_p_1' & `bMG05_p_2' & `bMG05_p_3' \\ " _n
+	file write sm " & (`seMG05_p_1') & (`seMG05_p_2') & (`seMG05_p_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & `bMG99_f_2' & `bMG99_f_3' & `bMG99_f_4' \\ " _n
-	file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') & (`seMG99_f_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_f_1' & `bMG05_f_2' & `bMG05_f_3' & `bMG05_f_4' \\ " _n
-	file write sm " & (`seMG05_f_1') & (`seMG05_f_2') & (`seMG05_f_3') & (`seMG05_f_4') \\ " _n
-	file write sm "   & & & & \\ " _n
-	file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' & `meanMG_f_4' \\ " _n
-	file write sm "  & & & &  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & `bMG99_f_2' & `bMG99_f_3' \\ " _n
+	file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_f_1' & `bMG05_f_2' & `bMG05_f_3' \\ " _n
+	file write sm " & (`seMG05_f_1') & (`seMG05_f_2') & (`seMG05_f_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_3' & `bMG99_m_4' \\ " _n
-	file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') & (`seMG99_m_4') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `bMG05_m_2' & `bMG05_m_3' & `bMG05_m_4' \\ " _n
-	file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') & (`seMG05_m_4') \\ " _n
-	file write sm " & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' & `meanMG_m_4' \\ " _n
-	file write sm "  & & & &  \\ " _n
-	file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' & `NMG_f_4' \\ " _n
-	file write sm "No. Mun & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' & `NmunMG_p_4' \\ " _n
-	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_3' \\ " _n
+	file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `bMG05_m_2' & `bMG05_m_3' \\ " _n
+	file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') \\ " _n
+	file write sm " & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' \\ " _n
+	file write sm "No. Mun & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' \\ " _n
+	file write sm "  & & & \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1799,7 +1816,7 @@ foreach pnl in p m f {
 	if "`pnl'" == "p" local sfx "_"
 	else              local sfx "_`pnl'"
 
-	keep cve_ent_mun_super year inten1999 inten2005 post gm_mun_1990 ///
+	keep cve_ent_mun_super year $mig99 $mig05 post gm_mun_1990 ///
 		pop5054`sfx' pop5559`sfx' pop6064`sfx' ///
 		pop6569`sfx' pop7074`sfx' popover70`sfx'
 	keep if year>=1991 & year<=2006
@@ -1819,8 +1836,15 @@ foreach pnl in p m f {
 	gen lpop  = log(pop)
 
 	* FIX 3(i): explicit interaction variables instead of factor syntax
-	gen triple99 = inten1999 * post * old65
-	gen triple05 = inten2005 * post * old65
+	* NOTE: `post' is coded {1 = 1997-2006, 2 = 1991-1996} in this pipeline,
+	* NOT {0,1}. The archived factor syntax (i.post) handled that correctly
+	* because `_b[1.post#...]' selects the level; a hand-built interaction
+	* must NOT multiply by `post' directly or the pre-period enters with
+	* weight 2 instead of 0. Build an explicit 0/1 post dummy first.
+	cap drop postd
+	gen byte postd = (post == 1) if !missing(post)
+	gen triple99 = ${mig99} * postd * old65
+	gen triple05 = ${mig05} * postd * old65
 
 	* col 1: Levels DDD
 	reghdfe pop triple99 triple05 if $sample_marg, ///
