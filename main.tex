@@ -49,14 +49,14 @@
 \newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
 
 % Word count: updated automatically by latexmkrc via texcount on each compile
-\newcommand{\wordcount}{%
-  \IfFileExists{wordcount.tex}{\input{wordcount.tex}}{N/A}%
-}
+% \newcommand{\wordcount}{%
+%   \IfFileExists{wordcount.tex}{\input{wordcount.tex}}{N/A}%
+% }
 
 % Paragraph numbering
-\newcounter{paragraphnum}
-\setcounter{paragraphnum}{0}
-\newcommand{\p}{\refstepcounter{paragraphnum}\textbf{[\theparagraphnum]}\enspace}
+% \newcounter{paragraphnum}
+% \setcounter{paragraphnum}{0}
+% \newcommand{\p}{\refstepcounter{paragraphnum}\textbf{[\theparagraphnum]}\enspace}
 
 \begin{document}
 %TC:ignore
@@ -116,7 +116,7 @@ We study the long-term effects of Mexico's \textit{Progresa} conditional cash tr
 
 \p Whether a child-focused CCT can generate mortality benefits for older adults raises a natural question: through what channels could a CCT designed for women with young children plausibly affect older adults' health? Three pathways are grounded in the program's design, and provide a plausible theoretical basis for expecting \textit{Progresa} to benefit older adults household members indirectly. First, the annual health check-up conditionality requires \textit{all} household members—including older adults—to attend one annual clinic visit, creating an opportunity for early detection and treatment of conditions such as infectious disease, diabetes, and hypertension that disproportionately drive mortality in older age \citep{Angel2017Gerontologist, aguila2024conditional}. Second, the cash transfer raises household income by over 25\% \citep{Gertler2004AER, ParkerTodd2017JEL}, potentially improving nutrition and healthcare access for older adult members who share household resources. Third, if program-induced changes in labor or living arrangements alter the availability of informal caregiving within the household, this could affect older adult's health through established social-support pathways \citep{duflo2000child, BehrmanParker2013Demography}. 
 
-\p The effects of Progresa on older adults' household members have focused on narrow outcomes and are almost entirely short-run. \cite{BehrmanParker2013Demography} document improved health-service utilization for older adults women but not men six years after implementation. \cite{aguila2024conditional} find that \textit{Progresa} improved hypertension diagnosis and treatment use among adults aged 50 and older but did not reduce uncontrolled blood pressure as measured by biomarkers, suggesting that CCTs can raise healthcare utilization without producing clinically meaningful improvements in chronic disease control. \cite{BarhamRowberry2013JDE} reported short-run reductions in aggregate older adults' mortality over the first five years of program operation, but no study has examined whether such effects persist or accumulate over a longer horizon. \textcolor{red}{Evidence from other CCTs points the same way. \cite{ContrerasSuarezMaitra2021JPopEcon} find that Colombia's \textit{Familias en Acci\'on} reduced reported illness among never-targeted household members aged 60 and older by 25\% in the short run and hospitalization by 42\% in the medium run, concentrated among older men and among households whose older members were in poor health at baseline. Over longer horizons, however, \cite{Barham2021PNAS} follow women for thirty-five years after Bangladesh's Matlab maternal and child health program and find few effects on later-life health. The pattern across settings is that transfers reaching older adults indirectly move health-care use and reported morbidity more reliably than they move deeper health outcomes.}
+\p The effects of Progresa on older adults' household members have focused on narrow outcomes and are almost entirely short-run. \cite{BehrmanParker2013Demography} document improved health-service utilization for older adults women but not men six years after implementation. \cite{aguila2024conditional} find that \textit{Progresa} improved hypertension diagnosis and treatment use among adults aged 50 and older but did not reduce uncontrolled blood pressure as measured by biomarkers, suggesting that CCTs can raise healthcare utilization without producing clinically meaningful improvements in chronic disease control. \cite{BarhamRowberry2013JDE} reported short-run reductions in aggregate older adults' mortality over the first five years of program operation, but no study has examined whether such effects persist or accumulate over a longer horizon. Evidence from other CCTs points the same way. \cite{ContrerasSuarezMaitra2021JPopEcon} find that Colombia's \textit{Familias en Acci\'on} reduced reported illness among never-targeted household members aged 60 and older in the short run and hospitalization in the medium run, concentrated among members who were in poor health at baseline. Over longer horizons, however, \cite{Barham2021PNAS} follow women for thirty-five years after Bangladesh's Matlab maternal and child health program and find few effects on later-life health. The pattern across settings is that transfers reaching older adults indirectly move health-care use and reported morbidity more reliably than they move deeper health outcomes.
 
 % By contrast, evidence on programs that target older adults directly, such as Mexico's subsequent \textit{70 y Más} non-contributory pension reduced older adults women mortality in rural areas \citep{Menares2026JHR} by 5.5\%. 
 

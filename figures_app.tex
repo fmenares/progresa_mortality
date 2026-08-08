@@ -35,7 +35,7 @@
 \subfigure[Municipality level]
 {\includegraphics[width=0.7\textwidth]{figures/appendix/AF3b_enroll_mun_marg_pctile.pdf}}
 
-         \floatfoot{Notes: This figure replicates Figures~2 and~3 of Parker and Vogl (2023) using our data. In both panels, the horizontal axis is a percentile rank in the national distribution of the 1995 (locality) or 1990 (municipality) CONAPO marginalization index; each point is the mean new-enrollment ratio within a 1-point percentile bin. The black series is the early phase (1997--1999); the red series is the incremental enrollment added during the later phase (2000--2005). Panel~(a), the locality-level replication, uses raw locality-level FASE beneficiary records and CONAPO's 1995 locality marginality index, restricted to localities with at least 10 dwellings in 1995, following Parker and Vogl's own sample restriction; localities with no recorded enrollment are assigned zero, not dropped, matching their stated convention. Panel~(b) repeats the existing municipality-level replication. Both panels use all Mexican localities/municipalities (not only the highly marginalized subsample) to display the full national targeting gradient.}
+         \floatfoot{Notes: This figure shows the enrollment ratio across the marginality percentile at the locality and municipality level. The horizontal axis is a percentile rank in the national distribution of the 1995 (locality) or 1990 (municipality) CONAPO marginalization index; each point is the mean new-enrollment ratio within a 1-point percentile bin. The black series is the early phase (1997--1999); the red series is the incremental enrollment added during the later phase (2000--2005). Both panels use all Mexican localities/municipalities (not only the highly marginalized subsample) to display the full national targeting gradient.}
 \end{figure}
 
 
@@ -53,7 +53,7 @@
     \subfigure[Respiratory]
 {\includegraphics[width=0.49\textwidth]{figures/appendix/AF4d_tb_resp_Marg.pdf}}
 
-         \floatfoot{Notes: Each panel displays interaction coefficients between Progresa intensity in 1999 and year indicators for the indicated cause of death. The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants attributable to each cause. The specification includes municipality and year fixed effects. Standard errors are clustered at the municipality level. The reference year is 1996. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). Regressions are weighted by the population 65+. 95\% confidence intervals shown.}
+         \floatfoot{Notes: Each panel displays interaction coefficients between Progresa intensity in 1999 and year indicators for the indicated cause of death. The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants attributable to each cause. The specification includes municipality and year fixed effects. Standard errors are clustered at the municipality level. The reference year is 1996. The sample is restricted to highly marginalized municipalities. Regressions are weighted by the population 65+. 95\% confidence intervals shown.}
 \end{figure}
 
 
@@ -72,7 +72,7 @@
     \subfigure[Accidents]
      {\includegraphics[width=0.49\textwidth]{figures/appendix/AF5d_tb_accid_Marg.pdf}}
 
-         \floatfoot{Notes: Each panel displays interaction coefficients between Progresa intensity in 1999 and year indicators for the indicated cause of death. The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants attributable to each cause. The specification includes municipality and year fixed effects. Standard errors are clustered at the municipality level. The reference year is 1996. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). Regressions are weighted by population 65+. 95\% confidence intervals shown.}
+         \floatfoot{Notes: Each panel displays interaction coefficients between Progresa intensity in 1999 and year indicators for the indicated cause of death. The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants attributable to each cause. The specification includes municipality and year fixed effects. Standard errors are clustered at the municipality level. The reference year is 1996. The sample is restricted to highly marginalized municipalities. Regressions are weighted by population 65+. 95\% confidence intervals shown.}
 \end{figure}
 
 
@@ -91,10 +91,10 @@
 \subfigure[Poisson]
      {\includegraphics[width=0.49\textwidth]{figures/appendix/AF6d_ES_func_form_poisson.pdf}}
 
-  \subfigure[AAMR Weighted +SP]
+  \subfigure[AAMR]
 {\includegraphics[width=0.49\textwidth]{figures/appendix/AF6e_aamr_col4.pdf}}
 
-         \floatfoot{Notes: All panels display interaction coefficients between Progresa intensity in 1999 and year indicators for pooled, female, and male populations, with 1996 as the reference year. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). 95\% confidence intervals shown. Panel~(a) shows the baseline weighted specification using the mortality rate in levels, complementing the main Figure~2. Panel~(b) shows the unweighted levels specification. Panel~(c) uses the natural log of the mortality rate (municipality-years with zero deaths are excluded); coefficients are multiplied by 100 and express the approximate percentage change in the mortality rate per unit increase in Progresa intensity. Panel~(d) uses Poisson pseudo-maximum likelihood with raw death counts as the outcome and population weights; coefficients are computed as $(\exp(\hat{\beta})-1)\times 100$ and express the percentage change in death counts per unit increase in intensity. Panel~(e) uses the Age-Adjusted Mortality Rate (AAMR) in the weighted specification with Seguro Popular intensity controls, which directly standardizes for the age structure of each municipality's elderly population.}
+         \floatfoot{Notes: All panels display interaction coefficients between Progresa intensity in 1999, restricted to highly marginalized municipalities. 95\% confidence intervals shown. Panel~(a) shows the baseline specification. Panel~(b) shows the unweighted specification. Panel~(c) uses the natural log of the mortality rate (municipality-years with zero deaths are excluded); coefficients are multiplied by 100 and express the approximate percentage change in the mortality rate per unit increase in Progresa intensity. Panel~(d) uses Poisson with raw death counts as the outcome; coefficients are computed as $(\exp(\hat{\beta})-1)\times 100$ and express the percentage change in death counts per unit increase in intensity. Panel~(e) uses the Age-Adjusted Mortality Rate (AAMR) using each municipality's older adult population. All specifications include $\textit{Intensity}_{2005}$ and year indicators, municipality and year fixed effects, and Seguro Popular intensity controls.}
 \end{figure}
 
 
@@ -102,25 +102,26 @@
     \caption{Event Study: Effect of Progresa Enrollment Intensity on Older Adults' Mortality Rate by Sex and SES-Trend Specification}
     \label{af:ses_trend}
 
-\subfigure[SES Trend]
+\subfigure[Pooled]
 {\includegraphics[width=0.65\textwidth]{figures/appendix/AF7a_ses_trend.pdf}}
 
-\subfigure[SES Trend Female]
+\subfigure[Female]
 {\includegraphics[width=0.49\textwidth]{figures/appendix/AF7b_ses_trend_f.pdf}}
-\subfigure[SES Trend Male]
+\subfigure[Male]
 {\includegraphics[width=0.49\textwidth]{figures/appendix/AF7c_ses_trend_m.pdf}}
 
 
-         \floatfoot{Notes: Panels~(a)--(c) present event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the pooled, female, and male older-adult (65+) mortality rate per 1,000 inhabitants, respectively. Within each panel, seven specifications are overlaid: (i) the baseline weighted specification with Seguro Popular intensity, using the End-of-year numerator over the year-varying municipal household denominator (the paper's main specification); (i-b) the same baseline but with the End-of-year numerator over the fixed 1997 household denominator, so the two denominator choices can be compared directly; (ii) the baseline plus a municipality-specific linear time trend interacted with the continuous 1990 municipality marginalization index; (iii) the baseline plus a linear trend interacted with 1990 municipality marginalization-index quintiles; (iv) the baseline plus a full set of percentile-bin indicators of the marginalization index (100 bins); (v) the baseline plus a locality-marginality percentile-share control -- the share of each municipality's population residing in localities at each percentile of the national \textit{locality}-marginality distribution (five bins) -- interacted with a fully flexible set of year indicators; and (vi) the same locality-marginality percentile-share control interacted with a \emph{linear} year trend. All seven specifications control for $\textit{Intensity}_{2005}$ (matching each specification's own denominator choice), which isolates the early-phase timing effect. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities and regressions are weighted by the population aged 65 and older. 95\% confidence intervals shown.}
+         \floatfoot{Notes: Panels~(a)--(c) present event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the pooled, female, and male older-adult (65+) mortality rate per 1,000 inhabitants, respectively. Within each panel, seven specifications are overlaid: (i) the baseline specifications; (i-b) the same baseline but with fixed 1997 household denominator; (ii) the baseline plus a municipality-specific linear time trend interacted with the continuous 1990 municipality marginalization index; (iii) the baseline plus a linear trend interacted with 1990 municipality marginalization-index quintiles; (iv) the baseline plus a full set of percentile-bin indicators of the marginalization index (100 bins); (v) the baseline plus a locality-marginality percentile-share control -- the share of each municipality's population residing in localities at each percentile of the national \textit{locality}-marginality distribution (five bins) -- interacted with a fully flexible set of year indicators; and (vi) the same locality-marginality percentile-share control interacted with a \emph{linear} year trend. All seven specifications control for $\textit{Intensity}_{2005}$ interaction. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities and regressions are weighted by the population aged 65 and older. 95\% confidence intervals shown.}
 \end{figure}
 
 \begin{figure}[H]
     \caption{Event Study: Stability of the Early-Phase (Intensity 1999) Coefficient to the Choice of Second-Phase Control}
     \label{af:beta0_stability}
 
-{\includegraphics[width=0.75\textwidth]{figures/appendix/AF8_beta0_stability.pdf}}
+{\includegraphics[width=0.85\textwidth]{figures/appendix/AF8_beta0_stability.pdf}}
 
-         \floatfoot{Notes: This figure presents event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the older-adult (65+) mortality rate per 1,000 inhabitants, under five specifications. The first, ``No control,'' omits any second-phase intensity control entirely, illustrating the misspecification that arises when later cumulative enrollment is left uncontrolled for. The remaining three add a second-phase (later cumulative enrollment) control: the baseline specification controlling for $\textit{Intensity}_{2005}$, and specifications replacing it with the adjacent $\textit{Intensity}_{2004}$ and $\textit{Intensity}_{2006}$ snapshots. Following Parker and Vogl (2023), 2005 marks the close of the second roll-out phase, so the endpoint is probed only locally; intermediate snapshots are not used as substitutes, because mid-phase the roll-out is still ramping up and such a control would absorb part of the early-phase variation the design isolates. All specifications use the End-of-year numerator over the year-varying municipal household denominator, include Seguro Popular intensity and municipality fixed effects, and are weighted by the population aged 65 and older. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. Overlapping year-by-year profiles across the three second-phase-control series, contrasted with the divergent no-control series, indicate that the early-phase coefficient is not sensitive to which later-phase snapshot is conditioned on but is sensitive to omitting a second-phase control altogether. 95\% confidence intervals shown.}
+         \floatfoot{Notes: This figure presents event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the older-adult (65+) mortality rate per 1,000 inhabitants, under four specifications. The first, ``No control,'' omits any later-phase intensity control entirely, illustrating the misspecification that arises when later cumulative enrollment is left uncontrolled for. The remaining three add a later-phase (later cumulative enrollment) control: the baseline specification controlling for $\textit{Intensity}_{2005}$, and specifications replacing it with the adjacent $\textit{Intensity}_{2004}$ and $\textit{Intensity}_{2006}$ snapshots. All specifications 
+         include Seguro Popular intensity, municipality and year fixed effects, and are weighted by the population aged 65 and older. The vertical line marks the program's 1997 rollout. The sample is restricted to highly marginalized municipalities. 95\% confidence intervals shown.}
 \end{figure}
 
 
@@ -144,7 +145,7 @@
  \subfigure[Highly Marginalized - Males]
 {\includegraphics[width=0.49\textwidth]{figures/appendix/AF9d_emr65m_HighMarg.pdf}}
 
-         \floatfoot{Notes: This figure compares event study estimates across the two sample definitions used in this paper and in Barham and Rowberry (2013). Left panels (BR) restrict to municipalities incorporated into Progresa in 1998 or 1999; right panels (HM) restrict to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). All regressions include municipality and year fixed effects; the reference year is 1996; the period is 1992--2002. 95\% confidence intervals shown.}
+         \floatfoot{Notes: This figure compares event study estimates across the two sample definitions used in this paper and in Barham and Rowberry (2013). Left panels (BR) restrict to municipalities incorporated into Progresa in 1998 or 1999; right panels (HM) restrict to highly marginalized municipalities. All regressions include municipality and year fixed effects; the reference year is 1996; the period is 1992--2002. 95\% confidence intervals shown.}
 \end{figure}
 
 
