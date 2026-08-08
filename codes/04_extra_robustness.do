@@ -1501,4 +1501,452 @@ foreach pnl in p f m {
 */
 di "Table (commented out) would have been exported to: $tables/T2_b_mortality_fixeddenom.tex"
 
+*============================================================
+* MIGRATION ROBUSTNESS -- ported from codes/archive/02_mortality_06_27_26.do,
+* where it lived until the file was split into 02/03/04. It was dropped
+* from the live pipeline in that split and never re-added, which is why
+* the two tables_app.tex entries for it (at:migration_rob,
+* at:migration_rob_agefe) and the main.tex "Threats to identification"
+* paragraph that cites them have been commented out ever since -- not a
+* deliberate decision to drop the check, just an artifact of the split.
+* Restored here, in the same "run + diagnose, output left for review"
+* spirit as the rest of this file, plus three fixes over the archived
+* version documented at each fix below.
+*
+* AT_migration_robustness: does Progresa intensity predict the SIZE of
+* the 65+ population (65+ counts on the LHS, Intensity_1999/2005 x Post
+* on the RHS, same inten1999/inten2005 as the main design -- year-varying
+* household-count denominator, per-municipality constant across years).
+* If Progresa induced differential elderly out-migration from
+* high-intensity municipalities, this should be negative and significant.
+*
+* AT_migration_robustness_ageFE sharpens this into a triple-difference:
+* stacks 65+ against a 50-64 within-municipality control band, so a
+* municipality-year FE can absorb general population growth and only the
+* *differential* trend of the 65+ band survives.
+*
+* FIX 0: the archived version's "Mean (1991-1996)" / "Mean 65+
+* (1991-1996)" row was always blank in both tables' static output. Cause:
+* `post' is coded {1 = 1997-2006, 2 = 1991-1996} throughout this
+* pipeline (see the `gen post' block in 02_mortality.do), but the
+* archived code summarized `if post == 0', which never matches -- r(mean)
+* was always missing. Corrected to `post == 2' below, matching the
+* convention already used for this exact row elsewhere (e.g.
+* AT4_functional_forms' "Mean (1991-1996)" row in 02_mortality.do).
+*============================================================
+
+cap drop lpopover65 lpopover65_m lpopover65_f
+g lpopover65   = log(popover65_)
+g lpopover65_m = log(popover65_m)
+g lpopover65_f = log(popover65_f)
+
+* FIX 1 (addresses the coauthor's question on using the same year-varying
+* household denominator that Intensity itself is built from, with
+* population on the LHS): a 4th column expressing the 65+ count as a rate
+* over hh_tot -- the same denominator underlying inten1999/inten2005
+* (intensity_new = pgbenef_new/hh_tot in 01_mortality_data.do). Levels,
+* Log and Poisson all leave the LHS in raw population counts, which mixes
+* the "did the 65+ population change" question with "is this a bigger
+* municipality"; expressing it per 100 households nets that out using
+* exactly the denominator basis the treatment variable already uses, and
+* is a more direct fourth check of the same out-migration/attrition
+* concern the note ascribes to this table.
+cap drop popshare65_p popshare65_m popshare65_f
+g popshare65_p = 100 * popover65_  / hh_tot
+g popshare65_m = 100 * popover65_m / hh_tot
+g popshare65_f = 100 * popover65_f / hh_tot
+label var popshare65_p "65+ population per 100 households (pooled)"
+label var popshare65_m "65+ population per 100 households (male)"
+label var popshare65_f "65+ population per 100 households (female)"
+
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local outcome  popover65_
+		local loutcome lpopover65
+		local shoutcome popshare65_p
+	}
+	else if "`pnl'" == "m" {
+		local outcome  popover65_m
+		local loutcome lpopover65_m
+		local shoutcome popshare65_m
+	}
+	else {
+		local outcome  popover65_f
+		local loutcome lpopover65_f
+		local shoutcome popshare65_f
+	}
+
+	* Pre-initialize every cell this loop can fill, so a failed regression
+	* leaves a visible "n/a" rather than a silently blank/misaligned
+	* LaTeX cell (matches the _rc-check pattern used elsewhere in this file).
+	foreach c in 1 2 3 4 {
+		local bMG99_`pnl'_`c'   "n/a"
+		local seMG99_`pnl'_`c'  "n/a"
+		local bMG05_`pnl'_`c'   "n/a"
+		local seMG05_`pnl'_`c'  "n/a"
+		local meanMG_`pnl'_`c'  "n/a"
+		local NMG_`pnl'_`c'     "n/a"
+		local NmunMG_`pnl'_`c'  "n/a"
+	}
+
+	* col 1: Levels (unweighted)
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg & year>=1991 & year<=2006, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local bMG99_`pnl'_1 = "`aux'***"
+		else if `t' >= 1.96  local bMG99_`pnl'_1 = "`aux'**"
+		else if `t' >= 1.645 local bMG99_`pnl'_1 = "`aux'*"
+		else                  local bMG99_`pnl'_1 = "`aux'"
+		local seMG99_`pnl'_1: di %12.3f _se[1.post#c.inten1999]
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local bMG05_`pnl'_1 = "`aux'***"
+		else if `t' >= 1.96  local bMG05_`pnl'_1 = "`aux'**"
+		else if `t' >= 1.645 local bMG05_`pnl'_1 = "`aux'*"
+		else                  local bMG05_`pnl'_1 = "`aux'"
+		local seMG05_`pnl'_1: di %12.3f _se[1.post#c.inten2005]
+		sum `outcome' if e(sample) & post == 2
+		local meanMG_`pnl'_1: di %12.0fc `r(mean)'
+		local NMG_`pnl'_1:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunMG_`pnl'_1: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration robustness, panel `pnl', col 1 (Levels): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	* col 2: Log (unweighted)
+	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg & year>=1991 & year<=2006, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local bMG99_`pnl'_2 = "`aux'***"
+		else if `t' >= 1.96  local bMG99_`pnl'_2 = "`aux'**"
+		else if `t' >= 1.645 local bMG99_`pnl'_2 = "`aux'*"
+		else                  local bMG99_`pnl'_2 = "`aux'"
+		local seMG99_`pnl'_2: di %12.3f _se[1.post#c.inten1999]
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local bMG05_`pnl'_2 = "`aux'***"
+		else if `t' >= 1.96  local bMG05_`pnl'_2 = "`aux'**"
+		else if `t' >= 1.645 local bMG05_`pnl'_2 = "`aux'*"
+		else                  local bMG05_`pnl'_2 = "`aux'"
+		local seMG05_`pnl'_2: di %12.3f _se[1.post#c.inten2005]
+		sum `loutcome' if e(sample) & post == 2
+		local meanMG_`pnl'_2: di %12.2f `r(mean)'
+		local NMG_`pnl'_2:    di %12.0fc `e(N)'
+		* FIX 2: the archived version never computed a column-specific
+		* Nmun for Log/Poisson and just reused column 1's in the table
+		* write -- wrong whenever log(0) (municipality-year cells with
+		* zero elderly population) drops observations that Levels/Poisson
+		* keep, which changes the underlying set of municipalities.
+		distinct cve_ent_mun_super if e(sample)
+		local NmunMG_`pnl'_2: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration robustness, panel `pnl', col 2 (Log): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	* col 3: Poisson (count outcome)
+	ppmlhdfe `outcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg & year>=1991 & year<=2006, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.3f exp(_b[1.post#c.inten1999])-1
+		local seMG99_`pnl'_3: di %12.3f exp(_b[1.post#c.inten1999])*_se[1.post#c.inten1999]
+		local t = abs(`aux' / `seMG99_`pnl'_3')
+		if      `t' >= 2.576 local bMG99_`pnl'_3 = "`aux'***"
+		else if `t' >= 1.96  local bMG99_`pnl'_3 = "`aux'**"
+		else if `t' >= 1.645 local bMG99_`pnl'_3 = "`aux'*"
+		else                  local bMG99_`pnl'_3 = "`aux'"
+		local aux: di %12.3f exp(_b[1.post#c.inten2005])-1
+		local seMG05_`pnl'_3: di %12.3f exp(_b[1.post#c.inten2005])*_se[1.post#c.inten2005]
+		local t = abs(`aux' / `seMG05_`pnl'_3')
+		if      `t' >= 2.576 local bMG05_`pnl'_3 = "`aux'***"
+		else if `t' >= 1.96  local bMG05_`pnl'_3 = "`aux'**"
+		else if `t' >= 1.645 local bMG05_`pnl'_3 = "`aux'*"
+		else                  local bMG05_`pnl'_3 = "`aux'"
+		sum `outcome' if e(sample) & post == 2
+		local meanMG_`pnl'_3: di %12.0fc `r(mean)'
+		local NMG_`pnl'_3:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunMG_`pnl'_3: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration robustness, panel `pnl', col 3 (Poisson): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	* col 4 (NEW, FIX 1): 65+ population per 100 households, same
+	* year-varying household denominator as inten1999/inten2005
+	reghdfe `shoutcome' c.inten1999#i.post c.inten2005#i.post ///
+		if $sample_marg & year>=1991 & year<=2006, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local bMG99_`pnl'_4 = "`aux'***"
+		else if `t' >= 1.96  local bMG99_`pnl'_4 = "`aux'**"
+		else if `t' >= 1.645 local bMG99_`pnl'_4 = "`aux'*"
+		else                  local bMG99_`pnl'_4 = "`aux'"
+		local seMG99_`pnl'_4: di %12.3f _se[1.post#c.inten1999]
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local bMG05_`pnl'_4 = "`aux'***"
+		else if `t' >= 1.96  local bMG05_`pnl'_4 = "`aux'**"
+		else if `t' >= 1.645 local bMG05_`pnl'_4 = "`aux'*"
+		else                  local bMG05_`pnl'_4 = "`aux'"
+		local seMG05_`pnl'_4: di %12.3f _se[1.post#c.inten2005]
+		sum `shoutcome' if e(sample) & post == 2
+		local meanMG_`pnl'_4: di %12.2f `r(mean)'
+		local NMG_`pnl'_4:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunMG_`pnl'_4: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration robustness, panel `pnl', col 4 (Pop/100HH): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+}
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_migration_robustness.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& Levels & Log & Poisson & Pop/100 HH \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_p_1' & `bMG99_p_2' & `bMG99_p_3' & `bMG99_p_4' \\ " _n
+	file write sm "  & (`seMG99_p_1') & (`seMG99_p_2') & (`seMG99_p_3') & (`seMG99_p_4') \\ " _n
+	file write sm "   & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_p_1' & `bMG05_p_2' & `bMG05_p_3' & `bMG05_p_4' \\ " _n
+	file write sm " & (`seMG05_p_1') & (`seMG05_p_2') & (`seMG05_p_3') & (`seMG05_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' & `meanMG_p_4' \\ " _n
+	file write sm "  & & & &  \\ " _n
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & `bMG99_f_2' & `bMG99_f_3' & `bMG99_f_4' \\ " _n
+	file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') & (`seMG99_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_f_1' & `bMG05_f_2' & `bMG05_f_3' & `bMG05_f_4' \\ " _n
+	file write sm " & (`seMG05_f_1') & (`seMG05_f_2') & (`seMG05_f_3') & (`seMG05_f_4') \\ " _n
+	file write sm "   & & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' & `meanMG_f_4' \\ " _n
+	file write sm "  & & & &  \\ " _n
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_3' & `bMG99_m_4' \\ " _n
+	file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') & (`seMG99_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `bMG05_m_2' & `bMG05_m_3' & `bMG05_m_4' \\ " _n
+	file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') & (`seMG05_m_4') \\ " _n
+	file write sm " & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' & `meanMG_m_4' \\ " _n
+	file write sm "  & & & &  \\ " _n
+	file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' & `NMG_f_4' \\ " _n
+	file write sm "No. Mun & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' & `NmunMG_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/appendix/AT_migration_robustness.tex"
+
+*============================================================
+* APPENDIX TABLE: Migration Robustness -- Triple-Difference (DDD)
+*   Differential growth of the 65+ population relative to the
+*   50-64 population, in high- vs low-intensity municipalities,
+*   post vs pre. Stacks 6 five-year age groups (50-54, 55-59,
+*   60-64, 65-69, 70-74, 75+). popover75 = popover70 - pop7074.
+*   Old65 = 1{age >= 65}.
+*
+*   Specification (long-run, 1991-2006):
+*       pop_{m,t,a} = beta . (Intensity_1999 x Post x Old65)
+*                   + gamma . (Intensity_2005 x Post x Old65)
+*                   + Mun x Year + Mun x Age + Year x Age FE + e
+*   Mun x Year FE absorbs overall municipality-year pop growth;
+*   identification rests on the triple interaction.
+*
+*   3 cols (Levels / Log / Poisson) x 3 panels (Pooled / M / F).
+*
+*   FIX 3: the archived run of this table printed "0.000***" in every
+*   single cell (coefficient AND standard error) with the Mean 65+ row
+*   blank, which is not a plausible small-but-real estimate -- SEs do not
+*   independently round to exactly zero in every cell. The likely
+*   mechanism: `_b[]'/`_se[]' on a coefficient name that reghdfe did not
+*   actually estimate return literal 0, and `t' = abs(0/0) evaluates to
+*   Stata missing (.), which the `if `t' >= 2.576' comparisons treat as
+*   +infinity, so every cell silently gets "0.000***" instead of erroring.
+*   Cannot confirm the exact cause without re-running (no Stata/data
+*   access in this environment), so this port adds two defenses: (i) an
+*   explicit, hand-built triple-interaction variable in place of the
+*   `c.inten99#i.post#i.old65' factor syntax, removing any ambiguity in
+*   which coefficient name is being pulled; (ii) an `_rc'/`e(N)' check
+*   around each regression (as in FIX 2 above) so a failed or degenerate
+*   fit leaves "n/a" rather than a fabricated "0.000***". Precision is
+*   also widened from 3 to 4 decimals in case the true issue was just
+*   under-precision for a genuinely small DDD coefficient.
+*============================================================
+destring(cve_ent_mun_super), replace
+
+foreach pnl in p m f {
+	foreach c in 1 2 3 {
+		local bDDD99_`pnl'_`c'   "n/a"
+		local seDDD99_`pnl'_`c'  "n/a"
+		local bDDD05_`pnl'_`c'   "n/a"
+		local seDDD05_`pnl'_`c'  "n/a"
+		local meanDDD_`pnl'_`c'  "n/a"
+		local NDDD_`pnl'_`c'     "n/a"
+		local NmunDDD_`pnl'_`c'  "n/a"
+	}
+
+	preserve
+	if "`pnl'" == "p" local sfx "_"
+	else              local sfx "_`pnl'"
+
+	keep cve_ent_mun_super year inten1999 inten2005 post gm_mun_1990 ///
+		pop5054`sfx' pop5559`sfx' pop6064`sfx' ///
+		pop6569`sfx' pop7074`sfx' popover70`sfx'
+	keep if year>=1991 & year<=2006
+
+	gen popover75`sfx' = popover70`sfx' - pop7074`sfx'
+	drop popover70`sfx'
+
+	rename pop5054`sfx'   pop1
+	rename pop5559`sfx'   pop2
+	rename pop6064`sfx'   pop3
+	rename pop6569`sfx'   pop4
+	rename pop7074`sfx'   pop5
+	rename popover75`sfx' pop6
+
+	reshape long pop, i(cve_ent_mun_super year) j(age_grp)
+	gen old65 = (age_grp >= 4)
+	gen lpop  = log(pop)
+
+	* FIX 3(i): explicit interaction variables instead of factor syntax
+	gen triple99 = inten1999 * post * old65
+	gen triple05 = inten2005 * post * old65
+
+	* col 1: Levels DDD
+	reghdfe pop triple99 triple05 if $sample_marg, ///
+		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+		vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.4f _b[triple99]
+		local t = abs(_b[triple99] / _se[triple99])
+		if      `t' >= 2.576 local bDDD99_`pnl'_1 = "`aux'***"
+		else if `t' >= 1.96  local bDDD99_`pnl'_1 = "`aux'**"
+		else if `t' >= 1.645 local bDDD99_`pnl'_1 = "`aux'*"
+		else                  local bDDD99_`pnl'_1 = "`aux'"
+		local seDDD99_`pnl'_1: di %12.4f _se[triple99]
+		local aux: di %12.4f _b[triple05]
+		local t = abs(_b[triple05] / _se[triple05])
+		if      `t' >= 2.576 local bDDD05_`pnl'_1 = "`aux'***"
+		else if `t' >= 1.96  local bDDD05_`pnl'_1 = "`aux'**"
+		else if `t' >= 1.645 local bDDD05_`pnl'_1 = "`aux'*"
+		else                  local bDDD05_`pnl'_1 = "`aux'"
+		local seDDD05_`pnl'_1: di %12.4f _se[triple05]
+		sum pop if e(sample) & post == 2 & old65 == 1
+		local meanDDD_`pnl'_1: di %12.0fc `r(mean)'
+		local NDDD_`pnl'_1:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunDDD_`pnl'_1: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration DDD, panel `pnl', col 1 (Levels): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	* col 2: Log DDD
+	reghdfe lpop triple99 triple05 if $sample_marg, ///
+		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+		vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.4f _b[triple99]
+		local t = abs(_b[triple99] / _se[triple99])
+		if      `t' >= 2.576 local bDDD99_`pnl'_2 = "`aux'***"
+		else if `t' >= 1.96  local bDDD99_`pnl'_2 = "`aux'**"
+		else if `t' >= 1.645 local bDDD99_`pnl'_2 = "`aux'*"
+		else                  local bDDD99_`pnl'_2 = "`aux'"
+		local seDDD99_`pnl'_2: di %12.4f _se[triple99]
+		local aux: di %12.4f _b[triple05]
+		local t = abs(_b[triple05] / _se[triple05])
+		if      `t' >= 2.576 local bDDD05_`pnl'_2 = "`aux'***"
+		else if `t' >= 1.96  local bDDD05_`pnl'_2 = "`aux'**"
+		else if `t' >= 1.645 local bDDD05_`pnl'_2 = "`aux'*"
+		else                  local bDDD05_`pnl'_2 = "`aux'"
+		local seDDD05_`pnl'_2: di %12.4f _se[triple05]
+		sum lpop if e(sample) & post == 2 & old65 == 1
+		local meanDDD_`pnl'_2: di %12.2f `r(mean)'
+		local NDDD_`pnl'_2:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunDDD_`pnl'_2: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration DDD, panel `pnl', col 2 (Log): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	* col 3: Poisson DDD
+	ppmlhdfe pop triple99 triple05 if $sample_marg, ///
+		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
+		vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.4f exp(_b[triple99])-1
+		local seDDD99_`pnl'_3: di %12.4f exp(_b[triple99])*_se[triple99]
+		local t = abs(`aux' / `seDDD99_`pnl'_3')
+		if      `t' >= 2.576 local bDDD99_`pnl'_3 = "`aux'***"
+		else if `t' >= 1.96  local bDDD99_`pnl'_3 = "`aux'**"
+		else if `t' >= 1.645 local bDDD99_`pnl'_3 = "`aux'*"
+		else                  local bDDD99_`pnl'_3 = "`aux'"
+		local aux: di %12.4f exp(_b[triple05])-1
+		local seDDD05_`pnl'_3: di %12.4f exp(_b[triple05])*_se[triple05]
+		local t = abs(`aux' / `seDDD05_`pnl'_3')
+		if      `t' >= 2.576 local bDDD05_`pnl'_3 = "`aux'***"
+		else if `t' >= 1.96  local bDDD05_`pnl'_3 = "`aux'**"
+		else if `t' >= 1.645 local bDDD05_`pnl'_3 = "`aux'*"
+		else                  local bDDD05_`pnl'_3 = "`aux'"
+		sum pop if e(sample) & post == 2 & old65 == 1
+		local meanDDD_`pnl'_3: di %12.0fc `r(mean)'
+		local NDDD_`pnl'_3:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunDDD_`pnl'_3: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration DDD, panel `pnl', col 3 (Poisson): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	restore
+}
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_migration_robustness_ageFE.tex", write replace
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& Levels & Log & Poisson \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_1' & `bDDD99_p_2' & `bDDD99_p_3' \\ " _n
+	file write sm "  & (`seDDD99_p_1') & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_p_1' & `bDDD05_p_2' & `bDDD05_p_3' \\ " _n
+	file write sm " & (`seDDD05_p_1') & (`seDDD05_p_2') & (`seDDD05_p_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_1' & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_1' & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
+	file write sm "  & (`seDDD99_f_1') & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_f_1' & `bDDD05_f_2' & `bDDD05_f_3' \\ " _n
+	file write sm " & (`seDDD05_f_1') & (`seDDD05_f_2') & (`seDDD05_f_3') \\ " _n
+	file write sm "   & & & \\ " _n
+	file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_1' & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_1' & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
+	file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_m_1' & `bDDD05_m_2' & `bDDD05_m_3' \\ " _n
+	file write sm " & (`seDDD05_m_1') & (`seDDD05_m_2') & (`seDDD05_m_3') \\ " _n
+	file write sm " & & & \\ " _n
+	file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
+	file write sm "  & & &  \\ " _n
+	file write sm "Obs & `NDDD_f_1' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+	file write sm "No. Mun & `NmunDDD_p_1' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
+
 log close
