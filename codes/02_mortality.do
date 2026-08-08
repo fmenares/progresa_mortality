@@ -2015,6 +2015,21 @@ foreach pnl in p m f {
 	local NFF_`pnl'_4:    di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunFF_`pnl'_4: di %12.0fc `r(ndistinct)'
+	* col 4b (new col 2 in table): levels, UNWEIGHTED + Seguro Popular
+	reghdfe `outcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+		if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bFFuw99_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bFFuw99_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bFFuw99_`pnl' = "`aux'*"
+	else                  local bFFuw99_`pnl' = "`aux'"
+	local seFFuw99_`pnl': di %12.3f _se[1.post#c.inten1999]
+	sum `outcome' if e(sample) & post == 2
+	local meanFFuw_`pnl': di %12.2fc `r(mean)'
+	local NFFuw_`pnl':    di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunFFuw_`pnl': di %12.0fc `r(ndistinct)'
 	* col 5: log mortality rate, weighted + Seguro Popular; coef x100 = approx % change in mortality rate
 	reghdfe `loutcome' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
 		[pw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
@@ -2095,32 +2110,32 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT4_functional_forms.tex", write replace
-	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
-	file write sm "& Levels & Log & Poisson & AAMR \\ " _n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+	file write sm "\begin{tabular}{lccccc} \hline \hline" _n
+	file write sm "& Levels & Levels (UW) & Log & Poisson & AAMR \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_p_4' & `bFF99_p_5' & `bFF99_p_6' & `bAAMR99_p' \\ " _n
-	file write sm "  & (`seFF99_p_4') & (`seFF99_p_5') & (`seFF99_p_6') & (`seAAMR99_p') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996)  & `meanFF_p_4' & `meanFF_p_5' & `meanFF_p_6' & `meanAAMR_p' \\ " _n
-	file write sm "  & & & &  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_p_4' & `bFFuw99_p' & `bFF99_p_5' & `bFF99_p_6' & `bAAMR99_p' \\ " _n
+	file write sm "  & (`seFF99_p_4') & (`seFFuw99_p') & (`seFF99_p_5') & (`seFF99_p_6') & (`seAAMR99_p') \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanFF_p_4' & `meanFFuw_p' & `meanFF_p_5' & `meanFF_p_6' & `meanAAMR_p' \\ " _n
+	file write sm "  & & & & &  \\ " _n
 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bFF99_f_4' & `bFF99_f_5' & `bFF99_f_6' & `bAAMR99_f' \\ " _n
-	file write sm "  & (`seFF99_f_4') & (`seFF99_f_5') & (`seFF99_f_6') & (`seAAMR99_f') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996)  & `meanFF_f_4' & `meanFF_f_5' & `meanFF_f_6' & `meanAAMR_f' \\ " _n
-	file write sm "  & & & &  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bFF99_f_4' & `bFFuw99_f' & `bFF99_f_5' & `bFF99_f_6' & `bAAMR99_f' \\ " _n
+	file write sm "  & (`seFF99_f_4') & (`seFFuw99_f') & (`seFF99_f_5') & (`seFF99_f_6') & (`seAAMR99_f') \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Mean (1991-1996)  & `meanFF_f_4' & `meanFFuw_f' & `meanFF_f_5' & `meanFF_f_6' & `meanAAMR_f' \\ " _n
+	file write sm "  & & & & &  \\ " _n
 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_m_4' & `bFF99_m_5' & `bFF99_m_6' & `bAAMR99_m' \\ " _n
-	file write sm "  & (`seFF99_m_4') & (`seFF99_m_5') & (`seFF99_m_6') & (`seAAMR99_m') \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `meanFF_m_4' & `meanFF_m_5' & `meanFF_m_6' & `meanAAMR_m' \\ " _n
-	file write sm "  & & & &  \\ " _n
-	file write sm "Obs & `NFF_f_4' & `NFF_f_5' & `NFF_f_6' & `NAAMR_f' \\ " _n
-	file write sm "No. Mun & `NmunFF_p_4' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
-	file write sm "  & & & & \\ " _n
-	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bFF99_m_4' & `bFFuw99_m' & `bFF99_m_5' & `bFF99_m_6' & `bAAMR99_m' \\ " _n
+	file write sm "  & (`seFF99_m_4') & (`seFFuw99_m') & (`seFF99_m_5') & (`seFF99_m_6') & (`seAAMR99_m') \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meanFF_m_4' & `meanFFuw_m' & `meanFF_m_5' & `meanFF_m_6' & `meanAAMR_m' \\ " _n
+	file write sm "  & & & & &  \\ " _n
+	file write sm "Obs & `NFF_f_4' & `NFFuw_f' & `NFF_f_5' & `NFF_f_6' & `NAAMR_f' \\ " _n
+	file write sm "No. Mun & `NmunFF_p_4' & `NmunFFuw_p' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
+	file write sm "  & & & & & \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
