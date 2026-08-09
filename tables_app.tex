@@ -180,52 +180,12 @@
 
 
 
-% \begin{landscape}
-% \begin{table}[H]
-% \RawCaption%
-%   {\caption{\added{Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts (65+), Highly Marginalized Municipalities}}
-%    \label{at:migration_rob}}
-% \floatbox[{\captop}]{table}[\FBwidth]
-%   {}
-%   {\scalebox{0.9}{
-%       \input{tables/appendix/AT_migration_robustness}
-%     }
-%     \vspace{-3mm}
-%     \floatfoot{\added{Notes: This table tests whether Progresa enrollment intensity predicts changes in the size of the elderly population (65+) at the municipality level, providing a direct check on the selective out-migration threat to the parallel-trends assumption. If Progresa induced differential elderly out-migration from high-intensity municipalities, we would expect a negative and significant effect on population counts. Columns (1)--(3) report the short-run specification (1992--2002) with $Intensity_{1999} \times Post$; columns (4)--(6) report the long-run specification (1991--2006) with $Intensity_{1999} \times Post$ and $Intensity_{2005} \times Post$. Within each panel, column (1)/(4) uses OLS with population counts as the outcome; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood with population counts. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
-%   }
-% \end{table}
-% \end{landscape}
-
-% \begin{landscape}
-% \begin{table}[H]
-% \RawCaption%
-%   {\caption{\added{Migration Robustness, Triple-Difference: Differential Growth of the 65+ Population Relative to 50--64 in High- vs Low-Intensity Municipalities}}
-%    \label{at:migration_rob_agefe}}
-% \floatbox[{\captop}]{table}[\FBwidth]
-%   {}
-%   {\scalebox{0.9}{
-%       \input{tables/appendix/AT_migration_robustness_ageFE}
-%     }
-%     \vspace{-3mm}
-%     \floatfoot{\added{Notes: This table sharpens the migration robustness check of Appendix Table~\ref{t:migration_rob} by adopting a triple-difference (DDD) specification that uses the within-municipality 50--64 population as a control group for the 65+ population. The dataset is stacked at the municipality $\times$ year $\times$ 5-year age-group level using six annually interpolated 5-year age groups (50--54, 55--59, 60--64, 65--69, 70--74, 75+), constructed via geometric interpolation between the 1990, 1995, 2000, and 2005 census vintages. The indicator $Old65 = 1$ for ages 65+ and $0$ for ages 50--64. The estimating equation is
-%     \[
-%     pop_{m,t,a} = \beta \cdot \big(\textit{Intensity}_{1999,m} \times \textit{Post}_t \times \textit{Old65}_a\big) \,+\, \mu_{m,t} \,+\, \mu_{m,a} \,+\, \mu_{t,a} \,+\, \varepsilon_{m,t,a},
-%     \]
-%     where the long-run specification additionally includes $\textit{Intensity}_{2005} \times \textit{Post} \times \textit{Old65}$. The three saturated two-way fixed effects (Municipality$\times$Year, Municipality$\times$Age, Year$\times$Age) absorb overall municipality-year population growth (so $\beta$ does not pick up the simple fact that pop grew faster in high-intensity municipalities), municipality-specific age composition, and national age-cohort trends respectively. Identification rests on differential post-program growth of the 65+ population \textit{relative to} the 50--64 population in high- versus low-intensity municipalities. A negative coefficient would indicate selective elderly out-migration in high-intensity municipalities. Columns (1)--(3) cover the short-run window (1992--2002); columns (4)--(6) cover the long-run window (1991--2006). Within each panel, column (1)/(4) uses OLS with population counts; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
-%   }
-% \end{table}
-% \end{landscape}
-
 %------------------------------------------------------------
-% SUPERSEDED: the two commented blocks above describe a 6-column
-% short-run/long-run design that was never actually implemented in any
-% version of the underlying code (archived or current) -- only 3 columns
-% (Levels/Log/Poisson) over a single window were ever produced. Left in
-% place as a record of the earlier (unbuilt) intent. The four tables and
-% one figure below are the LIVE migration-robustness exhibits, generated
-% by codes/04_extra_robustness.do and codes/03_experimental.do (see
-% migration_robustness_summary.md for the full writeup). PROVISIONAL --
-% not yet run, and not yet decided whether they stay in the paper.
+% The two never-implemented 6-column short-run/long-run versions of these
+% tables (superseded by the live 3-column exhibits immediately below,
+% and by their historical-record copies at the very end of this file)
+% used to sit here. Uncommented and moved to the end of the appendix per
+% request -- see the note at the bottom of this file.
 %------------------------------------------------------------
 
 \textcolor{red}{
@@ -290,4 +250,58 @@
     \floatfoot{Notes: PROVISIONAL -- see migration\_robustness\_summary.md before citing. This table asks whether the main mortality result depends on migration's ability to move the mortality rate's population denominator. Both columns estimate a Poisson pseudo-maximum-likelihood model of raw death counts on $\textit{Intensity}_{1999} \times \textit{Post}$, $\textit{Intensity}_{2005} \times \textit{Post}$, and Seguro Popular intensity, weighted by the 65+ population, with municipality and year fixed effects; coefficients are reported as $(\exp(\hat\beta)-1)\times 100$, the percentage change in death counts per unit increase in intensity. Column (1) uses the contemporaneous (year-varying) 65+ population as the offset, as in Appendix Table~\ref{at:did_robust_ff}. Column (2) fixes the offset at each municipality's \textbf{1996} (pre-program) 65+ population, so that no post-1997 change in population -- from migration or any other source -- can enter the estimate. If columns (1) and (2) agree, the mortality result does not depend on migration having moved the denominator. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
+}
+
+%------------------------------------------------------------
+% HISTORICAL RECORD (uncommented and moved here per request): the
+% original migration-robustness table designs, drafted before the
+% underlying code was ever built. They describe a 6-column short-run
+% (1992--2002) / long-run (1991--2006) layout that NO version of the code
+% -- archived or current -- ever actually produced; only 3 columns
+% (Levels/Log/Poisson) over a single window exist. \input{} therefore
+% points at the SAME live 3-column .tex outputs as the tables above, so
+% these render with the current data but under a caption/note describing
+% a design that was never implemented. Left visible, at the coauthor's
+% request, as a record of the earlier intent -- not as an additional
+% robustness check, and not decided whether to keep.
+%------------------------------------------------------------
+
+\textcolor{red}{
+\begin{landscape}
+\begin{table}[H]
+\RawCaption%
+  {\caption{\added{[Historical draft, pre-code -- see note] Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts (65+), Highly Marginalized Municipalities}}
+   \label{at:migration_rob_orig}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/appendix/AT_migration_robustness}
+    }
+    \vspace{-3mm}
+    \floatfoot{\added{Notes: HISTORICAL DRAFT -- written before codes/04\_extra\_robustness.do existed and describes a 6-column design that was never built; only the 3-column table above (Appendix Table~\ref{at:migration_rob}) exists. Kept for reference only. Original note: This table tests whether Progresa enrollment intensity predicts changes in the size of the elderly population (65+) at the municipality level, providing a direct check on the selective out-migration threat to the parallel-trends assumption. If Progresa induced differential elderly out-migration from high-intensity municipalities, we would expect a negative and significant effect on population counts. Columns (1)--(3) report the short-run specification (1992--2002) with $Intensity_{1999} \times Post$; columns (4)--(6) report the long-run specification (1991--2006) with $Intensity_{1999} \times Post$ and $Intensity_{2005} \times Post$. Within each panel, column (1)/(4) uses OLS with population counts as the outcome; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood with population counts. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. The sample is restricted to highly marginalized municipalities ($\textit{gm\_mun\_1990} = 4$ or $5$). ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+  }
+\end{table}
+\end{landscape}
+}
+
+\textcolor{red}{
+\begin{landscape}
+\begin{table}[H]
+\RawCaption%
+  {\caption{\added{[Historical draft, pre-code -- see note] Migration Robustness, Triple-Difference: Differential Growth of the 65+ Population Relative to 50--64 in High- vs Low-Intensity Municipalities}}
+   \label{at:migration_rob_agefe_orig}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.9}{
+      \input{tables/appendix/AT_migration_robustness_ageFE}
+    }
+    \vspace{-3mm}
+    \floatfoot{\added{Notes: HISTORICAL DRAFT -- written before codes/04\_extra\_robustness.do existed and describes a 6-column design that was never built; only the 3-column table above (Appendix Table~\ref{at:migration_rob_agefe}) exists. Kept for reference only. Original note: This table sharpens the migration robustness check of Appendix Table~\ref{at:migration_rob_orig} by adopting a triple-difference (DDD) specification that uses the within-municipality 50--64 population as a control group for the 65+ population. The dataset is stacked at the municipality $\times$ year $\times$ 5-year age-group level using six annually interpolated 5-year age groups (50--54, 55--59, 60--64, 65--69, 70--74, 75+), constructed via geometric interpolation between the 1990, 1995, 2000, and 2005 census vintages. The indicator $Old65 = 1$ for ages 65+ and $0$ for ages 50--64. The estimating equation is
+    \[
+    pop_{m,t,a} = \beta \cdot \big(\textit{Intensity}_{1999,m} \times \textit{Post}_t \times \textit{Old65}_a\big) \,+\, \mu_{m,t} \,+\, \mu_{m,a} \,+\, \mu_{t,a} \,+\, \varepsilon_{m,t,a},
+    \]
+    where the long-run specification additionally includes $\textit{Intensity}_{2005} \times \textit{Post} \times \textit{Old65}$. The three saturated two-way fixed effects (Municipality$\times$Year, Municipality$\times$Age, Year$\times$Age) absorb overall municipality-year population growth (so $\beta$ does not pick up the simple fact that pop grew faster in high-intensity municipalities), municipality-specific age composition, and national age-cohort trends respectively. Identification rests on differential post-program growth of the 65+ population \textit{relative to} the 50--64 population in high- versus low-intensity municipalities. A negative coefficient would indicate selective elderly out-migration in high-intensity municipalities. Columns (1)--(3) cover the short-run window (1992--2002); columns (4)--(6) cover the long-run window (1991--2006). Within each panel, column (1)/(4) uses OLS with population counts; column (2)/(5) uses OLS with log population counts; column (3)/(6) uses Poisson pseudo-maximum likelihood. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+  }
+\end{table}
+\end{landscape}
 }
