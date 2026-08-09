@@ -2046,6 +2046,7 @@ di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
 * MIGRATION EVENT STUDY: 65+ POPULATION, YEAR BY YEAR
 * Output: $figures/appendix/AF_migration_es.pdf (levels)
 *         $figures/appendix/AF_migration_es_log.pdf (log)
+*         $figures/appendix/AF_migration_es_poisson.pdf (poisson, % change)
 *
 * The two tables above report a single post-1997 interaction, which
 * cannot distinguish "the program moved population after 1997" from "the
@@ -2060,41 +2061,53 @@ di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
 * year_1995 index 1-16, municipality and year FE, clustered at the
 * municipality), so the two are read side by side.
 *
-* Two versions, one per pair of columns in Appendix Table~\ref{at:migration_rob}:
-* levels (its column 1) and log population (its column 2), following the
-* precedent of Appendix Figure~\ref{af:es_func_form} plotting both a
-* levels and a log panel of the same underlying event study. Poisson is
-* not plotted as an event study here (a coefficient-per-year Poisson
-* profile is a bigger addition, not just a second panel of the same
-* graph) -- can be added the same way if wanted.
+* Three versions, one per column of Appendix Table~\ref{at:migration_rob}:
+* levels (column 1), log population (column 2), and Poisson (column 3),
+* following the precedent of Appendix Figure~\ref{af:es_func_form}
+* plotting a levels, a log, and a Poisson panel of the same underlying
+* event study. The Poisson panel plots (exp(beta_t)-1)*100 per year --
+* the percentage change in population at each year relative to 1996,
+* same transform as column 3's single post-1997 coefficient -- with the
+* delta-method SE exp(beta_t)*se(beta_t)*100.
 *
-* NOTE: under $mig_years == "census" neither figure is meaningful -- there
-* are only three sampled years -- so both are skipped in that case.
+* NOTE: under $mig_years == "census" none of the three figures is
+* meaningful -- there are only three sampled years -- so all three are
+* skipped in that case.
 *============================================================
 if "$mig_years" == "census" {
 	di as text "Population event studies skipped: $mig_years leaves too few years to trace a profile."
 }
 else {
-	foreach spec in lvl log {
+	foreach spec in lvl log poisson {
 		if "`spec'" == "lvl" {
 			local esout_p popover65_
 			local esout_m popover65_m
 			local esout_f popover65_f
 			local es_ytitle "Population 65+ (count)"
 			local es_outfile "$figures/appendix/AF_migration_es.pdf"
+			local es_cmd reghdfe
 		}
-		else {
+		else if "`spec'" == "log" {
 			local esout_p lpopover65
 			local esout_m lpopover65_m
 			local esout_f lpopover65_f
 			local es_ytitle "Log population 65+"
 			local es_outfile "$figures/appendix/AF_migration_es_log.pdf"
+			local es_cmd reghdfe
+		}
+		else {
+			local esout_p popover65_
+			local esout_m popover65_m
+			local esout_f popover65_f
+			local es_ytitle "Population 65+ (% change from 1996)"
+			local es_outfile "$figures/appendix/AF_migration_es_poisson.pdf"
+			local es_cmd ppmlhdfe
 		}
 
 		foreach pnl in p m f {
 			local esout `esout_`pnl''
 
-			capture reghdfe `esout' c.${mig99}##ib6.year_1995 c.sp_intensity ///
+			capture `es_cmd' `esout' c.${mig99}##ib6.year_1995 c.sp_intensity ///
 				if $sample_marg & $mig_yrcond, ///
 				a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 			if !_rc & e(N) > 0 {
@@ -2102,6 +2115,10 @@ else {
 					if `pos' == 6 {
 						local bes_`pnl'_`pos'  = 0
 						local sees_`pnl'_`pos' = 0
+					}
+					else if "`spec'" == "poisson" {
+						local bes_`pnl'_`pos'  = (exp(_b[`pos'.year_1995#c.${mig99}])-1)*100
+						local sees_`pnl'_`pos' = exp(_b[`pos'.year_1995#c.${mig99}])*_se[`pos'.year_1995#c.${mig99}]*100
 					}
 					else {
 						local bes_`pnl'_`pos'  = _b[`pos'.year_1995#c.${mig99}]
@@ -2111,7 +2128,7 @@ else {
 				local esok_`pnl' = 1
 			}
 			else {
-				di as error "Population event study (`spec'), panel `pnl': reghdfe failed (rc=`_rc'); panel skipped"
+				di as error "Population event study (`spec'), panel `pnl': `es_cmd' failed (rc=`_rc'); panel skipped"
 				local esok_`pnl' = 0
 			}
 		}

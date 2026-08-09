@@ -27,12 +27,23 @@ numbers say.
    just no longer visible in the printed table, and needs to stay part of the
    text-level discussion of this table rather than disappear with the row.
 3. Added a log-population companion to the migration event study
-   (`AF_migration_es_log.pdf`, from a new `foreach spec in lvl log` loop
-   around the existing event-study code), matching Appendix Table
-   `at:migration_rob` columns (1)/(2). `figures_app.tex` now shows both as
-   subfigures (a) Levels / (b) Log under one combined note. **The log panel
-   has not been generated yet** — `04_extra_robustness.do` needs to run again
-   before `AF_migration_es_log.pdf` exists on disk.
+   (`AF_migration_es_log.pdf`, from a `foreach spec in lvl log` loop around
+   the existing event-study code), matching Appendix Table `at:migration_rob`
+   columns (1)/(2). `figures_app.tex` now shows both as subfigures (a) Levels
+   / (b) Log under one combined note. **The log panel has not been generated
+   yet** — `04_extra_robustness.do` needs to run again before
+   `AF_migration_es_log.pdf` exists on disk.
+
+**Update (9 Aug 2026, later still) — added a Poisson panel to the event
+study.** The `lvl`/`log` loop is now `foreach spec in lvl log poisson`,
+producing `AF_migration_es_poisson.pdf` (Population 65+, pooled/female/male),
+matching Appendix Table `at:migration_rob` column (3). Coefficients are
+plotted as $(\exp(\hat\beta_t)-1)\times 100$ per year relative to 1996 (the
+same transform as the table's single post-1997 Poisson coefficient), with the
+delta-method SE $\exp(\hat\beta_t)\cdot se(\hat\beta_t)\times 100$.
+`figures_app.tex` now shows three subfigures (a) Levels / (b) Log /
+(c) Poisson. **Not yet generated** — same caveat as the log panel, needs a
+rerun of `04_extra_robustness.do`.
 
 ---
 
