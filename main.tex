@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+\usepackage{calc}
 \usepackage{natbib}
 \usepackage{floatrow,threeparttable}
 \floatsetup[figure]{capposition=top}
@@ -49,14 +50,14 @@
 \newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
 
 % Word count: updated automatically by latexmkrc via texcount on each compile
-% \newcommand{\wordcount}{%
-%   \IfFileExists{wordcount.tex}{\input{wordcount.tex}}{N/A}%
-% }
+\newcommand{\wordcount}{%
+  \IfFileExists{wordcount.tex}{\input{wordcount.tex}}{N/A}%
+}
 
 % Paragraph numbering
-% \newcounter{paragraphnum}
-% \setcounter{paragraphnum}{0}
-% \newcommand{\p}{\refstepcounter{paragraphnum}\textbf{[\theparagraphnum]}\enspace}
+\newcounter{paragraphnum}
+\setcounter{paragraphnum}{0}
+\newcommand{\p}{\refstepcounter{paragraphnum}\textbf{[\theparagraphnum]}\enspace}
 
 \begin{document}
 %TC:ignore
