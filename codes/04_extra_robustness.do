@@ -1533,6 +1533,13 @@ di "Table (commented out) would have been exported to: $tables/T2_b_mortality_fi
 * was always missing. Corrected to `post == 2' below, matching the
 * convention already used for this exact row elsewhere (e.g.
 * AT4_functional_forms' "Mean (1991-1996)" row in 02_mortality.do).
+*
+* FIX 4 (see the fuller writeup at the DDD table below): the first real
+* run of this table (9 Aug 2026) returned "n/a" for the Levels/Log
+* columns even though the log shows both regressions completing
+* successfully -- an ambient, left-over `_rc' from `reghdfe' was being
+* misread as failure. Every `reghdfe'/`ppmlhdfe' call below is now
+* `capture'-prefixed so `_rc' is read cleanly.
 *============================================================
 
 cap drop lpopover65 lpopover65_m lpopover65_f
@@ -1672,7 +1679,7 @@ foreach pnl in p m f {
 	}
 
 	* col 1: Levels (unweighted)
-	reghdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
+	capture reghdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
 		if $sample_marg & $mig_yrcond, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
@@ -1699,7 +1706,7 @@ foreach pnl in p m f {
 	else di as error "Migration robustness, panel `pnl', col 1 (Levels): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 
 	* col 2: Log (unweighted)
-	reghdfe `loutcome' c.${mig99}#i.post c.${mig05}#i.post ///
+	capture reghdfe `loutcome' c.${mig99}#i.post c.${mig05}#i.post ///
 		if $sample_marg & $mig_yrcond, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
@@ -1731,7 +1738,7 @@ foreach pnl in p m f {
 	else di as error "Migration robustness, panel `pnl', col 2 (Log): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 
 	* col 3: Poisson (count outcome)
-	ppmlhdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
+	capture ppmlhdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
 		if $sample_marg & $mig_yrcond, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
@@ -1836,6 +1843,29 @@ di "Table exported to: $tables/appendix/AT_migration_robustness.tex"
 *   fit leaves "n/a" rather than a fabricated "0.000***". Precision is
 *   also widened from 3 to 4 decimals in case the true issue was just
 *   under-precision for a genuinely small DDD coefficient.
+*
+*   FIX 4 (found on the first real run, 9 Aug 2026 log): (ii) above was
+*   itself broken. The Levels/Log columns of BOTH migration tables came
+*   back "n/a" in that run, but the log shows each underlying `reghdfe'
+*   completing normally -- valid coefficient table, correct N, no error
+*   -- immediately before the "leaving cells n/a" message fires. The
+*   Poisson column (`ppmlhdfe', same guard, same data) came back with
+*   real numbers every time. Since a genuine estimation failure with no
+*   `capture' prefix would halt the whole do-file rather than fall
+*   through to the `else' branch, the only way `else' can ever fire here
+*   is a NONZERO `_rc' left over from something that did not abort --
+*   apparently a `reghdfe' internal step (plausibly its own handling of
+*   the collinear `2.post#...' term it drops and reports as a "note", as
+*   seen in the log) does not always reset `_rc' to 0 on exit, even
+*   though ppmlhdfe's does. Net effect: the guard was silently discarding
+*   correct results and replacing them with "n/a" -- a worse failure mode
+*   than the bug it was added to prevent. Fixed by prefixing every
+*   `reghdfe'/`ppmlhdfe' call in both migration tables with `capture',
+*   so `_rc' reflects exactly that command's own outcome rather than
+*   whatever state was already sitting in `_rc' beforehand -- the same
+*   pattern already used successfully (and without this problem) in the
+*   attrition test (03_experimental.do) and the fixed-offset Poisson
+*   table below, both of which returned real numbers on the same run.
 *============================================================
 destring(cve_ent_mun_super), replace
 
@@ -1885,7 +1915,7 @@ foreach pnl in p m f {
 	gen triple05 = ${mig05} * postd * old65
 
 	* col 1: Levels DDD
-	reghdfe pop triple99 triple05 if $sample_marg, ///
+	capture reghdfe pop triple99 triple05 if $sample_marg, ///
 		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
 		vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
@@ -1912,7 +1942,7 @@ foreach pnl in p m f {
 	else di as error "Migration DDD, panel `pnl', col 1 (Levels): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 
 	* col 2: Log DDD
-	reghdfe lpop triple99 triple05 if $sample_marg, ///
+	capture reghdfe lpop triple99 triple05 if $sample_marg, ///
 		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
 		vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
@@ -1939,7 +1969,7 @@ foreach pnl in p m f {
 	else di as error "Migration DDD, panel `pnl', col 2 (Log): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
 
 	* col 3: Poisson DDD
-	ppmlhdfe pop triple99 triple05 if $sample_marg, ///
+	capture ppmlhdfe pop triple99 triple05 if $sample_marg, ///
 		a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) ///
 		vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {

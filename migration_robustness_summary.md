@@ -3,6 +3,11 @@
 Status of the selective-out-migration threat to identification, and the four
 checks now implemented to address it.
 
+**Update (9 Aug 2026):** the code has now actually been run (see §7). The
+results below in §§1–6 are the design writeup from before that run; §7 covers
+what the run found, a real bug it exposed (now fixed), and what the surviving
+numbers say.
+
 ---
 
 ## 1. Background: why this was reopened
@@ -215,3 +220,133 @@ Suggested order:
   mechanism, international-vs-domestic split, no 65+ breakdown) were corroborated
   from secondary sources. A coauthor should check those two specific figures
   against the paper before the paragraph is un-commented.
+
+---
+
+## 7. The first real run (9 Aug 2026) and what it changed
+
+The code was run for the first time (Windows machine, logs in
+`codes/03_experimental_log.log` and `codes/04_extra_robustness_log.log`).
+Three things came out of it.
+
+### 7.1 A real bug, now found and fixed: `capture` was missing
+
+`AT_migration_robustness.tex` and `AT_migration_robustness_ageFE.tex` both came
+back with the Levels and Log columns showing `n/a`, Poisson showing real
+numbers. Reading the log line by line, the `reghdfe` calls behind the `n/a`
+columns **completed successfully** — valid coefficient table, correct N,
+matching the values from the original archived run (e.g. panel A pooled Levels:
+`147.9964`, exactly the old `147.996***`). The "reghdfe failed" message printed
+immediately after that same, valid output.
+
+Since a genuine estimation failure with no `capture` prefix halts the whole
+do-file rather than falling through to an `else` branch, the only way that
+branch could ever fire was a **stale, nonzero `_rc` left over from something
+that didn't actually abort** — most likely `reghdfe`'s own internal handling of
+the collinear `2.post#...` term it drops and reports as a `note:` (visible in
+the log). `ppmlhdfe`, hit with the same collinearity note on the same data,
+did not leave this residue — its columns came back fine on every table, in
+every one of these regressions, without `capture`.
+
+Confirming evidence: the two exhibits that already used `capture reghdfe` /
+`capture ppmlhdfe` — the experimental attrition test and the fixed-offset
+Poisson table — came back with **real numbers on every column, first try**. The
+two that used bare `reghdfe`/`ppmlhdfe` did not.
+
+**Fix:** every `reghdfe`/`ppmlhdfe` call in both migration tables in
+`04_extra_robustness.do` is now `capture`-prefixed, matching the pattern that
+was already working elsewhere. Documented in-code as `FIX 4`. This has not been
+re-run to confirm the fix — the reasoning is solid (it converts the ambiguous
+"what is `_rc` right now" into "what did *this* command return"), but it should
+be verified on the next pass rather than assumed.
+
+**Lesson for anywhere else in this codebase using the same
+`if !_rc & e(N) > 0` guard after a bare (non-`capture`) command:** the guard
+cannot do its intended job in that form. Without `capture`, a true failure halts
+execution before the guard is ever reached, so the guard's `else` branch can
+only ever fire on a false positive. Worth checking whether this pattern was
+copied anywhere else in `04_extra_robustness.do` beyond what this task touched.
+
+### 7.2 What actually ran, once the working columns are read
+
+With Poisson as the only trustworthy column on this run:
+
+| Table | Panel | Intensity 1999 × Post | Intensity 2005 × Post |
+|---|---|---|---|
+| `AT_migration_robustness` (Levels DDD-free) | Pooled | 0.104*** | 0.023 |
+| | Female | 0.114*** | 0.043 |
+| | Male | 0.094*** | 0.004 |
+| `AT_migration_robustness_ageFE` (DDD) | Pooled | −0.0227 (ns) | 0.1531*** |
+| | Female | −0.0434* | 0.2083*** |
+| | Male | −0.0026 (ns) | 0.1040*** |
+
+Two things worth flagging, provisionally (Levels/Log for both tables are still
+unverified pending a re-run with the `capture` fix, so this reading is
+Poisson-only and incomplete):
+
+- The simple table's `Intensity1999 × Post` is **positive and significant**
+  across all three panels — the population *count* interpretation (0.104 in
+  Poisson's `exp(β)−1` scale is a coefficient near the boundary the code's
+  formatting treats specially; treat the precise magnitude as unconfirmed until
+  the Levels column reruns) points the same direction as the original archived
+  run's `147.996***`: more population, not less, in higher-intensity
+  municipalities post-1997. That is the *opposite* of the out-migration story,
+  which would need this to be negative.
+- The DDD table tells a more mixed story: `Intensity1999` (the main design's
+  treatment variable) is small and **not significant** in Pooled and Male, and
+  only marginally significant in Female — consistent with no differential 65+
+  trend once the 50–64 control band absorbs general growth. But
+  `Intensity2005` is positive and significant in all three panels, which the
+  design did not anticipate and needs a substantive explanation before this
+  table can be cited either way.
+
+**Bottom line: this is not yet a clean read.** One-third of the evidence
+(Levels/Log) was thrown away by the `_rc` bug and needs to be regenerated. The
+Poisson-only picture that's left doesn't resolve to a simple "no migration
+threat" story — it's genuinely mixed, and the interpolation-artifact hypothesis
+(§4 above) has not been tested at all yet, since that run used
+`$mig_years = "all"` (the default), not `"census"`.
+
+### 7.3 Attrition and fixed-offset results (these ran cleanly, both columns)
+
+**Experimental attrition** (`AT_attrition_elderly.tex`): among all 65+
+individuals at baseline (Panel A), treatment has no effect on being observed in
+1998 (0.001, ns) but a **significant negative effect on being observed in
+1999** (−0.044***, against a 0.898 control-group mean). Panel B
+(older-adults-only households) shows the same sign but is not significant
+(−0.036, ns), on a much smaller N (1,894 vs. 6,836).
+
+This is the most important single number to come out of this run. Panel A's
+result is a real, randomization-based signal that older adults in treatment
+localities were less likely to remain on the roster by 1999 — precisely the
+identification threat this table was built to test. Recall the caveat that
+must travel with it: this combines death, migration, and ordinary survey
+attrition, and cannot separate them. It does **not** by itself mean people
+migrated. But it also does not support dismissing the migration threat — if
+anything, on this first pass, it points the opposite way (**a real, differential
+effect exists**), which cuts against un-commenting the "not a meaningful
+threat" paragraph as currently worded.
+
+**Fixed pre-program offset Poisson** (`AT_fixed_offset_poisson.tex`): columns
+(1) contemporaneous and (2) fixed-1996 offset are close for every panel
+(Pooled: −2.69 vs. 0.19; Female: 5.92 vs. 9.33; Male: −10.02 vs. −7.38) — none
+significant, same sign pattern, no coefficient flips. This is the reassuring
+result: whatever is happening with population/migration, it is **not** moving
+the headline mortality null. This is the one piece of unambiguous good news
+from this run.
+
+### 7.4 Revised next steps, replacing §6 above
+
+1. **Re-run `04_extra_robustness.do`** now that `FIX 4` is in place, to get real
+   Levels/Log numbers for both migration tables instead of `n/a`.
+2. **Then run under `$mig_years = "census"`** and compare — this still hasn't
+   been tested at all.
+3. **Take the attrition result to coauthors now, separately from the rest.**
+   A significant, randomization-based differential-attrition finding for 65+ by
+   1999 is a real result on its own terms, independent of whatever the
+   municipal-panel tables eventually show, and changes how the "Threats to
+   identification" paragraph should be written — not as "not a meaningful
+   threat" but as something that needs to be addressed head-on, with the
+   fixed-offset result (§7.3) as the mitigating point (the mortality headline
+   survives regardless).
+4. The fixed-offset result is solid as-is and can be cited with confidence.
