@@ -1458,6 +1458,126 @@ di "Table exported to: $tables/T3_experimental_slide.tex"
 * sample groups are separated by a spanning header. The former age-51+ visits column
 * was removed. All elderly-only locals are computed before the write block.
 
+*============================================================
+* APPENDIX TABLE: EXPERIMENTAL ATTRITION / OUT-MIGRATION OF OLDER ADULTS
+* Output: $tables/appendix/AT_attrition_elderly.tex
+*
+* WHY THIS EXISTS. The paper's out-migration threat is currently argued
+* from \cite{StecklovWintersStampiniDavis2005Demography}, who study
+* Progresa migration on this same experimental evaluation but -- as our
+* own footnote concedes -- report NO estimates for household members aged
+* 65 and older. That leaves the age group our mortality result is about
+* uncovered by the very citation used to reassure the reader about it.
+* This block closes that gap directly: it runs the age-65+ test Stecklov
+* et al. did not, on randomized treatment assignment, using the 1997
+* baseline cohort this file already builds.
+*
+* DESIGN. The panel here keeps rondas 1/3/5 and drops post-1997 entrants
+* (the `newindiv' drop), so it is a fixed 1997 cohort: every individual
+* enumerated at baseline either reappears in a later round or does not.
+* For the baseline 65+ cohort we therefore observe, per person:
+*     present98 = 1{observed in ronda 3}
+*     present99 = 1{observed in ronda 5}
+* and regress these on randomized treatment, clustering at the locality
+* (randomization) level with municipality FE -- the same specification as
+* equation (\ref{eq:exp_did}) in the paper, minus the year interaction
+* since the outcome is defined once per person.
+*
+* Because assignment is randomized, a null here means the program did not
+* differentially remove older adults from treatment localities, which is
+* precisely the assumption the municipal DiD needs. A significant
+* NEGATIVE coefficient would mean treatment-locality older adults
+* disappear from the roster faster -- the selective-out-migration story
+* the appendix tables can only test indirectly.
+*
+* IMPORTANT CAVEAT (stated in the note, and in the paper if this is
+* used): roster disappearance = death + migration + ordinary survey
+* attrition. ENCEL's 1997-99 rounds do not let us cleanly separate them
+* here, so this is a test of DIFFERENTIAL TOTAL ATTRITION, not of
+* migration alone. That is still the right test for the identification
+* threat -- any of the three channels, if differential by treatment,
+* biases the mortality comparison -- but it must not be described as a
+* pure migration estimate. Panel B restricts to older-adults-only
+* households, where the direct food transfer is the only benefit
+* received, as the subgroup with the strongest mechanical reason to move.
+*============================================================
+preserve
+
+keep if age97 >= 65 & !missing(age97)
+
+* One row per baseline individual, with presence flags for the later rounds
+* Computed over ALL rounds, before the ronda==1 restriction below.
+bys pid: egen byte present98 = max(ronda == 3)
+bys pid: egen byte present99 = max(ronda == 5)
+gen byte anyattrit = 1 - present99
+label var present98 "Observed in 1998 round"
+label var present99 "Observed in 1999 round"
+label var anyattrit "Attrited by 1999 (not observed in ronda 5)"
+
+* Collapse to the person level: the outcome is defined once per person,
+* so keeping all three rounds would replicate each person up to 3 times
+* and understate the standard errors.
+keep if ronda == 1
+capture isid pid
+if _rc di as error "WARNING: pid is not unique within ronda==1 -- attrition SEs may be understated; check the roster build."
+
+foreach pnl in all eob {
+    if "`pnl'" == "all" local acond ""
+    else                local acond "& only_elderly_base == 1"
+
+    foreach yv in present98 present99 {
+        * Control mean = untreated baseline-65+ share still on the roster
+        quietly summarize `yv' if contba == 0 `acond' & !missing(`yv', contba, claveofi)
+        local cm_`pnl'_`yv' : di %9.3f r(mean)
+
+        capture reghdfe `yv' contba if !missing(`yv', contba, claveofi) `acond', ///
+            absorb(clavemun) vce(cluster claveofi)
+        if !_rc & e(N) > 0 {
+            local aux : di %9.3f _b[contba]
+            local tstat = abs(_b[contba] / _se[contba])
+            if      `tstat' >= 2.576 local b_`pnl'_`yv' = trim("`aux'") + "***"
+            else if `tstat' >= 1.960 local b_`pnl'_`yv' = trim("`aux'") + "**"
+            else if `tstat' >= 1.645 local b_`pnl'_`yv' = trim("`aux'") + "*"
+            else                     local b_`pnl'_`yv' = trim("`aux'")
+            local se_`pnl'_`yv' : di %9.3f _se[contba]
+            local N_`pnl'_`yv'  : di %12.0fc e(N)
+        }
+        else {
+            di as error "Attrition test, panel `pnl', outcome `yv': reghdfe failed or empty sample (rc=`_rc')"
+            local b_`pnl'_`yv'  "n/a"
+            local se_`pnl'_`yv' "n/a"
+            local N_`pnl'_`yv'  "n/a"
+        }
+    }
+}
+
+{
+    cap file close at
+    file open at using "$tables/appendix/AT_attrition_elderly.tex", write replace
+    file write at "\begin{tabular}{lcc} \hline \hline" _n
+    file write at "& Observed in 1998 & Observed in 1999 \\ " _n
+    file write at "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+    file write at "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
+    file write at "\underline{\textit{Panel A: All older adults (65+ at baseline)}} \\ " _n
+    file write at "\textit{Treatment} & `b_all_present98' & `b_all_present99' \\ " _n
+    file write at " & (`se_all_present98') & (`se_all_present99') \\ " _n
+    file write at "  & & \\ " _n
+    file write at "Control Mean & `cm_all_present98' & `cm_all_present99' \\ " _n
+    file write at "Observations & `N_all_present98' & `N_all_present99' \\ " _n
+    file write at "  & & \\ " _n
+    file write at "\underline{\textit{Panel B: Older-adults-only households}} \\ " _n
+    file write at "\textit{Treatment} & `b_eob_present98' & `b_eob_present99' \\ " _n
+    file write at " & (`se_eob_present98') & (`se_eob_present99') \\ " _n
+    file write at "  & & \\ " _n
+    file write at "Control Mean & `cm_eob_present98' & `cm_eob_present99' \\ " _n
+    file write at "Observations & `N_eob_present98' & `N_eob_present99' \\ \bottomrule" _n
+    file write at "\end{tabular}"
+    file close at
+}
+di "Table exported to: $tables/appendix/AT_attrition_elderly.tex"
+
+restore
+
 **Household level analysis**
 **collapse to household level**
 ** distinguish between households with aging members and households without**

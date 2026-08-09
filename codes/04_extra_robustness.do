@@ -1585,6 +1585,44 @@ global mig_intensity "yearvar"
 *global mig_intensity "pv_fixed"
 *global mig_intensity "pre1990"
 
+*------------------------------------------------------------
+* SECOND SWITCH ($mig_years): which YEARS the migration test may use.
+*
+* This matters more than it looks. The 65+ population series is not
+* observed annually -- 01_mortality_data.do builds it by GEOMETRIC
+* INTERPOLATION between census anchors (1990, 1995, 2000, 2005), applying
+* a constant per-municipality growth multiplier within each inter-census
+* segment. Two consequences for this table:
+*
+*   (i) Within a segment, every municipality's population grows at a
+*       constant rate BY CONSTRUCTION. The post-1997 break the DiD looks
+*       for falls INSIDE the 1995-2000 segment, where no break can exist
+*       in the data-generating process. So an estimated "post-1997
+*       population effect" on the annual panel is not picking up anything
+*       that happened in 1997; it is a re-expression of the difference
+*       between the 1995-2000 and 2000-2005 census growth rates.
+*
+*  (ii) N is inflated roughly 16-fold relative to the number of genuinely
+*       observed population figures, so the standard errors are far too
+*       small and significance is close to mechanical. This is the most
+*       likely explanation for the very tight, very significant estimates
+*       (e.g. 147.996***) the archived run produced.
+*
+* "census" restricts to years the population is actually MEASURED rather
+* than interpolated. Within the 1991-2006 panel those are 1995, 2000 and
+* 2005 (1990 falls outside the panel), giving one pre-program and two
+* post-program observations per municipality -- thin, and with no scope
+* for a pre-trend test, but honest. Treat a disagreement between "all"
+* and "census" as evidence that the annual result is interpolation
+* artifact, not migration.
+*------------------------------------------------------------
+global mig_years "all"
+*global mig_years "census"
+
+if "$mig_years" == "census" global mig_yrcond "inlist(year,1995,2000,2005)"
+else                        global mig_yrcond "inrange(year,1991,2006)"
+di "Migration robustness year sample: $mig_years  ->  $mig_yrcond"
+
 if "$mig_intensity" == "pv_fixed" {
 	global mig99 inten1999_fix
 	global mig05 inten2005_fix
@@ -1635,7 +1673,7 @@ foreach pnl in p m f {
 
 	* col 1: Levels (unweighted)
 	reghdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
-		if $sample_marg & year>=1991 & year<=2006, ///
+		if $sample_marg & $mig_yrcond, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
 		local aux: di %12.3f _b[1.post#c.${mig99}]
@@ -1662,7 +1700,7 @@ foreach pnl in p m f {
 
 	* col 2: Log (unweighted)
 	reghdfe `loutcome' c.${mig99}#i.post c.${mig05}#i.post ///
-		if $sample_marg & year>=1991 & year<=2006, ///
+		if $sample_marg & $mig_yrcond, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
 		local aux: di %12.3f _b[1.post#c.${mig99}]
@@ -1694,7 +1732,7 @@ foreach pnl in p m f {
 
 	* col 3: Poisson (count outcome)
 	ppmlhdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
-		if $sample_marg & year>=1991 & year<=2006, ///
+		if $sample_marg & $mig_yrcond, ///
 		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 	if !_rc & e(N) > 0 {
 		local aux: di %12.3f exp(_b[1.post#c.${mig99}])-1
@@ -1819,7 +1857,7 @@ foreach pnl in p m f {
 	keep cve_ent_mun_super year $mig99 $mig05 post gm_mun_1990 ///
 		pop5054`sfx' pop5559`sfx' pop6064`sfx' ///
 		pop6569`sfx' pop7074`sfx' popover70`sfx'
-	keep if year>=1991 & year<=2006
+	keep if $mig_yrcond
 
 	gen popover75`sfx' = popover70`sfx' - pop7074`sfx'
 	drop popover70`sfx'
@@ -1972,5 +2010,212 @@ foreach pnl in p m f {
 	file close sm
 }
 di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
+
+*============================================================
+* MIGRATION EVENT STUDY: 65+ POPULATION, YEAR BY YEAR
+* Output: $figures/appendix/AF_migration_es.pdf
+*
+* The two tables above report a single post-1997 interaction, which
+* cannot distinguish "the program moved population after 1997" from "the
+* two groups of municipalities were already on different population
+* trajectories". This is the same distinction the paper already insists
+* on for mortality, applied to the migration threat: if the apparent
+* population effect is present BEFORE 1997, it is not the program, and
+* the threat is a pre-existing difference in demographic trends rather
+* than program-induced out-migration.
+*
+* Same construction as the mortality event studies (reference year 1996,
+* year_1995 index 1-16, municipality and year FE, clustered at the
+* municipality), so the two are read side by side.
+*
+* NOTE: under $mig_years == "census" this figure is not meaningful --
+* there are only three sampled years -- so it is skipped in that case.
+*============================================================
+if "$mig_years" == "census" {
+	di as text "Population event study skipped: $mig_years leaves too few years to trace a profile."
+}
+else {
+	foreach pnl in p m f {
+		if      "`pnl'" == "p" local esout popover65_
+		else if "`pnl'" == "m" local esout popover65_m
+		else                   local esout popover65_f
+
+		capture reghdfe `esout' c.${mig99}##ib6.year_1995 c.sp_intensity ///
+			if $sample_marg & $mig_yrcond, ///
+			a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		if !_rc & e(N) > 0 {
+			forval pos = 1/16 {
+				if `pos' == 6 {
+					local bes_`pnl'_`pos'  = 0
+					local sees_`pnl'_`pos' = 0
+				}
+				else {
+					local bes_`pnl'_`pos'  = _b[`pos'.year_1995#c.${mig99}]
+					local sees_`pnl'_`pos' = _se[`pos'.year_1995#c.${mig99}]
+				}
+			}
+			local esok_`pnl' = 1
+		}
+		else {
+			di as error "Population event study, panel `pnl': reghdfe failed (rc=`_rc'); panel skipped"
+			local esok_`pnl' = 0
+		}
+	}
+
+	if `esok_p' == 1 & `esok_m' == 1 & `esok_f' == 1 {
+		preserve
+		clear
+		set obs 16
+		gen yr_pos = _n
+		gen xpos_p = yr_pos - 0.18
+		gen xpos_m = yr_pos
+		gen xpos_f = yr_pos + 0.18
+		foreach s in p m f {
+			gen b_`s'  = .
+			gen hi_`s' = .
+			gen lo_`s' = .
+		}
+		forval pos = 1/16 {
+			foreach s in p m f {
+				replace b_`s'  = `bes_`s'_`pos''                          if yr_pos == `pos'
+				replace hi_`s' = `bes_`s'_`pos'' + 1.96 * `sees_`s'_`pos'' if yr_pos == `pos'
+				replace lo_`s' = `bes_`s'_`pos'' - 1.96 * `sees_`s'_`pos'' if yr_pos == `pos'
+			}
+		}
+
+		twoway ///
+			(rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+			(scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(vsmall)) ///
+			(rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+			(scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) ///
+			(rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+			(scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+			(line b_p xpos_p if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+			(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+			(line b_m xpos_m if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+			xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+			xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+			xscale(range(0.5 16.5)) ///
+			xtitle("") ///
+			ytitle("Population 65+ (count)", size(medsmall)) ///
+			ylabel(, grid gmin gmax labsize(small)) ///
+			legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+				cols(3) size(small) position(6) ring(1) ///
+				region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+			graphregion(color(white)) ///
+			plotregion(margin(l=1 r=1))
+		graph export "$figures/appendix/AF_migration_es.pdf", as(pdf) replace
+		restore
+		di "Figure exported to: $figures/appendix/AF_migration_es.pdf"
+	}
+	else di as error "Population event study not plotted: at least one panel failed to estimate."
+}
+
+*============================================================
+* MORTALITY WITH A PRE-PROGRAM (FIXED) POPULATION OFFSET
+* Output: $tables/appendix/AT_fixed_offset_poisson.tex
+*
+* This is the check that makes the migration threat moot for the paper's
+* HEADLINE result rather than merely testing it.
+*
+* Migration threatens the mortality estimate through the DENOMINATOR: the
+* outcome emr65 = death65*1000/popover65_ divides by a contemporaneous,
+* post-program population that migration can move. If instead we model
+* raw DEATH COUNTS with an offset FIXED at each municipality's 1996
+* (pre-program) 65+ population, no post-1997 population change can enter
+* the estimate at all -- by construction, not by assumption. Column (2)
+* is therefore immune to the entire selective-out-migration story.
+*
+* Column (1) repeats the standard Poisson with the contemporaneous
+* offset (as in AT4_functional_forms) so the two are directly comparable:
+* if (1) and (2) agree, migration cannot be driving the mortality null,
+* whatever the population tables happen to show.
+*============================================================
+cap drop popover65_1996 popover65_m1996 popover65_f1996
+foreach sfx in "_" "_m" "_f" {
+	g aux = popover65`sfx' if year == 1996
+	bys cve_ent_mun_super: egen popover65`sfx'1996 = min(aux)
+	drop aux
+}
+cap drop lpop96 lpop96_m lpop96_f
+g lpop96   = log(popover65_1996)
+g lpop96_m = log(popover65_m1996)
+g lpop96_f = log(popover65_f1996)
+
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local dout death65
+		local offc lpopover65
+		local offf lpop96
+		local wv   popover65_
+	}
+	else if "`pnl'" == "m" {
+		local dout death65m
+		local offc lpopover65_m
+		local offf lpop96_m
+		local wv   popover65_m
+	}
+	else {
+		local dout death65f
+		local offc lpopover65_f
+		local offf lpop96_f
+		local wv   popover65_f
+	}
+
+	foreach c in 1 2 {
+		local bFO_`pnl'_`c'  "n/a"
+		local seFO_`pnl'_`c' "n/a"
+		local NFO_`pnl'_`c'  "n/a"
+	}
+
+	* col 1: contemporaneous offset (the standard specification)
+	* col 2: offset fixed at the 1996 pre-program population
+	forval c = 1/2 {
+		if `c' == 1 local offset_use `offc'
+		else        local offset_use `offf'
+
+		capture ppmlhdfe `dout' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+			[pw=`wv'] if $sample_marg, a(year cve_ent_mun_super) ///
+			offset(`offset_use') vce(cluster cve_ent_mun_super)
+		if !_rc & e(N) > 0 {
+			local aux : di %12.2f (exp(_b[1.post#c.inten1999])-1)*100
+			local seFO_`pnl'_`c' : di %12.2f exp(_b[1.post#c.inten1999])*_se[1.post#c.inten1999]*100
+			local t = abs(`aux' / `seFO_`pnl'_`c'')
+			if      `t' >= 2.576 local bFO_`pnl'_`c' = "`aux'***"
+			else if `t' >= 1.96  local bFO_`pnl'_`c' = "`aux'**"
+			else if `t' >= 1.645 local bFO_`pnl'_`c' = "`aux'*"
+			else                  local bFO_`pnl'_`c' = "`aux'"
+			local NFO_`pnl'_`c' : di %12.0fc e(N)
+		}
+		else di as error "Fixed-offset Poisson, panel `pnl', col `c': ppmlhdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+	}
+}
+
+{
+	cap file close fo
+	file open fo using "$tables/appendix/AT_fixed_offset_poisson.tex", write replace
+	file write fo "\begin{tabular}{lcc} \hline \hline" _n
+	file write fo "& Contemporaneous offset & Fixed 1996 offset \\ " _n
+	file write fo "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+	file write fo "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
+	file write fo "\underline{\textit{Panel A: Pooled}} \\ " _n
+	file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_p_1' & `bFO_p_2' \\ " _n
+	file write fo " & (`seFO_p_1') & (`seFO_p_2') \\ " _n
+	file write fo "Obs & `NFO_p_1' & `NFO_p_2' \\ " _n
+	file write fo "  & & \\ " _n
+	file write fo "\underline{\textit{Panel B: Females}} \\ " _n
+	file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_f_1' & `bFO_f_2' \\ " _n
+	file write fo " & (`seFO_f_1') & (`seFO_f_2') \\ " _n
+	file write fo "Obs & `NFO_f_1' & `NFO_f_2' \\ " _n
+	file write fo "  & & \\ " _n
+	file write fo "\underline{\textit{Panel C: Males}} \\ " _n
+	file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_m_1' & `bFO_m_2' \\ " _n
+	file write fo " & (`seFO_m_1') & (`seFO_m_2') \\ " _n
+	file write fo "Obs & `NFO_m_1' & `NFO_m_2' \\ \bottomrule" _n
+	file write fo "\end{tabular}"
+	file close fo
+}
+di "Table exported to: $tables/appendix/AT_fixed_offset_poisson.tex"
 
 log close
