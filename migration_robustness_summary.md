@@ -8,6 +8,11 @@ results below in §§1–6 are the design writeup from before that run; §7 cove
 what the run found, a real bug it exposed (now fixed), and what the surviving
 numbers say.
 
+**Latest update (9 Aug 2026, evening) — read §8, not §7.2.** A second run
+confirms the `capture` fix from §7.1 worked: both migration tables are now
+fully populated (Levels/Log/Poisson, no `n/a`). §7.2's "Poisson-only" reading
+is superseded — §8 has the complete picture and a revised bottom line.
+
 **Update (9 Aug 2026, later same day) — three edits made at Felipe's request:**
 1. Deleted the "historical draft" pre-code table versions from `tables_app.tex`
    entirely (they duplicated the live tables' `\input{}` under a stale,
@@ -343,6 +348,69 @@ Poisson-only picture that's left doesn't resolve to a simple "no migration
 threat" story — it's genuinely mixed, and the interpolation-artifact hypothesis
 (§4 above) has not been tested at all yet, since that run used
 `$mig_years = "all"` (the default), not `"census"`.
+
+---
+
+## 8. Second run (9 Aug 2026, evening) — the `capture` fix confirmed, full table now readable
+
+A rerun came back with all three columns populated (no `n/a`) in both tables —
+the `FIX 4` `capture` fix worked. This replaces the Poisson-only reading in
+§7.2, which understated how strong the simple table's result is and missed
+that the DDD table's story is more specific than "Intensity2005 only."
+
+**`AT_migration_robustness` (simple, no DDD) — Intensity1999 × Post:**
+
+| Panel | Levels | Log | Poisson |
+|---|---|---|---|
+| Pooled | 147.996\*\*\* | 0.167\*\*\* | 0.104\*\*\* |
+| Female | 78.800\*\*\* | 0.180\*\*\* | 0.114\*\*\* |
+| Male | 69.210\*\*\* | 0.158\*\*\* | 0.094\*\*\* |
+
+All positive, all significant at 1%, across every functional form and every
+panel. This is now unambiguous, not just a Poisson artifact: the 65+
+population is **growing faster**, not shrinking, in higher-intensity
+municipalities post-1997. Exactly the opposite sign from what an
+out-migration story requires.
+
+**`AT_migration_robustness_ageFE` (DDD) — Intensity1999 × Post × Old65:**
+
+| Panel | Levels | Log | Poisson |
+|---|---|---|---|
+| Pooled | −14.39\*\*\* | −0.034 (ns) | −0.023 (ns) |
+| Female | −9.44\*\*\* | −0.046 (ns) | −0.043\* |
+| Male | −4.91\*\* | 0.001 (ns) | −0.003 (ns) |
+
+This is the one to look at closely, and it does **not** simply confirm "no
+migration" either. Levels is negative and significant in all three panels —
+a real differential-growth signal in absolute headcounts once the 50–64 band
+absorbs general municipality growth. But Log and Poisson — both scale-robust,
+percentage-based — are not significant (Female Poisson only marginally, at
+10%). That split is itself informative: a level-only effect that vanishes in
+percentage terms is the signature of a result driven by a handful of
+large-population municipalities dominating an unweighted OLS-levels
+regression, not a broad-based proportional effect. **Recommended next check
+before drawing any conclusion from this table:** trim or weight by population
+(the same kind of check the paper already runs on the BR replication,
+Appendix Table `at:br_trimming`) to see whether the Levels result survives
+outside the largest few municipalities.
+
+**Revised bottom line, replacing §7.2's:**
+- The simple table's positive, uniformly-significant result across all three
+  functional forms is now solid evidence *against* the out-migration story on
+  its own terms (population up, not down) — though see §4's interpolation
+  caveat, still untested (`$mig_years = "census"` has not been run).
+- The DDD table shows a genuine but functional-form-dependent signal: real in
+  levels, absent in percentage terms. Not a clean confirmation of migration,
+  not a clean null either — needs the population-weighting/trimming check
+  above before it can be cited in either direction.
+- Combined with the attrition test (§7.3: a real, randomization-based,
+  significant drop in observing 65+ individuals by 1999 in treatment
+  localities) and the fixed-offset Poisson (§7.3: the mortality headline is
+  unaffected either way), the overall picture is: **something around
+  population/attrition is really happening and is not yet fully understood,
+  but it does not appear to threaten the mortality result itself.** That is a
+  meaningfully different, and more defensible, thing to write in the paper
+  than "not a meaningful threat."
 
 ### 7.3 Attrition and fixed-offset results (these ran cleanly, both columns)
 
