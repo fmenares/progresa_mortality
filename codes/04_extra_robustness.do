@@ -1773,31 +1773,29 @@ foreach pnl in p m f {
 	file write sm "& Levels & Log & Poisson \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	* NOTE: Intensity 2005 x Post is estimated and included as a control in
+	* every regression above (needed to isolate the early-phase Intensity
+	* 1999 coefficient) but is not printed below, matching the convention
+	* already used for Table~\ref{t:did_age} in the main text ("included
+	* in every regression as a control but is not reported, as it has no
+	* stand-alone interpretation in this specification"). The bMG05_*/
+	* seMG05_* locals above are still computed for anyone who wants them.
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_p_1' & `bMG99_p_2' & `bMG99_p_3' \\ " _n
 	file write sm "  & (`seMG99_p_1') & (`seMG99_p_2') & (`seMG99_p_3') \\ " _n
-	file write sm "   & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_p_1' & `bMG05_p_2' & `bMG05_p_3' \\ " _n
-	file write sm " & (`seMG05_p_1') & (`seMG05_p_2') & (`seMG05_p_3') \\ " _n
-	file write sm "  & & & \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & `bMG99_f_2' & `bMG99_f_3' \\ " _n
 	file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_f_1' & `bMG05_f_2' & `bMG05_f_3' \\ " _n
-	file write sm " & (`seMG05_f_1') & (`seMG05_f_2') & (`seMG05_f_3') \\ " _n
-	file write sm "   & & & \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_3' \\ " _n
 	file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `bMG05_m_2' & `bMG05_m_3' \\ " _n
-	file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') \\ " _n
-	file write sm " & & & \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' \\ " _n
@@ -2005,31 +2003,34 @@ foreach pnl in p m f {
 	file write sm "& Levels & Log & Poisson \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	* NOTE: Intensity 2005 x Post x Old65 is estimated in every regression
+	* above but not printed below, matching the display convention used
+	* for the simple migration table and for Table~\ref{t:did_age} in the
+	* main text. UNLIKE the simple table, this coefficient is NOT purely a
+	* nuisance control here -- it is a second, independently meaningful
+	* differential-trend test, and on the one real run so far it came back
+	* significant in all three panels while Intensity 1999 did not (see
+	* migration_robustness_summary.md, Sec. 7.2). Dropping it from the
+	* printed table does not make that finding go away; it is still in
+	* the bDDD05_*/seDDD05_* locals above and in the run log, and belongs
+	* in the text/summary discussion of this table even though it is not
+	* shown in the table itself.
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_1' & `bDDD99_p_2' & `bDDD99_p_3' \\ " _n
 	file write sm "  & (`seDDD99_p_1') & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
-	file write sm "   & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_p_1' & `bDDD05_p_2' & `bDDD05_p_3' \\ " _n
-	file write sm " & (`seDDD05_p_1') & (`seDDD05_p_2') & (`seDDD05_p_3') \\ " _n
-	file write sm "  & & & \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_1' & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_1' & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
 	file write sm "  & (`seDDD99_f_1') & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_f_1' & `bDDD05_f_2' & `bDDD05_f_3' \\ " _n
-	file write sm " & (`seDDD05_f_1') & (`seDDD05_f_2') & (`seDDD05_f_3') \\ " _n
-	file write sm "   & & & \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_1' & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
 	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_1' & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
 	file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
-	file write sm "  & & & \\ " _n
-	file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_m_1' & `bDDD05_m_2' & `bDDD05_m_3' \\ " _n
-	file write sm " & (`seDDD05_m_1') & (`seDDD05_m_2') & (`seDDD05_m_3') \\ " _n
-	file write sm " & & & \\ " _n
+	file write sm "  & & &  \\ " _n
 	file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
 	file write sm "  & & &  \\ " _n
 	file write sm "Obs & `NDDD_f_1' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
@@ -2043,7 +2044,8 @@ di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
 
 *============================================================
 * MIGRATION EVENT STUDY: 65+ POPULATION, YEAR BY YEAR
-* Output: $figures/appendix/AF_migration_es.pdf
+* Output: $figures/appendix/AF_migration_es.pdf (levels)
+*         $figures/appendix/AF_migration_es_log.pdf (log)
 *
 * The two tables above report a single post-1997 interaction, which
 * cannot distinguish "the program moved population after 1997" from "the
@@ -2058,88 +2060,111 @@ di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
 * year_1995 index 1-16, municipality and year FE, clustered at the
 * municipality), so the two are read side by side.
 *
-* NOTE: under $mig_years == "census" this figure is not meaningful --
-* there are only three sampled years -- so it is skipped in that case.
+* Two versions, one per pair of columns in Appendix Table~\ref{at:migration_rob}:
+* levels (its column 1) and log population (its column 2), following the
+* precedent of Appendix Figure~\ref{af:es_func_form} plotting both a
+* levels and a log panel of the same underlying event study. Poisson is
+* not plotted as an event study here (a coefficient-per-year Poisson
+* profile is a bigger addition, not just a second panel of the same
+* graph) -- can be added the same way if wanted.
+*
+* NOTE: under $mig_years == "census" neither figure is meaningful -- there
+* are only three sampled years -- so both are skipped in that case.
 *============================================================
 if "$mig_years" == "census" {
-	di as text "Population event study skipped: $mig_years leaves too few years to trace a profile."
+	di as text "Population event studies skipped: $mig_years leaves too few years to trace a profile."
 }
 else {
-	foreach pnl in p m f {
-		if      "`pnl'" == "p" local esout popover65_
-		else if "`pnl'" == "m" local esout popover65_m
-		else                   local esout popover65_f
-
-		capture reghdfe `esout' c.${mig99}##ib6.year_1995 c.sp_intensity ///
-			if $sample_marg & $mig_yrcond, ///
-			a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		if !_rc & e(N) > 0 {
-			forval pos = 1/16 {
-				if `pos' == 6 {
-					local bes_`pnl'_`pos'  = 0
-					local sees_`pnl'_`pos' = 0
-				}
-				else {
-					local bes_`pnl'_`pos'  = _b[`pos'.year_1995#c.${mig99}]
-					local sees_`pnl'_`pos' = _se[`pos'.year_1995#c.${mig99}]
-				}
-			}
-			local esok_`pnl' = 1
+	foreach spec in lvl log {
+		if "`spec'" == "lvl" {
+			local esout_p popover65_
+			local esout_m popover65_m
+			local esout_f popover65_f
+			local es_ytitle "Population 65+ (count)"
+			local es_outfile "$figures/appendix/AF_migration_es.pdf"
 		}
 		else {
-			di as error "Population event study, panel `pnl': reghdfe failed (rc=`_rc'); panel skipped"
-			local esok_`pnl' = 0
+			local esout_p lpopover65
+			local esout_m lpopover65_m
+			local esout_f lpopover65_f
+			local es_ytitle "Log population 65+"
+			local es_outfile "$figures/appendix/AF_migration_es_log.pdf"
 		}
-	}
 
-	if `esok_p' == 1 & `esok_m' == 1 & `esok_f' == 1 {
-		preserve
-		clear
-		set obs 16
-		gen yr_pos = _n
-		gen xpos_p = yr_pos - 0.18
-		gen xpos_m = yr_pos
-		gen xpos_f = yr_pos + 0.18
-		foreach s in p m f {
-			gen b_`s'  = .
-			gen hi_`s' = .
-			gen lo_`s' = .
-		}
-		forval pos = 1/16 {
-			foreach s in p m f {
-				replace b_`s'  = `bes_`s'_`pos''                          if yr_pos == `pos'
-				replace hi_`s' = `bes_`s'_`pos'' + 1.96 * `sees_`s'_`pos'' if yr_pos == `pos'
-				replace lo_`s' = `bes_`s'_`pos'' - 1.96 * `sees_`s'_`pos'' if yr_pos == `pos'
+		foreach pnl in p m f {
+			local esout `esout_`pnl''
+
+			capture reghdfe `esout' c.${mig99}##ib6.year_1995 c.sp_intensity ///
+				if $sample_marg & $mig_yrcond, ///
+				a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			if !_rc & e(N) > 0 {
+				forval pos = 1/16 {
+					if `pos' == 6 {
+						local bes_`pnl'_`pos'  = 0
+						local sees_`pnl'_`pos' = 0
+					}
+					else {
+						local bes_`pnl'_`pos'  = _b[`pos'.year_1995#c.${mig99}]
+						local sees_`pnl'_`pos' = _se[`pos'.year_1995#c.${mig99}]
+					}
+				}
+				local esok_`pnl' = 1
+			}
+			else {
+				di as error "Population event study (`spec'), panel `pnl': reghdfe failed (rc=`_rc'); panel skipped"
+				local esok_`pnl' = 0
 			}
 		}
 
-		twoway ///
-			(rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
-			(scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(vsmall)) ///
-			(rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
-			(scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) ///
-			(rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
-			(scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
-			(line b_p xpos_p if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
-			(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
-			(line b_m xpos_m if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
-			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
-			xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
-			xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
-			xscale(range(0.5 16.5)) ///
-			xtitle("") ///
-			ytitle("Population 65+ (count)", size(medsmall)) ///
-			ylabel(, grid gmin gmax labsize(small)) ///
-			legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
-				cols(3) size(small) position(6) ring(1) ///
-				region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
-			graphregion(color(white)) ///
-			plotregion(margin(l=1 r=1))
-		graph export "$figures/appendix/AF_migration_es.pdf", as(pdf) replace
-		restore
-		di "Figure exported to: $figures/appendix/AF_migration_es.pdf"
+		if `esok_p' == 1 & `esok_m' == 1 & `esok_f' == 1 {
+			preserve
+			clear
+			set obs 16
+			gen yr_pos = _n
+			gen xpos_p = yr_pos - 0.18
+			gen xpos_m = yr_pos
+			gen xpos_f = yr_pos + 0.18
+			foreach s in p m f {
+				gen b_`s'  = .
+				gen hi_`s' = .
+				gen lo_`s' = .
+			}
+			forval pos = 1/16 {
+				foreach s in p m f {
+					replace b_`s'  = `bes_`s'_`pos''                          if yr_pos == `pos'
+					replace hi_`s' = `bes_`s'_`pos'' + 1.96 * `sees_`s'_`pos'' if yr_pos == `pos'
+					replace lo_`s' = `bes_`s'_`pos'' - 1.96 * `sees_`s'_`pos'' if yr_pos == `pos'
+				}
+			}
+
+			twoway ///
+				(rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+				(scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(vsmall)) ///
+				(rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+				(scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) ///
+				(rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+				(scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+				(line b_p xpos_p if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+				(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+				(line b_m xpos_m if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+				yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+				xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+				xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+				xscale(range(0.5 16.5)) ///
+				xtitle("") ///
+				ytitle("`es_ytitle'", size(medsmall)) ///
+				ylabel(, grid gmin gmax labsize(small)) ///
+				legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+					cols(3) size(small) position(6) ring(1) ///
+					region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+				graphregion(color(white)) ///
+				plotregion(margin(l=1 r=1))
+			graph export "`es_outfile'", as(pdf) replace
+			restore
+			di "Figure exported to: `es_outfile'"
+		}
+		else di as error "Population event study (`spec') not plotted: at least one panel failed to estimate."
 	}
-	else di as error "Population event study not plotted: at least one panel failed to estimate."
 }
 
 *============================================================

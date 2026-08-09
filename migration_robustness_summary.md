@@ -8,6 +8,32 @@ results below in §§1–6 are the design writeup from before that run; §7 cove
 what the run found, a real bug it exposed (now fixed), and what the surviving
 numbers say.
 
+**Update (9 Aug 2026, later same day) — three edits made at Felipe's request:**
+1. Deleted the "historical draft" pre-code table versions from `tables_app.tex`
+   entirely (they duplicated the live tables' `\input{}` under a stale,
+   never-implemented 6-column caption/note — redundant once the live 3-column
+   tables existed).
+2. `Intensity 2005 x Post` is no longer *printed* in either migration table
+   (`AT_migration_robustness`, `AT_migration_robustness_ageFE`) — still
+   estimated and included as a control in every regression, per Felipe's
+   explicit instruction (display only, not the regressions). For the simple
+   table this matches the paper's own convention (control with no
+   stand-alone interpretation, as in Table~`t:did_age`). **For the DDD table
+   this is different and worth remembering:** `Intensity2005 x Post x Old65`
+   is a second, independently meaningful differential-trend test in that
+   design, and it was significant in all three panels on the one run so far
+   (§7.2) while the reported `Intensity1999` interaction was not. That result
+   still exists (in the `bDDD05_*`/`seDDD05_*` locals and the run log) — it is
+   just no longer visible in the printed table, and needs to stay part of the
+   text-level discussion of this table rather than disappear with the row.
+3. Added a log-population companion to the migration event study
+   (`AF_migration_es_log.pdf`, from a new `foreach spec in lvl log` loop
+   around the existing event-study code), matching Appendix Table
+   `at:migration_rob` columns (1)/(2). `figures_app.tex` now shows both as
+   subfigures (a) Levels / (b) Log under one combined note. **The log panel
+   has not been generated yet** — `04_extra_robustness.do` needs to run again
+   before `AF_migration_es_log.pdf` exists on disk.
+
 ---
 
 ## 1. Background: why this was reopened

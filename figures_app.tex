@@ -159,9 +159,12 @@
     \caption{Event Study: Effect of Progresa Enrollment Intensity on the 65+ Population}
     \label{af:migration_es}
 
-{\includegraphics[width=0.85\textwidth]{figures/appendix/AF_migration_es.pdf}}
+\subfigure[Levels]
+{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_migration_es.pdf}}
+\subfigure[Log]
+{\includegraphics[width=0.49\textwidth]{figures/appendix/AF_migration_es_log.pdf}}
 
-         \floatfoot{Notes: PROVISIONAL -- see migration\_robustness\_summary.md before citing. This figure presents event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the 65+ population count, pooled, female, and male, as a check on whether any apparent migration effect (Appendix Tables~\ref{at:migration_rob}--\ref{at:migration_rob_agefe}) is a pre-existing trend rather than a post-1997 program effect: if the profile shows a differential trend before 1997, it cannot be attributed to \textit{Progresa}. Same specification as the mortality event studies (Figure~\ref{f:es_dd_sex_no_weight}): municipality and year fixed effects, Seguro Popular intensity, clustered at the municipality level. The sample is restricted to highly marginalized municipalities. The \texttt{\$mig\_intensity}/\texttt{\$mig\_years} switches described in Appendix Table~\ref{at:migration_rob}'s note apply here; under \texttt{\$mig\_years = "census"} this figure is not produced, as too few years remain to trace a profile. 95\% confidence intervals shown.}
+         \floatfoot{Notes: PROVISIONAL -- see migration\_robustness\_summary.md before citing. This figure presents event-study estimates of the interaction between $\textit{Intensity}_{1999}$ and year indicators (reference year 1996) for the 65+ population, pooled, female, and male, as a check on whether any apparent migration effect (Appendix Tables~\ref{at:migration_rob}--\ref{at:migration_rob_agefe}) is a pre-existing trend rather than a post-1997 program effect: if the profile shows a differential trend before 1997, it cannot be attributed to \textit{Progresa}. Panel~(a) uses the population count, corresponding to column~(1) of Appendix Table~\ref{at:migration_rob}; panel~(b) uses log population, corresponding to its column~(2). Same specification as the mortality event studies (Figure~\ref{f:es_dd_sex_no_weight}): municipality and year fixed effects, Seguro Popular intensity, clustered at the municipality level. The sample is restricted to highly marginalized municipalities. The \texttt{\$mig\_intensity}/\texttt{\$mig\_years} switches described in Appendix Table~\ref{at:migration_rob}'s note apply here; under \texttt{\$mig\_years = "census"} neither panel is produced, as too few years remain to trace a profile. A corresponding Poisson event-study panel is not included here (Appendix Table~\ref{at:migration_rob}'s column~(3) reports the single post-1997 Poisson interaction only). 95\% confidence intervals shown.}
 \end{figure}
 }
 
