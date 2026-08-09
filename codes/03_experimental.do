@@ -54,6 +54,34 @@ cap mkdir "$tempFolder"
 cap mkdir "$tables/appendix"
 
 *------------------------------------------------------------
+* WHOLE-FILE LOG
+* One log for the entire script, replacing the former Gertler-only
+* `name(gertler)' log that covered just the pooled cross-section block
+* (its diagnostics are now captured here along with everything else).
+* Mirrors the convention in 04_extra_robustness.do: the log sits next to
+* the do-file so results can be reviewed after a run without rerunning.
+*
+* Opened AFTER `clear all' above -- opening before it risks the log being
+* closed out from under us -- and after the mkdir calls, so the fallback
+* directory is guaranteed to exist.
+*------------------------------------------------------------
+if "`c(username)'" == "FELIPEME" {
+	global logFolder "C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\"
+}
+else if "`c(username)'" == "root" {
+	global logFolder "/home/user/progresa_mortality/codes/"
+}
+else {
+	* No codes path is defined for this user above; fall back to $tables,
+	* which is always created by the mkdir block just above.
+	global logFolder "$tables/"
+}
+
+cap log close _all
+log using "${logFolder}03_experimental_log.log", replace text
+di "Full-run log opened at: ${logFolder}03_experimental_log.log"
+
+*------------------------------------------------------------
 * CACHE FLAG: rebuild vs. load the pre-built working dataset.
 * The block below (raw Panel import, all recoding/construction, and both
 * the November and June SPSS visit-count imports) is slow to re-run every
@@ -1020,8 +1048,8 @@ restore
 *------------------------------------------------------------
 preserve
 
-cap log close gertler
-log using "$tables/appendix/gertler_pooled_diagnostics.log", replace text name(gertler)
+* Formerly its own named log (gertler_pooled_diagnostics.log); now folds
+* into the single whole-file log opened at the top of this do-file.
 
 foreach f in roster99_raw visits99_nov spss_folios_nov visits99_jun spss_folios_jun {
     capture confirm file "$tempFolder/`f'.dta"
@@ -1279,8 +1307,7 @@ foreach ggrp in p m f {
     local N_`ggrp'_tvp51age97    : di %12.0fc e(N)
 }
 
-cap log close gertler
-di "Gertler pooled-sample diagnostics written to: $tables/appendix/gertler_pooled_diagnostics.log"
+di "Gertler pooled-sample diagnostics written to: ${logFolder}03_experimental_log.log"
 
 restore
 
@@ -1811,6 +1838,8 @@ foreach yvar of local hh_outcomes {
     file close sm
 }
 di "Table exported to: $tables/appendix/AT8_expenditures_elderly.tex"
+
+cap log close _all
 
 
 
