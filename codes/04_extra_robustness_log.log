@@ -3,7 +3,7 @@
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_
 > robustness_log.log
   log type:  text
- opened on:   9 Aug 2026, 11:49:50
+ opened on:   9 Aug 2026, 18:47:54
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -4769,6 +4769,13 @@ Table (commented out) would have been exported to: C:\Users\FELIPEME\Dropbox\Apl
 . * was always missing. Corrected to `post == 2' below, matching the
 . * convention already used for this exact row elsewhere (e.g.
 . * AT4_functional_forms' "Mean (1991-1996)" row in 02_mortality.do).
+. *
+. * FIX 4 (see the fuller writeup at the DDD table below): the first real
+. * run of this table (9 Aug 2026) returned "n/a" for the Levels/Log
+. * columns even though the log shows both regressions completing
+. * successfully -- an ambient, left-over `_rc' from `reghdfe' was being
+. * misread as failure. Every `reghdfe'/`ppmlhdfe' call below is now
+. * `capture'-prefixed so `_rc' is read cleanly.
 . *============================================================
 . 
 . cap drop lpopover65 lpopover65_m lpopover65_f
@@ -4932,7 +4939,7 @@ Migration robustness intensity construction: yearvar  (99: inten1999 , 05: inten
  22.         }
  23. 
 .         * col 1: Levels (unweighted)
-.         reghdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
+.         capture reghdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
 >                 if $sample_marg & $mig_yrcond, ///
 >                 a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  24.         if !_rc & e(N) > 0 {
@@ -4960,7 +4967,7 @@ Migration robustness intensity construction: yearvar  (99: inten1999 , 05: inten
 > hdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
  46. 
 .         * col 2: Log (unweighted)
-.         reghdfe `loutcome' c.${mig99}#i.post c.${mig05}#i.post ///
+.         capture reghdfe `loutcome' c.${mig99}#i.post c.${mig05}#i.post ///
 >                 if $sample_marg & $mig_yrcond, ///
 >                 a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  47.         if !_rc & e(N) > 0 {
@@ -4993,7 +5000,7 @@ Migration robustness intensity construction: yearvar  (99: inten1999 , 05: inten
 > e failed or empty sample (rc=`_rc'), leaving cells n/a"
  69. 
 .         * col 3: Poisson (count outcome)
-.         ppmlhdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
+.         capture ppmlhdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
 >                 if $sample_marg & $mig_yrcond, ///
 >                 a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  70.         if !_rc & e(N) > 0 {
@@ -5023,137 +5030,6 @@ Migration robustness intensity construction: yearvar  (99: inten1999 , 05: inten
 > ghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
  92. 
 . }
-(MWFE estimator converged in 2 iterations)
-note: 2.post#c.inten1999 omitted because of collinearity
-note: 2.post#c.inten2005 omitted because of collinearity
-
-HDFE Linear regression                            Number of obs   =     17,904
-Absorbing 2 HDFE groups                           F(   2,   1118) =      52.42
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9712
-                                                  Adj R-squared   =     0.9692
-                                                  Within R-sq.    =     0.0378
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =   149.9231
-
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-      popover65_ | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   147.9964   22.03204     6.72   0.000     104.7676    191.2252
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |  -386.4252   43.82612    -8.82   0.000    -472.4159   -300.4344
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |   806.0787   19.46923    41.40   0.000     767.8784     844.279
-----------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration robustness, panel p, col 1 (Levels): reghdfe failed or empty sample (rc=), 
-> leaving cells n/a
-(MWFE estimator converged in 2 iterations)
-note: 2.post#c.inten1999 omitted because of collinearity
-note: 2.post#c.inten2005 omitted because of collinearity
-
-HDFE Linear regression                            Number of obs   =     17,904
-Absorbing 2 HDFE groups                           F(   2,   1118) =      43.66
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9947
-                                                  Adj R-squared   =     0.9943
-                                                  Within R-sq.    =     0.0501
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =     0.0817
-
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-      lpopover65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   .1670129    .023174     7.21   0.000     .1215434    .2124824
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |   .0126015   .0286277     0.44   0.660    -.0435685    .0687716
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |    5.89153    .010338   569.89   0.000     5.871246    5.911814
-----------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration robustness, panel p, col 2 (Log): reghdfe failed or empty sample (rc=), lea
-> ving cells n/a
-note: 2 variables omitted because of collinearity: 2bn.post#c.inten1999 2bn.post#c.in
-> ten2005
-Iteration 1:   deviance = 4.0637e+05  eps = .         iters = 3    tol = 1.0e-04  min
-> (eta) =  -2.01  P   
-Iteration 2:   deviance = 5.6774e+04  eps = 6.16e+00  iters = 2    tol = 1.0e-04  min
-> (eta) =  -2.87      
-Iteration 3:   deviance = 3.8157e+04  eps = 4.88e-01  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.49      
-Iteration 4:   deviance = 3.7665e+04  eps = 1.31e-02  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.76      
-Iteration 5:   deviance = 3.7662e+04  eps = 7.14e-05  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.81      
-Iteration 6:   deviance = 3.7662e+04  eps = 1.74e-08  iters = 2    tol = 1.0e-05  min
-> (eta) =  -3.81      
-Iteration 7:   deviance = 3.7662e+04  eps = 2.74e-15  iters = 1    tol = 1.0e-06  min
-> (eta) =  -3.81   S  
-Iteration 8:   deviance = 3.7662e+04  eps = 4.84e-16  iters = 1    tol = 1.0e-09  min
-> (eta) =  -3.81   S O
--------------------------------------------------------------------------------------
-> -----------------------
-(legend: p: exact partial-out   s: exact solver   h: step-halving   o: epsilon below 
-> tolerance)
-Converged in 8 iterations and 15 HDFE sub-iterations (tol = 1.0e-08)
-
-HDFE PPML regression                              No. of obs      =     17,904
-Absorbing 2 HDFE groups                           Residual df     =      1,118
-Statistics robust to heteroskedasticity           Wald chi2(2)    =      43.30
-Deviance             =  37662.45872               Prob > chi2     =     0.0000
-Log pseudolikelihood = -88496.71632               Pseudo R2       =     0.9864
-
-Number of clusters (cve_ent_mun_super)=     1,119
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-      popover65_ | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   .0987662   .0207118     4.77   0.000     .0581717    .1393606
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |   .0223751   .0246516     0.91   0.364    -.0259412    .0706914
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |   7.003186   .0091652   764.11   0.000     6.985222    7.021149
-----------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
@@ -5163,137 +5039,24 @@ Absorbed degrees of freedom:
                    |      total   distinct
 -------------------+----------------------
  cve_ent_mun_super |      17904       1119
-(MWFE estimator converged in 2 iterations)
-note: 2.post#c.inten1999 omitted because of collinearity
-note: 2.post#c.inten2005 omitted because of collinearity
 
-HDFE Linear regression                            Number of obs   =     17,904
-Absorbing 2 HDFE groups                           F(   2,   1118) =      51.36
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9728
-                                                  Adj R-squared   =     0.9710
-                                                  Within R-sq.    =     0.0380
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =    71.0811
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+  lpopover65 |      6,714    5.769256    1.075645   2.397895    8.98056
 
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-     popover65_m | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   69.20991   10.48307     6.60   0.000      48.6412    89.77861
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |  -184.0426   20.81293    -8.84   0.000    -224.8794   -143.2058
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |   396.8748   9.199058    43.14   0.000     378.8255    414.9242
-----------------------------------------------------------------------------------
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      17904       1119
 
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration robustness, panel m, col 1 (Levels): reghdfe failed or empty sample (rc=), 
-> leaving cells n/a
-(MWFE estimator converged in 2 iterations)
-note: 2.post#c.inten1999 omitted because of collinearity
-note: 2.post#c.inten2005 omitted because of collinearity
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+  popover65_ |      6,714     558.954    689.1295         11   7947.087
 
-HDFE Linear regression                            Number of obs   =     17,904
-Absorbing 2 HDFE groups                           F(   2,   1118) =      29.74
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9940
-                                                  Adj R-squared   =     0.9936
-                                                  Within R-sq.    =     0.0352
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =     0.0887
-
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-    lpopover65_m | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   .1575567   .0251516     6.26   0.000     .1082071    .2069062
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |  -.0105002   .0302833    -0.35   0.729    -.0699188    .0489184
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |   5.192929   .0107435   483.36   0.000     5.171849    5.214008
-----------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration robustness, panel m, col 2 (Log): reghdfe failed or empty sample (rc=), lea
-> ving cells n/a
-note: 2 variables omitted because of collinearity: 2bn.post#c.inten1999 2bn.post#c.in
-> ten2005
-Iteration 1:   deviance = 2.0831e+05  eps = .         iters = 3    tol = 1.0e-04  min
-> (eta) =  -2.01  P   
-Iteration 2:   deviance = 3.1179e+04  eps = 5.68e+00  iters = 2    tol = 1.0e-04  min
-> (eta) =  -2.86      
-Iteration 3:   deviance = 2.0844e+04  eps = 4.96e-01  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.49      
-Iteration 4:   deviance = 2.0529e+04  eps = 1.53e-02  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.78      
-Iteration 5:   deviance = 2.0527e+04  eps = 9.82e-05  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.83      
-Iteration 6:   deviance = 2.0527e+04  eps = 2.97e-08  iters = 2    tol = 1.0e-05  min
-> (eta) =  -3.83      
-Iteration 7:   deviance = 2.0527e+04  eps = 9.39e-15  iters = 1    tol = 1.0e-06  min
-> (eta) =  -3.83   S  
-Iteration 8:   deviance = 2.0527e+04  eps = 2.89e-16  iters = 1    tol = 1.0e-09  min
-> (eta) =  -3.83   S O
--------------------------------------------------------------------------------------
-> -----------------------
-(legend: p: exact partial-out   s: exact solver   h: step-halving   o: epsilon below 
-> tolerance)
-Converged in 8 iterations and 15 HDFE sub-iterations (tol = 1.0e-08)
-
-HDFE PPML regression                              No. of obs      =     17,904
-Absorbing 2 HDFE groups                           Residual df     =      1,118
-Statistics robust to heteroskedasticity           Wald chi2(2)    =      28.73
-Deviance             =  20527.43443               Prob > chi2     =     0.0000
-Log pseudolikelihood = -73566.73777               Pseudo R2       =     0.9772
-
-Number of clusters (cve_ent_mun_super)=     1,119
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-     popover65_m | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   .0901498    .021897     4.12   0.000     .0472325     .133067
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |   .0041803    .025628     0.16   0.870    -.0460496    .0544102
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |    6.30753   .0092101   684.85   0.000     6.289479    6.325582
-----------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      17904       1119
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
@@ -5303,137 +5066,42 @@ Absorbed degrees of freedom:
                    |      total   distinct
 -------------------+----------------------
  cve_ent_mun_super |      17904       1119
-(MWFE estimator converged in 2 iterations)
-note: 2.post#c.inten1999 omitted because of collinearity
-note: 2.post#c.inten2005 omitted because of collinearity
 
-HDFE Linear regression                            Number of obs   =     17,904
-Absorbing 2 HDFE groups                           F(   2,   1118) =      52.12
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9691
-                                                  Adj R-squared   =     0.9670
-                                                  Within R-sq.    =     0.0364
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =    80.1614
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+lpopover65_m |      6,714     5.06771    1.095638   1.386294   8.230551
 
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-     popover65_f | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   78.80049   11.72448     6.72   0.000     55.79604     101.805
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |  -202.3616   23.31415    -8.68   0.000     -248.106   -156.6172
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |   409.1258   10.41631    39.28   0.000     388.6881    429.5635
-----------------------------------------------------------------------------------
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      17904       1119
 
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration robustness, panel f, col 1 (Levels): reghdfe failed or empty sample (rc=), 
-> leaving cells n/a
-(MWFE estimator converged in 2 iterations)
-note: 2.post#c.inten1999 omitted because of collinearity
-note: 2.post#c.inten2005 omitted because of collinearity
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+ popover65_m |      6,714    279.4121    339.8544          4   3753.902
 
-HDFE Linear regression                            Number of obs   =     17,904
-Absorbing 2 HDFE groups                           F(   2,   1118) =      46.52
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9935
-                                                  Adj R-squared   =     0.9930
-                                                  Within R-sq.    =     0.0520
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =     0.0901
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      17904       1119
 
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-    lpopover65_f | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   .1799075   .0244401     7.36   0.000      .131954     .227861
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |   .0360697    .031127     1.16   0.247    -.0250043    .0971436
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |   5.192033   .0116776   444.61   0.000      5.16912    5.214945
-----------------------------------------------------------------------------------
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+ popover65_f |      6,714    279.4657    352.2982          7   4193.186
 
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration robustness, panel f, col 2 (Log): reghdfe failed or empty sample (rc=), lea
-> ving cells n/a
-note: 2 variables omitted because of collinearity: 2bn.post#c.inten1999 2bn.post#c.in
-> ten2005
-Iteration 1:   deviance = 2.0866e+05  eps = .         iters = 3    tol = 1.0e-04  min
-> (eta) =  -2.03  P   
-Iteration 2:   deviance = 3.1594e+04  eps = 5.60e+00  iters = 2    tol = 1.0e-04  min
-> (eta) =  -2.89      
-Iteration 3:   deviance = 2.2601e+04  eps = 3.98e-01  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.50      
-Iteration 4:   deviance = 2.2376e+04  eps = 1.00e-02  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.76      
-Iteration 5:   deviance = 2.2375e+04  eps = 4.94e-05  iters = 2    tol = 1.0e-04  min
-> (eta) =  -3.80      
-Iteration 6:   deviance = 2.2375e+04  eps = 9.20e-09  iters = 2    tol = 1.0e-05  min
-> (eta) =  -3.80      
-Iteration 7:   deviance = 2.2375e+04  eps = 9.80e-16  iters = 1    tol = 1.0e-06  min
-> (eta) =  -3.80   S  
-Iteration 8:   deviance = 2.2375e+04  eps = 4.20e-16  iters = 1    tol = 1.0e-09  min
-> (eta) =  -3.80   S O
--------------------------------------------------------------------------------------
-> -----------------------
-(legend: p: exact partial-out   s: exact solver   h: step-halving   o: epsilon below 
-> tolerance)
-Converged in 8 iterations and 15 HDFE sub-iterations (tol = 1.0e-08)
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      17904       1119
 
-HDFE PPML regression                              No. of obs      =     17,904
-Absorbing 2 HDFE groups                           Residual df     =      1,118
-Statistics robust to heteroskedasticity           Wald chi2(2)    =      50.94
-Deviance             =  22374.91041               Prob > chi2     =     0.0000
-Log pseudolikelihood = -74723.72918               Pseudo R2       =     0.9778
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+lpopover65_f |      6,714    5.072724    1.071673    1.94591   8.341216
 
-Number of clusters (cve_ent_mun_super)=     1,119
-                      (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-----------------------------------------------------------------------------------
-                 |               Robust
-     popover65_f | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
------------------+----------------------------------------------------------------
-post#c.inten1999 |
-      1997-2006  |   .1075492   .0219348     4.90   0.000     .0645579    .1505406
-      1991-1996  |          0  (omitted)
-                 |
-post#c.inten2005 |
-      1997-2006  |    .041626   .0263009     1.58   0.113    -.0099227    .0931748
-      1991-1996  |          0  (omitted)
-                 |
-           _cons |   6.317865   .0100264   630.12   0.000     6.298213    6.337516
-----------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
------------------------------------------------------------+
-       Absorbed FE | Categories  - Redundant  = Num. Coefs |
--------------------+---------------------------------------|
-              year |        16           1          15     |
- cve_ent_mun_super |      1119        1119           0    *|
------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      17904       1119
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
@@ -5454,15 +5122,18 @@ Absorbed degrees of freedom:
 .         file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
 .         file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multi
 > column{1}{c}{(3)} \\ \toprule" _n
+.         * NOTE: Intensity 2005 x Post is estimated and included as a control in
+.         * every regression above (needed to isolate the early-phase Intensity
+.         * 1999 coefficient) but is not printed below, matching the convention
+.         * already used for Table~\ref{t:did_age} in the main text ("included
+.         * in every regression as a control but is not reported, as it has no
+.         * stand-alone interpretation in this specification"). The bMG05_*/
+.         * seMG05_* locals above are still computed for anyone who wants them.
 .         file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
 .         file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_p_1' & `
 > bMG99_p_2' & `bMG99_p_3' \\ " _n
 .         file write sm "  & (`seMG99_p_1') & (`seMG99_p_2') & (`seMG99_p_3') \\ " _n
-.         file write sm "   & & & \\ " _n
-.         file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_p_1' & `
-> bMG05_p_2' & `bMG05_p_3' \\ " _n
-.         file write sm " & (`seMG05_p_1') & (`seMG05_p_2') & (`seMG05_p_3') \\ " _n
-.         file write sm "  & & & \\ " _n
+.         file write sm "  & & &  \\ " _n
 .         file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_
 > 3' \\ " _n
 .         file write sm "  & & &  \\ " _n
@@ -5470,11 +5141,7 @@ Absorbed degrees of freedom:
 .         file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & 
 > `bMG99_f_2' & `bMG99_f_3' \\ " _n
 .         file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') \\ " _n
-.         file write sm "  & & & \\ " _n
-.         file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_f_1' & `
-> bMG05_f_2' & `bMG05_f_3' \\ " _n
-.         file write sm " & (`seMG05_f_1') & (`seMG05_f_2') & (`seMG05_f_3') \\ " _n
-.         file write sm "   & & & \\ " _n
+.         file write sm "  & & &  \\ " _n
 .         file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_
 > 3' \\ " _n
 .         file write sm "  & & &  \\ " _n
@@ -5482,11 +5149,7 @@ Absorbed degrees of freedom:
 .         file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `
 > bMG99_m_2' & `bMG99_m_3' \\ " _n
 .         file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') \\ " _n
-.         file write sm "  & & & \\ " _n
-.         file write sm "\textit{Intensity 2005 x post (1997-2006)} & `bMG05_m_1' & `
-> bMG05_m_2' & `bMG05_m_3' \\ " _n
-.         file write sm " & (`seMG05_m_1') & (`seMG05_m_2') & (`seMG05_m_3') \\ " _n
-.         file write sm " & & & \\ " _n
+.         file write sm "  & & &  \\ " _n
 .         file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3
 > ' \\ " _n
 .         file write sm "  & & &  \\ " _n
@@ -5537,6 +5200,29 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 . *   fit leaves "n/a" rather than a fabricated "0.000***". Precision is
 . *   also widened from 3 to 4 decimals in case the true issue was just
 . *   under-precision for a genuinely small DDD coefficient.
+. *
+. *   FIX 4 (found on the first real run, 9 Aug 2026 log): (ii) above was
+. *   itself broken. The Levels/Log columns of BOTH migration tables came
+. *   back "n/a" in that run, but the log shows each underlying `reghdfe'
+. *   completing normally -- valid coefficient table, correct N, no error
+. *   -- immediately before the "leaving cells n/a" message fires. The
+. *   Poisson column (`ppmlhdfe', same guard, same data) came back with
+. *   real numbers every time. Since a genuine estimation failure with no
+. *   `capture' prefix would halt the whole do-file rather than fall
+. *   through to the `else' branch, the only way `else' can ever fire here
+. *   is a NONZERO `_rc' left over from something that did not abort --
+. *   apparently a `reghdfe' internal step (plausibly its own handling of
+. *   the collinear `2.post#...' term it drops and reports as a "note", as
+. *   seen in the log) does not always reset `_rc' to 0 on exit, even
+. *   though ppmlhdfe's does. Net effect: the guard was silently discarding
+. *   correct results and replacing them with "n/a" -- a worse failure mode
+. *   than the bug it was added to prevent. Fixed by prefixing every
+. *   `reghdfe'/`ppmlhdfe' call in both migration tables with `capture',
+. *   so `_rc' reflects exactly that command's own outcome rather than
+. *   whatever state was already sitting in `_rc' beforehand -- the same
+. *   pattern already used successfully (and without this problem) in the
+. *   attrition test (03_experimental.do) and the fixed-offset Poisson
+. *   table below, both of which returned real numbers on the same run.
 . *============================================================
 . destring(cve_ent_mun_super), replace
 cve_ent_mun_super: all characters numeric; replaced as long
@@ -5588,7 +5274,7 @@ cve_ent_mun_super: all characters numeric; replaced as long
  30.         gen triple05 = ${mig05} * postd * old65
  31. 
 .         * col 1: Levels DDD
-.         reghdfe pop triple99 triple05 if $sample_marg, ///
+.         capture reghdfe pop triple99 triple05 if $sample_marg, ///
 >                 a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) //
 > /
 >                 vce(cluster cve_ent_mun_super)
@@ -5617,7 +5303,7 @@ cve_ent_mun_super: all characters numeric; replaced as long
 > iled or empty sample (rc=`_rc'), leaving cells n/a"
  54. 
 .         * col 2: Log DDD
-.         reghdfe lpop triple99 triple05 if $sample_marg, ///
+.         capture reghdfe lpop triple99 triple05 if $sample_marg, ///
 >                 a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) //
 > /
 >                 vce(cluster cve_ent_mun_super)
@@ -5646,7 +5332,7 @@ cve_ent_mun_super: all characters numeric; replaced as long
 > d or empty sample (rc=`_rc'), leaving cells n/a"
  77. 
 .         * col 3: Poisson DDD
-.         ppmlhdfe pop triple99 triple05 if $sample_marg, ///
+.         capture ppmlhdfe pop triple99 triple05 if $sample_marg, ///
 >                 a(cve_ent_mun_super#year cve_ent_mun_super#age_grp year#age_grp) //
 > /
 >                 vce(cluster cve_ent_mun_super)
@@ -5692,118 +5378,24 @@ xij variables:
 (2,016 missing values generated)
 (2,016 missing values generated)
 (2,016 missing values generated)
-(MWFE estimator converged in 3 iterations)
 
-HDFE Linear regression                            Number of obs   =     76,092
-Absorbing 3 HDFE groups                           F(   2,   1118) =      10.84
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9974
-                                                  Adj R-squared   =     0.9962
-                                                  Within R-sq.    =     0.0013
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =    26.6895
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+         pop |      8,952    188.7454    236.9645          1       3070
 
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-         pop | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -14.39073   3.538794    -4.07   0.000    -21.33415   -7.447301
-    triple05 |   20.97826   7.632205     2.75   0.006     6.003206    35.95332
-       _cons |   309.3058   .9707533   318.62   0.000     307.4011    311.2105
-------------------------------------------------------------------------------
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      76092       1119
 
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6714        6714           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration DDD, panel p, col 1 (Levels): reghdfe failed or empty sample (rc=), leaving
->  cells n/a
-(MWFE estimator converged in 3 iterations)
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        lpop |      8,952    4.674061    1.086503          0   8.029433
 
-HDFE Linear regression                            Number of obs   =     76,092
-Absorbing 3 HDFE groups                           F(   2,   1118) =      13.19
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9951
-                                                  Adj R-squared   =     0.9928
-                                                  Within R-sq.    =     0.0046
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =     0.0970
-
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-        lpop | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -.0342216   .0309213    -1.11   0.269     -.094892    .0264487
-    triple05 |   .1617646    .037504     4.31   0.000     .0881785    .2353508
-       _cons |   5.092721   .0034671  1468.88   0.000     5.085919    5.099524
-------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6714        6714           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration DDD, panel p, col 2 (Log): reghdfe failed or empty sample (rc=), leaving ce
-> lls n/a
-Iteration 1:   deviance = 9.0677e+05  eps = .         iters = 5    tol = 1.0e-04  min
-> (eta) =  -2.04  P   
-Iteration 2:   deviance = 1.1164e+05  eps = 7.12e+00  iters = 5    tol = 1.0e-04  min
-> (eta) =  -3.05      
-Iteration 3:   deviance = 5.9927e+04  eps = 8.63e-01  iters = 5    tol = 1.0e-04  min
-> (eta) =  -4.03      
-Iteration 4:   deviance = 5.7568e+04  eps = 4.10e-02  iters = 4    tol = 1.0e-04  min
-> (eta) =  -4.89      
-Iteration 5:   deviance = 5.7506e+04  eps = 1.07e-03  iters = 4    tol = 1.0e-04  min
-> (eta) =  -5.42      
-Iteration 6:   deviance = 5.7506e+04  eps = 1.43e-05  iters = 3    tol = 1.0e-04  min
-> (eta) =  -5.55      
-Iteration 7:   deviance = 5.7506e+04  eps = 1.62e-08  iters = 2    tol = 1.0e-05  min
-> (eta) =  -5.55      
-Iteration 8:   deviance = 5.7506e+04  eps = 7.13e-13  iters = 2    tol = 1.0e-06  min
-> (eta) =  -5.55   S  
-Iteration 9:   deviance = 5.7506e+04  eps = 1.92e-15  iters = 3    tol = 1.0e-09  min
-> (eta) =  -5.55   S O
--------------------------------------------------------------------------------------
-> -----------------------
-(legend: p: exact partial-out   s: exact solver   h: step-halving   o: epsilon below 
-> tolerance)
-Converged in 9 iterations and 33 HDFE sub-iterations (tol = 1.0e-08)
-
-HDFE PPML regression                              No. of obs      =     76,092
-Absorbing 3 HDFE groups                           Residual df     =      1,118
-Statistics robust to heteroskedasticity           Wald chi2(2)    =      41.35
-Deviance             =  57505.51975               Prob > chi2     =     0.0000
-Log pseudolikelihood = -293183.4905               Pseudo R2       =     0.9793
-
-Number of clusters (cve_ent_mun_super)=     1,119
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-         pop | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -.0229159   .0216206    -1.06   0.289    -.0652915    .0194596
-    triple05 |   .1424478   .0249681     5.71   0.000     .0935111    .1913844
-       _cons |   6.313234   .0018471  3417.86   0.000     6.309614    6.316854
-------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6714        6714           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      76092       1119
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
@@ -5829,121 +5421,24 @@ xij variables:
 (2,016 missing values generated)
 (2,016 missing values generated)
 (2,016 missing values generated)
-(MWFE estimator converged in 6 iterations)
 
-HDFE Linear regression                            Number of obs   =     76,088
-Absorbing 3 HDFE groups                           F(   2,   1118) =       3.83
-Statistics robust to heteroskedasticity           Prob > F        =     0.0220
-                                                  R-squared       =     0.9967
-                                                  Adj R-squared   =     0.9952
-                                                  Within R-sq.    =     0.0004
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =    14.7609
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+         pop |      8,948    94.45712     117.051          0       1390
 
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-         pop | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -4.911356   1.924417    -2.55   0.011    -8.687232   -1.135479
-    triple05 |   5.822417   3.988428     1.46   0.145     -2.00323    13.64806
-       _cons |   153.2204   .5031319   304.53   0.000     152.2332    154.2076
-------------------------------------------------------------------------------
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      76088       1119
 
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6714        6714           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration DDD, panel m, col 1 (Levels): reghdfe failed or empty sample (rc=), leaving
->  cells n/a
-(dropped 2 singleton observations)
-(MWFE estimator converged in 8 iterations)
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        lpop |      8,946    3.970242     1.11245          0   7.237059
 
-HDFE Linear regression                            Number of obs   =     76,060
-Absorbing 3 HDFE groups                           F(   2,   1118) =       5.68
-Statistics robust to heteroskedasticity           Prob > F        =     0.0035
-                                                  R-squared       =     0.9913
-                                                  Adj R-squared   =     0.9871
-                                                  Within R-sq.    =     0.0014
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =     0.1333
-
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-        lpop | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |   .0005296   .0388526     0.01   0.989    -.0757026    .0767617
-    triple05 |   .1135284   .0455901     2.49   0.013     .0240765    .2029802
-       _cons |   4.373368   .0043546  1004.31   0.000     4.364824    4.381912
-------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6712        6712           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration DDD, panel m, col 2 (Log): reghdfe failed or empty sample (rc=), leaving ce
-> lls n/a
-Iteration 1:   deviance = 4.8224e+05  eps = .         iters = 5    tol = 1.0e-04  min
-> (eta) =  -2.04  P   
-Iteration 2:   deviance = 7.4820e+04  eps = 5.45e+00  iters = 5    tol = 1.0e-04  min
-> (eta) =  -3.06      
-Iteration 3:   deviance = 4.5571e+04  eps = 6.42e-01  iters = 5    tol = 1.0e-04  min
-> (eta) =  -4.06      
-Iteration 4:   deviance = 4.3945e+04  eps = 3.70e-02  iters = 4    tol = 1.0e-04  min
-> (eta) =  -5.01      
-Iteration 5:   deviance = 4.3880e+04  eps = 1.48e-03  iters = 4    tol = 1.0e-04  min
-> (eta) =  -5.72      
-Iteration 6:   deviance = 4.3878e+04  eps = 4.83e-05  iters = 3    tol = 1.0e-04  min
-> (eta) =  -5.98      
-Iteration 7:   deviance = 4.3878e+04  eps = 3.63e-07  iters = 3    tol = 1.0e-05  min
-> (eta) =  -6.01      
-Iteration 8:   deviance = 4.3878e+04  eps = 3.84e-11  iters = 2    tol = 1.0e-06  min
-> (eta) =  -6.01   S  
-Iteration 9:   deviance = 4.3878e+04  eps = 4.13e-16  iters = 2    tol = 1.0e-08  min
-> (eta) =  -6.01   S  
-Iteration 10:  deviance = 4.3878e+04  eps = 1.38e-16  iters = 2    tol = 1.0e-09  min
-> (eta) =  -6.01   S O
--------------------------------------------------------------------------------------
-> -----------------------
-(legend: p: exact partial-out   s: exact solver   h: step-halving   o: epsilon below 
-> tolerance)
-Converged in 10 iterations and 35 HDFE sub-iterations (tol = 1.0e-08)
-
-HDFE PPML regression                              No. of obs      =     76,088
-Absorbing 3 HDFE groups                           Residual df     =      1,118
-Statistics robust to heteroskedasticity           Wald chi2(2)    =      17.45
-Deviance             =  43877.74219               Prob > chi2     =     0.0002
-Log pseudolikelihood = -258862.2398               Pseudo R2       =     0.9638
-
-Number of clusters (cve_ent_mun_super)=     1,119
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-         pop | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -.0025954   .0263036    -0.10   0.921    -.0541495    .0489587
-    triple05 |   .0988955   .0294672     3.36   0.001     .0411409    .1566502
-       _cons |   5.615051   .0021383  2625.94   0.000      5.61086    5.619242
-------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6714        6714           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      76060       1119
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
@@ -5969,119 +5464,24 @@ xij variables:
 (2,016 missing values generated)
 (2,016 missing values generated)
 (2,016 missing values generated)
-(MWFE estimator converged in 3 iterations)
 
-HDFE Linear regression                            Number of obs   =     76,092
-Absorbing 3 HDFE groups                           F(   2,   1118) =      16.73
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9968
-                                                  Adj R-squared   =     0.9952
-                                                  Within R-sq.    =     0.0019
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =    15.1723
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+         pop |      8,952    94.22008    121.0025          0       1680
 
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-         pop | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -9.443023   1.947945    -4.85   0.000    -13.26506   -5.620984
-    triple05 |   15.14036   4.186669     3.62   0.000     6.925746    23.35497
-       _cons |   155.9767   .5363386   290.82   0.000     154.9244     157.029
-------------------------------------------------------------------------------
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      76092       1119
 
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6714        6714           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration DDD, panel f, col 1 (Levels): reghdfe failed or empty sample (rc=), leaving
->  cells n/a
-(dropped 2 singleton observations)
-(MWFE estimator converged in 6 iterations)
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        lpop |      8,950    3.973163    1.088519          0   7.426549
 
-HDFE Linear regression                            Number of obs   =     76,088
-Absorbing 3 HDFE groups                           F(   2,   1118) =      14.01
-Statistics robust to heteroskedasticity           Prob > F        =     0.0000
-                                                  R-squared       =     0.9924
-                                                  Adj R-squared   =     0.9888
-                                                  Within R-sq.    =     0.0043
-Number of clusters (cve_ent_mun_super) =      1,119Root MSE       =     0.1203
-
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-        lpop | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -.0459576    .034475    -1.33   0.183    -.1136006    .0216854
-    triple05 |    .196713   .0416511     4.72   0.000       .11499    .2784361
-       _cons |   4.411826   .0040252  1096.05   0.000     4.403928    4.419724
-------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6712        6712           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
-Migration DDD, panel f, col 2 (Log): reghdfe failed or empty sample (rc=), leaving ce
-> lls n/a
-Iteration 1:   deviance = 4.6421e+05  eps = .         iters = 5    tol = 1.0e-04  min
-> (eta) =  -2.05  P   
-Iteration 2:   deviance = 6.7282e+04  eps = 5.90e+00  iters = 5    tol = 1.0e-04  min
-> (eta) =  -3.05      
-Iteration 3:   deviance = 4.2601e+04  eps = 5.79e-01  iters = 5    tol = 1.0e-04  min
-> (eta) =  -4.00      
-Iteration 4:   deviance = 4.1554e+04  eps = 2.52e-02  iters = 4    tol = 1.0e-04  min
-> (eta) =  -4.81      
-Iteration 5:   deviance = 4.1531e+04  eps = 5.51e-04  iters = 4    tol = 1.0e-04  min
-> (eta) =  -5.25      
-Iteration 6:   deviance = 4.1531e+04  eps = 4.64e-06  iters = 2    tol = 1.0e-04  min
-> (eta) =  -5.33      
-Iteration 7:   deviance = 4.1531e+04  eps = 3.02e-09  iters = 2    tol = 1.0e-05  min
-> (eta) =  -5.34   S  
-Iteration 8:   deviance = 4.1531e+04  eps = 6.54e-13  iters = 3    tol = 1.0e-07  min
-> (eta) =  -5.34   S  
-Iteration 9:   deviance = 4.1531e+04  eps = 0.00e+00  iters = 3    tol = 1.0e-09  min
-> (eta) =  -5.34   S O
--------------------------------------------------------------------------------------
-> -----------------------
-(legend: p: exact partial-out   s: exact solver   h: step-halving   o: epsilon below 
-> tolerance)
-Converged in 9 iterations and 33 HDFE sub-iterations (tol = 1.0e-08)
-
-HDFE PPML regression                              No. of obs      =     76,092
-Absorbing 3 HDFE groups                           Residual df     =      1,118
-Statistics robust to heteroskedasticity           Wald chi2(2)    =      51.11
-Deviance             =   41531.1986               Prob > chi2     =     0.0000
-Log pseudolikelihood = -259483.6651               Pseudo R2       =     0.9643
-
-Number of clusters (cve_ent_mun_super)=     1,119
-                  (Std. err. adjusted for 1,119 clusters in cve_ent_mun_super)
-------------------------------------------------------------------------------
-             |               Robust
-         pop | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
--------------+----------------------------------------------------------------
-    triple99 |  -.0444001   .0241494    -1.84   0.066    -.0917321    .0029319
-    triple05 |   .1892315   .0283578     6.67   0.000     .1336513    .2448117
-       _cons |   5.628894   .0021397  2630.70   0.000       5.6247    5.633087
-------------------------------------------------------------------------------
-
-Absorbed degrees of freedom:
----------------------------------------------------------------------+
-                 Absorbed FE | Categories  - Redundant  = Num. Coefs |
------------------------------+---------------------------------------|
-      cve_ent_mun_super#year |     17904       17904           0    *|
-   cve_ent_mun_super#age_grp |      6714        6714           0    *|
-                year#age_grp |        68           1          67     |
----------------------------------------------------------------------+
-* = FE nested within cluster; treated as redundant for DoF computation
+                   |        Observations
+                   |      total   distinct
+-------------------+----------------------
+ cve_ent_mun_super |      76088       1119
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
@@ -6102,17 +5502,24 @@ Absorbed degrees of freedom:
 .         file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
 .         file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multi
 > column{1}{c}{(3)} \\ \toprule" _n
+.         * NOTE: Intensity 2005 x Post x Old65 is estimated in every regression
+.         * above but not printed below, matching the display convention used
+.         * for the simple migration table and for Table~\ref{t:did_age} in the
+.         * main text. UNLIKE the simple table, this coefficient is NOT purely a
+.         * nuisance control here -- it is a second, independently meaningful
+.         * differential-trend test, and on the one real run so far it came back
+.         * significant in all three panels while Intensity 1999 did not (see
+.         * migration_robustness_summary.md, Sec. 7.2). Dropping it from the
+.         * printed table does not make that finding go away; it is still in
+.         * the bDDD05_*/seDDD05_* locals above and in the run log, and belongs
+.         * in the text/summary discussion of this table even though it is not
+.         * shown in the table itself.
 .         file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
 .         file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_1' & `bDD
 > D99_p_2' & `bDDD99_p_3' \\ " _n
 .         file write sm "  & (`seDDD99_p_1') & (`seDDD99_p_2') & (`seDDD99_p_3') \\ "
 >  _n
-.         file write sm "   & & & \\ " _n
-.         file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_p_1' & `bDD
-> D05_p_2' & `bDDD05_p_3' \\ " _n
-.         file write sm " & (`seDDD05_p_1') & (`seDDD05_p_2') & (`seDDD05_p_3') \\ " 
-> _n
-.         file write sm "  & & & \\ " _n
+.         file write sm "  & & &  \\ " _n
 .         file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_1' & `meanDDD_p_2' & `mea
 > nDDD_p_3' \\ " _n
 .         file write sm "  & & &  \\ " _n
@@ -6121,12 +5528,7 @@ Absorbed degrees of freedom:
 > DD99_f_2' & `bDDD99_f_3' \\ " _n
 .         file write sm "  & (`seDDD99_f_1') & (`seDDD99_f_2') & (`seDDD99_f_3') \\ "
 >  _n
-.         file write sm "  & & & \\ " _n
-.         file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_f_1' & `bDD
-> D05_f_2' & `bDDD05_f_3' \\ " _n
-.         file write sm " & (`seDDD05_f_1') & (`seDDD05_f_2') & (`seDDD05_f_3') \\ " 
-> _n
-.         file write sm "   & & & \\ " _n
+.         file write sm "  & & &  \\ " _n
 .         file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_1' & `meanDDD_f_2' & `mea
 > nDDD_f_3' \\ " _n
 .         file write sm "  & & &  \\ " _n
@@ -6135,12 +5537,7 @@ Absorbed degrees of freedom:
 > D99_m_2' & `bDDD99_m_3' \\ " _n
 .         file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ "
 >  _n
-.         file write sm "  & & & \\ " _n
-.         file write sm "\textit{Intensity 2005 x post x Old65} & `bDDD05_m_1' & `bDD
-> D05_m_2' & `bDDD05_m_3' \\ " _n
-.         file write sm " & (`seDDD05_m_1') & (`seDDD05_m_2') & (`seDDD05_m_3') \\ " 
-> _n
-.         file write sm " & & & \\ " _n
+.         file write sm "  & & &  \\ " _n
 .         file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `mean
 > DDD_m_3' \\ " _n
 .         file write sm "  & & &  \\ " _n
@@ -6160,7 +5557,9 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 . 
 . *============================================================
 . * MIGRATION EVENT STUDY: 65+ POPULATION, YEAR BY YEAR
-. * Output: $figures/appendix/AF_migration_es.pdf
+. * Output: $figures/appendix/AF_migration_es.pdf (levels)
+. *         $figures/appendix/AF_migration_es_log.pdf (log)
+. *         $figures/appendix/AF_migration_es_poisson.pdf (poisson, % change)
 . *
 . * The two tables above report a single post-1997 interaction, which
 . * cannot distinguish "the program moved population after 1997" from "the
@@ -6175,60 +5574,155 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 . * year_1995 index 1-16, municipality and year FE, clustered at the
 . * municipality), so the two are read side by side.
 . *
-. * NOTE: under $mig_years == "census" this figure is not meaningful --
-. * there are only three sampled years -- so it is skipped in that case.
+. * Three versions, one per column of Appendix Table~\ref{at:migration_rob}:
+. * levels (column 1), log population (column 2), and Poisson (column 3),
+. * following the precedent of Appendix Figure~\ref{af:es_func_form}
+. * plotting a levels, a log, and a Poisson panel of the same underlying
+. * event study. The Poisson panel plots (exp(beta_t)-1)*100 per year --
+. * the percentage change in population at each year relative to 1996,
+. * same transform as column 3's single post-1997 coefficient -- with the
+. * delta-method SE exp(beta_t)*se(beta_t)*100.
+. *
+. * NOTE: under $mig_years == "census" none of the three figures is
+. * meaningful -- there are only three sampled years -- so all three are
+. * skipped in that case.
 . *============================================================
 . if "$mig_years" == "census" {
-.         di as text "Population event study skipped: $mig_years leaves too few years
->  to trace a profile."
+.         di as text "Population event studies skipped: $mig_years leaves too few yea
+> rs to trace a profile."
 . }
 
 . else {
-.         foreach pnl in p m f {
-  2.                 if      "`pnl'" == "p" local esout popover65_
-  3.                 else if "`pnl'" == "m" local esout popover65_m
-  4.                 else                   local esout popover65_f
-  5. 
-.                 capture reghdfe `esout' c.${mig99}##ib6.year_1995 c.sp_intensity //
-> /
->                         if $sample_marg & $mig_yrcond, ///
->                         a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-  6.                 if !_rc & e(N) > 0 {
-  7.                         forval pos = 1/16 {
-  8.                                 if `pos' == 6 {
-  9.                                         local bes_`pnl'_`pos'  = 0
- 10.                                         local sees_`pnl'_`pos' = 0
- 11.                                 }
- 12.                                 else {
- 13.                                         local bes_`pnl'_`pos'  = _b[`pos'.year_1
-> 995#c.${mig99}]
- 14.                                         local sees_`pnl'_`pos' = _se[`pos'.year_
-> 1995#c.${mig99}]
- 15.                                 }
- 16.                         }
- 17.                         local esok_`pnl' = 1
- 18.                 }
- 19.                 else {
- 20.                         di as error "Population event study, panel `pnl': reghdf
-> e failed (rc=`_rc'); panel skipped"
- 21.                         local esok_`pnl' = 0
- 22.                 }
- 23.         }
-. 
-.         if `esok_p' == 1 & `esok_m' == 1 & `esok_f' == 1 {
-.                 preserve
-.                 clear
-.                 set obs 16
+.         foreach spec in lvl log poisson {
+  2.                 if "`spec'" == "lvl" {
+  3.                         local esout_p popover65_
+  4.                         local esout_m popover65_m
+  5.                         local esout_f popover65_f
+  6.                         local es_ytitle "Population 65+ (count)"
+  7.                         local es_outfile "$figures/appendix/AF_migration_es.pdf"
+  8.                         local es_cmd reghdfe
+  9.                 }
+ 10.                 else if "`spec'" == "log" {
+ 11.                         local esout_p lpopover65
+ 12.                         local esout_m lpopover65_m
+ 13.                         local esout_f lpopover65_f
+ 14.                         local es_ytitle "Log population 65+"
+ 15.                         local es_outfile "$figures/appendix/AF_migration_es_log.
+> pdf"
+ 16.                         local es_cmd reghdfe
+ 17.                 }
+ 18.                 else {
+ 19.                         local esout_p popover65_
+ 20.                         local esout_m popover65_m
+ 21.                         local esout_f popover65_f
+ 22.                         local es_ytitle "Population 65+ (% change from 1996)"
+ 23.                         local es_outfile "$figures/appendix/AF_migration_es_pois
+> son.pdf"
+ 24.                         local es_cmd ppmlhdfe
+ 25.                 }
+ 26. 
+.                 foreach pnl in p m f {
+ 27.                         local esout `esout_`pnl''
+ 28. 
+.                         capture `es_cmd' `esout' c.${mig99}##ib6.year_1995 c.sp_int
+> ensity ///
+>                                 if $sample_marg & $mig_yrcond, ///
+>                                 a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ 29.                         if !_rc & e(N) > 0 {
+ 30.                                 forval pos = 1/16 {
+ 31.                                         if `pos' == 6 {
+ 32.                                                 local bes_`pnl'_`pos'  = 0
+ 33.                                                 local sees_`pnl'_`pos' = 0
+ 34.                                         }
+ 35.                                         else if "`spec'" == "poisson" {
+ 36.                                                 local bes_`pnl'_`pos'  = (exp(_b
+> [`pos'.year_1995#c.${mig99}])-1)*100
+ 37.                                                 local sees_`pnl'_`pos' = exp(_b[
+> `pos'.year_1995#c.${mig99}])*_se[`pos'.year_1995#c.${mig99}]*100
+ 38.                                         }
+ 39.                                         else {
+ 40.                                                 local bes_`pnl'_`pos'  = _b[`pos
+> '.year_1995#c.${mig99}]
+ 41.                                                 local sees_`pnl'_`pos' = _se[`po
+> s'.year_1995#c.${mig99}]
+ 42.                                         }
+ 43.                                 }
+ 44.                                 local esok_`pnl' = 1
+ 45.                         }
+ 46.                         else {
+ 47.                                 di as error "Population event study (`spec'), pa
+> nel `pnl': `es_cmd' failed (rc=`_rc'); panel skipped"
+ 48.                                 local esok_`pnl' = 0
+ 49.                         }
+ 50.                 }
+ 51. 
+.                 if `esok_p' == 1 & `esok_m' == 1 & `esok_f' == 1 {
+ 52.                         preserve
+ 53.                         clear
+ 54.                         set obs 16
+ 55.                         gen yr_pos = _n
+ 56.                         gen xpos_p = yr_pos - 0.18
+ 57.                         gen xpos_m = yr_pos
+ 58.                         gen xpos_f = yr_pos + 0.18
+ 59.                         foreach s in p m f {
+ 60.                                 gen b_`s'  = .
+ 61.                                 gen hi_`s' = .
+ 62.                                 gen lo_`s' = .
+ 63.                         }
+ 64.                         forval pos = 1/16 {
+ 65.                                 foreach s in p m f {
+ 66.                                         replace b_`s'  = `bes_`s'_`pos''        
+>                   if yr_pos == `pos'
+ 67.                                         replace hi_`s' = `bes_`s'_`pos'' + 1.96 
+> * `sees_`s'_`pos'' if yr_pos == `pos'
+ 68.                                         replace lo_`s' = `bes_`s'_`pos'' - 1.96 
+> * `sees_`s'_`pos'' if yr_pos == `pos'
+ 69.                                 }
+ 70.                         }
+ 71. 
+.                         twoway ///
+>                                 (rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vth
+> in) lpattern(solid)) ///
+>                                 (scatter b_p xpos_p, mcolor(black) msymbol(circle) 
+> msize(vsmall)) ///
+>                                 (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin
+> ) lpattern(dash)) ///
+>                                 (scatter b_f xpos_f, mcolor(red) msymbol(square) ms
+> ize(vsmall)) ///
+>                                 (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthi
+> n) lpattern(shortdash_dot)) ///
+>                                 (scatter b_m xpos_m, mcolor(blue) msymbol(triangle)
+>  msize(vsmall)) ///
+>                                 (line b_p xpos_p if 1==0, lcolor(black) lpattern(so
+> lid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+>                                 (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash
+> ) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+>                                 (line b_m xpos_m if 1==0, lcolor(blue) lpattern(sho
+> rtdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+>                                 yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin))
+>  ///
+>                                 xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vth
+> in)) ///
+>                                 xlabel(`yr_labels', labsize(small) angle(45) labcol
+> or(black)) ///
+>                                 xscale(range(0.5 16.5)) ///
+>                                 xtitle("") ///
+>                                 ytitle("`es_ytitle'", size(medsmall)) ///
+>                                 ylabel(, grid gmin gmax labsize(small)) ///
+>                                 legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+>                                         cols(3) size(small) position(6) ring(1) ///
+>                                         region(lcolor(none)) symxsize(5) keygap(1) 
+> rowgap(0)) ///
+>                                 graphregion(color(white)) ///
+>                                 plotregion(margin(l=1 r=1))
+ 72.                         graph export "`es_outfile'", as(pdf) replace
+ 73.                         restore
+ 74.                         di "Figure exported to: `es_outfile'"
+ 75.                 }
+ 76.                 else di as error "Population event study (`spec') not plotted: a
+> t least one panel failed to estimate."
+ 77.         }
 Number of observations (_N) was 0, now 16.
-.                 gen yr_pos = _n
-.                 gen xpos_p = yr_pos - 0.18
-.                 gen xpos_m = yr_pos
-.                 gen xpos_f = yr_pos + 0.18
-.                 foreach s in p m f {
-  2.                         gen b_`s'  = .
-  3.                         gen hi_`s' = .
-  4.                         gen lo_`s' = .
-  5.                 }
 (16 missing values generated)
 (16 missing values generated)
 (16 missing values generated)
@@ -6238,16 +5732,6 @@ Number of observations (_N) was 0, now 16.
 (16 missing values generated)
 (16 missing values generated)
 (16 missing values generated)
-.                 forval pos = 1/16 {
-  2.                         foreach s in p m f {
-  3.                                 replace b_`s'  = `bes_`s'_`pos''                
->           if yr_pos == `pos'
-  4.                                 replace hi_`s' = `bes_`s'_`pos'' + 1.96 * `sees_
-> `s'_`pos'' if yr_pos == `pos'
-  5.                                 replace lo_`s' = `bes_`s'_`pos'' - 1.96 * `sees_
-> `s'_`pos'' if yr_pos == `pos'
-  6.                         }
-  7.                 }
 (1 real change made)
 (1 real change made)
 (1 real change made)
@@ -6392,52 +5876,329 @@ Number of observations (_N) was 0, now 16.
 (1 real change made)
 (1 real change made)
 (1 real change made)
-. 
-.                 twoway ///
->                         (rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin) lpat
-> tern(solid)) ///
->                         (scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(vs
-> mall)) ///
->                         (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpatte
-> rn(dash)) ///
->                         (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsma
-> ll)) ///
->                         (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpatt
-> ern(shortdash_dot)) ///
->                         (scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(v
-> small)) ///
->                         (line b_p xpos_p if 1==0, lcolor(black) lpattern(solid) lwi
-> dth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
->                         (line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth
-> (thin) mcolor(red) msymbol(square) msize(vsmall)) ///
->                         (line b_m xpos_m if 1==0, lcolor(blue) lpattern(shortdash_d
-> ot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
->                         yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
->                         xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
->                         xlabel(`yr_labels', labsize(small) angle(45) labcolor(black
-> )) ///
->                         xscale(range(0.5 16.5)) ///
->                         xtitle("") ///
->                         ytitle("Population 65+ (count)", size(medsmall)) ///
->                         ylabel(, grid gmin gmax labsize(small)) ///
->                         legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
->                                 cols(3) size(small) position(6) ring(1) ///
->                                 region(lcolor(none)) symxsize(5) keygap(1) rowgap(0
-> )) ///
->                         graphregion(color(white)) ///
->                         plotregion(margin(l=1 r=1))
-.                 graph export "$figures/appendix/AF_migration_es.pdf", as(pdf) repla
-> ce
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/A
     > F_migration_es.pdf saved as PDF format
-.                 restore
-.                 di "Figure exported to: $figures/appendix/AF_migration_es.pdf"
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figu
 > res/appendix/AF_migration_es.pdf
-.         }
-.         else di as error "Population event study not plotted: at least one panel fa
-> iled to estimate."
+Number of observations (_N) was 0, now 16.
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/A
+    > F_migration_es_log.pdf saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figu
+> res/appendix/AF_migration_es_log.pdf
+Number of observations (_N) was 0, now 16.
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(16 missing values generated)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+(1 real change made)
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/A
+    > F_migration_es_poisson.pdf saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figu
+> res/appendix/AF_migration_es_poisson.pdf
 . }
 
 . 
@@ -6581,5 +6342,5 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_
 > robustness_log.log
   log type:  text
- closed on:   9 Aug 2026, 11:50:08
+ closed on:   9 Aug 2026, 18:48:31
 -------------------------------------------------------------------------------------
