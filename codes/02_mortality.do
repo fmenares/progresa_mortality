@@ -2223,6 +2223,26 @@ foreach pnl in p m f {
 	local NBR_5_`pnl': di %12.0fc `e(N)'
 	distinct cve_ent_mun_super if e(sample)
 	local NmunBR_5_`pnl': di %12.0fc `r(ndistinct)'
+	* Panel E: lag1 (1-yr), W -- added as a sensitivity check per the
+	* coauthor's request, same weighted structure as Panel D (3-yr lag)
+	* but with the 1-yr lag intensity measure. The year window shifts one
+	* year earlier than Panel C's 2-yr-lag window (1992-2002), following
+	* the same convention Panel D uses to shift one year later for the
+	* 3-yr lag (1993-2003).
+	reghdfe `outcome' lag_intensity_new [aw=`wvar'] if inrange(year, 1991, 2001) & $sample_br, ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	local aux: di %12.3f _b[lag_intensity_new]
+	local t = abs(_b[lag_intensity_new] / _se[lag_intensity_new])
+	if      `t' >= 2.576 local bBR1yr_7_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bBR1yr_7_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bBR1yr_7_`pnl' = "`aux'*"
+	else                  local bBR1yr_7_`pnl' = "`aux'"
+	local seBR1yr_7_`pnl': di %12.3f _se[lag_intensity_new]
+	sum `outcome' if e(sample) & year  == 1996
+	local meanBR_7_`pnl': di %12.2fc `r(mean)'
+	local NBR_7_`pnl': di %12.0fc `e(N)'
+	distinct cve_ent_mun_super if e(sample)
+	local NmunBR_7_`pnl': di %12.0fc `r(ndistinct)'
 
 	* Panel F: lag2, UW, INCLUSIVE phase window (municipalities first
 	* enrolling 1997-1999 rather than 1998-1999 only). Secondary robustness,
@@ -2294,9 +2314,15 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 	file write sm "\textit{3-yr lagged Intensity} & `bBR3_5_p' & `bBR3_5_f' & `bBR3_5_m' \\ " _n
 	file write sm " & (`seBR3_5_p') & (`seBR3_5_f') & (`seBR3_5_m') \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mean 1996 & `meanBR_5_p' & `meanBR_5_f' & `meanBR_5_m' \\ " _n
-	file write sm "Obs & `NBR_5_p' & `NBR_5_f' & `NBR_5_m' \\ " _n
-	file write sm "No. Mun & `NmunBR_2_p' & `NmunBR_2_f' & `NmunBR_2_m' \\ " _n
+	* Panel E: lag1 (1-yr), W -- added as a sensitivity check per the
+	* coauthor's request, same weighted structure as Panel D.
+	file write sm "\underline{\textit{Panel E: 1-yr Lag (Weighted)}}  \\ " _n
+	file write sm "\textit{1-yr lagged Intensity} & `bBR1yr_7_p' & `bBR1yr_7_f' & `bBR1yr_7_m' \\ " _n
+	file write sm " & (`seBR1yr_7_p') & (`seBR1yr_7_f') & (`seBR1yr_7_m') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean 1996 & `meanBR_7_p' & `meanBR_7_f' & `meanBR_7_m' \\ " _n
+	file write sm "Obs & `NBR_7_p' & `NBR_7_f' & `NBR_7_m' \\ " _n
+	file write sm "No. Mun & `NmunBR_7_p' & `NmunBR_7_f' & `NmunBR_7_m' \\ " _n
 	file write sm "  & & & \\ " _n
 	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
 	file write sm "\bottomrule" _n
