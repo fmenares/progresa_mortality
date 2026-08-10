@@ -3665,6 +3665,164 @@ restore
 di "Figure exported to: $figures/appendix/AF8_beta0_stability.pdf"
 
 *============================================================
+* D2: EVENT STUDY (β_k) ON INTENSITY_1999, WITHOUT ANY LATER-PHASE
+* CONTROL -- BY SEX. Companion to AF8_beta0_stability's Spec 0 ("No
+* control") series above, which was estimated pooled only. Per user
+* request, this section re-estimates that same no-control specification
+* separately for pooled/female/male, as three single-series panels
+* styled exactly like Figure_2_pooled/_female/_male (same colors and
+* symbols: pooled=black circle, female=red square, male=blue triangle),
+* placed at the end of the appendix, immediately before the migration
+* figures.
+* Output: $figures/appendix/AF10a_no_control_p.pdf,
+*         $figures/appendix/AF10b_no_control_f.pdf,
+*         $figures/appendix/AF10c_no_control_m.pdf
+*============================================================
+{
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+foreach grp in w f m {
+	if "`grp'" == "w" {
+		local outcome emr65
+		local wvar   popover65_
+		local gcolor black
+		local gsym   circle
+		local gtag   a
+		local gname  p
+	}
+	else if "`grp'" == "f" {
+		local outcome emr65f
+		local wvar   popover65_f
+		local gcolor red
+		local gsym   square
+		local gtag   b
+		local gname  f
+	}
+	else {
+		local outcome emr65m
+		local wvar   popover65_m
+		local gcolor blue
+		local gsym   triangle
+		local gtag   c
+		local gname  m
+	}
+
+	* No later-phase (Intensity_2005) control -- same as Spec 0 above,
+	* now estimated separately by sex instead of pooled only.
+	reghdfe `outcome' c.inten1999##ib6.year_1995 ///
+		c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
+		vce(cluster cve_ent_mun_super)
+
+	forval pos = 1/16 {
+		if `pos' == 6 {
+			local b_`pos'  = 0
+			local se_`pos' = 0
+		}
+		else {
+			local b_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local se_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
+	}
+
+	preserve
+	clear
+	set obs 16
+	gen yr_pos = _n
+	gen b  = .
+	gen hi = .
+	gen lo = .
+	forval pos = 1/16 {
+		replace b  = `b_`pos''                          if yr_pos == `pos'
+		replace hi = `b_`pos'' + 1.96 * `se_`pos'' if yr_pos == `pos'
+		replace lo = `b_`pos'' - 1.96 * `se_`pos'' if yr_pos == `pos'
+	}
+	twoway ///
+		(rcap hi lo yr_pos, ///
+			lcolor(`gcolor'%60) lwidth(vthin)) ///
+		(scatter b yr_pos, ///
+			mcolor(`gcolor') msymbol(`gsym') msize(vsmall)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+		xscale(range(0.5 16.5)) ///
+		xtitle("") ///
+		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+		legend(off) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+	graph export "$figures/appendix/AF10`gtag'_no_control_`gname'.pdf", as(pdf) replace
+	restore
+}
+}
+di "Figure exported to: $figures/appendix/AF10a_no_control_p.pdf / AF10b_no_control_f.pdf / AF10c_no_control_m.pdf"
+
+*============================================================
+* TABLE: NO-LATER-PHASE-CONTROL DiD SUMMARY, BY SEX
+* Post-period ("Post 1997-2006") point-estimate companion to AF10a-c
+* above -- same no-control specification, same three sexes. Mirrors
+* T2_mortality's row layout (coefficient / SE / Mean(1991-1996) / Obs /
+* No. Mun / Mean Intensity 1999), but here sex is the THREE COLUMNS
+* rather than row panels as in Table 2, since there is a single
+* specification (no age/SES-trend variants) rather than four.
+* Output: $tables/appendix/AT_no_control_sex.tex
+*============================================================
+foreach pnl in p f m {
+	if "`pnl'" == "p" {
+		local out65 emr65
+		local wt65  popover65_
+	}
+	else if "`pnl'" == "f" {
+		local out65 emr65f
+		local wt65  popover65_f
+	}
+	else {
+		local out65 emr65m
+		local wt65  popover65_m
+	}
+
+	reghdfe `out65' c.inten1999#i.post c.sp_intensity ///
+		[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+
+	local aux: di %12.3f _b[1.post#c.inten1999]
+	local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+	if      `t' >= 2.576 local bnc_`pnl' = "`aux'***"
+	else if `t' >= 1.96  local bnc_`pnl' = "`aux'**"
+	else if `t' >= 1.645 local bnc_`pnl' = "`aux'*"
+	else                  local bnc_`pnl' = "`aux'"
+	local senc_`pnl': di %12.3f _se[1.post#c.inten1999]
+
+	sum `out65' if e(sample) & year < 1997
+	local meannc_`pnl': di %12.2fc r(mean)
+	local Nnc_`pnl':    di %12.0fc e(N)
+	distinct cve_ent_mun_super if e(sample)
+	local Nmunnc_`pnl': di %12.0fc r(ndistinct)
+}
+
+quietly sum inten1999 if $sample_marg & year == 1996
+local meanI99nc: di %6.1f r(mean) * 100
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_no_control_sex.tex", write replace
+	file write sm "\begin{tabular}{lccc} \hline \hline" _n
+	file write sm "& Pooled & Female & Male \\ \cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bnc_p' & `bnc_f' & `bnc_m' \\ " _n
+	file write sm " & (`senc_p') & (`senc_f') & (`senc_m') \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean (1991-1996) & `meannc_p' & `meannc_f' & `meannc_m' \\ " _n
+	file write sm "Obs & `Nnc_p' & `Nnc_f' & `Nnc_m' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "No.\ Mun & `Nmunnc_p' & `Nmunnc_f' & `Nmunnc_m' \\ " _n
+	file write sm "  & & & \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99nc' & `meanI99nc' & `meanI99nc' \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/appendix/AT_no_control_sex.tex"
+
+*============================================================
 * NOTE: D3 (exact saturation diagnostics, AT_saturation_diagnostics.tex,
 * at:saturation_diagnostics, formerly AT12) has moved to
 * codes/04_extra_robustness.do per the coauthor's request, along with its
