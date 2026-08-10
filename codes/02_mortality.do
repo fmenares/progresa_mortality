@@ -4073,35 +4073,26 @@ save "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", replace
 *============================================================
 
 *============================================================
-* APPENDIX TABLE: AT7_BR_robustness_emr65_2002ctrl_eoy -- extends the
-* BR-adaptation robustness table with an Intensity_2002 x Post control
-* column per sample, using the End-of-year (Mixed numerator) +
+* APPENDIX TABLE: AT7_BR_robustness_emr65_2002ctrl_eoy -- BR-adaptation
+* robustness table, using the End-of-year (Mixed numerator) +
 * year-varying municipal household denominator construction -- the
-* coauthors' final agreed main specification. 6 columns: BR-sample and
-* full-HM-sample, each x {unweighted+SP, weighted+SP, weighted+SP+
-* Intensity_2002 control}, built from inten1999 / inten2002.
+* coauthors' final agreed main specification. 4 columns: BR-sample and
+* full-HM-sample, each x {unweighted+SP, weighted+SP}, built from
+* inten1999.
 *
-* IMPORTANT CAVEAT: the nesting argument ("Intensity_2002 must nest
-* Intensity_1999 for holding total-by-2002 dosage fixed to be
-* meaningful") is NOT guaranteed under the End-of-year construction,
-* since it is a point-in-time caseload count rather than a genuine
-* running sum -- this project's own crosswalk/non-monotonicity
-* diagnostics (AT_crosswalk_supermun_diagnostic; the 25 non-monotone
-* municipalities in Intensity_2005<Intensity_1999) show this construction
-* is NOT guaranteed monotonic. Column (3)/(6)'s Intensity_2002 control
-* should therefore be read as a same-construction robustness check (does
-* the coefficient move when a later, still-End-of-year, snapshot is
-* added), not as a "hold total eventual enrollment fixed" identification
-* argument.
+* NOTE: the weighted+SP+Intensity_2002-control columns (formerly (3)
+* and (6)) have been removed per the coauthor's request. Their
+* underlying caveat no longer applies here (the nesting argument --
+* "Intensity_2002 must nest Intensity_1999 for holding total-by-2002
+* dosage fixed to be meaningful" -- is NOT guaranteed under the
+* End-of-year construction; see AT_crosswalk_supermun_diagnostic for
+* the 25 non-monotone municipalities in Intensity_2005<Intensity_1999).
 * Output: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex
 *------------------------------------------------------------
-* inten2002 (year-varying denominator) already exists, built earlier in
-* this file (~line 246) from intensity_new -- reused directly here, no
-* separate construction needed.
 
 foreach pnl in p f m {
-	matrix results_emr65_eoyfix_`pnl' = J(6, 6, .)
-	matrix colnames results_emr65_eoyfix_`pnl' = "br_uw" "br_wsp" "br_wsp2002" "marg_uw" "marg_wsp" "marg_wsp2002"
+	matrix results_emr65_eoyfix_`pnl' = J(6, 4, .)
+	matrix colnames results_emr65_eoyfix_`pnl' = "br_uw" "br_wsp" "marg_uw" "marg_wsp"
 	matrix rownames results_emr65_eoyfix_`pnl' = "coef" "se" "t_stat" "n_obs" "n_mun" "mean_pre"
 }
 
@@ -4153,22 +4144,6 @@ foreach pnl in p f m {
 		sum `depvar' if e(sample) & post==2
 		matrix results_emr65_eoyfix_`pnl'[6,`col'] = r(mean)
 		local col = `col' + 1
-
-		* Spec 3: weighted + SP + Intensity_2002 x post control (same-
-		* construction robustness, NOT a nesting-guaranteed control -- see
-		* caveat above)
-		reghdfe `depvar' c.inten1999#i.post c.inten2002#i.post c.sp_intensity [aw=`wv'] ///
-			if inrange(year,1992,2002) & `cond', ///
-			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		matrix results_emr65_eoyfix_`pnl'[1,`col'] = _b[1.post#c.inten1999]
-		matrix results_emr65_eoyfix_`pnl'[2,`col'] = _se[1.post#c.inten1999]
-		matrix results_emr65_eoyfix_`pnl'[3,`col'] = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-		matrix results_emr65_eoyfix_`pnl'[4,`col'] = e(N)
-		distinct cve_ent_mun_super if e(sample)
-		matrix results_emr65_eoyfix_`pnl'[5,`col'] = r(ndistinct)
-		sum `depvar' if e(sample) & post==2
-		matrix results_emr65_eoyfix_`pnl'[6,`col'] = r(mean)
-		local col = `col' + 1
 	}
 }
 
@@ -4185,11 +4160,11 @@ restore
 {
 	cap file close tbl3
 	file open tbl3 using "$tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex", write replace
-	file write tbl3 "\begin{tabular}{lcccccc} \hline \hline" _n
-	file write tbl3 "& \multicolumn{3}{c}{\textit{BR Sample}} & \multicolumn{3}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}" _n
-	file write tbl3 "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{+ Int.\ 2002} \\ " _n
-	file write tbl3 "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
-	file write tbl3 "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+	file write tbl3 "\begin{tabular}{lcccc} \hline \hline" _n
+	file write tbl3 "& \multicolumn{2}{c}{\textit{BR Sample}} & \multicolumn{2}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+	file write tbl3 "& \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} & \multicolumn{1}{c}{Unweighted} & \multicolumn{1}{c}{Weighted} \\ " _n
+	file write tbl3 "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
+	file write tbl3 "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 
 	foreach pnl in p f m {
 		if "`pnl'" == "p"      local plabel "Panel A: Pooled"
@@ -4199,7 +4174,7 @@ restore
 		file write tbl3 "\underline{\textit{`plabel'}} \\ " _n
 
 		file write tbl3 "\textit{Intensity 1999 x Post}"
-		forval col = 1/6 {
+		forval col = 1/4 {
 			local coef = results_emr65_eoyfix_`pnl'[1,`col']
 			local t    = results_emr65_eoyfix_`pnl'[3,`col']
 			if      `t' >= 2.576 file write tbl3 "& " %9.3f (`coef') "***"
@@ -4210,43 +4185,43 @@ restore
 		file write tbl3 " \\ " _n
 
 		file write tbl3 " "
-		forval col = 1/6 {
+		forval col = 1/4 {
 			local se = results_emr65_eoyfix_`pnl'[2,`col']
 			file write tbl3 "& (" %9.3f (`se') ")"
 		}
 		file write tbl3 " \\ " _n
-		file write tbl3 "  & & & & & & \\ " _n
+		file write tbl3 "  & & & & \\ " _n
 
 		file write tbl3 "Mean (1991-1996)"
-		forval col = 1/6 {
+		forval col = 1/4 {
 			local mean = results_emr65_eoyfix_`pnl'[6,`col']
 			file write tbl3 "& " %9.2f (`mean') ""
 		}
 		file write tbl3 " \\ " _n
 
 		file write tbl3 "Obs"
-		forval col = 1/6 {
+		forval col = 1/4 {
 			local n = results_emr65_eoyfix_`pnl'[4,`col']
 			file write tbl3 "& " %9.0f (`n') ""
 		}
 		file write tbl3 " \\ " _n
 
 		file write tbl3 "No. Mun"
-		forval col = 1/6 {
+		forval col = 1/4 {
 			local nmun = results_emr65_eoyfix_`pnl'[5,`col']
 			file write tbl3 "& " %9.0f (`nmun') ""
 		}
 		if "`pnl'" != "m" {
 			file write tbl3 " \\ " _n
-			file write tbl3 "  & & & & & & \\ " _n
+			file write tbl3 "  & & & & \\ " _n
 		}
 		else {
 			file write tbl3 " \\ " _n
 		}
 	}
 
-	file write tbl3 "  & & & & & & \\ " _n
-	file write tbl3 "Mean Intensity 1999, End-of-year (\%) & \multicolumn{3}{c}{`meanI99eoy_br'} & \multicolumn{3}{c}{`meanI99eoy_hm'} \\ " _n
+	file write tbl3 "  & & & & \\ " _n
+	file write tbl3 "Mean Intensity 1999, End-of-year (\%) & \multicolumn{2}{c}{`meanI99eoy_br'} & \multicolumn{2}{c}{`meanI99eoy_hm'} \\ " _n
 	file write tbl3 "\bottomrule" _n
 	file write tbl3 "\end{tabular}"
 	file close tbl3
