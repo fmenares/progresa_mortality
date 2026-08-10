@@ -3691,6 +3691,164 @@ restore
 di "Figure exported to: $figures/appendix/AF8_beta0_stability.pdf"
 
 *============================================================
+* APPENDIX FIGURE (additional, NOT YET referenced in main.tex): EVENT
+* STUDY (β_k) ON INTENSITY_1999 -- STABILITY ACROSS SECOND-PHASE
+* CONTROLS, ADDING THE INTENSITY_2002 SNAPSHOT. Companion to
+* AF8_beta0_stability, which deliberately excluded this mid-phase
+* snapshot (see that block's Spec-0 comment above: mid-phase, the
+* roll-out is still ramping up, so such a control absorbs part of the
+* early-phase variation the design is meant to isolate). Per the
+* coauthor's request, this figure adds it anyway as an additional
+* sensitivity check, alongside the same four series shown in AF8 (no
+* control; 2005 baseline; 2004; 2006) -- recomputed here so the figure
+* is self-contained rather than relying on AF8's locals persisting.
+* Output: $figures/appendix/AF8b_beta0_stability_2002ctrl.pdf
+*============================================================
+{
+local yr_labels `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+* Spec 0: NO control
+reghdfe emr65 c.inten1999##ib6.year_1995 ///
+	c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+	vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local c0_`pos'  = 0
+		local sc0_`pos' = 0
+	}
+	else {
+		local c0_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sc0_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+* Spec 1: baseline -- 2nd-phase control = Intensity_2005
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+	c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+	vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local c1_`pos'  = 0
+		local sc1_`pos' = 0
+	}
+	else {
+		local c1_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sc1_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+* Spec 2: 2nd-phase control = Intensity_2004
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2004##ib6.year_1995 ///
+	c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+	vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local c2_`pos'  = 0
+		local sc2_`pos' = 0
+	}
+	else {
+		local c2_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sc2_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+* Spec 3: 2nd-phase control = Intensity_2006
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2006##ib6.year_1995 ///
+	c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+	vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local c3_`pos'  = 0
+		local sc3_`pos' = 0
+	}
+	else {
+		local c3_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sc3_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+* Spec 4 (NEW): 2nd-phase control = Intensity_2002, the mid-phase
+* snapshot deliberately excluded from AF8 -- included here as a
+* sensitivity check per the coauthor's request.
+reghdfe emr65 c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 ///
+	c.sp_intensity [aw=popover65_] if $sample_marg, a(cve_ent_mun_super) ///
+	vce(cluster cve_ent_mun_super)
+forval pos = 1/16 {
+	if `pos' == 6 {
+		local c4_`pos'  = 0
+		local sc4_`pos' = 0
+	}
+	else {
+		local c4_`pos'  = _b[`pos'.year_1995#c.inten1999]
+		local sc4_`pos' = _se[`pos'.year_1995#c.inten1999]
+	}
+}
+
+preserve
+clear
+set obs 16
+gen yr_pos = _n
+gen xpos_0 = yr_pos - 0.32
+gen xpos_1 = yr_pos - 0.16
+gen xpos_2 = yr_pos
+gen xpos_3 = yr_pos + 0.16
+gen xpos_4 = yr_pos + 0.32
+foreach s in 0 1 2 3 4 {
+	gen b_s`s'  = .
+	gen hi_s`s' = .
+	gen lo_s`s' = .
+}
+forval pos = 1/16 {
+	replace b_s0  = `c0_`pos''                       if yr_pos == `pos'
+	replace hi_s0 = `c0_`pos'' + 1.96 * `sc0_`pos'' if yr_pos == `pos'
+	replace lo_s0 = `c0_`pos'' - 1.96 * `sc0_`pos'' if yr_pos == `pos'
+	replace b_s1  = `c1_`pos''                       if yr_pos == `pos'
+	replace hi_s1 = `c1_`pos'' + 1.96 * `sc1_`pos'' if yr_pos == `pos'
+	replace lo_s1 = `c1_`pos'' - 1.96 * `sc1_`pos'' if yr_pos == `pos'
+	replace b_s2  = `c2_`pos''                       if yr_pos == `pos'
+	replace hi_s2 = `c2_`pos'' + 1.96 * `sc2_`pos'' if yr_pos == `pos'
+	replace lo_s2 = `c2_`pos'' - 1.96 * `sc2_`pos'' if yr_pos == `pos'
+	replace b_s3  = `c3_`pos''                       if yr_pos == `pos'
+	replace hi_s3 = `c3_`pos'' + 1.96 * `sc3_`pos'' if yr_pos == `pos'
+	replace lo_s3 = `c3_`pos'' - 1.96 * `sc3_`pos'' if yr_pos == `pos'
+	replace b_s4  = `c4_`pos''                       if yr_pos == `pos'
+	replace hi_s4 = `c4_`pos'' + 1.96 * `sc4_`pos'' if yr_pos == `pos'
+	replace lo_s4 = `c4_`pos'' - 1.96 * `sc4_`pos'' if yr_pos == `pos'
+}
+twoway ///
+	(rcap hi_s0 lo_s0 xpos_0, lcolor(red%60) lwidth(vthin) lpattern(solid)) ///
+	(scatter b_s0 xpos_0, mcolor(red) msymbol(x) msize(vsmall)) ///
+	(rcap hi_s1 lo_s1 xpos_1, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+	(scatter b_s1 xpos_1, mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(rcap hi_s2 lo_s2 xpos_2, lcolor(black%60) lwidth(vthin) lpattern(dash)) ///
+	(scatter b_s2 xpos_2, mcolor(black) msymbol(square) msize(vsmall)) ///
+	(rcap hi_s3 lo_s3 xpos_3, lcolor(black%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+	(scatter b_s3 xpos_3, mcolor(black) msymbol(triangle) msize(vsmall)) ///
+	(rcap hi_s4 lo_s4 xpos_4, lcolor(blue%60) lwidth(vthin) lpattern(dash_dot)) ///
+	(scatter b_s4 xpos_4, mcolor(blue) msymbol(diamond) msize(vsmall)) ///
+	(line b_s0 xpos_0 if 1==0, lcolor(red) lpattern(solid) lwidth(thin) mcolor(red) msymbol(x) msize(vsmall)) ///
+	(line b_s1 xpos_1 if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+	(line b_s2 xpos_2 if 1==0, lcolor(black) lpattern(dash) lwidth(thin) mcolor(black) msymbol(square) msize(vsmall)) ///
+	(line b_s3 xpos_3 if 1==0, lcolor(black) lpattern(shortdash_dot) lwidth(thin) mcolor(black) msymbol(triangle) msize(vsmall)) ///
+	(line b_s4 xpos_4 if 1==0, lcolor(blue) lpattern(dash_dot) lwidth(thin) mcolor(blue) msymbol(diamond) msize(vsmall)), ///
+	yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+	xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+	xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+	xscale(range(0.5 16.5)) ///
+	xtitle("") ///
+	ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+	ylabel(, grid gmin gmax labsize(small)) ///
+	legend(order(11 "No control" 12 "Control: Intensity 2005 (baseline)" 13 "Control: Intensity 2004" 14 "Control: Intensity 2006" 15 "Control: Intensity 2002") ///
+		cols(2) size(small) position(6) ring(1) ///
+		region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+	graphregion(color(white)) ///
+	plotregion(margin(l=1 r=1))
+graph export "$figures/appendix/AF8b_beta0_stability_2002ctrl.pdf", as(pdf) replace
+restore
+}
+di "Figure exported to: $figures/appendix/AF8b_beta0_stability_2002ctrl.pdf"
+
+*============================================================
 * D2: EVENT STUDY (β_k) ON INTENSITY_1999, WITHOUT ANY LATER-PHASE
 * CONTROL -- BY SEX. Companion to AF8_beta0_stability's Spec 0 ("No
 * control") series above, which was estimated pooled only. Per user
