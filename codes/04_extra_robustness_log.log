@@ -3,7 +3,7 @@
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_
 > robustness_log.log
   log type:  text
- opened on:   9 Aug 2026, 18:47:54
+ opened on:   9 Aug 2026, 20:01:59
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -6342,5 +6342,5 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_
 > robustness_log.log
   log type:  text
- closed on:   9 Aug 2026, 18:48:31
+ closed on:   9 Aug 2026, 20:02:29
 -------------------------------------------------------------------------------------
