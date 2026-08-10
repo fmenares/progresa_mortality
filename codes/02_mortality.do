@@ -1476,8 +1476,12 @@ foreach samp in `samples' {
             local wvar = "popover65_"
         }
 
-        *--- Run three event study regressions (UW, UW+SP, W+SP) ---
-        foreach spec in uw uwsp wsp {
+        *--- Run four event study regressions (UW, UW+SP, W+SP, and
+        *    W+SP+Intensity_2002 control -- the latter added as a
+        *    companion sensitivity check per the coauthor's request,
+        *    the event-study analogue of the Intensity_2002 control
+        *    column in Appendix Table~\ref{at:did_robust_br2_2002ctrl_eoy}) ---
+        foreach spec in uw uwsp wsp wsp2002 {
 
             if "`spec'" == "uw" {
                 reghdfe `outcome' c.inten1999##ib6.year_1995 ///
@@ -1489,8 +1493,14 @@ foreach samp in `samples' {
                     if inrange(year,1992,2002) & `samp_cond', ///
                     a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
             }
-            else {
+            else if "`spec'" == "wsp" {
                 reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+                    if inrange(year,1992,2002) & `samp_cond', ///
+                    a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+            }
+            else {
+                reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 ///
+                    c.sp_intensity [aw=`wvar'] ///
                     if inrange(year,1992,2002) & `samp_cond', ///
                     a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
             }
@@ -1514,18 +1524,19 @@ foreach samp in `samples' {
         set obs 11
 
         gen yr_pos = _n + 1
-        gen xpos_uw   = yr_pos - 0.15
-        gen xpos_uwsp = yr_pos
-        gen xpos_wsp  = yr_pos + 0.15
+        gen xpos_uw      = yr_pos - 0.15
+        gen xpos_uwsp    = yr_pos
+        gen xpos_wsp     = yr_pos + 0.15
+        gen xpos_wsp2002 = yr_pos + 0.30
 
-        foreach spec in uw uwsp wsp {
+        foreach spec in uw uwsp wsp wsp2002 {
             gen b_`spec'  = .
             gen hi_`spec' = .
             gen lo_`spec' = .
         }
 
         forval pos = 2/12 {
-            foreach spec in uw uwsp wsp {
+            foreach spec in uw uwsp wsp wsp2002 {
                 replace b_`spec'  = `b_`spec'_`pos''                             if yr_pos == `pos'
                 replace hi_`spec' = `b_`spec'_`pos'' + 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
                 replace lo_`spec' = `b_`spec'_`pos'' - 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
@@ -1580,6 +1591,41 @@ foreach samp in `samples' {
         else if "`outcome'" == "emr65m" & "`samp'" == "marg" local f6_stem "AF9d_emr65m_HighMarg"
 
         graph export "$figures/appendix/`f6_stem'.pdf", as(pdf) replace
+
+        *--- Companion figure, NOT a replacement for AF9a-d above: same
+        * weighted+SP baseline (wsp) overlaid with weighted+SP+Intensity_2002
+        * control (wsp2002), for the same four Females/Males x BR/HighMarg
+        * panels. Added per the coauthor's request as an additional
+        * sensitivity check, placed as a separate figure before the
+        * migration figures -- does not touch AF9a-d.
+        if      "`outcome'" == "emr65f" & "`samp'" == "br"   local f6b_stem "AF9a2_emr65f_BR_2002ctrl"
+        else if "`outcome'" == "emr65f" & "`samp'" == "marg" local f6b_stem "AF9b2_emr65f_HighMarg_2002ctrl"
+        else if "`outcome'" == "emr65m" & "`samp'" == "br"   local f6b_stem "AF9c2_emr65m_BR_2002ctrl"
+        else if "`outcome'" == "emr65m" & "`samp'" == "marg" local f6b_stem "AF9d2_emr65m_HighMarg_2002ctrl"
+        else local f6b_stem ""
+
+        if "`f6b_stem'" != "" {
+            twoway ///
+                (rcap hi_wsp lo_wsp xpos_wsp, lcolor(`col_wsp') lwidth(vthin)) ///
+                (scatter b_wsp xpos_wsp, mcolor(`col_wsp') msymbol(triangle) msize(vsmall)) ///
+                (rcap hi_wsp2002 lo_wsp2002 xpos_wsp2002, lcolor(`col_uwsp') lpattern(dash) lwidth(vthin)) ///
+                (scatter b_wsp2002 xpos_wsp2002, mcolor(`col_uwsp') msymbol(diamond) msize(vsmall)) ///
+                (line b_wsp xpos_wsp if 1==0, lcolor(`col_wsp') lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(`col_wsp') msize(vsmall)) ///
+                (line b_wsp2002 xpos_wsp2002 if 1==0, lcolor(`col_uwsp') lpattern(dash) lwidth(thin) msymbol(diamond) mcolor(`col_uwsp') msize(vsmall)), ///
+                yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+                xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+                xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+                xscale(range(1.5 12.5)) ///
+                xtitle("") ///
+                ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
+                ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
+                legend(order(5 "Weighted (baseline)" 6 "Weighted + Intensity 2002 control") ///
+                    cols(1) size(medsmall) position(6) ring(1) ///
+                    region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+                graphregion(color(white)) ///
+                plotregion(margin(l=1 r=1))
+            graph export "$figures/appendix/`f6b_stem'.pdf", as(pdf) replace
+        }
 
         restore
     }
