@@ -41,9 +41,20 @@
     \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. Columns~(1)--(4) report estimates for ages 50--64, 65 and older, 65--69, and 70 and older, respectively. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities. All regressions $\textit{Intensity}_{2005} \times \textit{Post}$, Seguro Popular intensity, municipality and year fixed effects, and are weighted by the population of each age group of interest. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
-% NOTE: the cause-of-death table (former AT2_cod_mortality,
-% at:did_robust_cod) has moved to codes/04_extra_robustness.do per the
-% coauthor's request -- no longer displayed in the paper.
+\begin{table}[H]
+\RawCaption%
+  {\caption{Effects of Progresa Enrollment Intensity on Cause-Specific Mortality Rate for Older Adults}
+   \label{at:did_robust_cod}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.76}{
+      \input{tables/appendix/AT2_cod_mortality}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table presents cause-specific difference-in-differences estimates for the main highly marginalized sample over 1991--2006. Each column corresponds to a specific cause of death. \textit{Progresa} enrollment intensity is interacted with the post-1997 dummy following equation~(\ref{eq:did}). Panel~A reports pooled estimates; Panel~B reports estimates for females; Panel~C reports estimates for males. The sample is restricted to highly marginalized municipalities. All regressions include municipality and year fixed effects, control for Seguro Popular intensity, and are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+\end{table}
+
+
 
 
 \begin{table}[H]
@@ -91,9 +102,19 @@
 \end{table}
 
 \newpage
-% NOTE: the BR-trimming table (former AT6_BR_trimming, at:br_trimming)
-% has moved to codes/04_extra_robustness.do per the coauthor's request
-% -- no longer displayed in the paper.
+% Because the End-of-year construction does not guarantee that $\textit{Intensity}_{2002}$ nests $\textit{Intensity}_{1999}$, this control should be read as a same-construction robustness check rather than a ``hold total eventual enrollment fixed'' identification argument
+\begin{table}[H]
+\RawCaption%
+  {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Population Sensitivity}
+   \label{at:br_trimming}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.75}{
+      \input{tables/appendix/AT6_BR_trimming}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column~(1) reproduces their original unweighted estimate; column~(2) reports our close replication, unweighted. Columns~(3)--(4) progressively trim the smallest municipalities, dropping those in the bottom 10\% and 25\% of the distribution of average older-adult (65+) population over 1992--2002, both estimated unweighted. Columns~(5)--(7) split the BR sample into three equal-sized groups (terciles) by the same average older-adult (65+) population and estimate the same unweighted specification separately within each tercile. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+\end{table}
 \newpage
 
 
