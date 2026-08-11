@@ -2291,6 +2291,122 @@ foreach pnl in p m f {
 di "Table exported to: $tables/appendix/AT_fixed_offset_poisson.tex"
 
 *============================================================
+* APPENDIX FIGURE (companion to af:es_sample_compare / Figure A.9):
+* Event Study by Sex and Sample, 1992-2002, WITH an Intensity_2002
+* control -- moved here from codes/02_mortality.do per the coauthor's
+* request. STILL DISPLAYED in the paper (figures_app.tex,
+* af:es_sample_compare_2002ctrl) -- unlike the "MOVED FROM" block
+* below, this one's `graph export' lines stay ACTIVE.
+*
+* Same weighted+SP baseline (wsp) as af:es_sample_compare, overlaid
+* with weighted+SP+Intensity_2002 control (wsp2002) -- the event-study
+* analogue of the Intensity_2002 control column in Appendix Table
+* at:did_robust_br2_2002ctrl_eoy -- for the same four Females/Males x
+* BR/HighMarg panels. Self-contained (recomputes the wsp baseline
+* itself, rather than depending on 02_mortality.do's AF9a-d locals).
+* Output: $figures/appendix/AF9a2-d2_..._2002ctrl.pdf
+*============================================================
+{
+local yr_labels `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
+
+foreach samp in br marg {
+
+	if "`samp'" == "br" local samp_cond = "$sample_br"
+	else                 local samp_cond = "$sample_marg"
+
+	foreach outcome in emr65f emr65m {
+
+		if regexm("`outcome'", "f$") local wvar = "popover65_f"
+		else                          local wvar = "popover65_m"
+
+		foreach spec in wsp wsp2002 {
+			if "`spec'" == "wsp" {
+				reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+					if inrange(year,1992,2002) & `samp_cond', ///
+					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			else {
+				reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 ///
+					c.sp_intensity [aw=`wvar'] ///
+					if inrange(year,1992,2002) & `samp_cond', ///
+					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+
+			forval pos = 2/12 {
+				if `pos' == 6 {
+					local b_`spec'_`pos'  = 0
+					local se_`spec'_`pos' = 0
+				}
+				else {
+					local b_`spec'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+					local se_`spec'_`pos' = _se[`pos'.year_1995#c.inten1999]
+				}
+			}
+		}
+
+		preserve
+		clear
+		set obs 11
+		gen yr_pos = _n + 1
+		gen xpos_wsp     = yr_pos - 0.08
+		gen xpos_wsp2002 = yr_pos + 0.08
+		foreach spec in wsp wsp2002 {
+			gen b_`spec'  = .
+			gen hi_`spec' = .
+			gen lo_`spec' = .
+		}
+		forval pos = 2/12 {
+			foreach spec in wsp wsp2002 {
+				replace b_`spec'  = `b_`spec'_`pos''                             if yr_pos == `pos'
+				replace hi_`spec' = `b_`spec'_`pos'' + 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
+				replace lo_`spec' = `b_`spec'_`pos'' - 1.96 * `se_`spec'_`pos'' if yr_pos == `pos'
+			}
+		}
+
+		* Same color convention as af:es_sample_compare: female=red,
+		* male=blue; baseline (wsp) at %80 opacity solid, 2002-control
+		* (wsp2002) at %60 opacity dashed.
+		if regexm("`outcome'", "f$") {
+			local col_wsp     = "red%80"
+			local col_wsp2002 = "red%60"
+		}
+		else {
+			local col_wsp     = "blue%80"
+			local col_wsp2002 = "blue%60"
+		}
+
+		twoway ///
+			(rcap hi_wsp lo_wsp xpos_wsp, lcolor(`col_wsp') lwidth(vthin)) ///
+			(scatter b_wsp xpos_wsp, mcolor(`col_wsp') msymbol(triangle) msize(vsmall)) ///
+			(rcap hi_wsp2002 lo_wsp2002 xpos_wsp2002, lcolor(`col_wsp2002') lpattern(dash) lwidth(vthin)) ///
+			(scatter b_wsp2002 xpos_wsp2002, mcolor(`col_wsp2002') msymbol(diamond) msize(vsmall)) ///
+			(line b_wsp xpos_wsp if 1==0, lcolor(`col_wsp') lpattern(solid) lwidth(thin) msymbol(triangle) mcolor(`col_wsp') msize(vsmall)) ///
+			(line b_wsp2002 xpos_wsp2002 if 1==0, lcolor(`col_wsp2002') lpattern(dash) lwidth(thin) msymbol(diamond) mcolor(`col_wsp2002') msize(vsmall)), ///
+			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+			xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+			xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
+			xscale(range(1.5 12.5)) ///
+			xtitle("") ///
+			ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
+			ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
+			legend(order(5 "Weighted (baseline)" 6 "Weighted + Intensity 2002 control") ///
+				cols(1) size(medsmall) position(6) ring(1) ///
+				region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+			graphregion(color(white)) ///
+			plotregion(margin(l=1 r=1))
+
+		if      "`outcome'" == "emr65f" & "`samp'" == "br"   local f6b_stem "AF9a2_emr65f_BR_2002ctrl"
+		else if "`outcome'" == "emr65f" & "`samp'" == "marg" local f6b_stem "AF9b2_emr65f_HighMarg_2002ctrl"
+		else if "`outcome'" == "emr65m" & "`samp'" == "br"   local f6b_stem "AF9c2_emr65m_BR_2002ctrl"
+		else                                                  local f6b_stem "AF9d2_emr65m_HighMarg_2002ctrl"
+		graph export "$figures/appendix/`f6b_stem'.pdf", as(pdf) replace
+		restore
+	}
+}
+}
+di "Figure exported to: $figures/appendix/AF9a2-d2_..._2002ctrl.pdf"
+
+*============================================================
 * MOVED FROM 02_mortality.do per the coauthor's request -- no longer
 * displayed in the paper (figures_app.tex/tables_app.tex entries
 * removed). Regressions/di diagnostics below still run so the numeric
