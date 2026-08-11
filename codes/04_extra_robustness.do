@@ -1808,6 +1808,140 @@ foreach pnl in p m f {
 di "Table exported to: $tables/appendix/AT_migration_robustness.tex"
 
 *============================================================
+* APPENDIX TABLE: Migration Robustness -- CENSUS-YEARS COMPARISON. A
+* separate table, deliberately NOT gated on the $mig_years switch above,
+* so it does not require setting $mig_years = "census" and re-running
+* the whole file: this block always runs and always produces its own
+* table, letting the default (all interpolated years) table above and
+* this census-years version be compared side by side from a single run.
+*
+* Restricts to years the 65+ population is actually MEASURED rather than
+* geometrically interpolated between census anchors (see FIX 1/SECOND
+* SWITCH notes above): 1995, 2000, 2005 within the 1991-2006 panel. One
+* pre-program and two post-program observations per municipality --
+* thin, and with no scope for a pre-trend test, but not an interpolation
+* artifact. Same intensity construction ($mig99/$mig05) as the table
+* above, so this isolates the years dimension specifically. No SP
+* control, matching the table above.
+*============================================================
+foreach pnl in p m f {
+	if "`pnl'" == "p" {
+		local outcome  popover65_
+		local loutcome lpopover65
+	}
+	else if "`pnl'" == "m" {
+		local outcome  popover65_m
+		local loutcome lpopover65_m
+	}
+	else {
+		local outcome  popover65_f
+		local loutcome lpopover65_f
+	}
+
+	foreach c in 1 2 3 {
+		local bMGC99_`pnl'_`c'   "n/a"
+		local seMGC99_`pnl'_`c'  "n/a"
+		local meanMGC_`pnl'_`c'  "n/a"
+		local NMGC_`pnl'_`c'     "n/a"
+		local NmunMGC_`pnl'_`c'  "n/a"
+	}
+
+	* col 1: Levels (unweighted)
+	capture reghdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
+		if $sample_marg & inlist(year,1995,2000,2005), ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.3f _b[1.post#c.${mig99}]
+		local t = abs(_b[1.post#c.${mig99}] / _se[1.post#c.${mig99}])
+		if      `t' >= 2.576 local bMGC99_`pnl'_1 = "`aux'***"
+		else if `t' >= 1.96  local bMGC99_`pnl'_1 = "`aux'**"
+		else if `t' >= 1.645 local bMGC99_`pnl'_1 = "`aux'*"
+		else                  local bMGC99_`pnl'_1 = "`aux'"
+		local seMGC99_`pnl'_1: di %12.3f _se[1.post#c.${mig99}]
+		sum `outcome' if e(sample) & post == 2
+		local meanMGC_`pnl'_1: di %12.0fc `r(mean)'
+		local NMGC_`pnl'_1:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunMGC_`pnl'_1: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration robustness (census years), panel `pnl', col 1 (Levels): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	* col 2: Log (unweighted)
+	capture reghdfe `loutcome' c.${mig99}#i.post c.${mig05}#i.post ///
+		if $sample_marg & inlist(year,1995,2000,2005), ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.3f _b[1.post#c.${mig99}]
+		local t = abs(_b[1.post#c.${mig99}] / _se[1.post#c.${mig99}])
+		if      `t' >= 2.576 local bMGC99_`pnl'_2 = "`aux'***"
+		else if `t' >= 1.96  local bMGC99_`pnl'_2 = "`aux'**"
+		else if `t' >= 1.645 local bMGC99_`pnl'_2 = "`aux'*"
+		else                  local bMGC99_`pnl'_2 = "`aux'"
+		local seMGC99_`pnl'_2: di %12.3f _se[1.post#c.${mig99}]
+		sum `loutcome' if e(sample) & post == 2
+		local meanMGC_`pnl'_2: di %12.2f `r(mean)'
+		local NMGC_`pnl'_2:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunMGC_`pnl'_2: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration robustness (census years), panel `pnl', col 2 (Log): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+
+	* col 3: Poisson (count outcome)
+	capture ppmlhdfe `outcome' c.${mig99}#i.post c.${mig05}#i.post ///
+		if $sample_marg & inlist(year,1995,2000,2005), ///
+		a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		local aux: di %12.3f exp(_b[1.post#c.${mig99}])-1
+		local seMGC99_`pnl'_3: di %12.3f exp(_b[1.post#c.${mig99}])*_se[1.post#c.${mig99}]
+		local t = abs(`aux' / `seMGC99_`pnl'_3')
+		if      `t' >= 2.576 local bMGC99_`pnl'_3 = "`aux'***"
+		else if `t' >= 1.96  local bMGC99_`pnl'_3 = "`aux'**"
+		else if `t' >= 1.645 local bMGC99_`pnl'_3 = "`aux'*"
+		else                  local bMGC99_`pnl'_3 = "`aux'"
+		sum `outcome' if e(sample) & post == 2
+		local meanMGC_`pnl'_3: di %12.0fc `r(mean)'
+		local NMGC_`pnl'_3:    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local NmunMGC_`pnl'_3: di %12.0fc `r(ndistinct)'
+	}
+	else di as error "Migration robustness (census years), panel `pnl', col 3 (Poisson): reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+}
+
+{
+	cap file close smc
+	file open smc using "$tables/appendix/AT_migration_robustness_census.tex", write replace
+	file write smc "\begin{tabular}{lccc} \hline \hline" _n
+	file write smc "& Levels & Log & Poisson \\ " _n
+	file write smc "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
+	file write smc "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	file write smc "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write smc "\textit{Intensity 1999 x post (1997-2006)} & `bMGC99_p_1' & `bMGC99_p_2' & `bMGC99_p_3' \\ " _n
+	file write smc "  & (`seMGC99_p_1') & (`seMGC99_p_2') & (`seMGC99_p_3') \\ " _n
+	file write smc "  & & &  \\ " _n
+	file write smc "Mean (1991-1996)  & `meanMGC_p_1' & `meanMGC_p_2' & `meanMGC_p_3' \\ " _n
+	file write smc "  & & &  \\ " _n
+	file write smc "\underline{\textit{Panel B: Females}}  \\ " _n
+	file write smc "\textit{Intensity 1999 x post (1997-2006)}  & `bMGC99_f_1' & `bMGC99_f_2' & `bMGC99_f_3' \\ " _n
+	file write smc "  & (`seMGC99_f_1') & (`seMGC99_f_2') & (`seMGC99_f_3') \\ " _n
+	file write smc "  & & &  \\ " _n
+	file write smc "Mean (1991-1996)  & `meanMGC_f_1' & `meanMGC_f_2' & `meanMGC_f_3' \\ " _n
+	file write smc "  & & &  \\ " _n
+	file write smc "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write smc "\textit{Intensity 1999 x post (1997-2006)} & `bMGC99_m_1' & `bMGC99_m_2' & `bMGC99_m_3' \\ " _n
+	file write smc "  & (`seMGC99_m_1') & (`seMGC99_m_2') & (`seMGC99_m_3') \\ " _n
+	file write smc "  & & &  \\ " _n
+	file write smc "Mean (1991-1996) & `meanMGC_m_1' & `meanMGC_m_2' & `meanMGC_m_3' \\ " _n
+	file write smc "  & & &  \\ " _n
+	file write smc "Obs & `NMGC_f_1' & `NMGC_f_2' & `NMGC_f_3' \\ " _n
+	file write smc "No. Mun & `NmunMGC_p_1' & `NmunMGC_p_2' & `NmunMGC_p_3' \\ " _n
+	file write smc "  & & & \\ " _n
+	file write smc "\bottomrule" _n
+	file write smc "\end{tabular}"
+	file close smc
+}
+di "Table exported to: $tables/appendix/AT_migration_robustness_census.tex"
+
+*============================================================
 * APPENDIX TABLE: Migration Robustness -- Triple-Difference (DDD)
 *   Differential growth of the 65+ population relative to the
 *   50-64 population, in high- vs low-intensity municipalities,
@@ -2107,7 +2241,7 @@ else {
 		foreach pnl in p m f {
 			local esout `esout_`pnl''
 
-			capture `es_cmd' `esout' c.${mig99}##ib6.year_1995 c.sp_intensity ///
+			capture `es_cmd' `esout' c.${mig99}##ib6.year_1995 ///
 				if $sample_marg & $mig_yrcond, ///
 				a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 			if !_rc & e(N) > 0 {
@@ -2183,6 +2317,110 @@ else {
 		else di as error "Population event study (`spec') not plotted: at least one panel failed to estimate."
 	}
 }
+
+*============================================================
+* MIGRATION EVENT STUDY (FIXED-DENOMINATOR COMPARISON) -- a separate
+* figure, deliberately NOT gated on the $mig_intensity switch above, so
+* it does not require setting $mig_intensity = "pre1990" and re-running
+* the whole file: this block always runs and always produces its own
+* figure, letting the default ("yearvar") AF_migration_es.pdf and this
+* fixed-denominator version be compared side by side from a single run.
+*
+* Uses the "pre1990" construction from FIX 1 above (pgbenef_*/hh_tot1990
+* -- the 1990 census household count, seven years before rollout):
+* strictly pre-determined, so no program-induced population change can
+* enter the regressor. Levels only, pooled/female/male, same style as
+* AF_migration_es.pdf's levels panel.
+* Output: $figures/appendix/AF_migration_es_fixeddenom.pdf
+*============================================================
+cap drop inten1999_fix90_cmp inten2005_fix90_cmp
+gen inten1999_fix90_cmp = pgbenef_1999/hh_tot1990
+gen inten2005_fix90_cmp = pgbenef_2005/hh_tot1990
+replace inten1999_fix90_cmp = 1 if inten1999_fix90_cmp > 1 & !missing(inten1999_fix90_cmp)
+replace inten2005_fix90_cmp = 1 if inten2005_fix90_cmp > 1 & !missing(inten2005_fix90_cmp)
+label var inten1999_fix90_cmp "Intensity 1999 (fixed 1990-census HH denominator)"
+label var inten2005_fix90_cmp "Intensity 2005 (fixed 1990-census HH denominator)"
+
+local yr_labels_fd `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+foreach pnl in p m f {
+	if "`pnl'" == "p"      local esout popover65_
+	else if "`pnl'" == "m" local esout popover65_m
+	else                     local esout popover65_f
+
+	* No SP control, same as the default-denominator figure above (FIX
+	* per the coauthor's request -- Seguro Popular intensity is not a
+	* nuisance control this check needs).
+	capture reghdfe `esout' c.inten1999_fix90_cmp##ib6.year_1995 ///
+		if $sample_marg & $mig_yrcond, ///
+		a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+	if !_rc & e(N) > 0 {
+		forval pos = 1/16 {
+			if `pos' == 6 {
+				local bfd_`pnl'_`pos'  = 0
+				local sefd_`pnl'_`pos' = 0
+			}
+			else {
+				local bfd_`pnl'_`pos'  = _b[`pos'.year_1995#c.inten1999_fix90_cmp]
+				local sefd_`pnl'_`pos' = _se[`pos'.year_1995#c.inten1999_fix90_cmp]
+			}
+		}
+		local fdok_`pnl' = 1
+	}
+	else {
+		di as error "Fixed-denominator population event study, panel `pnl': reghdfe failed or empty sample (rc=`_rc'); panel skipped"
+		local fdok_`pnl' = 0
+	}
+}
+
+if `fdok_p' == 1 & `fdok_m' == 1 & `fdok_f' == 1 {
+	preserve
+	clear
+	set obs 16
+	gen yr_pos = _n
+	gen xpos_p = yr_pos - 0.18
+	gen xpos_m = yr_pos
+	gen xpos_f = yr_pos + 0.18
+	foreach s in p m f {
+		gen b_`s'  = .
+		gen hi_`s' = .
+		gen lo_`s' = .
+	}
+	forval pos = 1/16 {
+		foreach s in p m f {
+			replace b_`s'  = `bfd_`s'_`pos''                           if yr_pos == `pos'
+			replace hi_`s' = `bfd_`s'_`pos'' + 1.96 * `sefd_`s'_`pos'' if yr_pos == `pos'
+			replace lo_`s' = `bfd_`s'_`pos'' - 1.96 * `sefd_`s'_`pos'' if yr_pos == `pos'
+		}
+	}
+
+	twoway ///
+		(rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin) lpattern(solid)) ///
+		(scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(vsmall)) ///
+		(rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+		(scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) ///
+		(rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+		(scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)) ///
+		(line b_p xpos_p if 1==0, lcolor(black) lpattern(solid) lwidth(thin) mcolor(black) msymbol(circle) msize(vsmall)) ///
+		(line b_f xpos_f if 1==0, lcolor(red) lpattern(dash) lwidth(thin) mcolor(red) msymbol(square) msize(vsmall)) ///
+		(line b_m xpos_m if 1==0, lcolor(blue) lpattern(shortdash_dot) lwidth(thin) mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels_fd', labsize(small) angle(45) labcolor(black)) ///
+		xscale(range(0.5 16.5)) ///
+		xtitle("") ///
+		ytitle("Population 65+ (count)", size(medsmall)) ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+		legend(order(7 "Pooled" 8 "Female" 9 "Male") ///
+			cols(3) size(small) position(6) ring(1) ///
+			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+	graph export "$figures/appendix/AF_migration_es_fixeddenom.pdf", as(pdf) replace
+	restore
+	di "Figure exported to: $figures/appendix/AF_migration_es_fixeddenom.pdf"
+}
+else di as error "Fixed-denominator population event study not plotted: at least one panel failed to estimate."
 
 *============================================================
 * MORTALITY WITH A PRE-PROGRAM (FIXED) POPULATION OFFSET
