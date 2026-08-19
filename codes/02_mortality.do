@@ -239,7 +239,7 @@ local N_nm = r(N)
 	cap file close sm
 	file open sm using "$tables/T1_descriptives.tex", write replace
 	file write sm "\begin{tabular}{lcc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
+	file write sm "& \multicolumn{1}{c}{Highly Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Progresa Enrollment Intensity (\%)}} \\ " _n
@@ -801,11 +801,11 @@ cap noisily twoway (line emr65_marg  year, lcolor(black) lpattern(solid) yaxis(1
        (line inten_marg  year, lcolor(orange) lpattern(solid) yaxis(2)) ///
        (line inten_nm    year, lcolor(orange) lpattern(dash)  yaxis(2)), ///
 	ytitle("Mortality Rate (65+ per 1,000)", axis(1)) ///
-	ytitle("Progresa Penetration (%)", axis(2)) ///
+	ytitle("Progresa Intensity (%)", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-	legend(order(1 "Marg: All" 2 "Marg: Female" 3 "Marg: Male" ///
-	             4 "Non-Marg: All" 5 "Non-Marg: Female" 6 "Non-Marg: Male" ///
-	             7 "Intensity, Marg (right axis)" 8 "Intensity, Non-Marg (right axis)") ///
+	legend(order(1 "Marginalized: All" 2 "Marginalized: Female" 3 "Marginalized: Male" ///
+	             4 "Non-Marginalized: All" 5 "Non-Marginalized: Female" 6 "Non-Marginalized: Male" ///
+	             7 "Intensity, Marginalized (right axis)" 8 "Intensity, Non-Marginalized (right axis)") ///
 	cols(3) size(small) position(6) ring(1)) ///
 	graphregion(fcolor(white))
 if _rc {
@@ -829,9 +829,9 @@ if _rc {
 	       (line inten_nm_scaled   year, lcolor(orange) lpattern(dash)), ///
 		ytitle("Mortality Rate (65+ per 1,000)") ///
 		xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
-		legend(order(1 "Marg: All" 2 "Marg: Female" 3 "Marg: Male" ///
-		             4 "Non-Marg: All" 5 "Non-Marg: Female" 6 "Non-Marg: Male" ///
-		             7 "Intensity, Marg (rescaled x`pen_scale_lbl')" 8 "Intensity, Non-Marg (rescaled x`pen_scale_lbl')") ///
+		legend(order(1 "Marginalized: All" 2 "Marginalized: Female" 3 "Marginalized: Male" ///
+		             4 "Non-Marginalized: All" 5 "Non-Marginalized: Female" 6 "Non-Marginalized: Male" ///
+		             7 "Intensity, Marginalized (rescaled x`pen_scale_lbl')" 8 "Intensity, Non-Marginalized (rescaled x`pen_scale_lbl')") ///
 		cols(3) size(small) position(6) ring(1)) ///
 		graphregion(fcolor(white))
 }
