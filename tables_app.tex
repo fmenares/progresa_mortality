@@ -41,6 +41,22 @@
     \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of Progresa enrollment intensity on the Mortality Rate for adults aged 65 and older per 1,000 inhabitants. Columns~(1)--(4) report estimates for ages 50--64, 65 and older, 65--69, and 70 and older, respectively. $\textit{Intensity}_{1999} \times \textit{Post}$ captures the effect of early-phase (1997--1999) Progresa enrollment: a coefficient of one corresponds to moving from 0\% to 100\% beneficiary household coverage after 1997. The post-dummy equals 1 for years 1997--2006. The sample is restricted to highly marginalized municipalities. All regressions include $\textit{Intensity}_{2005} \times \textit{Post}$, Seguro Popular intensity, municipality and year fixed effects, and are weighted by the population of each age group of interest. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality by Sex, Without a Later-Phase Control}
+   \label{at:no_control_sex}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.99}{
+      \input{tables/appendix/AT_no_control_sex}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table reports difference-in-differences estimates of $\textit{Intensity}_{1999} \times \textit{Post}$ on the older-adult (65+) mortality rate per 1,000 inhabitants, with \textbf{no} $\textit{Intensity}_{2005} \times \textit{Post}$ (or any other later-phase) control included. Columns~(1)--(3) report pooled, female, and male estimates, respectively. All regressions include municipality and year fixed effects and Seguro Popular intensity, and are weighted by the population of the relevant sex aged 65 and older. The sample is restricted to highly marginalized municipalities. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+
+
 % NOTE: the cause-of-death table (former AT2_cod_mortality,
 % at:did_robust_cod) has moved to codes/04_extra_robustness.do per the
 % coauthor's request -- no longer displayed in the paper.
@@ -155,24 +171,6 @@
     \floatfoot{Notes: This table reports difference-in-differences estimates of the effect of randomized assignment to \textit{Progresa} on household expenditure, with 1998 as the baseline year (the 1997 baseline round is dropped prior to estimation, so the reported coefficient is $Treatment~\times~1999$ against the 1998 control mean). Columns~(1)--(2) report the log of household food expenditure and food's share of total household expenditure; columns~(3)--(4) report the same for medicine expenditure. Panel~A restricts the sample to eligible households and reports the differential effect by whether a household had an elderly member (aged 65 or older) present at the 1997 baseline: the first row is the treatment effect for households without an elderly member, and the second row is the differential effect for households with one (i.e., the triple-interaction coefficient). Panel~B restricts the sample to older-adults-only households (no children or working-age adults present, with household composition fixed at its 1997 pre-treatment value) and instead differentiates by household eligibility, since only eligible households received the direct food transfer (\textit{apoyo alimentario}): the first row is the treatment effect for ineligible older-adults-only households, and the second row is the differential effect for eligible ones. All regressions include municipality and year fixed effects. Standard errors are clustered at the locality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
-
-
-
-
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality by Sex, Without a Later-Phase Control}
-   \label{at:no_control_sex}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.99}{
-      \input{tables/appendix/AT_no_control_sex}
-    }
-    \vspace{-3mm}
-    \floatfoot{Notes: This table reports difference-in-differences estimates of $\textit{Intensity}_{1999} \times \textit{Post}$ on the older-adult (65+) mortality rate per 1,000 inhabitants, disaggregated by sex, with \textbf{no} $\textit{Intensity}_{2005} \times \textit{Post}$ (or any other later-phase) control included. Columns~(1)--(3) report pooled, female, and male estimates, respectively. All regressions include municipality and year fixed effects and Seguro Popular intensity, and are weighted by the population of the relevant sex aged 65 and older. The sample is restricted to highly marginalized municipalities. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-  }
-\end{table}
 
 
 
