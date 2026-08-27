@@ -2558,44 +2558,26 @@ foreach samp in br marg {
 		else                          local wvar = "popover65_m"
 
 		foreach spec in wsp wsp2002 {
-			* Guarded like the cause-of-death block further down (capture +
-			* _rc check) instead of calling reghdfe bare: with a thin
-			* subsample (e.g. `samp'==marg & `outcome'==emr65m on a stale
-			* or partially-rebuilt checkpoint), a given year_1995 level can
-			* end up with zero observations and get omitted from e(b)
-			* entirely -- pulling _b[]/_se[] for an omitted coefficient
-			* name errors ("unknown function ()"), which previously took
-			* the whole script down instead of just this one series. Same
-			* fallback as below: warn and leave that series blank rather
-			* than crash.
 			if "`spec'" == "wsp" {
-				capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
+				reghdfe `outcome' c.inten1999##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
 					if inrange(year,1992,2002) & `samp_cond', ///
 					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 			}
 			else {
-				capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 ///
+				reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2002##ib6.year_1995 ///
 					c.sp_intensity [aw=`wvar'] ///
 					if inrange(year,1992,2002) & `samp_cond', ///
 					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 			}
-			local reg_ok = (_rc == 0)
-			if !`reg_ok' di "WARNING: Regression failed for `outcome' (`samp' sample, `spec') -- rc=`_rc'; that series will be left blank"
 
 			forval pos = 2/12 {
 				if `pos' == 6 {
 					local b_`spec'_`pos'  = 0
 					local se_`spec'_`pos' = 0
 				}
-				else if `reg_ok' {
-					capture local b_`spec'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-					if _rc local b_`spec'_`pos' = .
-					capture local se_`spec'_`pos' = _se[`pos'.year_1995#c.inten1999]
-					if _rc local se_`spec'_`pos' = .
-				}
 				else {
-					local b_`spec'_`pos'  = .
-					local se_`spec'_`pos' = .
+					local b_`spec'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+					local se_`spec'_`pos' = _se[`pos'.year_1995#c.inten1999]
 				}
 			}
 		}
