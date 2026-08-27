@@ -1469,234 +1469,20 @@ di "  Sample suffixes: _BR, _HighMarg, _BR_HighMarg"
 
 
 *============================================================
-* APPENDIX FIGURE 6: Event Study by Cause of Death (BR Sample, 1992-2002)
-* Figure_7_XXX_BR.pdf — y-axis fixed at -3(3)3 for all causes
+* NOTE: the cause-of-death event-study figures formerly here
+* (Figure_7_<cause>_BR.pdf / Figure_8_<cause>_Marg.pdf, an older
+* naming scheme) have been removed, not moved -- the current
+* cause-of-death analysis (AF4/AF5 event studies + AT2_cod_mortality
+* with the Romano-Wolf correction, at:did_robust_cod) already lived
+* in codes/04_extra_robustness.do from an earlier move. This was a
+* duplicate/superseded generator left behind at that time: it wrote
+* 18 PDFs (figures/appendix/Figure_7_*_BR.pdf, Figure_8_*_Marg.pdf)
+* that nothing in the paper ever referenced. All cause-of-death code
+* now lives only in codes/04_extra_robustness.do, consolidated at
+* the end of that file and fully commented out (not displayed in
+* the paper).
 *============================================================
 
-{
-local yr_labels_cod `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
-local samp_cond  "$sample_br"
-local samp_yr_cond "inrange(year,1992,2002)"
-local obs_n = 11
-local yr_pos_offset = 1
-local xscale_range "range(1.5 12.5)"
-local pos_start = 2
-local pos_end   = 12
-
-foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-
-	foreach grp in w f m {
-		local reg_success_`grp' = 0
-		if "`grp'" == "w" {
-			local outcome emr65`cod'
-			local wvar   popover65_
-		}
-		else if "`grp'" == "f" {
-			local outcome emr65`cod'f
-			local wvar   popover65_f
-		}
-		else {
-			local outcome emr65`cod'm
-			local wvar   popover65_m
-		}
-		capture noisily reghdfe `outcome' c.inten1999_fix##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
-			if `samp_yr_cond' & `samp_cond', ///
-			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		if _rc == 0 {
-			local reg_success_`grp' = 1
-			forval pos = `pos_start'/`pos_end' {
-				if `pos' == 6 {
-					local b_`grp'_`pos'  = 0
-					local se_`grp'_`pos' = 0
-				}
-				else {
-					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
-					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
-				}
-			}
-		}
-		else {
-			di "WARNING: Regression failed for `outcome' (`cod', BR sample) - skipping"
-			forval pos = `pos_start'/`pos_end' {
-				local b_`grp'_`pos'  = .
-				local se_`grp'_`pos' = .
-			}
-		}
-	}
-
-	preserve
-	clear
-	set obs `obs_n'
-	gen yr_pos = _n + `yr_pos_offset'
-	gen xpos_w = yr_pos - 0.18
-	gen xpos_f = yr_pos
-	gen xpos_m = yr_pos + 0.18
-	foreach grp in w f m {
-		gen b_`grp'  = .
-		gen hi_`grp' = .
-		gen lo_`grp' = .
-	}
-	forval pos = `pos_start'/`pos_end' {
-		foreach grp in w f m {
-			if `reg_success_`grp'' == 1 {
-				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-			}
-		}
-	}
-
-	local yaxis_range "-3(3)3"
-
-	local twoway_cmd "twoway"
-	local legend_nums ""
-	local legend_labels ""
-	local plot_count = 0
-	if `reg_success_w' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Pooled)"
-	}
-	if `reg_success_f' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red%60) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Female)"
-	}
-	if `reg_success_m' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%60) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Male)"
-	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
-	`twoway_cmd'
-	graph export "$figures/appendix/Figure_7_`cod'_BR.pdf", as(pdf) replace
-	restore
-
-} // end foreach cod
-} // end BR block
-
-
-*============================================================
-* APPENDIX FIGURE: Event Study by Cause of Death
-*   Highly Marginalized Sample, 1992-2002 (short-run window)
-* Figure_8_XXX_Marg.pdf — y-axis fixed at -3(3)3 for all causes
-* Spec: Intensity1999 x year only (no Intensity2005), ref = 1996
-*============================================================
-
-{
-local yr_labels_cod `"2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002""'
-local samp_cond  "$sample_marg"
-local samp_yr_cond "inrange(year,1992,2002)"
-local obs_n = 11
-local yr_pos_offset = 1
-local xscale_range "range(1.5 12.5)"
-local pos_start = 2
-local pos_end   = 12
-
-foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-
-	foreach grp in w f m {
-		local reg_success_`grp' = 0
-		if "`grp'" == "w" {
-			local outcome emr65`cod'
-			local wvar   popover65_
-		}
-		else if "`grp'" == "f" {
-			local outcome emr65`cod'f
-			local wvar   popover65_f
-		}
-		else {
-			local outcome emr65`cod'm
-			local wvar   popover65_m
-		}
-		capture noisily reghdfe `outcome' c.inten1999_fix##ib6.year_1995 c.sp_intensity [aw=`wvar'] ///
-			if `samp_yr_cond' & `samp_cond', ///
-			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		if _rc == 0 {
-			local reg_success_`grp' = 1
-			forval pos = `pos_start'/`pos_end' {
-				if `pos' == 6 {
-					local b_`grp'_`pos'  = 0
-					local se_`grp'_`pos' = 0
-				}
-				else {
-					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999_fix]
-					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999_fix]
-				}
-			}
-		}
-		else {
-			di "WARNING: Regression failed for `outcome' (`cod', Marg short) - skipping"
-			forval pos = `pos_start'/`pos_end' {
-				local b_`grp'_`pos'  = .
-				local se_`grp'_`pos' = .
-			}
-		}
-	}
-
-	preserve
-	clear
-	set obs `obs_n'
-	gen yr_pos = _n + `yr_pos_offset'
-	gen xpos_w = yr_pos - 0.18
-	gen xpos_f = yr_pos
-	gen xpos_m = yr_pos + 0.18
-	foreach grp in w f m {
-		gen b_`grp'  = .
-		gen hi_`grp' = .
-		gen lo_`grp' = .
-	}
-	forval pos = `pos_start'/`pos_end' {
-		foreach grp in w f m {
-			if `reg_success_`grp'' == 1 {
-				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-			}
-		}
-	}
-
-	local yaxis_range "-3(3)3"
-
-	local twoway_cmd "twoway"
-	local legend_nums ""
-	local legend_labels ""
-	local plot_count = 0
-	if `reg_success_w' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Pooled)"
-	}
-	if `reg_success_f' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red%60) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Female)"
-	}
-	if `reg_success_m' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%60) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Male)"
-	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
-	`twoway_cmd'
-	graph export "$figures/appendix/Figure_8_`cod'_Marg.pdf", as(pdf) replace
-	restore
-
-} // end foreach cod
-} // end Marg short block
-
-* NOTE: the APPENDIX TABLE "Causes of Death (Weighted + SP spec)"
-* (AT2_cod_mortality.tex, at:did_robust_cod, including its Romano-Wolf
-* step-down correction) has moved to codes/04_extra_robustness.do per
-* the coauthor's request, along with its tables_app.tex entry -- no
-* longer displayed in the paper.
-*============================================================
 * APPENDIX TABLE 2: Functional Form Robustness
 *============================================================
 
@@ -2543,210 +2329,26 @@ foreach grp in p f m {
 }
 
 * Clean up generated SES baseline variables. im90_bin is intentionally
-* KEPT (not dropped) here: the T2_c/AT1_ses_trend_summary block, later in
-* this file, reuses this exact variable for its own SES-trend control
-* rather than rebuilding it from im_mun_1990/cve_ent_mun_super.
+* KEPT (not dropped) here: AT1_ses_trend_summary's regression (moved to
+* codes/04_extra_robustness.do, see note below) reuses this exact
+* variable via the checkpoint this file saves, rather than rebuilding
+* it from im_mun_1990/cve_ent_mun_super.
 foreach v of varlist analf sprim ovsee ovsae vhac ovpt ovsde pl5000 {
 	cap drop `v'_90
 }
 
 *============================================================
-* TABLE T2_c: SES-Trend / Heterogeneity-Control Summary
-* Point-estimate (Post-interaction, not event-study) companion to the
-* AF_ses_trend event-study figure -- same structure as T2/T2_b (Panel
-* A/B/C = Pooled/Female/Male; Intensity 1999/2005 x post rows; Mean;
-* Obs), but with one column per AF_ses_trend SES-trend/heterogeneity
-* control instead of one column per weighting/Seguro-Popular
-* combination. Uses inten1999/inten2005 (End-of-year numerator,
-* year-varying municipal household denominator), the coauthors' final
-* agreed main specification, matching AF_ses_trend's Spec 1-6
-* construction (AF_ses_trend's own Spec 1b, the fixed-denominator
-* baseline comparison, has no column of its own here).
-*   Col 1: Baseline (W+SP)                            = AF_ses_trend Spec 1
-*   Col 2: + Trend x im_mun_1990 (continuous, linear)  = AF_ses_trend Spec 2
-*   Col 3: + Trend x im_mun_1990 quintile (linear)     = AF_ses_trend Spec 3
-*   Col 4: + Municipality marg. %-ile FE               = AF_ses_trend Spec 4
-*   Col 5: + Locality marg. %-ile shares, flexible FE  = AF_ses_trend Spec 5
-*   Col 6: + Locality marg. %-ile shares, linear trend = AF_ses_trend Spec 6
-* Cols 5-6 are guarded (cap noisily), same as AF_ses_trend Specs 5-6:
-* if Lshare_pc* is unavailable, those columns are written as "n/a"
-* rather than halting the table.
-* Output: $tables/appendix/AT1_ses_trend_summary.tex
+* NOTE: the point-estimate companion table formerly here
+* (AT1_ses_trend_summary.tex, at:age_ses_trends -- the Post-
+* interaction companion to the AF_ses_trend event-study figure
+* directly above) has moved to codes/04_extra_robustness.do per the
+* coauthor's request, along with its tables_app.tex entry -- no
+* longer displayed in the paper. AF_ses_trend itself is unaffected:
+* it is still built here and is still the specification displayed
+* in the paper. im90_bin/margpct_pv/Lshare_pc*, built above, are
+* kept (not dropped) below because the relocated table reads them
+* from the checkpoint this file saves.
 *============================================================
-
-foreach pnl in p f m {
-	if "`pnl'" == "p" {
-		local out65 emr65
-		local wt65  popover65_
-	}
-	else if "`pnl'" == "f" {
-		local out65 emr65f
-		local wt65  popover65_f
-	}
-	else {
-		local out65 emr65m
-		local wt65  popover65_m
-	}
-
-	foreach col in 1 2 3 4 {
-		if `col' == 1 {
-			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		else if `col' == 2 {
-			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-				c.im_mun_1990#c.year ///
-				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		else if `col' == 3 {
-			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-				i.im90_bin#c.year ///
-				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		}
-		else {
-			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super i.year#i.margpct_pv) vce(cluster cve_ent_mun_super)
-		}
-
-		local aux: di %12.3f _b[1.post#c.inten1999]
-		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-		if      `t' >= 2.576 local b99_2c_`pnl'_`col' = "`aux'***"
-		else if `t' >= 1.96  local b99_2c_`pnl'_`col' = "`aux'**"
-		else if `t' >= 1.645 local b99_2c_`pnl'_`col' = "`aux'*"
-		else                  local b99_2c_`pnl'_`col' = "`aux'"
-		local se99_2c_`pnl'_`col': di %12.3f _se[1.post#c.inten1999]
-		local aux: di %12.3f _b[1.post#c.inten2005]
-		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
-		if      `t' >= 2.576 local b05_2c_`pnl'_`col' = "`aux'***"
-		else if `t' >= 1.96  local b05_2c_`pnl'_`col' = "`aux'**"
-		else if `t' >= 1.645 local b05_2c_`pnl'_`col' = "`aux'*"
-		else                  local b05_2c_`pnl'_`col' = "`aux'"
-		local se05_2c_`pnl'_`col': di %12.3f _se[1.post#c.inten2005]
-
-		sum `out65' if e(sample) & year < 1997
-		local mean_2c_`pnl'_`col': di %12.2fc `r(mean)'
-		local N_2c_`pnl'_`col':    di %12.0fc `e(N)'
-		distinct cve_ent_mun_super if e(sample)
-		local Nmun_2c_`pnl'_`col': di %12.0fc `r(ndistinct)'
-	}
-
-	* Cols 5-6: locality marg. %-ile shares (fully flexible FE, and linear
-	* trend) -- guarded, same as AF_ses_trend Specs 5-6, since Lshare_pc*
-	* depends on the locality-share file being found.
-	foreach col in 5 6 {
-		local b99_2c_`pnl'_`col'   = "n/a"
-		local se99_2c_`pnl'_`col'  = "n/a"
-		local b05_2c_`pnl'_`col'   = "n/a"
-		local se05_2c_`pnl'_`col'  = "n/a"
-		local mean_2c_`pnl'_`col'  = "n/a"
-		local N_2c_`pnl'_`col'     = "n/a"
-		local Nmun_2c_`pnl'_`col'  = "n/a"
-	}
-	if `locshare_ok' {
-		cap noisily reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-			[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super i.year#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
-		if _rc == 0 {
-			local aux: di %12.3f _b[1.post#c.inten1999]
-			local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-			if      `t' >= 2.576 local b99_2c_`pnl'_5 = "`aux'***"
-			else if `t' >= 1.96  local b99_2c_`pnl'_5 = "`aux'**"
-			else if `t' >= 1.645 local b99_2c_`pnl'_5 = "`aux'*"
-			else                  local b99_2c_`pnl'_5 = "`aux'"
-			local se99_2c_`pnl'_5: di %12.3f _se[1.post#c.inten1999]
-			local aux: di %12.3f _b[1.post#c.inten2005]
-			local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
-			if      `t' >= 2.576 local b05_2c_`pnl'_5 = "`aux'***"
-			else if `t' >= 1.96  local b05_2c_`pnl'_5 = "`aux'**"
-			else if `t' >= 1.645 local b05_2c_`pnl'_5 = "`aux'*"
-			else                  local b05_2c_`pnl'_5 = "`aux'"
-			local se05_2c_`pnl'_5: di %12.3f _se[1.post#c.inten2005]
-			sum `out65' if e(sample) & year < 1997
-			local mean_2c_`pnl'_5: di %12.2fc `r(mean)'
-			local N_2c_`pnl'_5:    di %12.0fc `e(N)'
-			distinct cve_ent_mun_super if e(sample)
-			local Nmun_2c_`pnl'_5: di %12.0fc `r(ndistinct)'
-		}
-		else {
-			di as error "T2_c col 5 (locality marg. %-ile shares, flexible, `pnl'): reghdfe failed (rc=`_rc') -- written as n/a"
-		}
-
-		cap noisily reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-			c.(Lshare_pc*)#c.year ///
-			[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		if _rc == 0 {
-			local aux: di %12.3f _b[1.post#c.inten1999]
-			local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-			if      `t' >= 2.576 local b99_2c_`pnl'_6 = "`aux'***"
-			else if `t' >= 1.96  local b99_2c_`pnl'_6 = "`aux'**"
-			else if `t' >= 1.645 local b99_2c_`pnl'_6 = "`aux'*"
-			else                  local b99_2c_`pnl'_6 = "`aux'"
-			local se99_2c_`pnl'_6: di %12.3f _se[1.post#c.inten1999]
-			local aux: di %12.3f _b[1.post#c.inten2005]
-			local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
-			if      `t' >= 2.576 local b05_2c_`pnl'_6 = "`aux'***"
-			else if `t' >= 1.96  local b05_2c_`pnl'_6 = "`aux'**"
-			else if `t' >= 1.645 local b05_2c_`pnl'_6 = "`aux'*"
-			else                  local b05_2c_`pnl'_6 = "`aux'"
-			local se05_2c_`pnl'_6: di %12.3f _se[1.post#c.inten2005]
-			sum `out65' if e(sample) & year < 1997
-			local mean_2c_`pnl'_6: di %12.2fc `r(mean)'
-			local N_2c_`pnl'_6:    di %12.0fc `e(N)'
-			distinct cve_ent_mun_super if e(sample)
-			local Nmun_2c_`pnl'_6: di %12.0fc `r(ndistinct)'
-		}
-		else {
-			di as error "T2_c col 6 (locality marg. %-ile shares, linear, `pnl'): reghdfe failed (rc=`_rc') -- written as n/a"
-		}
-	}
-}
-
-quietly sum inten1999 if $sample_marg & year == 1996
-local meanI99_2c: di %6.1f r(mean) * 100
-
-{
-	cap file close sm
-	file open sm using "$tables/appendix/AT1_ses_trend_summary.tex", write replace
-	file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
-
-	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_p_1' & `b99_2c_p_2' & `b99_2c_p_3' & `b99_2c_p_4' & `b99_2c_p_5' & `b99_2c_p_6' \\ " _n
-	file write sm " & (`se99_2c_p_1') & (`se99_2c_p_2') & (`se99_2c_p_3') & (`se99_2c_p_4') & (`se99_2c_p_5') & (`se99_2c_p_6') \\ " _n
-	file write sm "  & & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `mean_2c_p_1' & `mean_2c_p_2' & `mean_2c_p_3' & `mean_2c_p_4' & `mean_2c_p_5' & `mean_2c_p_6' \\ " _n
-	file write sm "Obs & `N_2c_p_1' & `N_2c_p_2' & `N_2c_p_3' & `N_2c_p_4' & `N_2c_p_5' & `N_2c_p_6' \\ " _n
-	file write sm "  & & & & & & \\ " _n
-
-	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_f_1' & `b99_2c_f_2' & `b99_2c_f_3' & `b99_2c_f_4' & `b99_2c_f_5' & `b99_2c_f_6' \\ " _n
-	file write sm " & (`se99_2c_f_1') & (`se99_2c_f_2') & (`se99_2c_f_3') & (`se99_2c_f_4') & (`se99_2c_f_5') & (`se99_2c_f_6') \\ " _n
-	file write sm "  & & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `mean_2c_f_1' & `mean_2c_f_2' & `mean_2c_f_3' & `mean_2c_f_4' & `mean_2c_f_5' & `mean_2c_f_6' \\ " _n
-	file write sm "Obs & `N_2c_f_1' & `N_2c_f_2' & `N_2c_f_3' & `N_2c_f_4' & `N_2c_f_5' & `N_2c_f_6' \\ " _n
-	file write sm "  & & & & & & \\ " _n
-
-	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_m_1' & `b99_2c_m_2' & `b99_2c_m_3' & `b99_2c_m_4' & `b99_2c_m_5' & `b99_2c_m_6' \\ " _n
-	file write sm " & (`se99_2c_m_1') & (`se99_2c_m_2') & (`se99_2c_m_3') & (`se99_2c_m_4') & (`se99_2c_m_5') & (`se99_2c_m_6') \\ " _n
-	file write sm "  & & & & & & \\ " _n
-	file write sm "Mean (1991-1996) & `mean_2c_m_1' & `mean_2c_m_2' & `mean_2c_m_3' & `mean_2c_m_4' & `mean_2c_m_5' & `mean_2c_m_6' \\ " _n
-	file write sm "Obs & `N_2c_m_1' & `N_2c_m_2' & `N_2c_m_3' & `N_2c_m_4' & `N_2c_m_5' & `N_2c_m_6' \\ " _n
-	file write sm "  & & & & & & \\ " _n
-
-	file write sm "No.\ Mun & `Nmun_2c_p_1' & `Nmun_2c_p_2' & `Nmun_2c_p_3' & `Nmun_2c_p_4' & `Nmun_2c_p_5' & `Nmun_2c_p_6' \\ " _n
-	file write sm "  & & & & & & \\ " _n
-	file write sm "SES Trend (Cont.\ Muni.\ Index) & N & Y & N & N & N & N \\ " _n
-	file write sm "SES Trend (Muni.\ Quintile) & N & N & Y & N & N & N \\ " _n
-	file write sm "Muni.\ Marg.\ \%-ile FE & N & N & N & Y & N & N \\ " _n
-	file write sm "Locality Marg.\ \%-ile Shares, Flexible & N & N & N & N & Y & N \\ " _n
-	file write sm "Locality Marg.\ \%-ile Shares, Linear & N & N & N & N & N & Y \\ " _n
-	file write sm "Mean Intensity 1999 (\%) & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' \\ " _n
-	file write sm "\bottomrule" _n
-	file write sm "\end{tabular}"
-	file close sm
-}
-di "Table exported to: $tables/appendix/AT1_ses_trend_summary.tex"
-
 
 *============================================================
 * APPENDIX TABLE: Age Sub-Group Mortality (Minor Comment 7)

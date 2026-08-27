@@ -2645,295 +2645,372 @@ foreach samp in br marg {
 di "Figure exported to: $figures/appendix/AF9a2-d2_..._2002ctrl.pdf"
 
 *============================================================
-* MOVED FROM 02_mortality.do per the coauthor's request -- no longer
-* displayed in the paper (figures_app.tex/tables_app.tex entries
-* removed). Regressions/di diagnostics below still run so the numeric
-* results remain available for review; the `graph export'/`file
-* open...file close' lines are commented out so no .tex/.pdf is written
-* to figures/appendix or tables/appendix, per this file's convention.
+* The cause-of-death event studies + AT2_cod_mortality table that
+* used to sit here have moved to the very end of this file (still
+* commented out, still not displayed in the paper) so all
+* cause-of-death code lives in one place. Replaced here by the
+* SES-trend summary table and the experimental-attrition table,
+* both moved in from 02_mortality.do / 03_experimental.do.
 *============================================================
 
 *============================================================
-* APPENDIX FIGURES AF4/AF5 (former): Event Study by Cause of Death
-* (Our Sample, 1991-2006), af:es_cod_marg_a / af:es_cod_marg_b.
-* y-axis -9(3)9 for tb_card, -6(3)6 otherwise.
+* MOVED FROM 02_mortality.do per the coauthor's request -- the
+* point-estimate companion to the (still-active, still-displayed)
+* AF_ses_trend event-study figure. Was AT1_ses_trend_summary.tex,
+* at:age_ses_trends -- no longer displayed in the paper. Regressions/
+* di diagnostics below still run so the numeric results remain
+* available for review; the `file open...file close' lines are
+* commented out so no .tex is written to tables/appendix, per this
+* file's convention. Uses im90_bin/margpct_pv/Lshare_pc*, all built
+* by 02_mortality.do and present on the checkpoint this file loads.
 *============================================================
-{
-local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
-local samp_cond  "$sample_marg"
-local samp_yr_cond ""
-local obs_n = 16
-local yr_pos_offset = 0
-local xscale_range "range(0.5 16.5)"
-local pos_start = 1
-local pos_end   = 16
 
-foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+*============================================================
+* TABLE T2_c: SES-Trend / Heterogeneity-Control Summary
+* Point-estimate (Post-interaction, not event-study) companion to the
+* AF_ses_trend event-study figure -- same structure as T2/T2_b (Panel
+* A/B/C = Pooled/Female/Male; Intensity 1999/2005 x post rows; Mean;
+* Obs), but with one column per AF_ses_trend SES-trend/heterogeneity
+* control instead of one column per weighting/Seguro-Popular
+* combination. Uses inten1999/inten2005 (End-of-year numerator,
+* year-varying municipal household denominator), the coauthors' final
+* agreed main specification, matching AF_ses_trend's Spec 1-6
+* construction (AF_ses_trend's own Spec 1b, the fixed-denominator
+* baseline comparison, has no column of its own here).
+*   Col 1: Baseline (W+SP)                            = AF_ses_trend Spec 1
+*   Col 2: + Trend x im_mun_1990 (continuous, linear)  = AF_ses_trend Spec 2
+*   Col 3: + Trend x im_mun_1990 quintile (linear)     = AF_ses_trend Spec 3
+*   Col 4: + Municipality marg. %-ile FE               = AF_ses_trend Spec 4
+*   Col 5: + Locality marg. %-ile shares, flexible FE  = AF_ses_trend Spec 5
+*   Col 6: + Locality marg. %-ile shares, linear trend = AF_ses_trend Spec 6
+* Cols 5-6 are guarded (cap noisily), same as AF_ses_trend Specs 5-6:
+* if Lshare_pc* is unavailable, those columns are written as "n/a"
+* rather than halting the table.
+* Output: $tables/appendix/AT1_ses_trend_summary.tex
+*============================================================
 
-	* Output stem per cause of death: af:es_cod_marg_a (former Appendix
-	* Figure AF4) takes cancer/diab/illdef/resp; af:es_cod_marg_b (AF5)
-	* takes card/infect/nutri/accid; tb_other isn't in either, so it
-	* keeps its old Figure_3 stem (not part of the renumbered set).
-	if      "`cod'" == "tb_cancer" local af_stem "AF4a_tb_cancer_Marg"
-	else if "`cod'" == "tb_diab"   local af_stem "AF4b_tb_diab_Marg"
-	else if "`cod'" == "tb_illdef" local af_stem "AF4c_tb_illdef_Marg"
-	else if "`cod'" == "tb_resp"   local af_stem "AF4d_tb_resp_Marg"
-	else if "`cod'" == "tb_card"   local af_stem "AF5a_tb_card_Marg"
-	else if "`cod'" == "tb_infect" local af_stem "AF5b_tb_infect_Marg"
-	else if "`cod'" == "tb_nutri"  local af_stem "AF5c_tb_nutri_Marg"
-	else if "`cod'" == "tb_accid"  local af_stem "AF5d_tb_accid_Marg"
-	else                            local af_stem "Figure_3_`cod'_Marg"
-
-	foreach grp in w f m {
-		local reg_success_`grp' = 0
-		if "`grp'" == "w" {
-			local outcome emr65`cod'
-			local wvar   popover65_
-		}
-		else if "`grp'" == "f" {
-			local outcome emr65`cod'f
-			local wvar   popover65_f
-		}
-		else {
-			local outcome emr65`cod'm
-			local wvar   popover65_m
-		}
-		capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
-			c.sp_intensity [aw=`wvar'] if `samp_cond', ///
-			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
-		if _rc == 0 {
-			local reg_success_`grp' = 1
-			forval pos = `pos_start'/`pos_end' {
-				if `pos' == 6 {
-					local b_`grp'_`pos'  = 0
-					local se_`grp'_`pos' = 0
-				}
-				else {
-					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
-					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
-				}
-			}
-		}
-		else {
-			di "WARNING: Regression failed for `outcome' (`cod', Marg sample) - skipping"
-			forval pos = `pos_start'/`pos_end' {
-				local b_`grp'_`pos'  = .
-				local se_`grp'_`pos' = .
-			}
-		}
+foreach pnl in p f m {
+	if "`pnl'" == "p" {
+		local out65 emr65
+		local wt65  popover65_
 	}
-
-	preserve
-	clear
-	set obs `obs_n'
-	gen yr_pos = _n + `yr_pos_offset'
-	gen xpos_w = yr_pos - 0.18
-	gen xpos_f = yr_pos
-	gen xpos_m = yr_pos + 0.18
-	foreach grp in w f m {
-		gen b_`grp'  = .
-		gen hi_`grp' = .
-		gen lo_`grp' = .
-	}
-	forval pos = `pos_start'/`pos_end' {
-		foreach grp in w f m {
-			if `reg_success_`grp'' == 1 {
-				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
-				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
-			}
-		}
-	}
-
-	if inlist("`cod'", "tb_cancer", "tb_diab", "tb_illdef", "tb_infect") {
-		local yaxis_range "-6(3)3"
-	}
-	else if "`cod'" == "tb_card" {
-		local yaxis_range "-9(3)9"
+	else if "`pnl'" == "f" {
+		local out65 emr65f
+		local wt65  popover65_f
 	}
 	else {
-		local yaxis_range "-6(3)6"
+		local out65 emr65m
+		local wt65  popover65_m
 	}
 
-	local twoway_cmd "twoway"
-	local legend_nums ""
-	local legend_labels ""
-	local plot_count = 0
-	if `reg_success_w' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Pooled)"
-	}
-	if `reg_success_f' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red%60) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Female)"
-	}
-	if `reg_success_m' == 1 {
-		local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%60) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%60) lpattern(solid) lwidth(thin))"
-		local plot_count = `plot_count' + 3
-		local legend_nums "`legend_nums' `plot_count'"
-		local legend_labels "`legend_labels' label(`plot_count' Male)"
-	}
-	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
-	`twoway_cmd'
-	* graph export "$figures/appendix/`af_stem'.pdf", as(pdf) replace  -- disabled: not displayed in the paper
-	restore
+	foreach col in 1 2 3 4 {
+		if `col' == 1 {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 2 {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				c.im_mun_1990#c.year ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 3 {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				i.im90_bin#c.year ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super i.year#i.margpct_pv) vce(cluster cve_ent_mun_super)
+		}
 
-} // end foreach cod
-} // end Marg block
-
-
-*============================================================
-* APPENDIX TABLE (former): Causes of Death (Weighted + SP spec)
-* AT2_cod_mortality.tex -- Pooled, Female, Male panels, at:did_robust_cod.
-* NOTE: the wyoung Romano-Wolf bootstrap (500 reps x 3 panels x 9
-* outcomes) is slow.
-*============================================================
-foreach grp in w f m {
-	if "`grp'" == "w" {
-		local wvar = "popover65_"
-		local suffix = ""
-	}
-	else if "`grp'" == "f" {
-		local wvar = "popover65_f"
-		local suffix = "f"
-	}
-	else {
-		local wvar = "popover65_m"
-		local suffix = "m"
-	}
-
-	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
-		reghdfe emr65`cod'`suffix' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
-			[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) ///
-			vce(cluster cve_ent_mun_super)
 		local aux: di %12.3f _b[1.post#c.inten1999]
 		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
-		if      `t' >= 2.576 local b99_`grp'_`cod' = "`aux'***"
-		else if `t' >= 1.96  local b99_`grp'_`cod' = "`aux'**"
-		else if `t' >= 1.645 local b99_`grp'_`cod' = "`aux'*"
-		else                  local b99_`grp'_`cod' = "`aux'"
-		local se99_`grp'_`cod': di %12.3f _se[1.post#c.inten1999]
-		* Intensity_2005 x post kept as a control (per the coauthor's
-		* request) but not printed below -- no stand-alone interpretation.
+		if      `t' >= 2.576 local b99_2c_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b99_2c_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b99_2c_`pnl'_`col' = "`aux'*"
+		else                  local b99_2c_`pnl'_`col' = "`aux'"
+		local se99_2c_`pnl'_`col': di %12.3f _se[1.post#c.inten1999]
 		local aux: di %12.3f _b[1.post#c.inten2005]
 		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
-		if      `t' >= 2.576 local b05_`grp'_`cod' = "`aux'***"
-		else if `t' >= 1.96  local b05_`grp'_`cod' = "`aux'**"
-		else if `t' >= 1.645 local b05_`grp'_`cod' = "`aux'*"
-		else                  local b05_`grp'_`cod' = "`aux'"
-		local se05_`grp'_`cod': di %12.3f _se[1.post#c.inten2005]
-		sum emr65`cod'`suffix' if e(sample) & post == 2
-		local mean_`grp'_`cod': di %12.2fc `r(mean)'
-		local N_`grp'_`cod': di %12.0fc `e(N)'
+		if      `t' >= 2.576 local b05_2c_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b05_2c_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b05_2c_`pnl'_`col' = "`aux'*"
+		else                  local b05_2c_`pnl'_`col' = "`aux'"
+		local se05_2c_`pnl'_`col': di %12.3f _se[1.post#c.inten2005]
+
+		sum `out65' if e(sample) & year < 1997
+		local mean_2c_`pnl'_`col': di %12.2fc `r(mean)'
+		local N_2c_`pnl'_`col':    di %12.0fc `e(N)'
 		distinct cve_ent_mun_super if e(sample)
-		local Nmun_`grp'_`cod': di %12.0fc `r(ndistinct)'
+		local Nmun_2c_`pnl'_`col': di %12.0fc `r(ndistinct)'
+	}
+
+	* Cols 5-6: locality marg. %-ile shares (fully flexible FE, and linear
+	* trend) -- guarded, same as AF_ses_trend Specs 5-6, since Lshare_pc*
+	* depends on the locality-share file being found.
+	foreach col in 5 6 {
+		local b99_2c_`pnl'_`col'   = "n/a"
+		local se99_2c_`pnl'_`col'  = "n/a"
+		local b05_2c_`pnl'_`col'   = "n/a"
+		local se05_2c_`pnl'_`col'  = "n/a"
+		local mean_2c_`pnl'_`col'  = "n/a"
+		local N_2c_`pnl'_`col'     = "n/a"
+		local Nmun_2c_`pnl'_`col'  = "n/a"
+	}
+	* locshare_ok, set earlier in 02_mortality.do (where this table used
+	* to sit) as a merge-success flag, does not survive the move here --
+	* re-derive it directly from whether Lshare_pc1 exists on the
+	* checkpoint this file loads.
+	capture confirm variable Lshare_pc1
+	local locshare_ok = (_rc == 0)
+	if `locshare_ok' {
+		cap noisily reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+			[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super i.year#c.(Lshare_pc*)) vce(cluster cve_ent_mun_super)
+		if _rc == 0 {
+			local aux: di %12.3f _b[1.post#c.inten1999]
+			local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+			if      `t' >= 2.576 local b99_2c_`pnl'_5 = "`aux'***"
+			else if `t' >= 1.96  local b99_2c_`pnl'_5 = "`aux'**"
+			else if `t' >= 1.645 local b99_2c_`pnl'_5 = "`aux'*"
+			else                  local b99_2c_`pnl'_5 = "`aux'"
+			local se99_2c_`pnl'_5: di %12.3f _se[1.post#c.inten1999]
+			local aux: di %12.3f _b[1.post#c.inten2005]
+			local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+			if      `t' >= 2.576 local b05_2c_`pnl'_5 = "`aux'***"
+			else if `t' >= 1.96  local b05_2c_`pnl'_5 = "`aux'**"
+			else if `t' >= 1.645 local b05_2c_`pnl'_5 = "`aux'*"
+			else                  local b05_2c_`pnl'_5 = "`aux'"
+			local se05_2c_`pnl'_5: di %12.3f _se[1.post#c.inten2005]
+			sum `out65' if e(sample) & year < 1997
+			local mean_2c_`pnl'_5: di %12.2fc `r(mean)'
+			local N_2c_`pnl'_5:    di %12.0fc `e(N)'
+			distinct cve_ent_mun_super if e(sample)
+			local Nmun_2c_`pnl'_5: di %12.0fc `r(ndistinct)'
+		}
+		else {
+			di as error "T2_c col 5 (locality marg. %-ile shares, flexible, `pnl'): reghdfe failed (rc=`_rc') -- written as n/a"
+		}
+
+		cap noisily reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+			c.(Lshare_pc*)#c.year ///
+			[aw=`wt65'] if $sample_marg, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		if _rc == 0 {
+			local aux: di %12.3f _b[1.post#c.inten1999]
+			local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+			if      `t' >= 2.576 local b99_2c_`pnl'_6 = "`aux'***"
+			else if `t' >= 1.96  local b99_2c_`pnl'_6 = "`aux'**"
+			else if `t' >= 1.645 local b99_2c_`pnl'_6 = "`aux'*"
+			else                  local b99_2c_`pnl'_6 = "`aux'"
+			local se99_2c_`pnl'_6: di %12.3f _se[1.post#c.inten1999]
+			local aux: di %12.3f _b[1.post#c.inten2005]
+			local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+			if      `t' >= 2.576 local b05_2c_`pnl'_6 = "`aux'***"
+			else if `t' >= 1.96  local b05_2c_`pnl'_6 = "`aux'**"
+			else if `t' >= 1.645 local b05_2c_`pnl'_6 = "`aux'*"
+			else                  local b05_2c_`pnl'_6 = "`aux'"
+			local se05_2c_`pnl'_6: di %12.3f _se[1.post#c.inten2005]
+			sum `out65' if e(sample) & year < 1997
+			local mean_2c_`pnl'_6: di %12.2fc `r(mean)'
+			local N_2c_`pnl'_6:    di %12.0fc `e(N)'
+			distinct cve_ent_mun_super if e(sample)
+			local Nmun_2c_`pnl'_6: di %12.0fc `r(ndistinct)'
+		}
+		else {
+			di as error "T2_c col 6 (locality marg. %-ile shares, linear, `pnl'): reghdfe failed (rc=`_rc') -- written as n/a"
+		}
 	}
 }
 
-* Mean Intensity 1999 for AT1_cod -- HM sample, displayed as %
 quietly sum inten1999 if $sample_marg & year == 1996
-local meanI99_AT1cod: di %6.1f r(mean) * 100
+local meanI99_2c: di %6.1f r(mean) * 100
 
-*------------------------------------------------------------
-* Romano-Wolf step-down correction for AT2_cod_mortality
-* Family: 9 CoD outcomes; correction for Intensity1999xPost within each panel.
-* Package: ssc install wyoung   (Jones, Molitor & Reif, SJ 2019)
-* wyoung uses OUTCOMEVAR as placeholder in cmd(); the weight is embedded
-* directly so it varies correctly across pooled/female/male panels.
-* r(table): rows = outcomes in varlist order; col 5 = RW adjusted p-value.
-*   Verify on first run with: matrix list r(table)
-* NOTE: rw_treat99 = inten1999*(post==1) gives same coef as
-*       1.post#c.inten1999 in the main reghdfe regressions.
-* _hm indicator avoids | in if conditions inside wyoung cmd string.
-*------------------------------------------------------------
-cap drop rw_treat99 rw_treat05 _hm _br
-gen rw_treat99 = inten1999 * (post == 1)
-gen rw_treat05 = inten2005 * (post == 1)
-gen _hm        = (gm_mun_1990 == 4 | gm_mun_1990 == 5)
-gen _br        = ($sample_br)
-
-local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other"
-local wy_pval_col = 5   /* verify with: matrix list r(table) after first run */
-
-foreach grp in w f m {
-	if "`grp'" == "w" {
-		local wvar "popover65_"
-		local suffix ""
-	}
-	else if "`grp'" == "f" {
-		local wvar "popover65_f"
-		local suffix "f"
-	}
-	else {
-		local wvar "popover65_m"
-		local suffix "m"
-	}
-
-	* Build outcome varlist
-	local outcomes ""
-	foreach cod in `cod_rw' {
-		local outcomes "`outcomes' emr65`cod'`suffix'"
-	}
-
-	* Embed weight and HM filter in command template (long-run window, all years in data)
-	local cmd_str "reghdfe OUTCOMEVAR rw_treat99 rw_treat05 sp_intensity [aw=`wvar'] if _hm, absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)"
-
-	wyoung `outcomes', ///
-		cmd(`"`cmd_str'"') ///
-		familyp(rw_treat99) bootstraps(500) seed(12345) ///
-		cluster(cve_ent_mun_super)
-
-	matrix WY99_`grp' = r(table)
-	local i = 1
-	foreach cod in `cod_rw' {
-		local rwp99_`grp'_`cod': di %6.3f WY99_`grp'[`i', `wy_pval_col']
-		local i = `i' + 1
-	}
-}
-
-* file write lines below disabled: not displayed in the paper (formerly
-* wrote $tables/appendix/AT2_cod_mortality.tex)
 * {
 * 	cap file close sm
-* 	file open sm using "$tables/appendix/AT2_cod_mortality.tex", write replace
-* 	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
-* 	file write sm "& Cancer & Diab. & IllDef & Resp. & Card. & Infect. & Nutri. & Accid. & Other \\ " _n
-* 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
-* 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+* 	file open sm using "$tables/appendix/AT1_ses_trend_summary.tex", write replace
+* 	file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
+* 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+
 * 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-* 	file write sm "\textit{Intensity 1999 x post} & `b99_w_tb_cancer' & `b99_w_tb_diab' & `b99_w_tb_illdef' & `b99_w_tb_resp' & `b99_w_tb_card' & `b99_w_tb_infect' & `b99_w_tb_nutri' & `b99_w_tb_accid' & `b99_w_tb_other' \\ " _n
-* 	file write sm " & (`se99_w_tb_cancer') & (`se99_w_tb_diab') & (`se99_w_tb_illdef') & (`se99_w_tb_resp') & (`se99_w_tb_card') & (`se99_w_tb_infect') & (`se99_w_tb_nutri') & (`se99_w_tb_accid') & (`se99_w_tb_other') \\ " _n
-* 	file write sm "\textit{RW p-value} & [`rwp99_w_tb_cancer'] & [`rwp99_w_tb_diab'] & [`rwp99_w_tb_illdef'] & [`rwp99_w_tb_resp'] & [`rwp99_w_tb_card'] & [`rwp99_w_tb_infect'] & [`rwp99_w_tb_nutri'] & [`rwp99_w_tb_accid'] & [`rwp99_w_tb_other'] \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "Mean (pre-1997) & `mean_w_tb_cancer' & `mean_w_tb_diab' & `mean_w_tb_illdef' & `mean_w_tb_resp' & `mean_w_tb_card' & `mean_w_tb_infect' & `mean_w_tb_nutri' & `mean_w_tb_accid' & `mean_w_tb_other' \\ " _n
-* 	file write sm "No.\ Mun & `Nmun_w_tb_cancer' & `Nmun_w_tb_diab' & `Nmun_w_tb_illdef' & `Nmun_w_tb_resp' & `Nmun_w_tb_card' & `Nmun_w_tb_infect' & `Nmun_w_tb_nutri' & `Nmun_w_tb_accid' & `Nmun_w_tb_other' \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
+* 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_p_1' & `b99_2c_p_2' & `b99_2c_p_3' & `b99_2c_p_4' & `b99_2c_p_5' & `b99_2c_p_6' \\ " _n
+* 	file write sm " & (`se99_2c_p_1') & (`se99_2c_p_2') & (`se99_2c_p_3') & (`se99_2c_p_4') & (`se99_2c_p_5') & (`se99_2c_p_6') \\ " _n
+* 	file write sm "  & & & & & & \\ " _n
+* 	file write sm "Mean (1991-1996) & `mean_2c_p_1' & `mean_2c_p_2' & `mean_2c_p_3' & `mean_2c_p_4' & `mean_2c_p_5' & `mean_2c_p_6' \\ " _n
+* 	file write sm "Obs & `N_2c_p_1' & `N_2c_p_2' & `N_2c_p_3' & `N_2c_p_4' & `N_2c_p_5' & `N_2c_p_6' \\ " _n
+* 	file write sm "  & & & & & & \\ " _n
+
 * 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-* 	file write sm "\textit{Intensity 1999 x post} & `b99_f_tb_cancer' & `b99_f_tb_diab' & `b99_f_tb_illdef' & `b99_f_tb_resp' & `b99_f_tb_card' & `b99_f_tb_infect' & `b99_f_tb_nutri' & `b99_f_tb_accid' & `b99_f_tb_other' \\ " _n
-* 	file write sm " & (`se99_f_tb_cancer') & (`se99_f_tb_diab') & (`se99_f_tb_illdef') & (`se99_f_tb_resp') & (`se99_f_tb_card') & (`se99_f_tb_infect') & (`se99_f_tb_nutri') & (`se99_f_tb_accid') & (`se99_f_tb_other') \\ " _n
-* 	file write sm "\textit{RW p-value} & [`rwp99_f_tb_cancer'] & [`rwp99_f_tb_diab'] & [`rwp99_f_tb_illdef'] & [`rwp99_f_tb_resp'] & [`rwp99_f_tb_card'] & [`rwp99_f_tb_infect'] & [`rwp99_f_tb_nutri'] & [`rwp99_f_tb_accid'] & [`rwp99_f_tb_other'] \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "Mean (pre-1997) & `mean_f_tb_cancer' & `mean_f_tb_diab' & `mean_f_tb_illdef' & `mean_f_tb_resp' & `mean_f_tb_card' & `mean_f_tb_infect' & `mean_f_tb_nutri' & `mean_f_tb_accid' & `mean_f_tb_other' \\ " _n
-* 	file write sm "Obs & `N_f_tb_cancer' & `N_f_tb_diab' & `N_f_tb_illdef' & `N_f_tb_resp' & `N_f_tb_card' & `N_f_tb_infect' & `N_f_tb_nutri' & `N_f_tb_accid' & `N_f_tb_other' \\ " _n
-* 	file write sm "No.\ Mun & `Nmun_f_tb_cancer' & `Nmun_f_tb_diab' & `Nmun_f_tb_illdef' & `Nmun_f_tb_resp' & `Nmun_f_tb_card' & `Nmun_f_tb_infect' & `Nmun_f_tb_nutri' & `Nmun_f_tb_accid' & `Nmun_f_tb_other' \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
+* 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_f_1' & `b99_2c_f_2' & `b99_2c_f_3' & `b99_2c_f_4' & `b99_2c_f_5' & `b99_2c_f_6' \\ " _n
+* 	file write sm " & (`se99_2c_f_1') & (`se99_2c_f_2') & (`se99_2c_f_3') & (`se99_2c_f_4') & (`se99_2c_f_5') & (`se99_2c_f_6') \\ " _n
+* 	file write sm "  & & & & & & \\ " _n
+* 	file write sm "Mean (1991-1996) & `mean_2c_f_1' & `mean_2c_f_2' & `mean_2c_f_3' & `mean_2c_f_4' & `mean_2c_f_5' & `mean_2c_f_6' \\ " _n
+* 	file write sm "Obs & `N_2c_f_1' & `N_2c_f_2' & `N_2c_f_3' & `N_2c_f_4' & `N_2c_f_5' & `N_2c_f_6' \\ " _n
+* 	file write sm "  & & & & & & \\ " _n
+
 * 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-* 	file write sm "\textit{Intensity 1999 x post} & `b99_m_tb_cancer' & `b99_m_tb_diab' & `b99_m_tb_illdef' & `b99_m_tb_resp' & `b99_m_tb_card' & `b99_m_tb_infect' & `b99_m_tb_nutri' & `b99_m_tb_accid' & `b99_m_tb_other' \\ " _n
-* 	file write sm " & (`se99_m_tb_cancer') & (`se99_m_tb_diab') & (`se99_m_tb_illdef') & (`se99_m_tb_resp') & (`se99_m_tb_card') & (`se99_m_tb_infect') & (`se99_m_tb_nutri') & (`se99_m_tb_accid') & (`se99_m_tb_other') \\ " _n
-* 	file write sm "Obs & `N_m_tb_cancer' & `N_m_tb_diab' & `N_m_tb_illdef' & `N_m_tb_resp' & `N_m_tb_card' & `N_m_tb_infect' & `N_m_tb_nutri' & `N_m_tb_accid' & `N_m_tb_other' \\ " _n
-* 	file write sm "No.\ Mun & `Nmun_m_tb_cancer' & `Nmun_m_tb_diab' & `Nmun_m_tb_illdef' & `Nmun_m_tb_resp' & `Nmun_m_tb_card' & `Nmun_m_tb_infect' & `Nmun_m_tb_nutri' & `Nmun_m_tb_accid' & `Nmun_m_tb_other' \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' \\ " _n
+* 	file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_m_1' & `b99_2c_m_2' & `b99_2c_m_3' & `b99_2c_m_4' & `b99_2c_m_5' & `b99_2c_m_6' \\ " _n
+* 	file write sm " & (`se99_2c_m_1') & (`se99_2c_m_2') & (`se99_2c_m_3') & (`se99_2c_m_4') & (`se99_2c_m_5') & (`se99_2c_m_6') \\ " _n
+* 	file write sm "  & & & & & & \\ " _n
+* 	file write sm "Mean (1991-1996) & `mean_2c_m_1' & `mean_2c_m_2' & `mean_2c_m_3' & `mean_2c_m_4' & `mean_2c_m_5' & `mean_2c_m_6' \\ " _n
+* 	file write sm "Obs & `N_2c_m_1' & `N_2c_m_2' & `N_2c_m_3' & `N_2c_m_4' & `N_2c_m_5' & `N_2c_m_6' \\ " _n
+* 	file write sm "  & & & & & & \\ " _n
+
+* 	file write sm "No.\ Mun & `Nmun_2c_p_1' & `Nmun_2c_p_2' & `Nmun_2c_p_3' & `Nmun_2c_p_4' & `Nmun_2c_p_5' & `Nmun_2c_p_6' \\ " _n
+* 	file write sm "  & & & & & & \\ " _n
+* 	file write sm "SES Trend (Cont.\ Muni.\ Index) & N & Y & N & N & N & N \\ " _n
+* 	file write sm "SES Trend (Muni.\ Quintile) & N & N & Y & N & N & N \\ " _n
+* 	file write sm "Muni.\ Marg.\ \%-ile FE & N & N & N & Y & N & N \\ " _n
+* 	file write sm "Locality Marg.\ \%-ile Shares, Flexible & N & N & N & N & Y & N \\ " _n
+* 	file write sm "Locality Marg.\ \%-ile Shares, Linear & N & N & N & N & N & Y \\ " _n
+* 	file write sm "Mean Intensity 1999 (\%) & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' \\ " _n
 * 	file write sm "\bottomrule" _n
 * 	file write sm "\end{tabular}"
 * 	file close sm
 * }
-di "Table NOT exported (disabled): $tables/appendix/AT2_cod_mortality.tex"
+di "Table NOT exported (disabled): $tables/appendix/AT1_ses_trend_summary.tex"
 
+
+
+*============================================================
+* MOVED FROM 03_experimental.do per the coauthor's request -- was
+* AT_attrition_elderly.tex, at:attrition_elderly -- no longer
+* displayed in the paper. Regressions/di diagnostics below still
+* run so the numeric results remain available for review; the
+* `file open...file close' lines are commented out so no .tex is
+* written to tables/appendix, per this file's convention.
+*
+* This works on a DIFFERENT dataset than the rest of this file: the
+* individual/experimental-survey panel (pid/ronda/age97/contba/
+* claveofi/clavemun/only_elderly_base), not the municipality-year
+* administrative panel loaded at the top of this file. 03_experimental.do
+* now checkpoints its own working panel, right where this block used
+* to sit, to $data/Temp_data/working_panel_for_attrition.dta -- same
+* pattern as this file's own top-of-file checkpoint load, just a
+* second, separate one for this one block. preserve/restore around
+* the use below return this file to its usual municipality-year panel
+* afterward, for whatever runs next.
+*============================================================
+preserve
+use "$data/Temp_data/working_panel_for_attrition.dta", clear
+
+*============================================================
+* APPENDIX TABLE: EXPERIMENTAL ATTRITION / OUT-MIGRATION OF OLDER ADULTS
+* Output: $tables/appendix/AT_attrition_elderly.tex
+*
+* WHY THIS EXISTS. The paper's out-migration threat is currently argued
+* from \cite{StecklovWintersStampiniDavis2005Demography}, who study
+* Progresa migration on this same experimental evaluation but -- as our
+* own footnote concedes -- report NO estimates for household members aged
+* 65 and older. That leaves the age group our mortality result is about
+* uncovered by the very citation used to reassure the reader about it.
+* This block closes that gap directly: it runs the age-65+ test Stecklov
+* et al. did not, on randomized treatment assignment, using the 1997
+* baseline cohort this file already builds.
+*
+* DESIGN. The panel here keeps rondas 1/3/5 and drops post-1997 entrants
+* (the `newindiv' drop), so it is a fixed 1997 cohort: every individual
+* enumerated at baseline either reappears in a later round or does not.
+* For the baseline 65+ cohort we therefore observe, per person:
+*     present98 = 1{observed in ronda 3}
+*     present99 = 1{observed in ronda 5}
+* and regress these on randomized treatment, clustering at the locality
+* (randomization) level with municipality FE -- the same specification as
+* equation (\ref{eq:exp_did}) in the paper, minus the year interaction
+* since the outcome is defined once per person.
+*
+* Because assignment is randomized, a null here means the program did not
+* differentially remove older adults from treatment localities, which is
+* precisely the assumption the municipal DiD needs. A significant
+* NEGATIVE coefficient would mean treatment-locality older adults
+* disappear from the roster faster -- the selective-out-migration story
+* the appendix tables can only test indirectly.
+*
+* IMPORTANT CAVEAT (stated in the note, and in the paper if this is
+* used): roster disappearance = death + migration + ordinary survey
+* attrition. ENCEL's 1997-99 rounds do not let us cleanly separate them
+* here, so this is a test of DIFFERENTIAL TOTAL ATTRITION, not of
+* migration alone. That is still the right test for the identification
+* threat -- any of the three channels, if differential by treatment,
+* biases the mortality comparison -- but it must not be described as a
+* pure migration estimate. Panel B restricts to older-adults-only
+* households, where the direct food transfer is the only benefit
+* received, as the subgroup with the strongest mechanical reason to move.
+*============================================================
+
+keep if age97 >= 65 & !missing(age97)
+
+* One row per baseline individual, with presence flags for the later rounds
+* Computed over ALL rounds, before the ronda==1 restriction below.
+bys pid: egen byte present98 = max(ronda == 3)
+bys pid: egen byte present99 = max(ronda == 5)
+gen byte anyattrit = 1 - present99
+label var present98 "Observed in 1998 round"
+label var present99 "Observed in 1999 round"
+label var anyattrit "Attrited by 1999 (not observed in ronda 5)"
+
+* Collapse to the person level: the outcome is defined once per person,
+* so keeping all three rounds would replicate each person up to 3 times
+* and understate the standard errors.
+keep if ronda == 1
+capture isid pid
+if _rc di as error "WARNING: pid is not unique within ronda==1 -- attrition SEs may be understated; check the roster build."
+
+foreach pnl in all eob {
+    if "`pnl'" == "all" local acond ""
+    else                local acond "& only_elderly_base == 1"
+
+    foreach yv in present98 present99 {
+        * Control mean = untreated baseline-65+ share still on the roster
+        quietly summarize `yv' if contba == 0 `acond' & !missing(`yv', contba, claveofi)
+        local cm_`pnl'_`yv' : di %9.3f r(mean)
+
+        capture reghdfe `yv' contba if !missing(`yv', contba, claveofi) `acond', ///
+            absorb(clavemun) vce(cluster claveofi)
+        if !_rc & e(N) > 0 {
+            local aux : di %9.3f _b[contba]
+            local tstat = abs(_b[contba] / _se[contba])
+            if      `tstat' >= 2.576 local b_`pnl'_`yv' = trim("`aux'") + "***"
+            else if `tstat' >= 1.960 local b_`pnl'_`yv' = trim("`aux'") + "**"
+            else if `tstat' >= 1.645 local b_`pnl'_`yv' = trim("`aux'") + "*"
+            else                     local b_`pnl'_`yv' = trim("`aux'")
+            local se_`pnl'_`yv' : di %9.3f _se[contba]
+            local N_`pnl'_`yv'  : di %12.0fc e(N)
+        }
+        else {
+            di as error "Attrition test, panel `pnl', outcome `yv': reghdfe failed or empty sample (rc=`_rc')"
+            local b_`pnl'_`yv'  "n/a"
+            local se_`pnl'_`yv' "n/a"
+            local N_`pnl'_`yv'  "n/a"
+        }
+    }
+}
+
+* {
+*     cap file close at
+*     file open at using "$tables/appendix/AT_attrition_elderly.tex", write replace
+*     file write at "\begin{tabular}{lcc} \hline \hline" _n
+*     file write at "& Observed in 1998 & Observed in 1999 \\ " _n
+*     file write at "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+*     file write at "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
+*     file write at "\underline{\textit{Panel A: All older adults (65+ at baseline)}} \\ " _n
+*     file write at "\textit{Treatment} & `b_all_present98' & `b_all_present99' \\ " _n
+*     file write at " & (`se_all_present98') & (`se_all_present99') \\ " _n
+*     file write at "  & & \\ " _n
+*     file write at "Control Mean & `cm_all_present98' & `cm_all_present99' \\ " _n
+*     file write at "Observations & `N_all_present98' & `N_all_present99' \\ " _n
+*     file write at "  & & \\ " _n
+*     file write at "\underline{\textit{Panel B: Older-adults-only households}} \\ " _n
+*     file write at "\textit{Treatment} & `b_eob_present98' & `b_eob_present99' \\ " _n
+*     file write at " & (`se_eob_present98') & (`se_eob_present99') \\ " _n
+*     file write at "  & & \\ " _n
+*     file write at "Control Mean & `cm_eob_present98' & `cm_eob_present99' \\ " _n
+*     file write at "Observations & `N_eob_present98' & `N_eob_present99' \\ \bottomrule" _n
+*     file write at "\end{tabular}"
+*     file close at
+* }
+di "Table NOT exported (disabled): $tables/appendix/AT_attrition_elderly.tex"
+
+
+restore
 
 *============================================================
 * APPENDIX TABLE (former): BR Trimming — Municipality Size, at:br_trimming
@@ -3321,5 +3398,310 @@ foreach grp in w f m {
 }
 }
 di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _female_, _male_"
+
+
+*============================================================
+* CAUSE-OF-DEATH ANALYSIS (all of it, consolidated here)
+* Moved from partway through this file to the very end, so every
+* cause-of-death exhibit -- the AF4/AF5 event studies and the
+* AT2_cod_mortality table with its Romano-Wolf correction -- lives
+* in one place. Originally moved here from 02_mortality.do; the
+* content below is unchanged from that move, only its position in
+* this file changed. Still fully commented out on the output side
+* (graph export / file open...file close) -- not displayed in the
+* paper -- per this file's convention; regressions/di diagnostics
+* still run.
+*============================================================
+*============================================================
+* MOVED FROM 02_mortality.do per the coauthor's request -- no longer
+* displayed in the paper (figures_app.tex/tables_app.tex entries
+* removed). Regressions/di diagnostics below still run so the numeric
+* results remain available for review; the `graph export'/`file
+* open...file close' lines are commented out so no .tex/.pdf is written
+* to figures/appendix or tables/appendix, per this file's convention.
+*============================================================
+
+*============================================================
+* APPENDIX FIGURES AF4/AF5 (former): Event Study by Cause of Death
+* (Our Sample, 1991-2006), af:es_cod_marg_a / af:es_cod_marg_b.
+* y-axis -9(3)9 for tb_card, -6(3)6 otherwise.
+*============================================================
+{
+local yr_labels_cod `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+local samp_cond  "$sample_marg"
+local samp_yr_cond ""
+local obs_n = 16
+local yr_pos_offset = 0
+local xscale_range "range(0.5 16.5)"
+local pos_start = 1
+local pos_end   = 16
+
+foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+
+	* Output stem per cause of death: af:es_cod_marg_a (former Appendix
+	* Figure AF4) takes cancer/diab/illdef/resp; af:es_cod_marg_b (AF5)
+	* takes card/infect/nutri/accid; tb_other isn't in either, so it
+	* keeps its old Figure_3 stem (not part of the renumbered set).
+	if      "`cod'" == "tb_cancer" local af_stem "AF4a_tb_cancer_Marg"
+	else if "`cod'" == "tb_diab"   local af_stem "AF4b_tb_diab_Marg"
+	else if "`cod'" == "tb_illdef" local af_stem "AF4c_tb_illdef_Marg"
+	else if "`cod'" == "tb_resp"   local af_stem "AF4d_tb_resp_Marg"
+	else if "`cod'" == "tb_card"   local af_stem "AF5a_tb_card_Marg"
+	else if "`cod'" == "tb_infect" local af_stem "AF5b_tb_infect_Marg"
+	else if "`cod'" == "tb_nutri"  local af_stem "AF5c_tb_nutri_Marg"
+	else if "`cod'" == "tb_accid"  local af_stem "AF5d_tb_accid_Marg"
+	else                            local af_stem "Figure_3_`cod'_Marg"
+
+	foreach grp in w f m {
+		local reg_success_`grp' = 0
+		if "`grp'" == "w" {
+			local outcome emr65`cod'
+			local wvar   popover65_
+		}
+		else if "`grp'" == "f" {
+			local outcome emr65`cod'f
+			local wvar   popover65_f
+		}
+		else {
+			local outcome emr65`cod'm
+			local wvar   popover65_m
+		}
+		capture noisily reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+			c.sp_intensity [aw=`wvar'] if `samp_cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		if _rc == 0 {
+			local reg_success_`grp' = 1
+			forval pos = `pos_start'/`pos_end' {
+				if `pos' == 6 {
+					local b_`grp'_`pos'  = 0
+					local se_`grp'_`pos' = 0
+				}
+				else {
+					local b_`grp'_`pos'  = _b[`pos'.year_1995#c.inten1999]
+					local se_`grp'_`pos' = _se[`pos'.year_1995#c.inten1999]
+				}
+			}
+		}
+		else {
+			di "WARNING: Regression failed for `outcome' (`cod', Marg sample) - skipping"
+			forval pos = `pos_start'/`pos_end' {
+				local b_`grp'_`pos'  = .
+				local se_`grp'_`pos' = .
+			}
+		}
+	}
+
+	preserve
+	clear
+	set obs `obs_n'
+	gen yr_pos = _n + `yr_pos_offset'
+	gen xpos_w = yr_pos - 0.18
+	gen xpos_f = yr_pos
+	gen xpos_m = yr_pos + 0.18
+	foreach grp in w f m {
+		gen b_`grp'  = .
+		gen hi_`grp' = .
+		gen lo_`grp' = .
+	}
+	forval pos = `pos_start'/`pos_end' {
+		foreach grp in w f m {
+			if `reg_success_`grp'' == 1 {
+				replace b_`grp'  = `b_`grp'_`pos''                            if yr_pos == `pos'
+				replace hi_`grp' = `b_`grp'_`pos'' + 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+				replace lo_`grp' = `b_`grp'_`pos'' - 1.96 * `se_`grp'_`pos'' if yr_pos == `pos'
+			}
+		}
+	}
+
+	if inlist("`cod'", "tb_cancer", "tb_diab", "tb_illdef", "tb_infect") {
+		local yaxis_range "-6(3)3"
+	}
+	else if "`cod'" == "tb_card" {
+		local yaxis_range "-9(3)9"
+	}
+	else {
+		local yaxis_range "-6(3)6"
+	}
+
+	local twoway_cmd "twoway"
+	local legend_nums ""
+	local legend_labels ""
+	local plot_count = 0
+	if `reg_success_w' == 1 {
+		local twoway_cmd "`twoway_cmd' (rcap hi_w lo_w xpos_w, lcolor(black%60) lwidth(vthin)) (scatter b_w xpos_w, mcolor(black) msymbol(circle) msize(vsmall)) (line b_w xpos_w if 1==0, lcolor(black) lpattern(solid) lwidth(thin))"
+		local plot_count = `plot_count' + 3
+		local legend_nums "`legend_nums' `plot_count'"
+		local legend_labels "`legend_labels' label(`plot_count' Pooled)"
+	}
+	if `reg_success_f' == 1 {
+		local twoway_cmd "`twoway_cmd' (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin)) (scatter b_f xpos_f, mcolor(red%60) msymbol(square) msize(vsmall)) (line b_f xpos_f if 1==0, lcolor(red%60) lpattern(solid) lwidth(thin))"
+		local plot_count = `plot_count' + 3
+		local legend_nums "`legend_nums' `plot_count'"
+		local legend_labels "`legend_labels' label(`plot_count' Female)"
+	}
+	if `reg_success_m' == 1 {
+		local twoway_cmd "`twoway_cmd' (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin)) (scatter b_m xpos_m, mcolor(blue%60) msymbol(triangle) msize(vsmall)) (line b_m xpos_m if 1==0, lcolor(blue%60) lpattern(solid) lwidth(thin))"
+		local plot_count = `plot_count' + 3
+		local legend_nums "`legend_nums' `plot_count'"
+		local legend_labels "`legend_labels' label(`plot_count' Male)"
+	}
+	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
+	`twoway_cmd'
+	* graph export "$figures/appendix/`af_stem'.pdf", as(pdf) replace  -- disabled: not displayed in the paper
+	restore
+
+} // end foreach cod
+} // end Marg block
+
+
+*============================================================
+* APPENDIX TABLE (former): Causes of Death (Weighted + SP spec)
+* AT2_cod_mortality.tex -- Pooled, Female, Male panels, at:did_robust_cod.
+* NOTE: the wyoung Romano-Wolf bootstrap (500 reps x 3 panels x 9
+* outcomes) is slow.
+*============================================================
+foreach grp in w f m {
+	if "`grp'" == "w" {
+		local wvar = "popover65_"
+		local suffix = ""
+	}
+	else if "`grp'" == "f" {
+		local wvar = "popover65_f"
+		local suffix = "f"
+	}
+	else {
+		local wvar = "popover65_m"
+		local suffix = "m"
+	}
+
+	foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other {
+		reghdfe emr65`cod'`suffix' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+			[aw=`wvar'] if $sample_marg, a(year cve_ent_mun_super) ///
+			vce(cluster cve_ent_mun_super)
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local b99_`grp'_`cod' = "`aux'***"
+		else if `t' >= 1.96  local b99_`grp'_`cod' = "`aux'**"
+		else if `t' >= 1.645 local b99_`grp'_`cod' = "`aux'*"
+		else                  local b99_`grp'_`cod' = "`aux'"
+		local se99_`grp'_`cod': di %12.3f _se[1.post#c.inten1999]
+		* Intensity_2005 x post kept as a control (per the coauthor's
+		* request) but not printed below -- no stand-alone interpretation.
+		local aux: di %12.3f _b[1.post#c.inten2005]
+		local t = abs(_b[1.post#c.inten2005] / _se[1.post#c.inten2005])
+		if      `t' >= 2.576 local b05_`grp'_`cod' = "`aux'***"
+		else if `t' >= 1.96  local b05_`grp'_`cod' = "`aux'**"
+		else if `t' >= 1.645 local b05_`grp'_`cod' = "`aux'*"
+		else                  local b05_`grp'_`cod' = "`aux'"
+		local se05_`grp'_`cod': di %12.3f _se[1.post#c.inten2005]
+		sum emr65`cod'`suffix' if e(sample) & post == 2
+		local mean_`grp'_`cod': di %12.2fc `r(mean)'
+		local N_`grp'_`cod': di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local Nmun_`grp'_`cod': di %12.0fc `r(ndistinct)'
+	}
+}
+
+* Mean Intensity 1999 for AT1_cod -- HM sample, displayed as %
+quietly sum inten1999 if $sample_marg & year == 1996
+local meanI99_AT1cod: di %6.1f r(mean) * 100
+
+*------------------------------------------------------------
+* Romano-Wolf step-down correction for AT2_cod_mortality
+* Family: 9 CoD outcomes; correction for Intensity1999xPost within each panel.
+* Package: ssc install wyoung   (Jones, Molitor & Reif, SJ 2019)
+* wyoung uses OUTCOMEVAR as placeholder in cmd(); the weight is embedded
+* directly so it varies correctly across pooled/female/male panels.
+* r(table): rows = outcomes in varlist order; col 5 = RW adjusted p-value.
+*   Verify on first run with: matrix list r(table)
+* NOTE: rw_treat99 = inten1999*(post==1) gives same coef as
+*       1.post#c.inten1999 in the main reghdfe regressions.
+* _hm indicator avoids | in if conditions inside wyoung cmd string.
+*------------------------------------------------------------
+cap drop rw_treat99 rw_treat05 _hm _br
+gen rw_treat99 = inten1999 * (post == 1)
+gen rw_treat05 = inten2005 * (post == 1)
+gen _hm        = (gm_mun_1990 == 4 | gm_mun_1990 == 5)
+gen _br        = ($sample_br)
+
+local cod_rw "tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_illdef tb_other"
+local wy_pval_col = 5   /* verify with: matrix list r(table) after first run */
+
+foreach grp in w f m {
+	if "`grp'" == "w" {
+		local wvar "popover65_"
+		local suffix ""
+	}
+	else if "`grp'" == "f" {
+		local wvar "popover65_f"
+		local suffix "f"
+	}
+	else {
+		local wvar "popover65_m"
+		local suffix "m"
+	}
+
+	* Build outcome varlist
+	local outcomes ""
+	foreach cod in `cod_rw' {
+		local outcomes "`outcomes' emr65`cod'`suffix'"
+	}
+
+	* Embed weight and HM filter in command template (long-run window, all years in data)
+	local cmd_str "reghdfe OUTCOMEVAR rw_treat99 rw_treat05 sp_intensity [aw=`wvar'] if _hm, absorb(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)"
+
+	wyoung `outcomes', ///
+		cmd(`"`cmd_str'"') ///
+		familyp(rw_treat99) bootstraps(500) seed(12345) ///
+		cluster(cve_ent_mun_super)
+
+	matrix WY99_`grp' = r(table)
+	local i = 1
+	foreach cod in `cod_rw' {
+		local rwp99_`grp'_`cod': di %6.3f WY99_`grp'[`i', `wy_pval_col']
+		local i = `i' + 1
+	}
+}
+
+* file write lines below disabled: not displayed in the paper (formerly
+* wrote $tables/appendix/AT2_cod_mortality.tex)
+* {
+* 	cap file close sm
+* 	file open sm using "$tables/appendix/AT2_cod_mortality.tex", write replace
+* 	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
+* 	file write sm "& Cancer & Diab. & IllDef & Resp. & Card. & Infect. & Nutri. & Accid. & Other \\ " _n
+* 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
+* 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+* 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+* 	file write sm "\textit{Intensity 1999 x post} & `b99_w_tb_cancer' & `b99_w_tb_diab' & `b99_w_tb_illdef' & `b99_w_tb_resp' & `b99_w_tb_card' & `b99_w_tb_infect' & `b99_w_tb_nutri' & `b99_w_tb_accid' & `b99_w_tb_other' \\ " _n
+* 	file write sm " & (`se99_w_tb_cancer') & (`se99_w_tb_diab') & (`se99_w_tb_illdef') & (`se99_w_tb_resp') & (`se99_w_tb_card') & (`se99_w_tb_infect') & (`se99_w_tb_nutri') & (`se99_w_tb_accid') & (`se99_w_tb_other') \\ " _n
+* 	file write sm "\textit{RW p-value} & [`rwp99_w_tb_cancer'] & [`rwp99_w_tb_diab'] & [`rwp99_w_tb_illdef'] & [`rwp99_w_tb_resp'] & [`rwp99_w_tb_card'] & [`rwp99_w_tb_infect'] & [`rwp99_w_tb_nutri'] & [`rwp99_w_tb_accid'] & [`rwp99_w_tb_other'] \\ " _n
+* 	file write sm "  & & & & & & & & & \\ " _n
+* 	file write sm "Mean (pre-1997) & `mean_w_tb_cancer' & `mean_w_tb_diab' & `mean_w_tb_illdef' & `mean_w_tb_resp' & `mean_w_tb_card' & `mean_w_tb_infect' & `mean_w_tb_nutri' & `mean_w_tb_accid' & `mean_w_tb_other' \\ " _n
+* 	file write sm "No.\ Mun & `Nmun_w_tb_cancer' & `Nmun_w_tb_diab' & `Nmun_w_tb_illdef' & `Nmun_w_tb_resp' & `Nmun_w_tb_card' & `Nmun_w_tb_infect' & `Nmun_w_tb_nutri' & `Nmun_w_tb_accid' & `Nmun_w_tb_other' \\ " _n
+* 	file write sm "  & & & & & & & & & \\ " _n
+* 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
+* 	file write sm "\textit{Intensity 1999 x post} & `b99_f_tb_cancer' & `b99_f_tb_diab' & `b99_f_tb_illdef' & `b99_f_tb_resp' & `b99_f_tb_card' & `b99_f_tb_infect' & `b99_f_tb_nutri' & `b99_f_tb_accid' & `b99_f_tb_other' \\ " _n
+* 	file write sm " & (`se99_f_tb_cancer') & (`se99_f_tb_diab') & (`se99_f_tb_illdef') & (`se99_f_tb_resp') & (`se99_f_tb_card') & (`se99_f_tb_infect') & (`se99_f_tb_nutri') & (`se99_f_tb_accid') & (`se99_f_tb_other') \\ " _n
+* 	file write sm "\textit{RW p-value} & [`rwp99_f_tb_cancer'] & [`rwp99_f_tb_diab'] & [`rwp99_f_tb_illdef'] & [`rwp99_f_tb_resp'] & [`rwp99_f_tb_card'] & [`rwp99_f_tb_infect'] & [`rwp99_f_tb_nutri'] & [`rwp99_f_tb_accid'] & [`rwp99_f_tb_other'] \\ " _n
+* 	file write sm "  & & & & & & & & & \\ " _n
+* 	file write sm "Mean (pre-1997) & `mean_f_tb_cancer' & `mean_f_tb_diab' & `mean_f_tb_illdef' & `mean_f_tb_resp' & `mean_f_tb_card' & `mean_f_tb_infect' & `mean_f_tb_nutri' & `mean_f_tb_accid' & `mean_f_tb_other' \\ " _n
+* 	file write sm "Obs & `N_f_tb_cancer' & `N_f_tb_diab' & `N_f_tb_illdef' & `N_f_tb_resp' & `N_f_tb_card' & `N_f_tb_infect' & `N_f_tb_nutri' & `N_f_tb_accid' & `N_f_tb_other' \\ " _n
+* 	file write sm "No.\ Mun & `Nmun_f_tb_cancer' & `Nmun_f_tb_diab' & `Nmun_f_tb_illdef' & `Nmun_f_tb_resp' & `Nmun_f_tb_card' & `Nmun_f_tb_infect' & `Nmun_f_tb_nutri' & `Nmun_f_tb_accid' & `Nmun_f_tb_other' \\ " _n
+* 	file write sm "  & & & & & & & & & \\ " _n
+* 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+* 	file write sm "\textit{Intensity 1999 x post} & `b99_m_tb_cancer' & `b99_m_tb_diab' & `b99_m_tb_illdef' & `b99_m_tb_resp' & `b99_m_tb_card' & `b99_m_tb_infect' & `b99_m_tb_nutri' & `b99_m_tb_accid' & `b99_m_tb_other' \\ " _n
+* 	file write sm " & (`se99_m_tb_cancer') & (`se99_m_tb_diab') & (`se99_m_tb_illdef') & (`se99_m_tb_resp') & (`se99_m_tb_card') & (`se99_m_tb_infect') & (`se99_m_tb_nutri') & (`se99_m_tb_accid') & (`se99_m_tb_other') \\ " _n
+* 	file write sm "Obs & `N_m_tb_cancer' & `N_m_tb_diab' & `N_m_tb_illdef' & `N_m_tb_resp' & `N_m_tb_card' & `N_m_tb_infect' & `N_m_tb_nutri' & `N_m_tb_accid' & `N_m_tb_other' \\ " _n
+* 	file write sm "No.\ Mun & `Nmun_m_tb_cancer' & `Nmun_m_tb_diab' & `Nmun_m_tb_illdef' & `Nmun_m_tb_resp' & `Nmun_m_tb_card' & `Nmun_m_tb_infect' & `Nmun_m_tb_nutri' & `Nmun_m_tb_accid' & `Nmun_m_tb_other' \\ " _n
+* 	file write sm "  & & & & & & & & & \\ " _n
+* 	file write sm "Mean Intensity 1999 (\%) & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' \\ " _n
+* 	file write sm "\bottomrule" _n
+* 	file write sm "\end{tabular}"
+* 	file close sm
+* }
+di "Table NOT exported (disabled): $tables/appendix/AT2_cod_mortality.tex"
+
+
 
 log close
