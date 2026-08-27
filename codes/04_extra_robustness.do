@@ -3097,4 +3097,229 @@ di "Table NOT exported (disabled): $tables/appendix/AT6_BR_trimming.tex"
 
 drop pop_mun_br
 
+*============================================================
+* ROBUSTNESS: MAIN RESULTS RESTRICTED TO 1991-2005 (drop 2006)
+*
+* Motivation: the paper's stated reason for ending the panel at 2006,
+* not later, is that a pension component for ages 70+ was added to
+* Progresa in 2006 (main.tex, Sec. 2), which would start changing what
+* the program *is* for older adults from that point on. That argument
+* justifies not going PAST 2006 -- it does not by itself establish that
+* 2006 is safe to INCLUDE, since the pension was added at some point
+* *during* 2006, not after it. This block re-estimates the two main
+* exhibits -- Table 2 (T2_mortality) and Figure 2
+* (Figure_2_pooled/_female/_male) -- on the sample truncated to
+* year<=2005, as the more conservative check. Same specifications as
+* 02_mortality.do (T2: ~line 602; Figure 2: ~line 507), same variables
+* (already on this file's checkpointed panel -- both exhibits are built
+* in 02_mortality.do *before* working_panel_for_binary_and_descriptives.dta
+* is saved), only `$sample_marg & year<=2005` added to each `if`.
+* If these match the through-2006 originals closely, the 2006
+* observations are not driving the main results; if they diverge
+* materially, that is itself informative about the pension-timing
+* concern.
+*============================================================
+
+*------------------------------------------------------------
+* TABLE 2, through 2005: same 4 columns (baseline / +SES trend /
+* ages 65-69 / ages 70+) x 3 panels (pooled/female/male) as
+* T2_mortality.tex.
+* Output: $tables/appendix/AT_T2_through2005.tex
+*------------------------------------------------------------
+
+foreach pnl in p f m {
+	if "`pnl'" == "p" {
+		local out65   emr65
+		local out6569 asr6569
+		local out70   asrover70
+		local wt65    popover65_
+		local wt6569  pop6569_
+		local wt70    popover70_
+	}
+	else if "`pnl'" == "f" {
+		local out65   emr65f
+		local out6569 asr6569f
+		local out70   asrover70f
+		local wt65    popover65_f
+		local wt6569  pop6569_f
+		local wt70    popover70_f
+	}
+	else {
+		local out65   emr65m
+		local out6569 asr6569m
+		local out70   asrover70m
+		local wt65    popover65_m
+		local wt6569  pop6569_m
+		local wt70    popover70_m
+	}
+
+	foreach col in 1 2 3 4 {
+		if `col' == 1 {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt65'] if $sample_marg & year<=2005, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 2 {
+			reghdfe `out65' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				c.im_mun_1990#c.year ///
+				[aw=`wt65'] if $sample_marg & year<=2005, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else if `col' == 3 {
+			reghdfe `out6569' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt6569'] if $sample_marg & year<=2005, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			reghdfe `out70' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+				[aw=`wt70'] if $sample_marg & year<=2005, a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+
+		local aux: di %12.3f _b[1.post#c.inten1999]
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		if      `t' >= 2.576 local b99_2005_`pnl'_`col' = "`aux'***"
+		else if `t' >= 1.96  local b99_2005_`pnl'_`col' = "`aux'**"
+		else if `t' >= 1.645 local b99_2005_`pnl'_`col' = "`aux'*"
+		else                  local b99_2005_`pnl'_`col' = "`aux'"
+		local se99_2005_`pnl'_`col': di %12.3f _se[1.post#c.inten1999]
+
+		if `col' <= 2 {
+			sum `out65' if e(sample) & year < 1997
+		}
+		else if `col' == 3 {
+			sum `out6569' if e(sample) & year < 1997
+		}
+		else {
+			sum `out70' if e(sample) & year < 1997
+		}
+		local mean_2005_`pnl'_`col': di %12.2fc `r(mean)'
+		local N_2005_`pnl'_`col':    di %12.0fc `e(N)'
+		distinct cve_ent_mun_super if e(sample)
+		local Nmun_2005_`pnl'_`col': di %12.0fc `r(ndistinct)'
+	}
+}
+
+quietly sum inten1999 if $sample_marg & year == 1996
+local meanI99_2005: di %6.1f r(mean) * 100
+
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT_T2_through2005.tex", write replace
+	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
+	file write sm "& \multicolumn{2}{c}{\textit{Ages 65+}} & \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+
+	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2005)} & `b99_2005_p_1' & `b99_2005_p_2' & `b99_2005_p_3' & `b99_2005_p_4' \\ " _n
+	file write sm " & (`se99_2005_p_1') & (`se99_2005_p_2') & (`se99_2005_p_3') & (`se99_2005_p_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2005_p_1' & `mean_2005_p_2' & `mean_2005_p_3' & `mean_2005_p_4' \\ " _n
+	file write sm "Obs & `N_2005_p_1' & `N_2005_p_2' & `N_2005_p_3' & `N_2005_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2005)} & `b99_2005_f_1' & `b99_2005_f_2' & `b99_2005_f_3' & `b99_2005_f_4' \\ " _n
+	file write sm " & (`se99_2005_f_1') & (`se99_2005_f_2') & (`se99_2005_f_3') & (`se99_2005_f_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2005_f_1' & `mean_2005_f_2' & `mean_2005_f_3' & `mean_2005_f_4' \\ " _n
+	file write sm "Obs & `N_2005_f_1' & `N_2005_f_2' & `N_2005_f_3' & `N_2005_f_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
+	file write sm "\textit{Intensity 1999 x post (1997-2005)} & `b99_2005_m_1' & `b99_2005_m_2' & `b99_2005_m_3' & `b99_2005_m_4' \\ " _n
+	file write sm " & (`se99_2005_m_1') & (`se99_2005_m_2') & (`se99_2005_m_3') & (`se99_2005_m_4') \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "Mean (1991-1996) & `mean_2005_m_1' & `mean_2005_m_2' & `mean_2005_m_3' & `mean_2005_m_4' \\ " _n
+	file write sm "Obs & `N_2005_m_1' & `N_2005_m_2' & `N_2005_m_3' & `N_2005_m_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+
+	file write sm "No.\ Mun & `Nmun_2005_p_1' & `Nmun_2005_p_2' & `Nmun_2005_p_3' & `Nmun_2005_p_4' \\ " _n
+	file write sm "  & & & & \\ " _n
+	file write sm "SES Trend (Cont.\ Index) & N & Y & N & N \\ " _n
+	file write sm "Mean Intensity 1999 (\%) & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+}
+di "Table exported to: $tables/appendix/AT_T2_through2005.tex"
+
+*------------------------------------------------------------
+* FIGURE 2, through 2005: same manual event study (pooled / female /
+* male), same colors/symbols, as Figure_2_pooled/_female/_male.pdf.
+* year_1995 still runs 1=1991...16=2006, but with year==2006 excluded
+* from the estimation sample below, position 16 is never estimated
+* (a factor level with zero observations in-sample), so the loop below
+* only goes to position 15 (=2005) -- there is no b_16/se_16 to pull.
+* Output: $figures/appendix/Figure_2_{pooled,female,male}_through2005.pdf
+*------------------------------------------------------------
+{
+local yr_labels_05 `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005""'
+foreach grp in w f m {
+	if "`grp'" == "w" {
+		local outcome emr65
+		local wvar   popover65_
+		local gcolor black
+		local gsym   circle
+		local gname  pooled
+	}
+	else if "`grp'" == "f" {
+		local outcome emr65f
+		local wvar   popover65_f
+		local gcolor red
+		local gsym   square
+		local gname  female
+	}
+	else {
+		local outcome emr65m
+		local wvar   popover65_m
+		local gcolor blue
+		local gsym   triangle
+		local gname  male
+	}
+
+	reghdfe `outcome' c.inten1999##ib6.year_1995 c.inten2005##ib6.year_1995 ///
+		c.sp_intensity [aw=`wvar'] if $sample_marg & year<=2005, a(cve_ent_mun_super) ///
+		vce(cluster cve_ent_mun_super)
+
+	forval pos = 1/15 {
+		if `pos' == 6 {
+			local b_`pos'  = 0
+			local se_`pos' = 0
+		}
+		else {
+			local b_`pos'  = _b[`pos'.year_1995#c.inten1999]
+			local se_`pos' = _se[`pos'.year_1995#c.inten1999]
+		}
+	}
+
+	preserve
+	clear
+	set obs 15
+	gen yr_pos = _n
+	gen b  = .
+	gen hi = .
+	gen lo = .
+	forval pos = 1/15 {
+		replace b  = `b_`pos''                          if yr_pos == `pos'
+		replace hi = `b_`pos'' + 1.96 * `se_`pos'' if yr_pos == `pos'
+		replace lo = `b_`pos'' - 1.96 * `se_`pos'' if yr_pos == `pos'
+	}
+	twoway ///
+		(rcap hi lo yr_pos, ///
+			lcolor(`gcolor'%60) lwidth(vthin)) ///
+		(scatter b yr_pos, ///
+			mcolor(`gcolor') msymbol(`gsym') msize(vsmall)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(`yr_labels_05', labsize(small) angle(45) labcolor(black)) ///
+		xscale(range(0.5 15.5)) ///
+		xtitle("") ///
+		ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+		ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
+		legend(off) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+	graph export "$figures/appendix/Figure_2_`gname'_through2005.pdf", as(pdf) replace
+	restore
+}
+}
+di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _female_, _male_"
+
 log close
