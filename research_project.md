@@ -1403,6 +1403,14 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - **Verdict:** for the relationship between exposure and the effect in our own design, the cloud dominates the residual/time-path plots proposed earlier. For BR, keep the before/after coefficient table but show it as clouds: BR's own (BR sample, change from 1992–1999 to 2000–2002 vs. average lag-2 dose) and one with Andrew's leftover on the x-axis. Drop for now the small-vs-large time paths and the covariate exploration.
 - **Order:** (1) our cloud, plain and conditional, with an NP fit and dose histogram, plus a pre-period placebo cloud (1994–96 vs. 1991–93); (2) TWFE weights vs. dose density for Intensity_1999 (CGBS Fig. 7 / slide 47); (3) BR's cloud, the leftover cloud and the before/after table; (4) size splits and covariates only if (1)–(3) point there.
 
+**Exact specification for step (3), agreed before coding.** The user's description (BR's treatment on municipality + year FE + Intensity_1999 × time) is right, with three tightenings: the dependent variable is BR's actual regressor `lag2_intensity_new`, not contemporaneous intensity; "× time" means year dummies (base 1996), not a linear trend or `Post`; and every step uses BR's sample, window and weights. It is the first stage of a Frisch–Waugh–Lovell decomposition, so it needs a second step to say anything about mortality.
+- Sample: `$sample_br` (1998/1999 entrants), 1992–2002, outcome `emr65`; unweighted (= BR) and weighted by `popover65_`; cluster by municipality. One sample marker for all steps.
+- (A) BR: `emr65 = a_m + g_t + b_BR·lag2_intensity_new` (Table A5 Panel B).
+- (B) First stage: `lag2_intensity_new = a_m + g_t + Σ_k θ_k·1[t=k]·inten1999` → residual û and the within-R² (share of BR's identifying variation our design shares). Variant B′ adds `Σ_k φ_k·1[t=k]·inten2005`.
+- (C) Augmented: `emr65 = a_m + g_t + b_left·lag2_intensity_new + Σ_k δ_k·1[t=k]·inten1999` (+ the inten2005 × year terms for C′). By FWL, b_left equals the slope of `emr65` residualized on the same controls on û.
+- Display: table of b_BR, b_left, b_left′ with within-R²; two binscatters with identical bins — mortality vs. BR's treatment both residualized on the FEs only (slope = b_BR), and both residualized on FEs + inten1999 × year (slope = b_left).
+- Long-window variant: HM sample, 1991–2006, weighted, `sp_intensity` in every step, inten1999 × year and inten2005 × year.
+
 ---
 
 ## Notes for Contributors
