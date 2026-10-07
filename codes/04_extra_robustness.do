@@ -3548,7 +3548,7 @@ program define cloud_plot
 		xlabel(, labsize(small)) ///
 		xtitle(`"`xt'"', size(small)) ///
 		ytitle(`"`yt'"', size(small)) ///
-		legend(order(`legorder') size(vsmall) rows(2) region(lcolor(white))) ///
+		legend(order(`legorder') size(vsmall) rows(2) position(6) ring(1) region(lcolor(white))) ///
 		graphregion(color(white)) plotregion(margin(small))
 	graph export "$figures/appendix/`fname'.pdf", as(pdf) replace
 	di "Figure exported to: $figures/appendix/`fname'.pdf"
@@ -3652,7 +3652,7 @@ foreach spec in plain cond {
 		legend(order(1 "Distribution of intensity" ///
 			2 "Regression weight on marginal effects" ///
 			3 "Regression weight on level effects") ///
-			size(vsmall) rows(3) region(lcolor(white))) ///
+			size(vsmall) rows(2) position(6) ring(1) region(lcolor(white))) ///
 		graphregion(color(white))
 	graph export "$figures/appendix/AF_twfe_weights_`spec'.pdf", as(pdf) replace
 	di "Figure exported to: $figures/appendix/AF_twfe_weights_`spec'.pdf"
@@ -3834,7 +3834,7 @@ foreach wt in uw w {
 			xtitle("`xt'", size(small)) ///
 			ytitle("Mortality rate 65+, residualized", size(small)) ///
 			legend(order(1 "Binned means (20 quantiles)" 2 "Slope `b_`s'' (`se_`s'')") ///
-				size(vsmall) rows(1) region(lcolor(white))) ///
+				size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
 			graphregion(color(white))
 		graph export "$figures/appendix/AF_br_leftover_`s'_`wt'.pdf", as(pdf) replace
 		di "Figure exported to: $figures/appendix/AF_br_leftover_`s'_`wt'.pdf"
