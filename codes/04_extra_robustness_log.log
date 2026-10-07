@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:   7 Oct 2026, 17:02:52
+ opened on:   7 Oct 2026, 17:57:08
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -566,6 +566,7 @@ Number of observations (_N) was 0, now 16.
 >     plotregion(margin(l=1 r=1))
 
 . * graph export "$figures/appendix/AF_binary_es.pdf", as(pdf) replace
+. * if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_binary_es.pdf", as(pdf) replace
 . restore
 
 . di "Figure exported to: $figures/appendix/AF_binary_es.pdf"
@@ -720,6 +721,8 @@ Absorbed degrees of freedom:
 >     file write bin "\bottomrule" _n
 >     file write bin "\end{tabular}"
 >     file close bin
+>     if "$repo_tables" != "" copy "$tables/appendix/AT_binary_es.tex" "$repo_tables/appendix/AT_binary_es.
+> tex", replace
 > }
 > */
 . di "Table exported to: $tables/appendix/AT_binary_es.tex"
@@ -1305,6 +1308,7 @@ Number of observations (_N) was 0, now 16.
 >     plotregion(margin(l=1 r=1))
 
 . * graph export "$figures/appendix/AF_binary_es_2bin.pdf", as(pdf) replace
+. * if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_binary_es_2bin.pdf", as(pdf) replace
 . restore
 
 . di "Figure exported to: $figures/appendix/AF_binary_es_2bin.pdf"
@@ -1487,6 +1491,8 @@ Absorbed degrees of freedom:
 >     file write bin2 "\bottomrule" _n
 >     file write bin2 "\end{tabular}"
 >     file close bin2
+>     if "$repo_tables" != "" copy "$tables/appendix/AT_binary_es_2bin.tex" "$repo_tables/appendix/AT_binar
+> y_es_2bin.tex", replace
 > }
 > */
 . di "Table exported to: $tables/appendix/AT_binary_es_2bin.tex"
@@ -1756,6 +1762,8 @@ Threshold grid (Intensity_1999, End-of-year fixed-denom, 1996 HM cross-section):
 >         legend(order(`legend_order') cols(4) size(small) position(6) ring(1) region(lcolor(none))) ///
 >         graphregion(color(white)) plotregion(margin(l=1 r=1))
 116.     * graph export "$figures/appendix/AF_threshold_validation_`spec'.pdf", as(pdf) replace
+.     * if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_threshold_validation_`spec'.pdf", 
+> as(pdf) replace
 .     use `panel_snapshot_`spec'', clear
 117. }
 (17,904 missing values generated)
@@ -2323,6 +2331,8 @@ Figures exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cc
 > file write tc "\bottomrule" _n
 > file write tc "\end{tabular}"
 > file close tc
+> if "$repo_tables" != "" copy "$tables/appendix/AT_threshold_categorical.tex" "$repo_tables/appendix/AT_th
+> reshold_categorical.tex", replace
 > */
 . di "Table written to: $tables/appendix/AT_threshold_categorical.tex"
 Table written to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_threshold
@@ -2559,6 +2569,8 @@ Number of observations (_N) was 0, now 16.
 >     plotregion(margin(l=1 r=1))
 
 . * graph export "$figures/appendix/AF_threshold_categorical_es.pdf", as(pdf) replace
+. * if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_threshold_categorical_es.pdf", as(pdf)
+>  replace
 . di "Figure exported to: $figures/appendix/AF_threshold_categorical_es.pdf"
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_thresh
 > old_categorical_es.pdf
@@ -2631,6 +2643,8 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >     graphregion(color(white)) plotregion(margin(l=1 r=1))
 
 . * graph export "$figures/appendix/AF_intensity_timeseries_w.pdf", as(pdf) replace
+. * if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_intensity_timeseries_w.pdf", as(pdf) r
+> eplace
 . restore
 
 . 
@@ -2950,6 +2964,8 @@ first_cross |
 >     file write sat "\bottomrule" _n
 >     file write sat "\end{tabular}"
 >     file close sat
+>     if "$repo_tables" != "" copy "$tables/appendix/AT_saturation_diagnostics.tex" "$repo_tables/appendix/
+> AT_saturation_diagnostics.tex", replace
 > }
 > */
 . di "Table exported to: $tables/appendix/AT_saturation_diagnostics.tex"
@@ -3381,6 +3397,8 @@ Non-monotone share among non-super municipalities: 51 / 1110 ( 4.6%)
 > file write fd "Total & `n_nonmono' & `=`n_tot'-`n_nonmono'' & `n_tot' \\ " _n
 > file write fd "\end{tabular}" _n
 > file close fd
+> if "$repo_tables" != "" copy "$tables/appendix/AT_crosswalk_supermun_diagnostic.tex" "$repo_tables/append
+> ix/AT_crosswalk_supermun_diagnostic.tex", replace
 > */
 . di "Table written to: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex"
 Table written to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_crosswalk
@@ -3614,6 +3632,8 @@ Decomposition of Delta-R^2 vs. baseline (0.160/0.377): denom-fix-alone 0.078/0.0
 >     file write r2b "No.\ HM municipalities & \multicolumn{4}{c}{`n_r2fase_mun'} \\ " _n
 >     file write r2b "\end{tabular}"
 >     file close r2b
+>     if "$repo_tables" != "" copy "$tables/appendix/AT_pv_r2_benefsource.tex" "$repo_tables/appendix/AT_pv
+> _r2_benefsource.tex", replace
 > }
 > */
 . di "Table exported to: $tables/appendix/AT_pv_r2_benefsource.tex"
@@ -3679,6 +3699,8 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 > file write ic "\bottomrule" _n
 > file write ic "\end{tabular}"
 > file close ic
+> if "$repo_tables" != "" copy "$tables/appendix/AT_intensity_correlations.tex" "$repo_tables/appendix/AT_i
+> ntensity_correlations.tex", replace
 > */
 . di "Table exported to: $tables/appendix/AT_intensity_correlations.tex"
 Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_intensit
@@ -3870,6 +3892,8 @@ Absorbed degrees of freedom:
 > file write mde "\bottomrule" _n
 > file write mde "\end{tabular}"
 > file close mde
+> if "$repo_tables" != "" copy "$tables/appendix/AT_power_mde.tex" "$repo_tables/appendix/AT_power_mde.tex"
+> , replace
 > */
 . di "Table exported to: $tables/appendix/AT_power_mde.tex"
 Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_power_md
@@ -4576,6 +4600,8 @@ Absorbed degrees of freedom:
 >     file write fd "\bottomrule" _n
 >     file write fd "\end{tabular}"
 >     file close fd
+>     if "$repo_tables" != "" copy "$tables/T2_b_mortality_fixeddenom.tex" "$repo_tables/T2_b_mortality_fix
+> eddenom.tex", replace
 > }
 > */
 . di "Table (commented out) would have been exported to: $tables/T2_b_mortality_fixeddenom.tex"
@@ -4993,6 +5019,8 @@ lpopover65_f |      6,714    5.072724    1.071673    1.94591   8.341216
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
 .         file close sm
+.         if "$repo_tables" != "" copy "$tables/appendix/AT_migration_robustness.tex" "$repo_tables/appendi
+> x/AT_migration_robustness.tex", replace
 . }
 
 . di "Table exported to: $tables/appendix/AT_migration_robustness.tex"
@@ -5220,6 +5248,8 @@ lpopover65_f |      1,119    5.105873    1.083196    1.94591   8.309677
 .         file write smc "\bottomrule" _n
 .         file write smc "\end{tabular}"
 .         file close smc
+.         if "$repo_tables" != "" copy "$tables/appendix/AT_migration_robustness_census.tex" "$repo_tables/
+> appendix/AT_migration_robustness_census.tex", replace
 . }
 
 . di "Table exported to: $tables/appendix/AT_migration_robustness_census.tex"
@@ -5598,6 +5628,8 @@ xij variables:
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
 .         file close sm
+.         if "$repo_tables" != "" copy "$tables/appendix/AT_migration_robustness_ageFE.tex" "$repo_tables/a
+> ppendix/AT_migration_robustness_ageFE.tex", replace
 . }
 
 . di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
@@ -5650,83 +5682,86 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
   5.                         local esout_f popover65_f
   6.                         local es_ytitle "Population 65+ (count)"
   7.                         local es_outfile "$figures/appendix/AF_migration_es.pdf"
-  8.                         local es_cmd reghdfe
-  9.                 }
- 10.                 else if "`spec'" == "log" {
- 11.                         local esout_p lpopover65
- 12.                         local esout_m lpopover65_m
- 13.                         local esout_f lpopover65_f
- 14.                         local es_ytitle "Log population 65+"
- 15.                         local es_outfile "$figures/appendix/AF_migration_es_log.pdf"
- 16.                         local es_cmd reghdfe
- 17.                 }
- 18.                 else {
- 19.                         local esout_p popover65_
- 20.                         local esout_m popover65_m
- 21.                         local esout_f popover65_f
- 22.                         local es_ytitle "Population 65+ (% change from 1996)"
- 23.                         local es_outfile "$figures/appendix/AF_migration_es_poisson.pdf"
- 24.                         local es_cmd ppmlhdfe
- 25.                 }
- 26. 
+  8.                         local es_outfile_repo "$repo_figures/appendix/AF_migration_es.pdf"
+  9.                         local es_cmd reghdfe
+ 10.                 }
+ 11.                 else if "`spec'" == "log" {
+ 12.                         local esout_p lpopover65
+ 13.                         local esout_m lpopover65_m
+ 14.                         local esout_f lpopover65_f
+ 15.                         local es_ytitle "Log population 65+"
+ 16.                         local es_outfile "$figures/appendix/AF_migration_es_log.pdf"
+ 17.                         local es_outfile_repo "$repo_figures/appendix/AF_migration_es_log.pdf"
+ 18.                         local es_cmd reghdfe
+ 19.                 }
+ 20.                 else {
+ 21.                         local esout_p popover65_
+ 22.                         local esout_m popover65_m
+ 23.                         local esout_f popover65_f
+ 24.                         local es_ytitle "Population 65+ (% change from 1996)"
+ 25.                         local es_outfile "$figures/appendix/AF_migration_es_poisson.pdf"
+ 26.                         local es_outfile_repo "$repo_figures/appendix/AF_migration_es_poisson.pdf"
+ 27.                         local es_cmd ppmlhdfe
+ 28.                 }
+ 29. 
 .                 foreach pnl in p m f {
- 27.                         local esout `esout_`pnl''
- 28. 
+ 30.                         local esout `esout_`pnl''
+ 31. 
 .                         capture `es_cmd' `esout' c.${mig99}##ib6.year_1995 ///
 >                                 if $sample_marg & $mig_yrcond, ///
 >                                 a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
- 29.                         if !_rc & e(N) > 0 {
- 30.                                 forval pos = 1/16 {
- 31.                                         if `pos' == 6 {
- 32.                                                 local bes_`pnl'_`pos'  = 0
- 33.                                                 local sees_`pnl'_`pos' = 0
- 34.                                         }
- 35.                                         else if "`spec'" == "poisson" {
- 36.                                                 local bes_`pnl'_`pos'  = (exp(_b[`pos'.year_1995#c.${m
+ 32.                         if !_rc & e(N) > 0 {
+ 33.                                 forval pos = 1/16 {
+ 34.                                         if `pos' == 6 {
+ 35.                                                 local bes_`pnl'_`pos'  = 0
+ 36.                                                 local sees_`pnl'_`pos' = 0
+ 37.                                         }
+ 38.                                         else if "`spec'" == "poisson" {
+ 39.                                                 local bes_`pnl'_`pos'  = (exp(_b[`pos'.year_1995#c.${m
 > ig99}])-1)*100
- 37.                                                 local sees_`pnl'_`pos' = exp(_b[`pos'.year_1995#c.${mi
+ 40.                                                 local sees_`pnl'_`pos' = exp(_b[`pos'.year_1995#c.${mi
 > g99}])*_se[`pos'.year_1995#c.${mig99}]*100
- 38.                                         }
- 39.                                         else {
- 40.                                                 local bes_`pnl'_`pos'  = _b[`pos'.year_1995#c.${mig99}
+ 41.                                         }
+ 42.                                         else {
+ 43.                                                 local bes_`pnl'_`pos'  = _b[`pos'.year_1995#c.${mig99}
 > ]
- 41.                                                 local sees_`pnl'_`pos' = _se[`pos'.year_1995#c.${mig99
+ 44.                                                 local sees_`pnl'_`pos' = _se[`pos'.year_1995#c.${mig99
 > }]
- 42.                                         }
- 43.                                 }
- 44.                                 local esok_`pnl' = 1
- 45.                         }
- 46.                         else {
- 47.                                 di as error "Population event study (`spec'), panel `pnl': `es_cmd' fa
+ 45.                                         }
+ 46.                                 }
+ 47.                                 local esok_`pnl' = 1
+ 48.                         }
+ 49.                         else {
+ 50.                                 di as error "Population event study (`spec'), panel `pnl': `es_cmd' fa
 > iled (rc=`_rc'); panel skipped"
- 48.                                 local esok_`pnl' = 0
- 49.                         }
- 50.                 }
- 51. 
+ 51.                                 local esok_`pnl' = 0
+ 52.                         }
+ 53.                 }
+ 54. 
 .                 if `esok_p' == 1 & `esok_m' == 1 & `esok_f' == 1 {
- 52.                         preserve
- 53.                         clear
- 54.                         set obs 16
- 55.                         gen yr_pos = _n
- 56.                         gen xpos_p = yr_pos - 0.18
- 57.                         gen xpos_m = yr_pos
- 58.                         gen xpos_f = yr_pos + 0.18
- 59.                         foreach s in p m f {
- 60.                                 gen b_`s'  = .
- 61.                                 gen hi_`s' = .
- 62.                                 gen lo_`s' = .
- 63.                         }
- 64.                         forval pos = 1/16 {
- 65.                                 foreach s in p m f {
- 66.                                         replace b_`s'  = `bes_`s'_`pos''                          if y
+ 55.                         preserve
+ 56.                         clear
+ 57.                         set obs 16
+ 58.                         gen yr_pos = _n
+ 59.                         gen xpos_p = yr_pos - 0.18
+ 60.                         gen xpos_m = yr_pos
+ 61.                         gen xpos_f = yr_pos + 0.18
+ 62.                         foreach s in p m f {
+ 63.                                 gen b_`s'  = .
+ 64.                                 gen hi_`s' = .
+ 65.                                 gen lo_`s' = .
+ 66.                         }
+ 67.                         forval pos = 1/16 {
+ 68.                                 foreach s in p m f {
+ 69.                                         replace b_`s'  = `bes_`s'_`pos''                          if y
 > r_pos == `pos'
- 67.                                         replace hi_`s' = `bes_`s'_`pos'' + 1.96 * `sees_`s'_`pos'' if 
+ 70.                                         replace hi_`s' = `bes_`s'_`pos'' + 1.96 * `sees_`s'_`pos'' if 
 > yr_pos == `pos'
- 68.                                         replace lo_`s' = `bes_`s'_`pos'' - 1.96 * `sees_`s'_`pos'' if 
+ 71.                                         replace lo_`s' = `bes_`s'_`pos'' - 1.96 * `sees_`s'_`pos'' if 
 > yr_pos == `pos'
- 69.                                 }
- 70.                         }
- 71. 
+ 72.                                 }
+ 73.                         }
+ 74. 
 .                         twoway ///
 >                                 (rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin) lpattern(solid)) /
 > //
@@ -5754,13 +5789,14 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                                         region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 >                                 graphregion(color(white)) ///
 >                                 plotregion(margin(l=1 r=1))
- 72.                         graph export "`es_outfile'", as(pdf) replace
- 73.                         restore
- 74.                         di "Figure exported to: `es_outfile'"
- 75.                 }
- 76.                 else di as error "Population event study (`spec') not plotted: at least one panel fail
+ 75.                         graph export "`es_outfile'", as(pdf) replace
+ 76.                         if "$repo_figures" != "" graph export "`es_outfile_repo'", as(pdf) replace
+ 77.                         restore
+ 78.                         di "Figure exported to: `es_outfile'"
+ 79.                 }
+ 80.                 else di as error "Population event study (`spec') not plotted: at least one panel fail
 > ed to estimate."
- 77.         }
+ 81.         }
 Number of observations (_N) was 0, now 16.
 (16 missing values generated)
 (16 missing values generated)
@@ -5917,6 +5953,8 @@ Number of observations (_N) was 0, now 16.
 (1 real change made)
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es.pdf
     saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es.pdf saved
+    as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
 > ion_es.pdf
 Number of observations (_N) was 0, now 16.
@@ -6075,6 +6113,8 @@ Number of observations (_N) was 0, now 16.
 (1 real change made)
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_log.pdf
+    saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_log.pdf
     saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
 > ion_es_log.pdf
@@ -6235,6 +6275,8 @@ Number of observations (_N) was 0, now 16.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_poisson
     > .pdf saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_poisson.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
 > ion_es_poisson.pdf
 . }
@@ -6514,6 +6556,11 @@ Number of observations (_N) was 0, now 16.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_fixedde
     > nom.pdf saved as PDF format
+.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_migration_es_fixeddenom.pdf", as
+> (pdf) replace
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_fixeddenom.p
+    > df saved as PDF format
 .         restore
 .         di "Figure exported to: $figures/appendix/AF_migration_es_fixeddenom.pdf"
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
@@ -6645,6 +6692,8 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 .         file write fo "Obs & `NFO_m_1' & `NFO_m_2' \\ \bottomrule" _n
 .         file write fo "\end{tabular}"
 .         file close fo
+.         if "$repo_tables" != "" copy "$tables/appendix/AT_fixed_offset_poisson.tex" "$repo_tables/appendi
+> x/AT_fixed_offset_poisson.tex", replace
 . }
 
 . di "Table exported to: $tables/appendix/AT_fixed_offset_poisson.tex"
@@ -6776,9 +6825,11 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
  55.                 else                                                  local f6b_stem "AF9d2_emr65m_Hig
 > hMarg_2002ctrl"
  56.                 graph export "$figures/appendix/`f6b_stem'.pdf", as(pdf) replace
- 57.                 restore
- 58.         }
- 59. }
+ 57.                 if "$repo_figures" != "" graph export "$repo_figures/appendix/`f6b_stem'.pdf", as(pdf)
+>  replace
+ 58.                 restore
+ 59.         }
+ 60. }
 (MWFE estimator converged in 4 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -7021,6 +7072,9 @@ Number of observations (_N) was 0, now 11.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF9a2_emr65f_BR_2002ctr
     > l.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF9a2_emr65f_BR_2002ctrl.pdf
+    saved as PDF format
 (MWFE estimator converged in 4 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -7263,6 +7317,9 @@ Number of observations (_N) was 0, now 11.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF9c2_emr65m_BR_2002ctr
     > l.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF9c2_emr65m_BR_2002ctrl.pdf
+    saved as PDF format
 (MWFE estimator converged in 4 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -7505,6 +7562,9 @@ Number of observations (_N) was 0, now 11.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF9b2_emr65f_HighMarg_2
     > 002ctrl.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF9b2_emr65f_HighMarg_2002ct
+    > rl.pdf saved as PDF format
 (MWFE estimator converged in 4 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -7747,6 +7807,9 @@ Number of observations (_N) was 0, now 11.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF9d2_emr65m_HighMarg_2
     > 002ctrl.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF9d2_emr65m_HighMarg_2002ct
+    > rl.pdf saved as PDF format
 . }
 
 . di "Figure exported to: $figures/appendix/AF9a2-d2_..._2002ctrl.pdf"
@@ -8916,6 +8979,8 @@ Absorbed degrees of freedom:
 . *       file write sm "\bottomrule" _n
 . *       file write sm "\end{tabular}"
 . *       file close sm
+. *       if "$repo_tables" != "" copy "$tables/appendix/AT1_ses_trend_summary.tex" "$repo_tables/appendix/
+> AT1_ses_trend_summary.tex", replace
 . * }
 . di "Table NOT exported (disabled): $tables/appendix/AT1_ses_trend_summary.tex"
 Table NOT exported (disabled): C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix
@@ -9077,6 +9142,8 @@ Table NOT exported (disabled): C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\p
 . *     file write at "Observations & `N_eob_present98' & `N_eob_present99' \\ \bottomrule" _n
 . *     file write at "\end{tabular}"
 . *     file close at
+. *     if "$repo_tables" != "" copy "$tables/appendix/AT_attrition_elderly.tex" "$repo_tables/appendix/AT_
+> attrition_elderly.tex", replace
 . * }
 . di "Table NOT exported (disabled): $tables/appendix/AT_attrition_elderly.tex"
 Table NOT exported (disabled): C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix
@@ -9560,6 +9627,8 @@ Absorbed degrees of freedom:
 . *     file write sm "\bottomrule" _n
 . *     file write sm "\end{tabular}"
 . *     file close sm
+. *     if "$repo_tables" != "" copy "$tables/appendix/AT6_BR_trimming.tex" "$repo_tables/appendix/AT6_BR_t
+> rimming.tex", replace
 . * }
 . di "Table NOT exported (disabled): $tables/appendix/AT6_BR_trimming.tex"
 Table NOT exported (disabled): C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix
@@ -10290,6 +10359,10 @@ Absorbed degrees of freedom:
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
 .         file close sm
+.         if "$repo_tables" != "" copy "$tables/appendix/AT_T2_through2005.tex" "$repo_tables/appendix/AT_T
+> 2_through2005.tex", replace
+(file C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables/appendix/AT_T2_through2005.tex not
+    found)
 . }
 
 . di "Table exported to: $tables/appendix/AT_T2_through2005.tex"
@@ -10375,8 +10448,10 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                 graphregion(color(white)) ///
 >                 plotregion(margin(l=1 r=1))
  47.         graph export "$figures/appendix/Figure_2_`gname'_through2005.pdf", as(pdf) replace
- 48.         restore
- 49. }
+ 48.         if "$repo_figures" != "" graph export "$repo_figures/appendix/Figure_2_`gname'_through2005.pdf
+> ", as(pdf) replace
+ 49.         restore
+ 50. }
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -10511,6 +10586,9 @@ Number of observations (_N) was 0, now 15.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/Figure_2_pooled_through
     > 2005.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/Figure_2_pooled_through2005.
+    > pdf saved as PDF format
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -10645,6 +10723,9 @@ Number of observations (_N) was 0, now 15.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/Figure_2_female_through
     > 2005.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/Figure_2_female_through2005.
+    > pdf saved as PDF format
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -10779,6 +10860,9 @@ Number of observations (_N) was 0, now 15.
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/Figure_2_male_through20
     > 05.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/Figure_2_male_through2005.pd
+    > f saved as PDF format
 . }
 
 . di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _female_, _male_"
@@ -10821,7 +10905,23 @@ Figures exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cc
 . *
 . * The working panel is saved here and reloaded at the end, so the
 . * cause-of-death section below runs on exactly the same data as before.
+. *
+. * This block needs the municipality-year panel that 02_mortality.do
+. * checkpoints. If the data in memory is not that panel -- for example
+. * 03_experimental.do just ran in this session, or only this block is
+. * being run -- the checkpoint is loaded first; otherwise the data in
+. * memory is kept as is. If a variable is missing even in the checkpoint,
+. * `confirm' stops and names it: rerun 02_mortality.do.
 . *============================================================
+. capture confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
+>         sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year
+
+. if _rc {
+.         use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
+.         confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
+>                 sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year
+. }
+
 . tempfile cdid_panel
 
 . save `cdid_panel'
@@ -10918,12 +11018,14 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000010.tmp saved as .dta forma
 >                 xlabel(, labsize(small)) ///
 >                 xtitle(`"`xt'"', size(small)) ///
 >                 ytitle(`"`yt'"', size(small)) ///
->                 legend(order(`legorder') size(vsmall) rows(2) region(lcolor(white))) ///
+>                 legend(order(`legorder') size(vsmall) rows(2) position(6) ring(1) region(lcolor(white))) 
+> ///
 >                 graphregion(color(white)) plotregion(margin(small))
  49.         graph export "$figures/appendix/`fname'.pdf", as(pdf) replace
- 50.         di "Figure exported to: $figures/appendix/`fname'.pdf"
- 51.         restore
- 52. end
+ 50.         if "$repo_figures" != "" graph export "$repo_figures/appendix/`fname'.pdf", as(pdf) replace
+ 51.         di "Figure exported to: $figures/appendix/`fname'.pdf"
+ 52.         restore
+ 53. end
 
 . 
 . *------------------------------------------------------------
@@ -10953,7 +11055,9 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000010.tmp saved as .dta forma
 
 . bysort cve_ent_mun_super: egen double w65_pre = mean(cond(year <= 1996, popover65_, .))
 
-. bysort cve_ent_mun_super: keep if _n == 1
+. egen byte __one = tag(cve_ent_mun_super)
+
+. keep if __one
 (16,785 observations deleted)
 
 . gen double d_post = mr_post - mr_pre
@@ -10977,6 +11081,8 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000010.tmp saved as .dta forma
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_post_plain.pdf
     saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_post_plain.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_
 > post_plain.pdf
 
@@ -10984,6 +11090,8 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >         "Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
 >         "Change in mortality rate 65+, 1997-2006 vs. 1991-1996 (net)" 0
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_post_cond.pdf
+    saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_post_cond.pdf
     saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_
 > post_cond.pdf
@@ -10993,6 +11101,8 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >         "Change in mortality rate 65+, 1994-1996 vs. 1991-1993" 1
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_pre_plain.pdf
     saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_pre_plain.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_
 > pre_plain.pdf
 
@@ -11001,6 +11111,8 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >         "Change in mortality rate 65+, 1994-1996 vs. 1991-1993 (net)" 0
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_pre_cond.pdf
     saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_pre_cond.pdf saved
+    as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_
 > pre_cond.pdf
 
@@ -11057,20 +11169,26 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >                 legend(order(1 "Distribution of intensity" ///
 >                         2 "Regression weight on marginal effects" ///
 >                         3 "Regression weight on level effects") ///
->                         size(vsmall) rows(3) region(lcolor(white))) ///
+>                         size(vsmall) rows(2) position(6) ring(1) region(lcolor(white))) ///
 >                 graphregion(color(white))
  31.         graph export "$figures/appendix/AF_twfe_weights_`spec'.pdf", as(pdf) replace
- 32.         di "Figure exported to: $figures/appendix/AF_twfe_weights_`spec'.pdf"
- 33.         restore
- 34. }
+ 32.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_twfe_weights_`spec'.pdf", as(
+> pdf) replace
+ 33.         di "Figure exported to: $figures/appendix/AF_twfe_weights_`spec'.pdf"
+ 34.         restore
+ 35. }
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_twfe_weights_plain.p
     > df saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_twfe_weights_plain.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_twfe_w
 > eights_plain.pdf
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_twfe_weights_cond.pd
     > f saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_twfe_weights_cond.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_twfe_w
 > eights_cond.pdf
 
@@ -11697,8 +11815,6 @@ Panel B, w, row 3: share of BR treatment variation explained = 0.636
 . cap file close brl
 
 . file open brl using "$tables/appendix/AT_br_leftover.tex", write replace
-(file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_leftover.tex not
-    found)
 
 . file write brl "\begin{tabular}{lcc} \hline \hline" _n
 
@@ -11737,6 +11853,11 @@ Panel B, w, row 3: share of BR treatment variation explained = 0.636
 . file write brl "\end{tabular}"
 
 . file close brl
+
+. if "$repo_tables" != "" copy "$tables/appendix/AT_br_leftover.tex" "$repo_tables/appendix/AT_br_leftover.
+> tex", replace
+(file C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables/appendix/AT_br_leftover.tex not
+    found)
 
 . di "Table exported to: $tables/appendix/AT_br_leftover.tex"
 Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_lefto
@@ -11821,31 +11942,41 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                         xtitle("`xt'", size(small)) ///
 >                         ytitle("Mortality rate 65+, residualized", size(small)) ///
 >                         legend(order(1 "Binned means (20 quantiles)" 2 "Slope `b_`s'' (`se_`s'')") ///
->                                 size(vsmall) rows(1) region(lcolor(white))) ///
+>                                 size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
 >                         graphregion(color(white))
  45.                 graph export "$figures/appendix/AF_br_leftover_`s'_`wt'.pdf", as(pdf) replace
- 46.                 di "Figure exported to: $figures/appendix/AF_br_leftover_`s'_`wt'.pdf"
- 47.         }
- 48.         drop __*
- 49. }
+ 46.                 if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_leftover_`s'_`wt'.
+> pdf", as(pdf) replace
+ 47.                 di "Figure exported to: $figures/appendix/AF_br_leftover_`s'_`wt'.pdf"
+ 48.         }
+ 49.         drop __*
+ 50. }
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_leftover_fe_uw.pd
     > f saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_br_leftover_fe_uw.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_lef
 > tover_fe_uw.pdf
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_leftover_i99_uw.p
     > df saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_br_leftover_i99_uw.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_lef
 > tover_i99_uw.pdf
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_leftover_fe_w.pdf
+    saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_br_leftover_fe_w.pdf
     saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_lef
 > tover_fe_w.pdf
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_leftover_i99_w.pd
     > f saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_br_leftover_i99_w.pdf
+    saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_lef
 > tover_i99_w.pdf
 
@@ -11869,7 +12000,9 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . bysort cve_ent_mun_super: egen double w65_br     = mean(cond(year <= 1999, popover65_, .))
 
-. bysort cve_ent_mun_super: keep if _n == 1
+. egen byte __one = tag(cve_ent_mun_super)
+
+. keep if __one
 (14,220 observations deleted)
 
 . gen double d_br = mr_br_post - mr_br_pre
@@ -11880,6 +12013,8 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >         "Change in mortality rate 65+, 2000-2002 vs. 1992-1999" 1
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_br_uw.pdf
     saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_br_uw.pdf saved as
+    PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_
 > br_uw.pdf
 
@@ -11888,6 +12023,8 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >         "Change in mortality rate 65+, 2000-2002 vs. 1992-1999" 1
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_br_w.pdf
     saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_br_w.pdf saved as
+    PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_
 > br_w.pdf
 
@@ -11895,28 +12032,6 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 . * restore the working panel for the cause-of-death section below
 . use `cdid_panel', clear
 
-. 
-. 
-. *============================================================
-. * CAUSE-OF-DEATH ANALYSIS (all of it, consolidated here)
-. * Moved from partway through this file to the very end, so every
-. * cause-of-death exhibit -- the AF4/AF5 event studies and the
-. * AT2_cod_mortality table with its Romano-Wolf correction -- lives
-. * in one place. Originally moved here from 02_mortality.do; the
-. * content below is unchanged from that move, only its position in
-. * this file changed. Still fully commented out on the output side
-. * (graph export / file open...file close) -- not displayed in the
-. * paper -- per this file's convention; regressions/di diagnostics
-. * still run.
-. *============================================================
-. *============================================================
-. * MOVED FROM 02_mortality.do per the coauthor's request -- no longer
-. * displayed in the paper (figures_app.tex/tables_app.tex entries
-. * removed). Regressions/di diagnostics below still run so the numeric
-. * results remain available for review; the `graph export'/`file
-. * open...file close' lines are commented out so no .tex/.pdf is written
-. * to figures/appendix or tables/appendix, per this file's convention.
-. *============================================================
 . 
 end of do-file
 
