@@ -37,6 +37,10 @@ set more off
 	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
 	global repo_tables  "C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables"
 	global repo_figures "C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures"
+	cap mkdir "$repo_figures"
+	cap mkdir "$repo_figures/appendix"
+	cap mkdir "$repo_tables"
+	cap mkdir "$repo_tables/appendix"
 }
 
  if c(username)=="root" {
