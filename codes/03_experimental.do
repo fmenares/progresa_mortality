@@ -42,6 +42,8 @@ if "`c(username)'" == "FELIPEME" {
 	global dataFolder "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\ENCASEH_ENCEL_PROGRESA"
 	global tables     "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
 	global tempFolder "C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data"
+	global repo_tables  "C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables"
+	global repo_figures "C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures"
 }
 if "`c(username)'" == "root" {
 	global dataFolder "/home/user/progresa_mortality/data/ENCASEH_ENCEL_PROGRESA"
@@ -52,6 +54,53 @@ if "`c(username)'" == "root" {
 cap mkdir "$tables"
 cap mkdir "$tempFolder"
 cap mkdir "$tables/appendix"
+
+*============================================================
+* MIRROR EVERY FIGURE AND TABLE INTO THE REPO CLONE
+* $figures and $tables point at the Overleaf folders, so exports land
+* there. mirror_out copies a file that was just exported to $figures or
+* $tables into the same relative place under $repo_figures /
+* $repo_tables (the repo clone's figures/ and tables/ folders), so
+* Overleaf and the repo always hold the same latest version. It is
+* called right after every `graph export' and every table's `file close'
+* (and inside the disabled export blocks, so re-enabling one mirrors
+* too). $repo_figures / $repo_tables are set above only for users whose
+* clone is listed; for everyone else, and in the cloud environment where
+* $figures and $tables already are the repo folders, the call does
+* nothing. A failed copy, or any other error inside the mirror, prints a
+* message in the log but never stops the run.
+* When you add a new export, call mirror_out right after it.
+*============================================================
+capture program drop mirror_out
+capture program drop _mirror_out
+program define mirror_out
+	* the mirror is auxiliary: any error inside is printed but never
+	* stops the run
+	capture noisily _mirror_out `0'
+end
+program define _mirror_out
+	args src
+	local src = subinstr(`"`src'"', "\", "/", .)
+	foreach kind in figures tables {
+		local base = subinstr(`"${`kind'}"', "\", "/", .)
+		local repo = subinstr(`"${repo_`kind'}"', "\", "/", .)
+		if `"`base'"' == "" | `"`repo'"' == "" continue
+		if substr(`"`src'"', 1, length(`"`base'"') + 1) == `"`base'/"' {
+			local rel = substr(`"`src'"', length(`"`base'"') + 2, .)
+			if `"`repo'/`rel'"' == `"`src'"' continue
+			local p = strrpos(`"`rel'"', "/")
+			if `p' > 1 {
+				local dir = substr(`"`rel'"', 1, `p' - 1)
+				capture mkdir `"`repo'/`dir'"'
+			}
+			capture copy `"`src'"' `"`repo'/`rel'"', replace
+			if _rc {
+				di as error "WARNING: could not copy `rel' to the repo (error " _rc ")"
+			}
+			else di "  mirrored to repo: `kind'/`rel'"
+		}
+	}
+end
 
 *------------------------------------------------------------
 * WHOLE-FILE LOG
@@ -721,6 +770,7 @@ iebaltab `balvars' ///
     vce(cluster claveofi) ///
     rowvarlabels ///
     savecsv("$tables/elderly_balance.csv") replace
+mirror_out "$tables/elderly_balance.csv"
 
 iebaltab work days_week hours_day live_alone ///
     if age97>=65, ///
@@ -729,6 +779,7 @@ iebaltab work days_week hours_day live_alone ///
     rowvarlabels ///
     stats(pair(diff)) ///
     savexlsx("$tables/elderly_balance.xlsx") replace
+mirror_out "$tables/elderly_balance.xlsx"
 
 
 *------------------------------------------------------------
@@ -1323,6 +1374,7 @@ restore
 *============================================================
 {
     cap file close gp
+    global mir_gp "$tables/appendix/AT_gertler_pooled.tex"
     file open gp using "$tables/appendix/AT_gertler_pooled.tex", write replace
     file write gp "\begin{tabular}{lccccccccc} \hline \hline" _n
     file write gp "& \multicolumn{3}{c}{Ages 65+} & \multicolumn{3}{c}{Ages 51+ (Gertler 2000, contemp.\ age)} & \multicolumn{3}{c}{Ages 51+ (Gertler 2000, baseline age)} \\ \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}" _n
@@ -1337,6 +1389,7 @@ restore
     file write gp "Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\ \bottomrule" _n
     file write gp "\end{tabular}"
     file close gp
+    mirror_out "${mir_gp}"
 }
 di "Table exported to: $tables/appendix/AT_gertler_pooled.tex"
 
@@ -1402,6 +1455,7 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
 
 {
     cap file close sm
+    global mir_sm "$tables/T3_experimental.tex"
     file open sm using "$tables/T3_experimental.tex", write replace
     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
     file write sm "& \multicolumn{5}{c}{\textit{All Eligible Older Adults (65+)}} & \multicolumn{2}{c}{\textit{Older-Adults-Only Households}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-8}" _n
@@ -1447,6 +1501,7 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
     file write sm "\bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
+    mirror_out "${mir_sm}"
 }
 
 *============================================================
@@ -1456,6 +1511,7 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
 *============================================================
 {
     cap file close sm
+    global mir_sm "$tables/T3_experimental_slide.tex"
     file open sm using "$tables/T3_experimental_slide.tex", write replace
     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
     file write sm "& \multicolumn{5}{c}{\textit{All Eligible Older Adults (65+)}} & \multicolumn{2}{c}{\textit{Older-Adults-Only Households}} \\ \cmidrule(lr){2-6}\cmidrule(lr){7-8}" _n
@@ -1475,6 +1531,7 @@ di "b99_p_tveo = `b99_p_tveo'  |  N_p_tveo = `N_p_tveo'"
     file write sm "\bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
+    mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/T3_experimental_slide.tex"
 
@@ -1557,6 +1614,7 @@ iebaltab `balvars' ///
     vce(cluster claveofi) ///
     rowvarlabels ///
     savecsv("$tables/balance_HH.csv") replace
+mirror_out "$tables/balance_HH.csv"
 
 iebaltab `balvars' ///
     if elderly97>=1, ///
@@ -1564,6 +1622,7 @@ iebaltab `balvars' ///
     vce(cluster claveofi) ///
     rowvarlabels ///
     savecsv("$tables/elderly_balance_HH.csv") replace
+mirror_out "$tables/elderly_balance_HH.csv"
 *------------------------------------------------------------
 * HOUSEHOLD-LEVEL RESULTS (expenditures)
 * Store estimates and export clean tables focused on Progresa effects
@@ -1702,6 +1761,7 @@ foreach yvar of local hh_outcomes {
 
 {
     cap file close sm
+    global mir_sm "$tables/appendix/AT8_expenditures_elderly.tex"
     file open sm using "$tables/appendix/AT8_expenditures_elderly.tex", write replace
     file write sm "\begin{tabular}{lcccc} \hline \hline" _n
     file write sm "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
@@ -1730,6 +1790,7 @@ foreach yvar of local hh_outcomes {
     file write sm "Observations & `N_et_food' & `N_et_pf' & `N_et_med' & `N_et_pm' \\ \bottomrule" _n
     file write sm "\end{tabular}"
     file close sm
+    mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/appendix/AT8_expenditures_elderly.tex"
 

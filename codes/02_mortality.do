@@ -23,6 +23,8 @@ set more off
 	global codes "C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\"
 	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
 	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
+	global repo_tables  "C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables"
+	global repo_figures "C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures"
 	global iter "/hdir/0/fmenares/Dropbox/R01_MHAS/Progresa_Locality_Mortality_Project\CensusData_ITER\"
 	global SP "/hdir/0/fmenares/Dropbox/R01_MHAS\SocialProgramBeneficiaries"
 
@@ -38,6 +40,53 @@ set more off
 	global iter "/home/user/progresa_mortality/data/"
 	global SP "/home/user/progresa_mortality/data/"
 }
+
+*============================================================
+* MIRROR EVERY FIGURE AND TABLE INTO THE REPO CLONE
+* $figures and $tables point at the Overleaf folders, so exports land
+* there. mirror_out copies a file that was just exported to $figures or
+* $tables into the same relative place under $repo_figures /
+* $repo_tables (the repo clone's figures/ and tables/ folders), so
+* Overleaf and the repo always hold the same latest version. It is
+* called right after every `graph export' and every table's `file close'
+* (and inside the disabled export blocks, so re-enabling one mirrors
+* too). $repo_figures / $repo_tables are set above only for users whose
+* clone is listed; for everyone else, and in the cloud environment where
+* $figures and $tables already are the repo folders, the call does
+* nothing. A failed copy, or any other error inside the mirror, prints a
+* message in the log but never stops the run.
+* When you add a new export, call mirror_out right after it.
+*============================================================
+capture program drop mirror_out
+capture program drop _mirror_out
+program define mirror_out
+	* the mirror is auxiliary: any error inside is printed but never
+	* stops the run
+	capture noisily _mirror_out `0'
+end
+program define _mirror_out
+	args src
+	local src = subinstr(`"`src'"', "\", "/", .)
+	foreach kind in figures tables {
+		local base = subinstr(`"${`kind'}"', "\", "/", .)
+		local repo = subinstr(`"${repo_`kind'}"', "\", "/", .)
+		if `"`base'"' == "" | `"`repo'"' == "" continue
+		if substr(`"`src'"', 1, length(`"`base'"') + 1) == `"`base'/"' {
+			local rel = substr(`"`src'"', length(`"`base'"') + 2, .)
+			if `"`repo'/`rel'"' == `"`src'"' continue
+			local p = strrpos(`"`rel'"', "/")
+			if `p' > 1 {
+				local dir = substr(`"`rel'"', 1, `p' - 1)
+				capture mkdir `"`repo'/`dir'"'
+			}
+			capture copy `"`src'"' `"`repo'/`rel'"', replace
+			if _rc {
+				di as error "WARNING: could not copy `rel' to the repo (error " _rc ")"
+			}
+			else di "  mirrored to repo: `kind'/`rel'"
+		}
+	}
+end
 
 global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 *** BR phase-in sample: which start-year municipalities count as BR?
@@ -237,6 +286,7 @@ local N_nm = r(N)
 
 {
 	cap file close sm
+	global mir_sm "$tables/T1_descriptives.tex"
 	file open sm using "$tables/T1_descriptives.tex", write replace
 	file write sm "\begin{tabular}{lcc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Highly Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
@@ -281,6 +331,7 @@ local N_nm = r(N)
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 restore
 
@@ -400,6 +451,7 @@ if _rc {
 		graphregion(fcolor(white))
 }
 graph export "$figures/Figure_1a_marg.pdf", as(pdf) replace
+mirror_out "$figures/Figure_1a_marg.pdf"
 restore
 }
 *============================================================
@@ -466,6 +518,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
 graph export "$figures/Figure_1b_inten1999.png", as(png) replace width(1200)
+mirror_out "$figures/Figure_1b_inten1999.png"
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -474,6 +527,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
 graph export "$figures/Figure_1c_inten2005.png", as(png) replace width(1200)
+mirror_out "$figures/Figure_1c_inten2005.png"
 
  *---- Map 5: Initial rollout 1997 — mortality sample ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -482,6 +536,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
 graph export "$figures/appendix/AF2c_inten1997_mort.png", as(png) replace width(1200)
+mirror_out "$figures/appendix/AF2c_inten1997_mort.png"
 
 
 restore
@@ -574,6 +629,7 @@ foreach grp in w f m {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/Figure_2_`gname'.pdf", as(pdf) replace
+	mirror_out "$figures/Figure_2_`gname'.pdf"
 	restore
 }
 }
@@ -684,6 +740,7 @@ local meanI99_2b: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
+	global mir_sm "$tables/T2_mortality.tex"
 	file open sm using "$tables/T2_mortality.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& \multicolumn{2}{c}{\textit{Ages 65+}} & \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
@@ -720,6 +777,7 @@ local meanI99_2b: di %6.1f r(mean) * 100
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/T2_mortality.tex"
 
@@ -730,6 +788,7 @@ di "Table exported to: $tables/T2_mortality.tex"
 *============================================================
 {
 	cap file close sm
+	global mir_sm "$tables/T2_slide_age.tex"
 	file open sm using "$tables/T2_slide_age.tex", write replace
 	file write sm "\begin{tabular}{lcc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ " _n
@@ -752,6 +811,7 @@ di "Table exported to: $tables/T2_mortality.tex"
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/T2_slide_age.tex"
 
@@ -836,6 +896,7 @@ if _rc {
 		graphregion(fcolor(white))
 }
 graph export "$figures/appendix/AF1_all.pdf", as(pdf) replace
+mirror_out "$figures/appendix/AF1_all.pdf"
 restore
 }
 *============================================================
@@ -893,6 +954,7 @@ spmap inten1999 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
 graph export "$figures/appendix/AF2a_inten1999_all.png", as(png) replace width(1200)
+mirror_out "$figures/appendix/AF2a_inten1999_all.png"
 
 * ---- Map 2: Mortality sample — intensity 2005 ----
 spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
@@ -901,6 +963,7 @@ spmap inten2005 using "${shp}\municipios_2000_shp.dta", id(_ID)  ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
 graph export "$figures/appendix/AF2b_inten2005_all.png", as(png) replace width(1200)
+mirror_out "$figures/appendix/AF2b_inten2005_all.png"
 
 * ---- Map 5: Initial rollout 1997 — mortality sample (all municipalities) ----
 spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
@@ -909,6 +972,7 @@ spmap inten1997 using "${shp}\municipios_2000_shp.dta", id(_ID) ///
 	legend(size(medium) position(7)) ///
 	graphregion(fcolor(white))
 graph export "$figures/appendix/AF2d_inten1997_mort_all.png", as(png) replace width(1200)
+mirror_out "$figures/appendix/AF2d_inten1997_mort_all.png"
 
 
 
@@ -1005,6 +1069,7 @@ twoway ///
 	graphregion(color(white)) ///
 	plotregion(margin(l=1 r=1))
 graph export "$figures/appendix/AF6b_uw.pdf", as(pdf) replace
+mirror_out "$figures/appendix/AF6b_uw.pdf"
 restore
 }
 
@@ -1128,6 +1193,7 @@ forval col = 1/4 {
 	if `col' == 4 local aamr_stem "AF6e_aamr_col4"
 	else           local aamr_stem "Figure_5_aamr_col`col'"
 	graph export "$figures/appendix/`aamr_stem'.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/`aamr_stem'.pdf"
 	restore
 } // end forval col = 1/4
 
@@ -1307,6 +1373,7 @@ foreach ff in levels log poisson {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/appendix/`figname'.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/`figname'.pdf"
 	restore
 
 } // end foreach ff
@@ -1454,6 +1521,7 @@ foreach samp in `samples' {
         else if "`outcome'" == "emr65m" & "`samp'" == "marg" local f6_stem "AF9d_emr65m_HighMarg"
 
         graph export "$figures/appendix/`f6_stem'.pdf", as(pdf) replace
+        mirror_out "$figures/appendix/`f6_stem'.pdf"
 
         restore
     }
@@ -1626,6 +1694,7 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
+	global mir_sm "$tables/appendix/AT4_functional_forms.tex"
 	file open sm using "$tables/appendix/AT4_functional_forms.tex", write replace
 	file write sm "\begin{tabular}{lccccc} \hline \hline" _n
 	file write sm "& Levels & Levels (UW) & Log & Poisson & AAMR \\ " _n
@@ -1656,6 +1725,7 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 *============================================================
 * APPENDIX TABLE 3: Barham & Rowberry (2013) Replication
@@ -1795,6 +1865,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
+	global mir_sm "$tables/appendix/AT5_BR_replication.tex"
 	file open sm using "$tables/appendix/AT5_BR_replication.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Pooled} & \multicolumn{1}{c}{Females} & \multicolumn{1}{c}{Males} \\ " _n
@@ -1845,6 +1916,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 
 
@@ -2325,6 +2397,7 @@ foreach grp in p f m {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/appendix/`sestrend_stem'.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/`sestrend_stem'.pdf"
 	restore
 }
 
@@ -2430,6 +2503,7 @@ local meanI99_age: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
+	global mir_sm "$tables/appendix/AT3_age_subgroups.tex"
 	file open sm using "$tables/appendix/AT3_age_subgroups.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& \multicolumn{1}{c}{Ages 50--64} & \multicolumn{1}{c}{Ages 65+} & \multicolumn{1}{c}{Ages 65--69} & \multicolumn{1}{c}{Ages 70+} \\ " _n
@@ -2465,6 +2539,7 @@ local meanI99_age: di %6.1f r(mean) * 100
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/appendix/AT3_age_subgroups.tex"
 
@@ -2620,6 +2695,7 @@ if `locfig_ok' {
         graphregion(color(white)) ///
         plotregion(margin(l=1 r=1))
     graph export "$figures/appendix/AF3a_enroll_loc_marg_pctile.pdf", as(pdf) replace
+    mirror_out "$figures/appendix/AF3a_enroll_loc_marg_pctile.pdf"
     restore
     di "Figure exported to: $figures/appendix/AF3a_enroll_loc_marg_pctile.pdf"
 }
@@ -2688,6 +2764,7 @@ twoway ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
 graph export "$figures/appendix/AF3b_enroll_mun_marg_pctile.pdf", as(pdf) replace
+mirror_out "$figures/appendix/AF3b_enroll_mun_marg_pctile.pdf"
 restore
 di "Figure exported to: $figures/appendix/AF3b_enroll_mun_marg_pctile.pdf"
 
@@ -2813,6 +2890,7 @@ twoway ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
 graph export "$figures/appendix/AF8_beta0_stability.pdf", as(pdf) replace
+mirror_out "$figures/appendix/AF8_beta0_stability.pdf"
 restore
 di "Figure exported to: $figures/appendix/AF8_beta0_stability.pdf"
 
@@ -2906,6 +2984,7 @@ foreach grp in w f m {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/appendix/AF10`gtag'_no_control_`gname'.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/AF10`gtag'_no_control_`gname'.pdf"
 	restore
 }
 }
@@ -2958,6 +3037,7 @@ local meanI99nc: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
+	global mir_sm "$tables/appendix/AT_no_control_sex.tex"
 	file open sm using "$tables/appendix/AT_no_control_sex.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& Pooled & Female & Male \\ \cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
@@ -2974,6 +3054,7 @@ local meanI99nc: di %6.1f r(mean) * 100
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/appendix/AT_no_control_sex.tex"
 
@@ -3271,6 +3352,7 @@ restore
 
 {
 	cap file close tbl3
+	global mir_tbl3 "$tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex"
 	file open tbl3 using "$tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex", write replace
 	file write tbl3 "\begin{tabular}{lcccc} \hline \hline" _n
 	file write tbl3 "& \multicolumn{2}{c}{\textit{BR Sample}} & \multicolumn{2}{c}{\textit{High Marginalization}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
@@ -3337,6 +3419,7 @@ restore
 	file write tbl3 "\bottomrule" _n
 	file write tbl3 "\end{tabular}"
 	file close tbl3
+	mirror_out "${mir_tbl3}"
 }
 di "Table exported to: $tables/appendix/AT7_BR_robustness_emr65_2002ctrl_eoy.tex"
 

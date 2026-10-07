@@ -20,6 +20,8 @@
 *** the numeric results remain available for review without regenerating
 *** any paper exhibit. Uncomment a block's `graph export'/`file open...
 *** file close' lines to restore that output.
+*** EXPORT MIRRORING: every figure and table written here is also copied
+*** into the repo clone by mirror_out (defined below the path globals).
 *** EXCEPTIONS (exports active, for review): the through-2005 Table 2 /
 *** Figure 2 replication and the dose-response cloud / Barham-Rowberry
 *** decomposition block, both right before the cause-of-death section.
@@ -33,6 +35,8 @@ set more off
 	global codes "C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\"
 	global tables  "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables"
 	global figures "C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures"
+	global repo_tables  "C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables"
+	global repo_figures "C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures"
 }
 
  if c(username)=="root" {
@@ -48,6 +52,53 @@ global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 * file also runs in a fresh session while still honoring the choice made
 * in 02_mortality.do when both run in the same session.
 if "$sample_br" == "" global sample_br = "(inten_start_year==1998|inten_start_year==1999)"
+
+*============================================================
+* MIRROR EVERY FIGURE AND TABLE INTO THE REPO CLONE
+* $figures and $tables point at the Overleaf folders, so exports land
+* there. mirror_out copies a file that was just exported to $figures or
+* $tables into the same relative place under $repo_figures /
+* $repo_tables (the repo clone's figures/ and tables/ folders), so
+* Overleaf and the repo always hold the same latest version. It is
+* called right after every `graph export' and every table's `file close'
+* (and inside the disabled export blocks, so re-enabling one mirrors
+* too). $repo_figures / $repo_tables are set above only for users whose
+* clone is listed; for everyone else, and in the cloud environment where
+* $figures and $tables already are the repo folders, the call does
+* nothing. A failed copy, or any other error inside the mirror, prints a
+* message in the log but never stops the run.
+* When you add a new export, call mirror_out right after it.
+*============================================================
+capture program drop mirror_out
+capture program drop _mirror_out
+program define mirror_out
+	* the mirror is auxiliary: any error inside is printed but never
+	* stops the run
+	capture noisily _mirror_out `0'
+end
+program define _mirror_out
+	args src
+	local src = subinstr(`"`src'"', "\", "/", .)
+	foreach kind in figures tables {
+		local base = subinstr(`"${`kind'}"', "\", "/", .)
+		local repo = subinstr(`"${repo_`kind'}"', "\", "/", .)
+		if `"`base'"' == "" | `"`repo'"' == "" continue
+		if substr(`"`src'"', 1, length(`"`base'"') + 1) == `"`base'/"' {
+			local rel = substr(`"`src'"', length(`"`base'"') + 2, .)
+			if `"`repo'/`rel'"' == `"`src'"' continue
+			local p = strrpos(`"`rel'"', "/")
+			if `p' > 1 {
+				local dir = substr(`"`rel'"', 1, `p' - 1)
+				capture mkdir `"`repo'/`dir'"'
+			}
+			capture copy `"`src'"' `"`repo'/`rel'"', replace
+			if _rc {
+				di as error "WARNING: could not copy `rel' to the repo (error " _rc ")"
+			}
+			else di "  mirrored to repo: `kind'/`rel'"
+		}
+	}
+end
 
 cap log close _all
 log using "$codes/04_extra_robustness_log.log", replace text
@@ -195,6 +246,7 @@ twoway ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
 * graph export "$figures/appendix/AF_binary_es.pdf", as(pdf) replace
+* mirror_out "$figures/appendix/AF_binary_es.pdf"
 restore
 di "Figure exported to: $figures/appendix/AF_binary_es.pdf"
 
@@ -228,6 +280,7 @@ foreach v in treated_15 treated_med treated_p75 {
 /*
 {
     cap file close bin
+    global mir_bin "$tables/appendix/AT_binary_es.tex"
     file open bin using "$tables/appendix/AT_binary_es.tex", write replace
     file write bin "\begin{tabular}{lcccc} \hline \hline" _n
     file write bin "Threshold & Intensity 1999 x Post & Obs & High & Low \\ \toprule" _n
@@ -242,6 +295,7 @@ foreach v in treated_15 treated_med treated_p75 {
     file write bin "\bottomrule" _n
     file write bin "\end{tabular}"
     file close bin
+    mirror_out "${mir_bin}"
 }
 */
 di "Table exported to: $tables/appendix/AT_binary_es.tex"
@@ -369,6 +423,7 @@ twoway ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
 * graph export "$figures/appendix/AF_binary_es_2bin.pdf", as(pdf) replace
+* mirror_out "$figures/appendix/AF_binary_es_2bin.pdf"
 restore
 di "Figure exported to: $figures/appendix/AF_binary_es_2bin.pdf"
 
@@ -416,6 +471,7 @@ foreach spec in 15 med p75 {
 /*
 {
     cap file close bin2
+    global mir_bin2 "$tables/appendix/AT_binary_es_2bin.tex"
     file open bin2 using "$tables/appendix/AT_binary_es_2bin.tex", write replace
     file write bin2 "\begin{tabular}{lcccc} \hline \hline" _n
     file write bin2 "Threshold & Intensity 1999 x Post & Obs & High\textsubscript{2005} & Low\textsubscript{2005} \\ \toprule" _n
@@ -430,6 +486,7 @@ foreach spec in 15 med p75 {
     file write bin2 "\bottomrule" _n
     file write bin2 "\end{tabular}"
     file close bin2
+    mirror_out "${mir_bin2}"
 }
 */
 di "Table exported to: $tables/appendix/AT_binary_es_2bin.tex"
@@ -670,6 +727,7 @@ foreach spec in 15 median tercile {
         legend(order(`legend_order') cols(4) size(small) position(6) ring(1) region(lcolor(none))) ///
         graphregion(color(white)) plotregion(margin(l=1 r=1))
     * graph export "$figures/appendix/AF_threshold_validation_`spec'.pdf", as(pdf) replace
+    * mirror_out "$figures/appendix/AF_threshold_validation_`spec'.pdf"
     use `panel_snapshot_`spec'', clear
 }
 
@@ -695,6 +753,7 @@ di "Figures exported to: $figures/appendix/AF_threshold_validation_15.pdf, AF_th
 *------------------------------------------------------------
 /*
 cap file close tc
+global mir_tc "$tables/appendix/AT_threshold_categorical.tex"
 file open tc using "$tables/appendix/AT_threshold_categorical.tex", write replace
 file write tc "\begin{tabular}{lccc} \hline \hline" _n
 file write tc "& \multicolumn{1}{c}{15\% (a priori)} & \multicolumn{1}{c}{Median} & \multicolumn{1}{c}{Upper tercile} \\ \toprule" _n
@@ -717,6 +776,7 @@ file write tc "High-Low (non-monotone) & `n_hl_15' & `n_hl_median' & `n_hl_terci
 file write tc "\bottomrule" _n
 file write tc "\end{tabular}"
 file close tc
+mirror_out "${mir_tc}"
 */
 di "Table written to: $tables/appendix/AT_threshold_categorical.tex"
 
@@ -782,6 +842,7 @@ twoway ///
     graphregion(color(white)) ///
     plotregion(margin(l=1 r=1))
 * graph export "$figures/appendix/AF_threshold_categorical_es.pdf", as(pdf) replace
+* mirror_out "$figures/appendix/AF_threshold_categorical_es.pdf"
 di "Figure exported to: $figures/appendix/AF_threshold_categorical_es.pdf"
 
 restore
@@ -833,6 +894,7 @@ twoway ///
            cols(2) size(small) position(6) ring(1) region(lcolor(none))) ///
     graphregion(color(white)) plotregion(margin(l=1 r=1))
 * graph export "$figures/appendix/AF_intensity_timeseries_w.pdf", as(pdf) replace
+* mirror_out "$figures/appendix/AF_intensity_timeseries_w.pdf"
 restore
 
 di "Figure exported to: $figures/appendix/AF_intensity_timeseries_w.pdf"
@@ -951,6 +1013,7 @@ di "`n_near_zero' HM municipality-years with max post-1997 intensity below 5% (n
 /*
 {
     cap file close sat
+    global mir_sat "$tables/appendix/AT_saturation_diagnostics.tex"
     file open sat using "$tables/appendix/AT_saturation_diagnostics.tex", write replace
     file write sat "\begin{tabular}{lc} \hline \hline" _n
     file write sat "\multicolumn{2}{l}{\textit{Year-on-year \$|\Delta\$Intensity\$|\$, HM sample, 1997--2006}} \\ \toprule" _n
@@ -967,6 +1030,7 @@ di "`n_near_zero' HM municipality-years with max post-1997 intensity below 5% (n
     file write sat "\bottomrule" _n
     file write sat "\end{tabular}"
     file close sat
+    mirror_out "${mir_sat}"
 }
 */
 di "Table exported to: $tables/appendix/AT_saturation_diagnostics.tex"
@@ -1147,6 +1211,7 @@ di "Non-monotone share among non-super municipalities: `n_nonmono_notsuper' / `n
 
 /*
 cap file close fd
+global mir_fd "$tables/appendix/AT_crosswalk_supermun_diagnostic.tex"
 file open fd using "$tables/appendix/AT_crosswalk_supermun_diagnostic.tex", write replace
 file write fd "\begin{tabular}{lccc} \hline \hline" _n
 file write fd "& Non-monotone & Monotone & Total \\ " _n
@@ -1157,6 +1222,7 @@ file write fd "\bottomrule" _n
 file write fd "Total & `n_nonmono' & `=`n_tot'-`n_nonmono'' & `n_tot' \\ " _n
 file write fd "\end{tabular}" _n
 file close fd
+mirror_out "${mir_fd}"
 */
 di "Table written to: $tables/appendix/AT_crosswalk_supermun_diagnostic.tex"
 restore
@@ -1223,6 +1289,7 @@ di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `dd
 /*
 {
     cap file close r2b
+    global mir_r2b "$tables/appendix/AT_pv_r2_benefsource.tex"
     file open r2b using "$tables/appendix/AT_pv_r2_benefsource.tex", write replace
     file write r2b "\begin{tabular}{lcccc} \hline \hline" _n
     file write r2b "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed (P\&V) denom.} \\" _n
@@ -1242,6 +1309,7 @@ di "Decomposition of Delta-R^2 vs. baseline (`r2_1'/`r2_2'): denom-fix-alone `dd
     file write r2b "No.\ HM municipalities & \multicolumn{4}{c}{`n_r2fase_mun'} \\ " _n
     file write r2b "\end{tabular}"
     file close r2b
+    mirror_out "${mir_r2b}"
 }
 */
 di "Table exported to: $tables/appendix/AT_pv_r2_benefsource.tex"
@@ -1275,6 +1343,7 @@ restore
 *------------------------------------------------------------
 /*
 cap file close ic
+global mir_ic "$tables/appendix/AT_intensity_correlations.tex"
 file open ic using "$tables/appendix/AT_intensity_correlations.tex", write replace
 file write ic "\begin{tabular}{lcccc} \hline \hline" _n
 file write ic "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} \\ " _n
@@ -1294,6 +1363,7 @@ file write ic "Corr(End-of-year, Cumulative), 2005 & \multicolumn{2}{c}{`corr05_
 file write ic "\bottomrule" _n
 file write ic "\end{tabular}"
 file close ic
+mirror_out "${mir_ic}"
 */
 di "Table exported to: $tables/appendix/AT_intensity_correlations.tex"
 
@@ -1349,6 +1419,7 @@ foreach pnl in p f m {
 
 /*
 cap file close mde
+global mir_mde "$tables/appendix/AT_power_mde.tex"
 file open mde using "$tables/appendix/AT_power_mde.tex", write replace
 file write mde "\begin{tabular}{lc} \hline \hline" _n
 file write mde "& \multicolumn{1}{c}{End-of-year} \\ " _n
@@ -1369,6 +1440,7 @@ foreach pnl in p f m {
 file write mde "\bottomrule" _n
 file write mde "\end{tabular}"
 file close mde
+mirror_out "${mir_mde}"
 */
 di "Table exported to: $tables/appendix/AT_power_mde.tex"
 
@@ -1479,6 +1551,7 @@ foreach pnl in p f m {
 /*
 {
     cap file close fd
+    global mir_fd "$tables/T2_b_mortality_fixeddenom.tex"
     file open fd using "$tables/T2_b_mortality_fixeddenom.tex", write replace
     file write fd "\begin{tabular}{lccccc} \hline \hline" _n
     file write fd "& \multicolumn{2}{c}{Year-varying denom.} & \multicolumn{2}{c}{Fixed 1997 denom.\ (P\&V-style)} & \\ " _n
@@ -1505,6 +1578,7 @@ foreach pnl in p f m {
     file write fd "\bottomrule" _n
     file write fd "\end{tabular}"
     file close fd
+    mirror_out "${mir_fd}"
 }
 */
 di "Table (commented out) would have been exported to: $tables/T2_b_mortality_fixeddenom.tex"
@@ -1776,6 +1850,7 @@ foreach pnl in p m f {
 
 {
 	cap file close sm
+	global mir_sm "$tables/appendix/AT_migration_robustness.tex"
 	file open sm using "$tables/appendix/AT_migration_robustness.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& Levels & Log & Poisson \\ " _n
@@ -1812,6 +1887,7 @@ foreach pnl in p m f {
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/appendix/AT_migration_robustness.tex"
 
@@ -1917,6 +1993,7 @@ foreach pnl in p m f {
 
 {
 	cap file close smc
+	global mir_smc "$tables/appendix/AT_migration_robustness_census.tex"
 	file open smc using "$tables/appendix/AT_migration_robustness_census.tex", write replace
 	file write smc "\begin{tabular}{lccc} \hline \hline" _n
 	file write smc "& Levels & Log & Poisson \\ " _n
@@ -1946,6 +2023,7 @@ foreach pnl in p m f {
 	file write smc "\bottomrule" _n
 	file write smc "\end{tabular}"
 	file close smc
+	mirror_out "${mir_smc}"
 }
 di "Table exported to: $tables/appendix/AT_migration_robustness_census.tex"
 
@@ -2140,6 +2218,7 @@ foreach pnl in p m f {
 
 {
 	cap file close sm
+	global mir_sm "$tables/appendix/AT_migration_robustness_ageFE.tex"
 	file open sm using "$tables/appendix/AT_migration_robustness_ageFE.tex", write replace
 	file write sm "\begin{tabular}{lccc} \hline \hline" _n
 	file write sm "& Levels & Log & Poisson \\ " _n
@@ -2181,6 +2260,7 @@ foreach pnl in p m f {
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/appendix/AT_migration_robustness_ageFE.tex"
 
@@ -2319,6 +2399,7 @@ else {
 				graphregion(color(white)) ///
 				plotregion(margin(l=1 r=1))
 			graph export "`es_outfile'", as(pdf) replace
+			mirror_out "`es_outfile'"
 			restore
 			di "Figure exported to: `es_outfile'"
 		}
@@ -2425,6 +2506,7 @@ if `fdok_p' == 1 & `fdok_m' == 1 & `fdok_f' == 1 {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/appendix/AF_migration_es_fixeddenom.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/AF_migration_es_fixeddenom.pdf"
 	restore
 	di "Figure exported to: $figures/appendix/AF_migration_es_fixeddenom.pdf"
 }
@@ -2512,6 +2594,7 @@ foreach pnl in p m f {
 
 {
 	cap file close fo
+	global mir_fo "$tables/appendix/AT_fixed_offset_poisson.tex"
 	file open fo using "$tables/appendix/AT_fixed_offset_poisson.tex", write replace
 	file write fo "\begin{tabular}{lcc} \hline \hline" _n
 	file write fo "& Contemporaneous offset & Fixed 1996 offset \\ " _n
@@ -2533,6 +2616,7 @@ foreach pnl in p m f {
 	file write fo "Obs & `NFO_m_1' & `NFO_m_2' \\ \bottomrule" _n
 	file write fo "\end{tabular}"
 	file close fo
+	mirror_out "${mir_fo}"
 }
 di "Table exported to: $tables/appendix/AT_fixed_offset_poisson.tex"
 
@@ -2646,6 +2730,7 @@ foreach samp in br marg {
 		else if "`outcome'" == "emr65m" & "`samp'" == "br"   local f6b_stem "AF9c2_emr65m_BR_2002ctrl"
 		else                                                  local f6b_stem "AF9d2_emr65m_HighMarg_2002ctrl"
 		graph export "$figures/appendix/`f6b_stem'.pdf", as(pdf) replace
+		mirror_out "$figures/appendix/`f6b_stem'.pdf"
 		restore
 	}
 }
@@ -2834,6 +2919,7 @@ local meanI99_2c: di %6.1f r(mean) * 100
 
 * {
 * 	cap file close sm
+* 	global mir_sm "$tables/appendix/AT1_ses_trend_summary.tex"
 * 	file open sm using "$tables/appendix/AT1_ses_trend_summary.tex", write replace
 * 	file write sm "\begin{tabular}{lcccccc} \hline \hline" _n
 * 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
@@ -2873,6 +2959,7 @@ local meanI99_2c: di %6.1f r(mean) * 100
 * 	file write sm "\bottomrule" _n
 * 	file write sm "\end{tabular}"
 * 	file close sm
+* 	mirror_out "${mir_sm}"
 * }
 di "Table NOT exported (disabled): $tables/appendix/AT1_ses_trend_summary.tex"
 
@@ -2994,6 +3081,7 @@ foreach pnl in all eob {
 
 * {
 *     cap file close at
+*     global mir_at "$tables/appendix/AT_attrition_elderly.tex"
 *     file open at using "$tables/appendix/AT_attrition_elderly.tex", write replace
 *     file write at "\begin{tabular}{lcc} \hline \hline" _n
 *     file write at "& Observed in 1998 & Observed in 1999 \\ " _n
@@ -3014,6 +3102,7 @@ foreach pnl in all eob {
 *     file write at "Observations & `N_eob_present98' & `N_eob_present99' \\ \bottomrule" _n
 *     file write at "\end{tabular}"
 *     file close at
+*     mirror_out "${mir_at}"
 * }
 di "Table NOT exported (disabled): $tables/appendix/AT_attrition_elderly.tex"
 
@@ -3161,6 +3250,7 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 * wrote $tables/appendix/AT6_BR_trimming.tex)
 * {
 *     cap file close sm
+*     global mir_sm "$tables/appendix/AT6_BR_trimming.tex"
 *     file open sm using "$tables/appendix/AT6_BR_trimming.tex", write replace
 *     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
 *     file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Population Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
@@ -3177,6 +3267,7 @@ local meanI99_AT5_3: di %6.1f r(mean) * 100
 *     file write sm "\bottomrule" _n
 *     file write sm "\end{tabular}"
 *     file close sm
+*     mirror_out "${mir_sm}"
 * }
 di "Table NOT exported (disabled): $tables/appendix/AT6_BR_trimming.tex"
 
@@ -3286,6 +3377,7 @@ local meanI99_2005: di %6.1f r(mean) * 100
 
 {
 	cap file close sm
+	global mir_sm "$tables/appendix/AT_T2_through2005.tex"
 	file open sm using "$tables/appendix/AT_T2_through2005.tex", write replace
 	file write sm "\begin{tabular}{lcccc} \hline \hline" _n
 	file write sm "& \multicolumn{2}{c}{\textit{Ages 65+}} & \multicolumn{1}{c}{\textit{Ages 65--69}} & \multicolumn{1}{c}{\textit{Ages 70+}} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
@@ -3322,6 +3414,7 @@ local meanI99_2005: di %6.1f r(mean) * 100
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
+	mirror_out "${mir_sm}"
 }
 di "Table exported to: $tables/appendix/AT_T2_through2005.tex"
 
@@ -3402,6 +3495,7 @@ foreach grp in w f m {
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))
 	graph export "$figures/appendix/Figure_2_`gname'_through2005.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/Figure_2_`gname'_through2005.pdf"
 	restore
 }
 }
@@ -3551,6 +3645,7 @@ program define cloud_plot
 		legend(order(`legorder') size(vsmall) rows(2) position(6) ring(1) region(lcolor(white))) ///
 		graphregion(color(white)) plotregion(margin(small))
 	graph export "$figures/appendix/`fname'.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/`fname'.pdf"
 	di "Figure exported to: $figures/appendix/`fname'.pdf"
 	restore
 end
@@ -3655,6 +3750,7 @@ foreach spec in plain cond {
 			size(vsmall) rows(2) position(6) ring(1) region(lcolor(white))) ///
 		graphregion(color(white))
 	graph export "$figures/appendix/AF_twfe_weights_`spec'.pdf", as(pdf) replace
+	mirror_out "$figures/appendix/AF_twfe_weights_`spec'.pdf"
 	di "Figure exported to: $figures/appendix/AF_twfe_weights_`spec'.pdf"
 	restore
 }
@@ -3731,6 +3827,7 @@ foreach pnl in A B {
 }
 
 cap file close brl
+global mir_brl "$tables/appendix/AT_br_leftover.tex"
 file open brl using "$tables/appendix/AT_br_leftover.tex", write replace
 file write brl "\begin{tabular}{lcc} \hline \hline" _n
 file write brl " & Unweighted & Weighted \\ " _n
@@ -3759,6 +3856,7 @@ foreach pnl in A B {
 file write brl "\bottomrule" _n
 file write brl "\end{tabular}"
 file close brl
+mirror_out "${mir_brl}"
 di "Table exported to: $tables/appendix/AT_br_leftover.tex"
 
 *------------------------------------------------------------
@@ -3837,6 +3935,7 @@ foreach wt in uw w {
 				size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
 			graphregion(color(white))
 		graph export "$figures/appendix/AF_br_leftover_`s'_`wt'.pdf", as(pdf) replace
+		mirror_out "$figures/appendix/AF_br_leftover_`s'_`wt'.pdf"
 		di "Figure exported to: $figures/appendix/AF_br_leftover_`s'_`wt'.pdf"
 	}
 	drop __*
@@ -4018,6 +4117,7 @@ foreach cod in tb_card tb_infect tb_diab tb_resp tb_nutri tb_cancer tb_accid tb_
 	local twoway_cmd "`twoway_cmd', yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) xlabel(`yr_labels_cod', labsize(small) angle(45) labcolor(black)) xscale(`xscale_range') xtitle("") ytitle("Mortality Rate, 65+ (per 1,000)", size(medsmall)) ylabel(`yaxis_range', grid gmin gmax labsize(small)) legend(order(`legend_nums') `legend_labels' cols(3) size(medsmall) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) graphregion(color(white)) plotregion(margin(l=1 r=1))"
 	`twoway_cmd'
 	* graph export "$figures/appendix/`af_stem'.pdf", as(pdf) replace  -- disabled: not displayed in the paper
+	* mirror_out "$figures/appendix/`af_stem'.pdf"
 	restore
 
 } // end foreach cod
@@ -4137,6 +4237,7 @@ foreach grp in w f m {
 * wrote $tables/appendix/AT2_cod_mortality.tex)
 * {
 * 	cap file close sm
+* 	global mir_sm "$tables/appendix/AT2_cod_mortality.tex"
 * 	file open sm using "$tables/appendix/AT2_cod_mortality.tex", write replace
 * 	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
 * 	file write sm "& Cancer & Diab. & IllDef & Resp. & Card. & Infect. & Nutri. & Accid. & Other \\ " _n
@@ -4169,6 +4270,7 @@ foreach grp in w f m {
 * 	file write sm "\bottomrule" _n
 * 	file write sm "\end{tabular}"
 * 	file close sm
+* 	mirror_out "${mir_sm}"
 * }
 di "Table NOT exported (disabled): $tables/appendix/AT2_cod_mortality.tex"
 
