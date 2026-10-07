@@ -3442,7 +3442,21 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 *
 * The working panel is saved here and reloaded at the end, so the
 * cause-of-death section below runs on exactly the same data as before.
+*
+* This block needs the municipality-year panel that 02_mortality.do
+* checkpoints. If the data in memory is not that panel -- for example
+* 03_experimental.do just ran in this session, or only this block is
+* being run -- the checkpoint is loaded first; otherwise the data in
+* memory is kept as is. If a variable is missing even in the checkpoint,
+* `confirm' stops and names it: rerun 02_mortality.do.
 *============================================================
+capture confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
+	sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year
+if _rc {
+	use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
+	confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
+		sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year
+}
 tempfile cdid_panel
 save `cdid_panel'
 
@@ -3560,7 +3574,8 @@ bysort cve_ent_mun_super: egen double mr_pl2  = mean(cond(inrange(year, 1994, 19
 bysort cve_ent_mun_super: egen double mr_pl1  = mean(cond(inrange(year, 1991, 1993), emr65, .))
 bysort cve_ent_mun_super: egen double sp_post = mean(cond(year >= 1997, sp_intensity, .))
 bysort cve_ent_mun_super: egen double w65_pre = mean(cond(year <= 1996, popover65_, .))
-bysort cve_ent_mun_super: keep if _n == 1
+egen byte __one = tag(cve_ent_mun_super)
+keep if __one
 gen double d_post = mr_post - mr_pre
 gen double d_pre  = mr_pl2 - mr_pl1
 keep cve_ent_mun_super inten1999 inten2005 sp_post w65_pre d_post d_pre
@@ -3840,7 +3855,8 @@ bysort cve_ent_mun_super: egen double mr_br_post = mean(cond(year >= 2000, emr65
 bysort cve_ent_mun_super: egen double mr_br_pre  = mean(cond(year <= 1999, emr65, .))
 bysort cve_ent_mun_super: egen double dose_br    = mean(cond(year >= 2000, lag2_intensity_new, .))
 bysort cve_ent_mun_super: egen double w65_br     = mean(cond(year <= 1999, popover65_, .))
-bysort cve_ent_mun_super: keep if _n == 1
+egen byte __one = tag(cve_ent_mun_super)
+keep if __one
 gen double d_br = mr_br_post - mr_br_pre
 
 cloud_plot d_br dose_br w65_br 0 "AF_cloud_br_uw" ///
