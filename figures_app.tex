@@ -159,3 +159,66 @@
 % \end{figure}
 % >>> END TEMPORARY BLOCK <<<
 
+% ============================================================
+% Dose-response "cloud" and Barham--Rowberry decomposition, suggested by
+% Andrew Goodman-Bacon (October 2026), following Callaway, Goodman-Bacon
+% and Sant'Anna (2025). Built in codes/04_extra_robustness.do (the block
+% right before the cause-of-death section): run it first to generate the
+% AF_cloud_*, AF_twfe_weights_* and AF_br_leftover_* files.
+% ============================================================
+
+\begin{figure}[H]
+    \caption{Change in Older Adults' Mortality by Early-Phase Enrollment Intensity}
+    \label{af:cloud_mortality}
+
+    \subfigure[Change after 1997]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_post_plain.pdf}}
+    \subfigure[Change after 1997, net of later-phase enrollment]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_post_cond.pdf}}
+    \subfigure[Pre-period placebo]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_pre_plain.pdf}}
+    \subfigure[Pre-period placebo, net of later-phase enrollment]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_pre_cond.pdf}}
+
+         \floatfoot{Notes: Following \citet{callaway2025continuous}, each panel plots the change in each highly marginalized municipality's mortality rate for adults aged 65 and older (deaths per 1,000) against its \textit{Progresa} enrollment intensity in 1999. In panels~(a) and (b), the change is the 1997--2006 mean minus the 1991--1996 mean; panels~(c) and (d) are a placebo using the change from 1991--1993 to 1994--1996, before the program began. Circles are means within 20 equal-width intensity bins, weighted by the 1991--1996 average population aged 65 and older, with area proportional to bin population. The navy curve is a restricted cubic spline (four knots) with its 95\% confidence interval; the solid and dashed maroon lines are the population-weighted and unweighted linear fits, with slopes and robust standard errors in the legend. The dashed grey line marks the mean change in the lowest-intensity decile: because every municipality was eventually treated, changes are identified only relative to the least-treated municipalities, and differences across intensity levels are causal effects only under strong parallel trends. Grey bars show the distribution of municipalities by intensity. In panels~(b) and (d), both axes are net of $\textit{Intensity}_{2005}$ and post-1997 Seguro Popular intensity (population-weighted), with means added back; the weighted slope in panel~(b) is the two-period analog of $\beta_0$ in Table~\ref{t:did_age}, column~(1), and the weighted slope in panel~(a) that of the specification without later-phase controls in Appendix Table~\ref{at:no_control_sex}.}
+\end{figure}
+
+\begin{figure}[H]
+    \caption{Implicit Regression Weights and the Distribution of Early-Phase Enrollment Intensity}
+    \label{af:twfe_weights}
+
+    \subfigure[Intensity in 1999]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_twfe_weights_plain.pdf}}
+    \subfigure[Intensity in 1999, net of later-phase enrollment]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_twfe_weights_cond.pdf}}
+
+         \floatfoot{Notes: This figure shows how a linear difference-in-differences regression on $\textit{Intensity}_{1999}$ weights effects at different intensity levels \citep[Table~1]{callaway2025continuous}. The solid line is the distribution (kernel density) of intensity across highly marginalized municipalities. The dotted line is the weight the regression places on the marginal effect of intensity at each level, $w(l)=E[(D-E[D])\,\mathbf{1}\{D\geq l\}]/\mathrm{Var}(D)$; the dashed line is the weight it places on the level effect at each intensity, $(l-E[D])\,f(l)/\mathrm{Var}(D)$, which is negative below the mean (vertical line). With no untreated municipalities, the marginal-effect weights are non-negative, integrate to one, and coincide with the density when intensity is normally distributed. Panel~(b) uses intensity net of $\textit{Intensity}_{2005}$ and Seguro Popular intensity, the variation used by the specification with later-phase controls. All quantities are weighted by the 1991--1996 average population aged 65 and older.}
+\end{figure}
+
+\begin{figure}[H]
+    \caption{Change in Older Adults' Mortality by Barham and Rowberry's Treatment}
+    \label{af:cloud_br}
+
+    \subfigure[Unweighted]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_br_uw.pdf}}
+    \subfigure[Weighted by population aged 65 and older]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_br_w.pdf}}
+
+         \floatfoot{Notes: This figure repeats Appendix Figure~\ref{af:cloud_mortality} for the design of \citet{BarhamRowberry2013JDE}: municipalities first incorporated into \textit{Progresa} in 1998 or 1999, over 1992--2002, with treatment equal to enrollment intensity lagged two years. The vertical axis is each municipality's change in the mortality rate for adults aged 65 and older (deaths per 1,000) from 1992--1999, when the lagged treatment is zero, to 2000--2002; the horizontal axis is the mean lagged treatment over 2000--2002, that is, the mean intensity in 1998--2000. Panel~(a) weights municipalities equally, as \citet{BarhamRowberry2013JDE} do, with circle area proportional to the number of municipalities in each bin; panel~(b) weights by the 1992--1999 average population aged 65 and older, with circle area proportional to bin population. The curve, lines, reference line, and bars are defined as in Appendix Figure~\ref{af:cloud_mortality}. This two-period comparison approximates their regression; Appendix Table~\ref{at:br_leftover} and Appendix Figure~\ref{af:br_leftover} report the exact estimates.}
+\end{figure}
+
+\begin{figure}[H]
+    \caption{Barham and Rowberry's Identifying Variation Before and After Removing Early-Phase Intensity}
+    \label{af:br_leftover}
+
+    \subfigure[Unweighted, fixed effects only]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_br_leftover_fe_uw.pdf}}
+    \subfigure[Unweighted, net of Intensity 1999 $\times$ year]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_br_leftover_i99_uw.pdf}}
+    \subfigure[Weighted, fixed effects only]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_br_leftover_fe_w.pdf}}
+    \subfigure[Weighted, net of Intensity 1999 $\times$ year]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_br_leftover_i99_w.pdf}}
+
+         \floatfoot{Notes: Each panel is a binned scatter (20 quantile bins) of the mortality rate for adults aged 65 and older (deaths per 1,000) against the treatment of \citet{BarhamRowberry2013JDE}, enrollment intensity lagged two years, in their sample (municipalities first incorporated in 1998 or 1999) and period (1992--2002). In panels~(a) and (c), both variables are net of municipality and year fixed effects, so the slope is their two-way fixed effects estimate. In panels~(b) and (d), both are also net of $\textit{Intensity}_{1999}$ interacted with year indicators, the variation our event study uses, so by the Frisch--Waugh--Lovell theorem the slope is their estimate computed only from the part of their treatment that our design does not use. Panels~(a) and (b) are unweighted, as in their paper; panels~(c) and (d) are weighted by population aged 65 and older. Axes are identical within each row, so the narrower horizontal spread in the right-hand panel shows how much of their treatment variation our design shares. Slopes and standard errors clustered at the municipality level are reported in the legend and match Appendix Table~\ref{at:br_leftover}, Panel~A.}
+\end{figure}

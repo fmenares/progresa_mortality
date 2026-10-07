@@ -227,3 +227,23 @@
 % \end{table}
 % >>> END TEMPORARY BLOCK <<<
 
+% ============================================================
+% Barham--Rowberry decomposition, suggested by Andrew Goodman-Bacon
+% (October 2026). Built in codes/04_extra_robustness.do (the block right
+% before the cause-of-death section): run it first to generate
+% tables/appendix/AT_br_leftover.tex.
+% ============================================================
+
+\begin{table}[H]
+\RawCaption%
+  {\caption{Barham and Rowberry's Estimate Using Only Variation Not Used by Our Design}
+   \label{at:br_leftover}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.99}{
+      \input{tables/appendix/AT_br_leftover}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table decomposes the two-way fixed effects estimate of \citet{BarhamRowberry2013JDE}, whose treatment is municipal enrollment intensity lagged two years. In each panel, the first row regresses the mortality rate for adults aged 65 and older (deaths per 1,000) on that treatment with municipality and year fixed effects; in Panel~A, column~(1) corresponds to Appendix Table~\ref{at:did_robust_br}, Panel~B. The second row adds $\textit{Intensity}_{1999}$ interacted with year indicators, the variation used by our event study, and the third row also adds $\textit{Intensity}_{2005}$ interacted with year indicators. By the Frisch--Waugh--Lovell theorem, these rows are their estimate computed only from the part of their treatment that the added terms do not explain. The bottom rows report the share of the treatment's variation, net of the fixed effects (and, in Panel~B, Seguro Popular intensity), that those terms explain. Panel~A uses their sample (municipalities first incorporated into \textit{Progresa} in 1998 or 1999) and period (1992--2002); Panel~B uses our sample of highly marginalized municipalities and period (1991--2006) and controls for Seguro Popular intensity. Column~(1) is unweighted, as in their paper; column~(2) is weighted by the population aged 65 and older. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}

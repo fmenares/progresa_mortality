@@ -1411,6 +1411,18 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Display: table of b_BR, b_left, b_left′ with within-R²; two binscatters with identical bins — mortality vs. BR's treatment both residualized on the FEs only (slope = b_BR), and both residualized on FEs + inten1999 × year (slope = b_left).
 - Long-window variant: HM sample, 1991–2006, weighted, `sp_intensity` in every step, inten1999 × year and inten2005 × year.
 
+
+## Session Update (2026-10-07)
+
+**Implemented the dose-response cloud and the BR decomposition (steps 1–3 of the 2026-10-06 plan, plus the optional BR cloud).** Code: a new block in `codes/04_extra_robustness.do`, right after the through-2005 block and before the cause-of-death section (which stays last). Unlike the rest of that file, its exports are active (noted in the file header). Per the user's instruction, every figure panel is exported as its own file and assembled with `\subfigure` in `figures_app.tex`, like the other appendix figures; the same rule applies to all future figures.
+- **`af:cloud_mortality`** (2×2): change in mortality 65+ against Intensity_1999, HM sample. Columns: plain / net of Intensity_2005 and post-1997 Seguro Popular (both axes residualized, weighted). Rows: 1997–2006 vs. 1991–1996 / placebo 1994–96 vs. 1991–93. Files `AF_cloud_{post,pre}_{plain,cond}.pdf`. Each panel: 20 equal-width bins (population-weighted means, area ∝ population), restricted cubic spline (4 knots) with 95% CI, weighted (solid) and unweighted (dashed, plain panels only) linear fits with slopes in the legend, a reference line at the lowest-intensity decile's mean, and the intensity distribution as grey bars. Municipality weights are the fixed 1991–1996 mean population 65+.
+- **`af:twfe_weights`** (2 panels): marginal-effect weights `E[(D−E[D])1{D≥l}]/Var(D)` and level-effect weights `(l−E[D])f(l)/Var(D)` against the kernel density of Intensity_1999 (plain and residualized). Files `AF_twfe_weights_{plain,cond}.pdf`.
+- **`at:br_leftover`**: BR's coefficient (row 1), + Intensity_1999 × year (row 2), + Intensity_2005 × year (row 3), with the partial within-R² of those terms in BR's treatment; Panel A = BR sample/window, Panel B = HM 1991–2006 with Seguro Popular; columns unweighted / weighted. File `AT_br_leftover.tex`.
+- **`af:br_leftover`** (2×2): Panel A of the table as binned scatters (20 quantile bins), fixed effects only vs. also net of Intensity_1999 × year, unweighted and weighted, with common axes within each row. Files `AF_br_leftover_{fe,i99}_{uw,w}.pdf`.
+- **`af:cloud_br`** (2 panels): BR's own cloud: change in mortality from 1992–99 to 2000–02 against the mean lag-2 treatment over 2000–02, unweighted and weighted. Files `AF_cloud_br_{uw,w}.pdf`. A two-period approximation, labelled as such.
+- **Also:** `04_extra_robustness.do` now sets `$sample_br` (02's strict 1998/1999 default) when it is not already defined, so the BR blocks also run in a fresh Stata session; added `callaway2025continuous` to `bibliography.bib`.
+- **Verified statically only** (no Stata or LaTeX in this sandbox): brace balance 842/842 in `04_extra_robustness.do`; parentheses, compound quotes and macro quotes balanced in all 254 commands of the new block; preserve/restore and program/end paired; LaTeX braces and environments balanced; no duplicate labels; every `\ref`/`\cite` resolves; the 12 included figure files match the 12 Stata exports exactly. **TODO (user):** run `04_extra_robustness.do`, then compile.
+
 ---
 
 ## Notes for Contributors

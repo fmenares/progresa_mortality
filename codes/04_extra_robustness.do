@@ -20,6 +20,9 @@
 *** the numeric results remain available for review without regenerating
 *** any paper exhibit. Uncomment a block's `graph export'/`file open...
 *** file close' lines to restore that output.
+*** EXCEPTIONS (exports active, for review): the through-2005 Table 2 /
+*** Figure 2 replication and the dose-response cloud / Barham-Rowberry
+*** decomposition block, both right before the cause-of-death section.
 *** ============================================================================================================
 cls
 clear
@@ -40,6 +43,11 @@ set more off
 }
 
 global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
+* $sample_br is defined in 02_mortality.do (strict default: 1998/1999
+* entrants). Mirror that default only if it is not already set, so this
+* file also runs in a fresh session while still honoring the choice made
+* in 02_mortality.do when both run in the same session.
+if "$sample_br" == "" global sample_br = "(inten_start_year==1998|inten_start_year==1999)"
 
 cap log close _all
 log using "$codes/04_extra_robustness_log.log", replace text
@@ -3398,6 +3406,452 @@ foreach grp in w f m {
 }
 }
 di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _female_, _male_"
+
+
+*============================================================
+* DOSE-RESPONSE "CLOUD" FIGURES AND THE BARHAM-ROWBERRY (BR)
+* DECOMPOSITION
+* Suggested by Andrew Goodman-Bacon (Oct 2026), following Callaway,
+* Goodman-Bacon & Sant'Anna (2025), "Difference-in-Differences with a
+* Continuous Treatment" -- the plots on slides 40, 46, 52 and 54-59 of
+* literature/cdid_ajgb_idb_2026.pptx. Design discussion and the exact
+* specification: research_project.md, Session Update (2026-10-06).
+*
+* Unlike most of this file, the exports below are ACTIVE so the
+* exhibits can be reviewed; they are wired into the end of
+* figures_app.tex and tables_app.tex. Each figure panel is exported as
+* its own file and assembled with \subfigure in LaTeX.
+*
+*   (1) af:cloud_mortality -- change in mortality vs. Intensity_1999,
+*       HM sample: after 1997 (1997-2006 vs. 1991-1996) and a
+*       pre-period placebo (1994-96 vs. 1991-93), each plain and net of
+*       Intensity_2005 and Seguro Popular:
+*       AF_cloud_post_plain, AF_cloud_post_cond, AF_cloud_pre_plain,
+*       AF_cloud_pre_cond (.pdf)
+*   (2) af:twfe_weights -- the implicit regression weights against the
+*       distribution of Intensity_1999 (CGBS Table 1, slide 47):
+*       AF_twfe_weights_plain, AF_twfe_weights_cond (.pdf)
+*   (3) at:br_leftover -- BR's coefficient before and after removing
+*       the variation our design uses: AT_br_leftover.tex
+*   (4) af:br_leftover -- (3), Panel A, as paired binned scatters:
+*       AF_br_leftover_fe_uw, AF_br_leftover_i99_uw,
+*       AF_br_leftover_fe_w, AF_br_leftover_i99_w (.pdf)
+*   (5) af:cloud_br -- BR's own cloud: change in mortality from 1992-99
+*       to 2000-02 against the mean lagged dose:
+*       AF_cloud_br_uw, AF_cloud_br_w (.pdf)
+*
+* The working panel is saved here and reloaded at the end, so the
+* cause-of-death section below runs on exactly the same data as before.
+*============================================================
+tempfile cdid_panel
+save `cdid_panel'
+
+*------------------------------------------------------------
+* Helper: one "cloud" panel. Binned scatter of a municipality-level
+* outcome change against a dose: 20 equal-width bins of the dose,
+* circle area = bin population (bin count when unweighted); a
+* restricted cubic spline fit (4 knots) with its 95% CI; the weighted
+* (solid) and, optionally, unweighted (dashed) linear fits, with their
+* slopes in the legend; a dashed reference line at the mean outcome of
+* the lowest-dose decile; and the distribution of the dose as grey bars
+* along the bottom.
+*   args: y x w weighted(1/0) file xtitle ytitle bothlines(1/0)
+*------------------------------------------------------------
+capture program drop cloud_plot
+program define cloud_plot
+	args yv xv wv wtd fname xt yt both
+	preserve
+	quietly keep if !missing(`yv', `xv', `wv')
+	local aw ""
+	if `wtd' == 1 local aw "[aw=`wv']"
+
+	* bins and binned means
+	quietly summarize `xv'
+	local xmin = r(min)
+	local binw = (r(max) - r(min)) / 20
+	quietly gen int __bin = min(floor((`xv' - `xmin') / `binw'), 19)
+	quietly gen double __ww = cond(`wtd' == 1, `wv', 1)
+	quietly gen double __wy = `yv' * __ww
+	quietly gen double __wx = `xv' * __ww
+	bysort __bin: egen double __sw  = total(__ww)
+	bysort __bin: egen double __swy = total(__wy)
+	bysort __bin: egen double __swx = total(__wx)
+	bysort __bin: gen byte __first = (_n == 1)
+	quietly gen double __doty = __swy / __sw
+	quietly gen double __dotx = __swx / __sw
+
+	* grey bars use at most about a quarter of the panel height
+	quietly count
+	local nobs = r(N)
+	bysort __bin: gen double __frac = _N / `nobs'
+	quietly summarize __frac
+	local hmax = 4 * r(max)
+
+	* reference line: mean outcome in the lowest-dose decile (there is
+	* no untreated group to compare against)
+	quietly xtile __dec = `xv' `aw', nquantiles(10)
+	quietly summarize `yv' `aw' if __dec == 1
+	local ref = r(mean)
+
+	* linear fits (robust SEs; one observation per municipality)
+	quietly regress `yv' `xv' [aw=`wv'], vce(robust)
+	local b_w  = trim(string(_b[`xv'], "%9.2f"))
+	local se_w = trim(string(_se[`xv'], "%9.2f"))
+	quietly predict double __fitw, xb
+	quietly regress `yv' `xv', vce(robust)
+	local b_uw  = trim(string(_b[`xv'], "%9.2f"))
+	local se_uw = trim(string(_se[`xv'], "%9.2f"))
+	quietly predict double __fituw, xb
+
+	* smooth fit: restricted cubic spline, 4 knots, 95% CI
+	quietly mkspline __rcs = `xv', cubic nknots(4)
+	quietly regress `yv' __rcs* `aw', vce(robust)
+	quietly predict double __curve, xb
+	quietly predict double __cse, stdp
+	quietly gen double __lo = __curve - 1.96 * __cse
+	quietly gen double __hi = __curve + 1.96 * __cse
+
+	local uwline ""
+	local legorder `"3 "Binned means" 4 "Spline fit, 95% CI" 5 "Linear fit, weighted: slope `b_w' (`se_w')""'
+	if `both' == 1 {
+		local uwline "(line __fituw `xv', lcolor(maroon) lpattern(dash) lwidth(medthin))"
+		local legorder `"`legorder' 6 "Linear fit, unweighted: slope `b_uw' (`se_uw')""'
+	}
+
+	sort `xv'
+	twoway ///
+		(histogram `xv', fraction width(`binw') start(`xmin') yaxis(2) ///
+			fcolor(gs14) lcolor(gs12) lwidth(vthin)) ///
+		(rarea __lo __hi `xv', color(navy%20) lwidth(none)) ///
+		(scatter __doty __dotx if __first [aw=__sw], ///
+			msymbol(Oh) mcolor(black) mlwidth(thin)) ///
+		(line __curve `xv', lcolor(navy) lwidth(medthick)) ///
+		(line __fitw `xv', lcolor(maroon) lwidth(medthin)) ///
+		`uwline', ///
+		yline(`ref', lcolor(gs8) lpattern(shortdash) lwidth(thin)) ///
+		yscale(axis(2) off range(0 `hmax')) ///
+		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+		xlabel(, labsize(small)) ///
+		xtitle(`"`xt'"', size(small)) ///
+		ytitle(`"`yt'"', size(small)) ///
+		legend(order(`legorder') size(vsmall) rows(2) region(lcolor(white))) ///
+		graphregion(color(white)) plotregion(margin(small))
+	graph export "$figures/appendix/`fname'.pdf", as(pdf) replace
+	di "Figure exported to: $figures/appendix/`fname'.pdf"
+	restore
+end
+
+*------------------------------------------------------------
+* (1) Change in mortality vs. Intensity_1999, HM sample. Each
+* municipality's mean mortality rate 65+ after (1997-2006) minus before
+* (1991-1996); placebo: 1994-96 minus 1991-93. Weights: the 1991-1996
+* mean population 65+ (a fixed weight, so each municipality counts
+* once). "Cond" panels residualize both axes on Intensity_2005 and the
+* post-1997 mean Seguro Popular intensity (weighted), adding back the
+* means -- their weighted slope is the collapsed analog of Table 2,
+* col. (1); the plain post slope is the analog of the specification
+* without the 2005 control (at:no_control_sex).
+*------------------------------------------------------------
+use `cdid_panel', clear
+quietly keep if $sample_marg & inrange(year, 1991, 2006)
+bysort cve_ent_mun_super: egen double mr_post = mean(cond(year >= 1997, emr65, .))
+bysort cve_ent_mun_super: egen double mr_pre  = mean(cond(year <= 1996, emr65, .))
+bysort cve_ent_mun_super: egen double mr_pl2  = mean(cond(inrange(year, 1994, 1996), emr65, .))
+bysort cve_ent_mun_super: egen double mr_pl1  = mean(cond(inrange(year, 1991, 1993), emr65, .))
+bysort cve_ent_mun_super: egen double sp_post = mean(cond(year >= 1997, sp_intensity, .))
+bysort cve_ent_mun_super: egen double w65_pre = mean(cond(year <= 1996, popover65_, .))
+bysort cve_ent_mun_super: keep if _n == 1
+gen double d_post = mr_post - mr_pre
+gen double d_pre  = mr_pl2 - mr_pl1
+keep cve_ent_mun_super inten1999 inten2005 sp_post w65_pre d_post d_pre
+
+foreach v in d_post d_pre inten1999 {
+	quietly regress `v' inten2005 sp_post [aw=w65_pre]
+	quietly predict double r_`v' if e(sample), residuals
+	quietly summarize `v' [aw=w65_pre] if e(sample)
+	quietly replace r_`v' = r_`v' + r(mean)
+}
+
+cloud_plot d_post inten1999 w65_pre 1 "AF_cloud_post_plain" ///
+	"Intensity 1999" ///
+	"Change in mortality rate 65+, 1997-2006 vs. 1991-1996" 1
+cloud_plot r_d_post r_inten1999 w65_pre 1 "AF_cloud_post_cond" ///
+	"Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
+	"Change in mortality rate 65+, 1997-2006 vs. 1991-1996 (net)" 0
+cloud_plot d_pre inten1999 w65_pre 1 "AF_cloud_pre_plain" ///
+	"Intensity 1999" ///
+	"Change in mortality rate 65+, 1994-1996 vs. 1991-1993" 1
+cloud_plot r_d_pre r_inten1999 w65_pre 1 "AF_cloud_pre_cond" ///
+	"Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
+	"Change in mortality rate 65+, 1994-1996 vs. 1991-1993 (net)" 0
+
+*------------------------------------------------------------
+* (2) Implicit regression weights vs. the distribution of the dose
+* (CGBS Table 1), weighted by the 1991-1996 population 65+:
+*   marginal-effect weights  w(l) = E[(D - E[D]) 1{D >= l}] / Var(D)
+*   level-effect weights     v(l) = (l - E[D]) f(l) / Var(D)
+* With no untreated municipalities, w(l) integrates to one and equals
+* the density f(l) when D is normally distributed (Yitzhaki 1996).
+* "Cond" uses the residualized dose from (1), i.e. the variation the
+* regression with the 2005 control actually uses.
+*------------------------------------------------------------
+foreach spec in plain cond {
+	if "`spec'" == "plain" {
+		local dv inten1999
+		local dlab "Intensity 1999"
+	}
+	else {
+		local dv r_inten1999
+		local dlab "Intensity 1999, net of Intensity 2005 and Seguro Popular"
+	}
+	preserve
+	quietly keep if !missing(`dv', w65_pre)
+	quietly summarize w65_pre
+	local W = r(sum)
+	quietly gen double __t = w65_pre * `dv'
+	quietly summarize __t
+	local mu = r(sum) / `W'
+	quietly replace __t = w65_pre * (`dv' - `mu')^2
+	quietly summarize __t
+	local vd = r(sum) / `W'
+	kdensity `dv' [aw=w65_pre], n(100) generate(__gx __fd) nograph
+	quietly gen double __wacr = .
+	quietly gen double __watt = .
+	forvalues i = 1/100 {
+		local l = __gx[`i']
+		quietly replace __t = w65_pre * (`dv' - `mu') * (`dv' >= `l')
+		quietly summarize __t
+		quietly replace __wacr = (r(sum) / `W') / `vd' in `i'
+		quietly replace __watt = (`l' - `mu') * __fd[`i'] / `vd' in `i'
+	}
+	twoway ///
+		(line __fd   __gx, lcolor(navy) lwidth(medthick)) ///
+		(line __wacr __gx, lcolor(maroon) lpattern(shortdash) lwidth(medthick)) ///
+		(line __watt __gx, lcolor(dkgreen) lpattern(dash) lwidth(medium)), ///
+		xline(`mu', lcolor(gs8) lpattern(dot)) ///
+		yline(0, lcolor(gs10) lwidth(thin)) ///
+		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+		xlabel(, labsize(small)) ///
+		xtitle("`dlab'", size(small)) ///
+		ytitle("Density / weight", size(small)) ///
+		legend(order(1 "Distribution of intensity" ///
+			2 "Regression weight on marginal effects" ///
+			3 "Regression weight on level effects") ///
+			size(vsmall) rows(3) region(lcolor(white))) ///
+		graphregion(color(white))
+	graph export "$figures/appendix/AF_twfe_weights_`spec'.pdf", as(pdf) replace
+	di "Figure exported to: $figures/appendix/AF_twfe_weights_`spec'.pdf"
+	restore
+}
+
+*------------------------------------------------------------
+* (3) BR's coefficient before and after removing our variation.
+* Panel A: BR's sample (1998/99 entrants, $sample_br) and window
+* (1992-2002). Panel B: our HM sample and window (1991-2006), with
+* Seguro Popular in every regression. BR's treatment is their actual
+* regressor, lag2_intensity_new (intensity two years earlier).
+*   Row 1: fixed effects only (Panel A, col. 1 = Table A5, Panel B)
+*   Row 2: + Intensity_1999 x year dummies
+*   Row 3: + Intensity_2005 x year dummies
+* By Frisch-Waugh-Lovell, rows 2-3 are BR's estimate computed only from
+* the part of their treatment those terms do not explain. The "share
+* explained" rows are the partial within-R2 of those terms in a
+* regression of BR's treatment on them (beyond the fixed effects and,
+* in Panel B, Seguro Popular): the share of BR's identifying variation
+* that our design also uses. Note that within 1992-2002, BR's
+* treatment is 0 through 1999 and its 2001 value equals inten1999, so
+* the leftover is the 1998 and 2000 intensities relative to 1999.
+*------------------------------------------------------------
+foreach pnl in A B {
+	use `cdid_panel', clear
+	if "`pnl'" == "A" {
+		quietly keep if $sample_br & inrange(year, 1992, 2002)
+		local base ""
+	}
+	else {
+		quietly keep if $sample_marg & inrange(year, 1991, 2006)
+		quietly keep if !missing(sp_intensity)
+		local base "c.sp_intensity"
+	}
+	quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+	local ctl1 "`base'"
+	local ctl2 "`base' c.inten1999#i.year"
+	local ctl3 "`base' c.inten1999#i.year c.inten2005#i.year"
+	foreach wt in uw w {
+		local aw ""
+		if "`wt'" == "w" local aw "[aw=popover65_]"
+		* first-stage baseline: within-R2 of BR's treatment on the base
+		* controls alone (zero when there are none)
+		local r2base = 0
+		if "`base'" != "" {
+			quietly reghdfe lag2_intensity_new `base' `aw', a(cve_ent_mun_super year)
+			local r2base = e(r2_within)
+		}
+		forvalues r = 1/3 {
+			reghdfe emr65 lag2_intensity_new `ctl`r'' `aw', ///
+				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+			local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+			local st ""
+			if `t' >= 1.645 local st "*"
+			if `t' >= 1.960 local st "**"
+			if `t' >= 2.576 local st "***"
+			local b_`pnl'_`wt'_`r' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
+			local se_`pnl'_`wt'_`r' = trim(string(_se[lag2_intensity_new], "%9.3f"))
+			if `r' == 1 {
+				local N_`pnl'_`wt' = trim(string(e(N), "%12.0fc"))
+				tempvar tg
+				quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+				quietly count if `tg' == 1
+				local M_`pnl'_`wt' = trim(string(r(N), "%12.0fc"))
+				drop `tg'
+			}
+			else {
+				quietly reghdfe lag2_intensity_new `ctl`r'' `aw', a(cve_ent_mun_super year)
+				local pr2 = (e(r2_within) - `r2base') / (1 - `r2base')
+				local r2_`pnl'_`wt'_`r' = trim(string(`pr2', "%9.3f"))
+				di "Panel `pnl', `wt', row `r': share of BR treatment variation explained = `r2_`pnl'_`wt'_`r''"
+			}
+		}
+	}
+}
+
+cap file close brl
+file open brl using "$tables/appendix/AT_br_leftover.tex", write replace
+file write brl "\begin{tabular}{lcc} \hline \hline" _n
+file write brl " & Unweighted & Weighted \\ " _n
+file write brl " & (1) & (2) \\ \toprule" _n
+foreach pnl in A B {
+	if "`pnl'" == "A" {
+		file write brl "\underline{\textit{Panel A: Barham and Rowberry sample (1998--1999 entrants), 1992--2002}} \\ " _n
+	}
+	else {
+		file write brl "  & & \\ " _n
+		file write brl "\underline{\textit{Panel B: Highly marginalized municipalities, 1991--2006}} \\ " _n
+	}
+	file write brl "\textit{BR treatment}, fixed effects only & `b_`pnl'_uw_1' & `b_`pnl'_w_1' \\ " _n
+	file write brl " & (`se_`pnl'_uw_1') & (`se_`pnl'_w_1') \\ " _n
+	file write brl "\quad + Intensity 1999 x year & `b_`pnl'_uw_2' & `b_`pnl'_w_2' \\ " _n
+	file write brl " & (`se_`pnl'_uw_2') & (`se_`pnl'_w_2') \\ " _n
+	file write brl "\quad + Intensity 2005 x year & `b_`pnl'_uw_3' & `b_`pnl'_w_3' \\ " _n
+	file write brl " & (`se_`pnl'_uw_3') & (`se_`pnl'_w_3') \\ " _n
+	file write brl "  & & \\ " _n
+	file write brl "Share of BR treatment variation explained by: & & \\ " _n
+	file write brl "\quad Intensity 1999 x year & `r2_`pnl'_uw_2' & `r2_`pnl'_w_2' \\ " _n
+	file write brl "\quad Intensity 1999 and 2005 x year & `r2_`pnl'_uw_3' & `r2_`pnl'_w_3' \\ " _n
+	file write brl "Observations & `N_`pnl'_uw' & `N_`pnl'_w' \\ " _n
+	file write brl "No. Mun & `M_`pnl'_uw' & `M_`pnl'_w' \\ " _n
+}
+file write brl "\bottomrule" _n
+file write brl "\end{tabular}"
+file close brl
+di "Table exported to: $tables/appendix/AT_br_leftover.tex"
+
+*------------------------------------------------------------
+* (4) Panel A of (3) as paired binned scatters, with the same bins and
+* axes: mortality vs. BR's treatment, both residualized on (fe) the
+* fixed effects only -- slope = row 1 -- and on (i99) the fixed effects
+* plus Intensity_1999 x year -- slope = row 2. The horizontal spread
+* shrinking from (fe) to (i99) shows how much of BR's variation our
+* design shares. 20 quantile bins of the residualized treatment.
+*------------------------------------------------------------
+use `cdid_panel', clear
+quietly keep if $sample_br & inrange(year, 1992, 2002)
+quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+foreach wt in uw w {
+	local aw ""
+	if "`wt'" == "w" local aw "[aw=popover65_]"
+	quietly gen double __ww = 1
+	if "`wt'" == "w" quietly replace __ww = popover65_
+
+	quietly reghdfe emr65 `aw', a(cve_ent_mun_super year) residuals(__y_fe)
+	quietly reghdfe lag2_intensity_new `aw', a(cve_ent_mun_super year) residuals(__x_fe)
+	quietly reghdfe emr65 c.inten1999#i.year `aw', a(cve_ent_mun_super year) residuals(__y_i99)
+	quietly reghdfe lag2_intensity_new c.inten1999#i.year `aw', a(cve_ent_mun_super year) residuals(__x_i99)
+
+	* slopes and clustered SEs, identical to (3), Panel A, rows 1-2
+	quietly reghdfe emr65 lag2_intensity_new `aw', ///
+		a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+	local s_fe  = _b[lag2_intensity_new]
+	local b_fe  = trim(string(_b[lag2_intensity_new], "%9.2f"))
+	local se_fe = trim(string(_se[lag2_intensity_new], "%9.2f"))
+	quietly reghdfe emr65 lag2_intensity_new c.inten1999#i.year `aw', ///
+		a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+	local s_i99  = _b[lag2_intensity_new]
+	local b_i99  = trim(string(_b[lag2_intensity_new], "%9.2f"))
+	local se_i99 = trim(string(_se[lag2_intensity_new], "%9.2f"))
+
+	foreach s in fe i99 {
+		quietly xtile __q_`s' = __x_`s' `aw', nquantiles(20)
+		quietly gen double __wy_`s' = __y_`s' * __ww
+		quietly gen double __wx_`s' = __x_`s' * __ww
+		bysort __q_`s': egen double __sw_`s'  = total(__ww)
+		bysort __q_`s': egen double __swy_`s' = total(__wy_`s')
+		bysort __q_`s': egen double __swx_`s' = total(__wx_`s')
+		bysort __q_`s': gen byte __f_`s' = (_n == 1)
+		quietly gen double __by_`s' = __swy_`s' / __sw_`s'
+		quietly gen double __bx_`s' = __swx_`s' / __sw_`s'
+	}
+
+	* common axis ranges, so the shrinking spread is visible
+	quietly summarize __bx_fe if __f_fe
+	local xlo = r(min)
+	local xhi = r(max)
+	quietly summarize __bx_i99 if __f_i99
+	local xlo = min(`xlo', r(min))
+	local xhi = max(`xhi', r(max))
+	quietly summarize __by_fe if __f_fe
+	local ylo = r(min)
+	local yhi = r(max)
+	quietly summarize __by_i99 if __f_i99
+	local ylo = min(`ylo', r(min))
+	local yhi = max(`yhi', r(max))
+
+	foreach s in fe i99 {
+		if "`s'" == "fe" local xt "BR treatment, net of municipality and year fixed effects"
+		else             local xt "BR treatment, also net of Intensity 1999 x year"
+		twoway ///
+			(scatter __by_`s' __bx_`s' if __f_`s', msymbol(O) mcolor(navy%70)) ///
+			(function y = `s_`s'' * x, range(`xlo' `xhi') lcolor(maroon) lwidth(medthick)), ///
+			xscale(range(`xlo' `xhi')) yscale(range(`ylo' `yhi')) ///
+			xline(0, lcolor(gs12)) yline(0, lcolor(gs12)) ///
+			ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+			xlabel(, labsize(small)) ///
+			xtitle("`xt'", size(small)) ///
+			ytitle("Mortality rate 65+, residualized", size(small)) ///
+			legend(order(1 "Binned means (20 quantiles)" 2 "Slope `b_`s'' (`se_`s'')") ///
+				size(vsmall) rows(1) region(lcolor(white))) ///
+			graphregion(color(white))
+		graph export "$figures/appendix/AF_br_leftover_`s'_`wt'.pdf", as(pdf) replace
+		di "Figure exported to: $figures/appendix/AF_br_leftover_`s'_`wt'.pdf"
+	}
+	drop __*
+}
+
+*------------------------------------------------------------
+* (5) BR's own cloud, in the slides' style: each BR municipality's
+* change in mortality from 1992-99 (when BR's treatment is 0) to
+* 2000-02, against its mean BR treatment over 2000-02 (= mean intensity
+* 1998-2000). A two-period approximation of BR's regression, for
+* intuition; (3) and (4) are the exact versions.
+*------------------------------------------------------------
+use `cdid_panel', clear
+quietly keep if $sample_br & inrange(year, 1992, 2002)
+bysort cve_ent_mun_super: egen double mr_br_post = mean(cond(year >= 2000, emr65, .))
+bysort cve_ent_mun_super: egen double mr_br_pre  = mean(cond(year <= 1999, emr65, .))
+bysort cve_ent_mun_super: egen double dose_br    = mean(cond(year >= 2000, lag2_intensity_new, .))
+bysort cve_ent_mun_super: egen double w65_br     = mean(cond(year <= 1999, popover65_, .))
+bysort cve_ent_mun_super: keep if _n == 1
+gen double d_br = mr_br_post - mr_br_pre
+
+cloud_plot d_br dose_br w65_br 0 "AF_cloud_br_uw" ///
+	"BR treatment: mean lagged intensity, 2000-2002" ///
+	"Change in mortality rate 65+, 2000-2002 vs. 1992-1999" 1
+cloud_plot d_br dose_br w65_br 1 "AF_cloud_br_w" ///
+	"BR treatment: mean lagged intensity, 2000-2002" ///
+	"Change in mortality rate 65+, 2000-2002 vs. 1992-1999" 1
+
+* restore the working panel for the cause-of-death section below
+use `cdid_panel', clear
 
 
 *============================================================
