@@ -1444,6 +1444,8 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Both new families run inside the existing weighting loop of step (4), reuse its residualized variables, and have repo-twin export lines. **Verified statically only** (no Stata here); brace/quote balance of the added code checked, and every figure file in the .tex matches an export.
 - **Open reading rule:** if the coefficient moves a lot with trimming, or differs sharply by size tercile, the BR estimate is driven by few observations or noisy small municipalities; stable coefficients argue against that.
 
+**Follow-up: what is the leftover? (`at:br_leftover`, Panel A, three new rows.)** Algebra: within 1992–2002 BR's treatment is 0 through 1999 and equals inten1998 / inten1999 / inten2000 in 2000 / 2001 / 2002, so Intensity_1999 × year absorbs 2001 exactly and the leftover is the 2000 value (entry timing, 1998 vs 1999 entrants) and the 2002 value (enrollment growth 1999→2000). New rows, each added to row 2: entry cohort × year; Intensity_1998 × year (absorbs 2000, leftover = 2002); Intensity_2000 × year (absorbs 2002, leftover = 2000); with the matching "share explained" rows. Rows 5 and 6 cannot be combined (they absorb the treatment entirely). Panel B unchanged. The code warns if a missing inten1998/inten2000 changes the sample. Row 3 (Intensity_2005 × year) already showed that a long-run intensity pattern absorbs only ~2 points more of the treatment (72.4→74.3% unweighted, 84.0→85.2% weighted), because it does not track the 1998–2000 path. No figure for this decomposition yet.
+
 ---
 
 ## Notes for Contributors

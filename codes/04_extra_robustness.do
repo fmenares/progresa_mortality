@@ -3491,11 +3491,11 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 * `confirm' stops and names it: rerun 02_mortality.do.
 *============================================================
 capture confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
-	sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year
+	sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000
 if _rc {
 	use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
 	confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
-		sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year
+		sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000
 }
 tempfile cdid_panel
 save `cdid_panel'
@@ -3710,6 +3710,17 @@ foreach spec in plain cond {
 *   Row 1: fixed effects only (Panel A, col. 1 = Table A5, Panel B)
 *   Row 2: + Intensity_1999 x year dummies
 *   Row 3: + Intensity_2005 x year dummies
+* Panel A only, to name what the leftover is. Within 1992-2002 BR's
+* treatment is 0 through 1999 and equals inten1998, inten1999, inten2000
+* in 2000, 2001, 2002, so Intensity_1999 x year absorbs 2001 exactly and
+* the leftover is the 2000 value (inten1998: entry timing, 1998 vs 1999
+* entrants) and the 2002 value (inten2000: growth in enrollment after
+* 1999). Each row below adds one term to row 2:
+*   Row 4: + entry cohort (inten_start_year) x year dummies
+*   Row 5: + Intensity_1998 x year dummies (absorbs 2000: leftover = 2002)
+*   Row 6: + Intensity_2000 x year dummies (absorbs 2002: leftover = 2000)
+* Adding both rows 5 and 6 would absorb the treatment completely, so
+* they are separate rows.
 * By Frisch-Waugh-Lovell, rows 2-3 are BR's estimate computed only from
 * the part of their treatment those terms do not explain. The "share
 * explained" rows are the partial within-R2 of those terms in a
@@ -3734,6 +3745,13 @@ foreach pnl in A B {
 	local ctl1 "`base'"
 	local ctl2 "`base' c.inten1999#i.year"
 	local ctl3 "`base' c.inten1999#i.year c.inten2005#i.year"
+	local nr = 3
+	if "`pnl'" == "A" {
+		local ctl4 "`ctl2' i.inten_start_year#i.year"
+		local ctl5 "`ctl2' c.inten1998#i.year"
+		local ctl6 "`ctl2' c.inten2000#i.year"
+		local nr = 6
+	}
 	foreach wt in uw w {
 		local aw ""
 		if "`wt'" == "w" local aw "[aw=popover65_]"
@@ -3744,7 +3762,7 @@ foreach pnl in A B {
 			quietly reghdfe lag2_intensity_new `base' `aw', a(cve_ent_mun_super year)
 			local r2base = e(r2_within)
 		}
-		forvalues r = 1/3 {
+		forvalues r = 1/`nr' {
 			reghdfe emr65 lag2_intensity_new `ctl`r'' `aw', ///
 				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
 			local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
@@ -3754,7 +3772,13 @@ foreach pnl in A B {
 			if `t' >= 2.576 local st "***"
 			local b_`pnl'_`wt'_`r' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
 			local se_`pnl'_`wt'_`r' = trim(string(_se[lag2_intensity_new], "%9.3f"))
+			* rows 4-6 must run on row 1's sample (a missing Intensity 1998
+			* or 2000 would drop observations silently)
+			if `r' >= 4 {
+				if e(N) != `N1' di as error "WARNING: row `r' (`wt') has `=e(N)' observations vs. `N1' in row 1"
+			}
 			if `r' == 1 {
+				local N1 = e(N)
 				local N_`pnl'_`wt' = trim(string(e(N), "%12.0fc"))
 				tempvar tg
 				quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
@@ -3791,10 +3815,25 @@ foreach pnl in A B {
 	file write brl " & (`se_`pnl'_uw_2') & (`se_`pnl'_w_2') \\ " _n
 	file write brl "\quad + Intensity 2005 x year & `b_`pnl'_uw_3' & `b_`pnl'_w_3' \\ " _n
 	file write brl " & (`se_`pnl'_uw_3') & (`se_`pnl'_w_3') \\ " _n
+	if "`pnl'" == "A" {
+		file write brl "  & & \\ " _n
+		file write brl "Intensity 1999 x year and, in addition: & & \\ " _n
+		file write brl "\quad Entry cohort x year (1998 vs. 1999) & `b_`pnl'_uw_4' & `b_`pnl'_w_4' \\ " _n
+		file write brl " & (`se_`pnl'_uw_4') & (`se_`pnl'_w_4') \\ " _n
+		file write brl "\quad Intensity 1998 x year (leftover: 2002 only) & `b_`pnl'_uw_5' & `b_`pnl'_w_5' \\ " _n
+		file write brl " & (`se_`pnl'_uw_5') & (`se_`pnl'_w_5') \\ " _n
+		file write brl "\quad Intensity 2000 x year (leftover: 2000 only) & `b_`pnl'_uw_6' & `b_`pnl'_w_6' \\ " _n
+		file write brl " & (`se_`pnl'_uw_6') & (`se_`pnl'_w_6') \\ " _n
+	}
 	file write brl "  & & \\ " _n
 	file write brl "Share of BR treatment variation explained by: & & \\ " _n
 	file write brl "\quad Intensity 1999 x year & `r2_`pnl'_uw_2' & `r2_`pnl'_w_2' \\ " _n
 	file write brl "\quad Intensity 1999 and 2005 x year & `r2_`pnl'_uw_3' & `r2_`pnl'_w_3' \\ " _n
+	if "`pnl'" == "A" {
+		file write brl "\quad Intensity 1999 and entry cohort x year & `r2_`pnl'_uw_4' & `r2_`pnl'_w_4' \\ " _n
+		file write brl "\quad Intensity 1999 and 1998 x year & `r2_`pnl'_uw_5' & `r2_`pnl'_w_5' \\ " _n
+		file write brl "\quad Intensity 1999 and 2000 x year & `r2_`pnl'_uw_6' & `r2_`pnl'_w_6' \\ " _n
+	}
 	file write brl "Observations & `N_`pnl'_uw' & `N_`pnl'_w' \\ " _n
 	file write brl "No. Mun & `M_`pnl'_uw' & `M_`pnl'_w' \\ " _n
 }
