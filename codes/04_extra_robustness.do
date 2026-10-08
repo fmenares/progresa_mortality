@@ -3573,10 +3573,13 @@ program define cloud_plot
 	}
 
 	sort `xv'
+	* the CI band comes first so that the main y-axis (axis 1) is the first
+	* axis declared and is drawn on the left; the histogram, on the hidden
+	* axis 2, follows. The legend indices below do not use plots 1 and 2.
 	twoway ///
+		(rarea __lo __hi `xv', color(navy%20) lwidth(none)) ///
 		(histogram `xv', fraction width(`binw') start(`xmin') yaxis(2) ///
 			fcolor(gs14) lcolor(gs12) lwidth(vthin)) ///
-		(rarea __lo __hi `xv', color(navy%20) lwidth(none)) ///
 		(scatter __doty __dotx if __first [aw=__sw], ///
 			msymbol(Oh) mcolor(black) mlwidth(thin)) ///
 		(line __curve `xv', lcolor(navy) lwidth(medthick)) ///
