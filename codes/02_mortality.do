@@ -84,6 +84,16 @@ global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 	g aux = intensity_new if year==2005
 	bys cve_ent_mun_super: egen inten2005 = min(aux)
 	drop aux
+	* The other snapshot years (same definition): 1997, 1998, 2000 and 2002.
+	* inten1998 and inten2000 are used in 04_extra_robustness.do to split the
+	* part of Barham-Rowberry's treatment that Intensity_1999 does not explain
+	* (their treatment in 2000 and 2002 is the intensity of 1998 and 2000).
+	cap drop inten1997 inten1998 inten2000 inten2002
+	foreach yy in 1997 1998 2000 2002 {
+		g aux = intensity_new if year == `yy'
+		bys cve_ent_mun_super: egen inten`yy' = min(aux)
+		drop aux
+	}
 	count if missing(inten1999) | missing(inten2005)
 	di "`r(N)' obs missing inten1999/inten2005 after rebuilding from intensity_new"
 
@@ -326,18 +336,7 @@ lab var year "year"
 		10"2000" 11"2001" 12"2002" 13"2003" 14 "2004" 15"2005" 16"2006" 
 	lab val year_1995 year_1995
 	
-	g aux = intensity_new if year == 2002
-	bys cve_ent_mun_super: egen inten2002 = min(aux)
-	drop aux
-	g aux = intensity_new if year == 1997
-	bys cve_ent_mun_super: egen inten1997 = min(aux)
-	drop aux
-	g aux = intensity_new if year == 1998
-	bys cve_ent_mun_super: egen inten1998 = min(aux)
-	drop aux
-	g aux = intensity_new if year == 2000
-	bys cve_ent_mun_super: egen inten2000 = min(aux)
-	drop aux
+	* inten1997/1998/2000/2002 are built next to inten1999/inten2005 above
 	preserve
 
 	*Restriction (marginalized areas)
