@@ -4009,11 +4009,11 @@ foreach wt in uw w {
 		if `k' == 4 local cond ""
 		if `k' < 4 {
 			quietly summarize __sz if __tag & __terc == `k'
-			local mp = trim(string(r(mean), "%9.0f"))
+			local mp`k' = trim(string(r(mean), "%9.0fc"))
 			local nm : word `k' of Small Medium Large
-			local slab `"`slab' `k' `"`nm'"' `"(mean `mp')"'"'
+			local slab `slab' `k' "`nm'"
 		}
-		else local slab `"`slab' 4 "All""'
+		else local slab `slab' 4 "All"
 		foreach s in fe i99 {
 			local ctl ""
 			if "`s'" == "i99" local ctl "c.inten1999#i.year"
@@ -4046,9 +4046,9 @@ foreach wt in uw w {
 		(rcap l_i99 h_i99 k_i99, lcolor(maroon%60)) ///
 		(scatter b_i99 k_i99, mcolor(maroon) msymbol(D)), ///
 		yline(0, lcolor(gs12)) ///
-		xscale(range(0.5 4.5)) xlabel(`slab', labsize(small) notick) ///
+		xscale(range(0.5 4.5)) xlabel(`slab', labsize(small)) ///
 		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
-		xtitle("Municipality size: mean population 65+, 1992-1996", size(small)) ///
+		xtitle("Size tercile (mean population 65+, 1992-96: `mp1', `mp2', `mp3')", size(small)) ///
 		ytitle("Coefficient on BR treatment (95% CI)", size(small)) ///
 		legend(order(2 "Net of municipality and year fixed effects" ///
 			4 "Also net of Intensity 1999 x year") size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
