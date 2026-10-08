@@ -1448,6 +1448,16 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 
 **Follow-up: where inten1998/inten2000 are built.** In `02_mortality.do` the snapshot variables inten1997/1998/2000/2002 were built ~250 lines after inten1999/inten2005, after the `keep if year > 1990` step. They are now built right next to inten1999/inten2005 (same definition: `intensity_new` in that single year, minimum over the municipality's rows) and the old block is replaced by a pointer comment. Values are unchanged. The new `at:br_leftover` rows need inten1998 and inten2000 in the checkpoint, so `02_mortality.do` must be rerun once to refresh `working_panel_for_binary_and_descriptives.dta`; the guard at the top of the 04 block names the variable if it is still missing.
 
+**Reading of the 2026-10-08 run (BR leftover, Panel A of `at:br_leftover`; `af:br_leftover`, `af:br_trim`, `af:br_size`).**
+- **Map:** BR's treatment D_mt = I_m,t-2. In 1992–1999 it is 0 for both entry cohorts; in 2000 it is I_1998 (positive for 1998 entrants, 0 for 1999 entrants); in 2001 it is I_1999 (absorbed exactly by Intensity_1999 × year); in 2002 it is I_2000.
+- **The leftover splits additively:** unweighted 27.6% = 21.7 pts in year 2000 (I_1998 given I_1999: entry timing, how much was enrolled by 1998) + 5.9 pts in year 2002 (I_2000 given I_1999: growth); weighted 16.0% = 11.9 + 4.1. Rows 5 and 6 each absorb one piece.
+- **Which piece carries the coefficient:** the timing piece (row 6: −9.66*** unweighted, −2.79 weighted, n.s.); the growth piece has no signal (row 5: −2.12 (5.34), +1.60 (3.19)). The variance-share average reproduces row 2: 0.786·(−9.66) + 0.214·(−2.12) = −8.05 vs −8.03; weighted 0.744·(−2.79) + 0.256·(1.60) = −1.66 vs −1.61.
+- **Cohort × year** absorbs 7 of the 21.7 timing points but leaves the coefficient at −8.74, so a difference in mortality trends between 1998 and 1999 entrants as groups does not drive it; the within-cohort 1998-vs-1999 enrollment contrast does.
+- **Size:** BR's estimate and the leftover estimate are concentrated in the smallest tercile (mean population 65+ = 154: −7.7/−12.1 unweighted, −7.3/−9.5 weighted); medium and large are near zero or positive. This is why population weighting shrinks BR's estimate.
+- **Trimming:** the FE-only series is stable through 5% (BR's estimate is not driven by extreme dose deviations). The net-of-Intensity_1999 series is not an outlier test beyond ~1–2%: its variation lives almost only in years 2000 and 2002 (2 of 11 years, ~18% of observations), so trimming 5–10% per tail deletes most of the identifying observations, hence the exploding CIs. The 10% points are not interpretable for either series.
+- **Labels** of rows 5–6 changed to say what is left ("left: 2000 value = Intensity 1998", "left: 2002 value = Intensity 2000"); the old labels named calendar years and were easy to misread.
+- **Open:** (i) an event study of the timing piece (I_1998 × year, net of Intensity_1999 × year) with 1992–1999 as placebo years; (ii) rows 4–6 by size tercile.
+
 ---
 
 ## Notes for Contributors

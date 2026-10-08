@@ -3823,9 +3823,9 @@ foreach pnl in A B {
 		file write brl "Intensity 1999 x year and, in addition: & & \\ " _n
 		file write brl "\quad Entry cohort x year (1998 vs. 1999) & `b_`pnl'_uw_4' & `b_`pnl'_w_4' \\ " _n
 		file write brl " & (`se_`pnl'_uw_4') & (`se_`pnl'_w_4') \\ " _n
-		file write brl "\quad Intensity 1998 x year (leftover: 2002 only) & `b_`pnl'_uw_5' & `b_`pnl'_w_5' \\ " _n
+		file write brl "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000) & `b_`pnl'_uw_5' & `b_`pnl'_w_5' \\ " _n
 		file write brl " & (`se_`pnl'_uw_5') & (`se_`pnl'_w_5') \\ " _n
-		file write brl "\quad Intensity 2000 x year (leftover: 2000 only) & `b_`pnl'_uw_6' & `b_`pnl'_w_6' \\ " _n
+		file write brl "\quad Intensity 2000 x year (left: 2000 value = Intensity 1998) & `b_`pnl'_uw_6' & `b_`pnl'_w_6' \\ " _n
 		file write brl " & (`se_`pnl'_uw_6') & (`se_`pnl'_w_6') \\ " _n
 	}
 	file write brl "  & & \\ " _n
