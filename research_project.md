@@ -1434,6 +1434,16 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - **Convention for new code:** after every `graph export` add the `$repo_figures` twin, and after every table's `file close` add the `copy` line.
 - **Verified statically only** (no Stata here): every export has its repo line immediately after it, and brace/paren/quote balance is unchanged.
 
+## Session Update (2026-10-08)
+
+**BR figures: AF10 note, population-sized dots in AF11, and two new diagnostics (`codes/04_extra_robustness.do`, step 4; `figures_app.tex`).**
+- **`af:cloud_br` (A.10):** note only. It now says the plot is unadjusted (raw 1992–99 → 2000–02 change), that the horizontal axis (mean lagged treatment 2000–02 = mean intensity 1998–2000) is close to Intensity_1999, what the circle area means in each panel, that both panels show the same weighted (solid) and unweighted (dashed) fits, what the grey reference line and bars are, and that the sparse high-dose tail is imprecise.
+- **`af:br_leftover` (A.11):** dots replaced by hollow circles with area proportional to the bin's mean population 65+ (all four panels; legend text and note updated). Slopes and bins are unchanged.
+- **New `af:br_trim`:** BR's coefficient after trimming 0/1/2/3/5/10% from each tail of the residualized treatment (each spec trimmed on its own residualized treatment: FE only, and net of Intensity_1999 × year), with clustered 95% CIs; 0% reproduces Table A5 / `at:br_leftover` Panel A rows 1–2. Files `AF_br_trim_{uw,w}.pdf`.
+- **New `af:br_size`:** the same two regressions within terciles of municipality size (mean population 65+, 1992–96) and in the full sample. Files `AF_br_size_{uw,w}.pdf`.
+- Both new families run inside the existing weighting loop of step (4), reuse its residualized variables, and have repo-twin export lines. **Verified statically only** (no Stata here); brace/quote balance of the added code checked, and every figure file in the .tex matches an export.
+- **Open reading rule:** if the coefficient moves a lot with trimming, or differs sharply by size tercile, the BR estimate is driven by few observations or noisy small municipalities; stable coefficients argue against that.
+
 ---
 
 ## Notes for Contributors

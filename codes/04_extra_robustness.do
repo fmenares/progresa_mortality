@@ -3473,6 +3473,9 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 *   (4) af:br_leftover -- (3), Panel A, as paired binned scatters:
 *       AF_br_leftover_fe_uw, AF_br_leftover_i99_uw,
 *       AF_br_leftover_fe_w, AF_br_leftover_i99_w (.pdf)
+*       also af:br_trim (AF_br_trim_uw, _w) and af:br_size
+*       (AF_br_size_uw, _w): the same slopes after trimming the tails
+*       of the residualized treatment / within size terciles
 *   (5) af:cloud_br -- BR's own cloud: change in mortality from 1992-99
 *       to 2000-02 against the mean lagged dose:
 *       AF_cloud_br_uw, AF_cloud_br_w (.pdf)
@@ -3807,7 +3810,14 @@ di "Table exported to: $tables/appendix/AT_br_leftover.tex"
 * fixed effects only -- slope = row 1 -- and on (i99) the fixed effects
 * plus Intensity_1999 x year -- slope = row 2. The horizontal spread
 * shrinking from (fe) to (i99) shows how much of BR's variation our
-* design shares. 20 quantile bins of the residualized treatment.
+* design shares. 20 quantile bins of the residualized treatment; circle
+* area = mean population 65+ in the bin. Two further diagnostics, run on
+* the same residualized variables inside the loop below:
+*   (4b) af:br_trim -- the same two slopes after trimming 0/1/2/3/5/10%
+*        from each tail of the residualized treatment: AF_br_trim_uw/w
+*   (4c) af:br_size -- the same two slopes within terciles of
+*        municipality size (mean population 65+, 1992-96) and overall:
+*        AF_br_size_uw/w
 *------------------------------------------------------------
 use `cdid_panel', clear
 quietly keep if $sample_br & inrange(year, 1992, 2002)
@@ -3842,6 +3852,7 @@ foreach wt in uw w {
 		bysort __q_`s': egen double __sw_`s'  = total(__ww)
 		bysort __q_`s': egen double __swy_`s' = total(__wy_`s')
 		bysort __q_`s': egen double __swx_`s' = total(__wx_`s')
+		bysort __q_`s': egen double __mp_`s'  = mean(popover65_)
 		bysort __q_`s': gen byte __f_`s' = (_n == 1)
 		quietly gen double __by_`s' = __swy_`s' / __sw_`s'
 		quietly gen double __bx_`s' = __swx_`s' / __sw_`s'
@@ -3865,7 +3876,7 @@ foreach wt in uw w {
 		if "`s'" == "fe" local xt "BR treatment, net of municipality and year fixed effects"
 		else             local xt "BR treatment, also net of Intensity 1999 x year"
 		twoway ///
-			(scatter __by_`s' __bx_`s' if __f_`s', msymbol(O) mcolor(navy%70)) ///
+			(scatter __by_`s' __bx_`s' [aw=__mp_`s'] if __f_`s', msymbol(Oh) mcolor(black) mlwidth(thin)) ///
 			(function y = `s_`s'' * x, range(`xlo' `xhi') lcolor(maroon) lwidth(medthick)), ///
 			xscale(range(`xlo' `xhi')) yscale(range(`ylo' `yhi')) ///
 			xline(0, lcolor(gs12)) yline(0, lcolor(gs12)) ///
@@ -3873,13 +3884,137 @@ foreach wt in uw w {
 			xlabel(, labsize(small)) ///
 			xtitle("`xt'", size(small)) ///
 			ytitle("Mortality rate 65+, residualized", size(small)) ///
-			legend(order(1 "Binned means (20 quantiles)" 2 "Slope `b_`s'' (`se_`s'')") ///
+			legend(order(1 "Binned means (20 quantiles; area = population 65+)" 2 "Slope `b_`s'' (`se_`s'')") ///
 				size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
 			graphregion(color(white))
 		graph export "$figures/appendix/AF_br_leftover_`s'_`wt'.pdf", as(pdf) replace
 		if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_leftover_`s'_`wt'.pdf", as(pdf) replace
 		di "Figure exported to: $figures/appendix/AF_br_leftover_`s'_`wt'.pdf"
 	}
+
+	* (4b) trim the tails of the residualized treatment, re-estimate.
+	* Each spec trims on its own residualized treatment (__x_fe, __x_i99);
+	* 0% reproduces the slopes above.
+	local tlist "0 1 2 3 5 10"
+	local nt : word count `tlist'
+	foreach s in fe i99 {
+		local ctl ""
+		if "`s'" == "i99" local ctl "c.inten1999#i.year"
+		forvalues i = 1/`nt' {
+			local t : word `i' of `tlist'
+			local lo = -1e12
+			local hi =  1e12
+			if `t' > 0 {
+				quietly _pctile __x_`s' `aw', p(`t' `=100-`t'')
+				local lo = r(r1)
+				local hi = r(r2)
+			}
+			quietly reghdfe emr65 lag2_intensity_new `ctl' `aw' if inrange(__x_`s', `lo', `hi'), ///
+				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+			local tb_`s'_`i' = _b[lag2_intensity_new]
+			local tl_`s'_`i' = _b[lag2_intensity_new] - 1.96 * _se[lag2_intensity_new]
+			local th_`s'_`i' = _b[lag2_intensity_new] + 1.96 * _se[lag2_intensity_new]
+		}
+	}
+	preserve
+	clear
+	quietly set obs `nt'
+	quietly gen byte k = _n
+	foreach s in fe i99 {
+		quietly gen double b_`s' = .
+		quietly gen double l_`s' = .
+		quietly gen double h_`s' = .
+		forvalues i = 1/`nt' {
+			quietly replace b_`s' = `tb_`s'_`i'' in `i'
+			quietly replace l_`s' = `tl_`s'_`i'' in `i'
+			quietly replace h_`s' = `th_`s'_`i'' in `i'
+		}
+	}
+	quietly gen double k_fe  = k - 0.1
+	quietly gen double k_i99 = k + 0.1
+	local tlab ""
+	forvalues i = 1/`nt' {
+		local t : word `i' of `tlist'
+		local tlab `"`tlab' `i' "`t'%""'
+	}
+	twoway ///
+		(rcap l_fe h_fe k_fe, lcolor(navy%60)) ///
+		(connected b_fe k_fe, mcolor(navy) lcolor(navy) msymbol(O)) ///
+		(rcap l_i99 h_i99 k_i99, lcolor(maroon%60)) ///
+		(connected b_i99 k_i99, mcolor(maroon) lcolor(maroon) msymbol(D) lpattern(dash)), ///
+		yline(0, lcolor(gs12)) ///
+		xscale(range(0.5 `=`nt'+0.5')) xlabel(`tlab', labsize(small)) ///
+		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+		xtitle("Share trimmed from each tail of the residualized treatment", size(small)) ///
+		ytitle("Coefficient on BR treatment (95% CI)", size(small)) ///
+		legend(order(2 "Net of municipality and year fixed effects" ///
+			4 "Also net of Intensity 1999 x year") size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
+		graphregion(color(white))
+	graph export "$figures/appendix/AF_br_trim_`wt'.pdf", as(pdf) replace
+	if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_trim_`wt'.pdf", as(pdf) replace
+	di "Figure exported to: $figures/appendix/AF_br_trim_`wt'.pdf"
+	restore
+
+	* (4c) the same two regressions within terciles of municipality size
+	* (mean population 65+ over 1992-96), then in the whole sample
+	bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
+	egen byte __tag = tag(cve_ent_mun_super)
+	quietly xtile __szt = __sz if __tag, nquantiles(3)
+	bysort cve_ent_mun_super: egen byte __terc = max(__szt)
+	local slab ""
+	forvalues k = 1/4 {
+		local cond "if __terc == `k'"
+		if `k' == 4 local cond ""
+		if `k' < 4 {
+			quietly summarize __sz if __tag & __terc == `k'
+			local mp = trim(string(r(mean), "%9.0f"))
+			local nm : word `k' of Small Medium Large
+			local slab `"`slab' `k' `"`nm'"' `"(mean `mp')"'"'
+		}
+		else local slab `"`slab' 4 "All""'
+		foreach s in fe i99 {
+			local ctl ""
+			if "`s'" == "i99" local ctl "c.inten1999#i.year"
+			quietly reghdfe emr65 lag2_intensity_new `ctl' `aw' `cond', ///
+				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+			local sb_`s'_`k' = _b[lag2_intensity_new]
+			local sl_`s'_`k' = _b[lag2_intensity_new] - 1.96 * _se[lag2_intensity_new]
+			local sh_`s'_`k' = _b[lag2_intensity_new] + 1.96 * _se[lag2_intensity_new]
+		}
+	}
+	preserve
+	clear
+	quietly set obs 4
+	quietly gen byte k = _n
+	foreach s in fe i99 {
+		quietly gen double b_`s' = .
+		quietly gen double l_`s' = .
+		quietly gen double h_`s' = .
+		forvalues k = 1/4 {
+			quietly replace b_`s' = `sb_`s'_`k'' in `k'
+			quietly replace l_`s' = `sl_`s'_`k'' in `k'
+			quietly replace h_`s' = `sh_`s'_`k'' in `k'
+		}
+	}
+	quietly gen double k_fe  = k - 0.1
+	quietly gen double k_i99 = k + 0.1
+	twoway ///
+		(rcap l_fe h_fe k_fe, lcolor(navy%60)) ///
+		(scatter b_fe k_fe, mcolor(navy) msymbol(O)) ///
+		(rcap l_i99 h_i99 k_i99, lcolor(maroon%60)) ///
+		(scatter b_i99 k_i99, mcolor(maroon) msymbol(D)), ///
+		yline(0, lcolor(gs12)) ///
+		xscale(range(0.5 4.5)) xlabel(`slab', labsize(small) notick) ///
+		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+		xtitle("Municipality size: mean population 65+, 1992-1996", size(small)) ///
+		ytitle("Coefficient on BR treatment (95% CI)", size(small)) ///
+		legend(order(2 "Net of municipality and year fixed effects" ///
+			4 "Also net of Intensity 1999 x year") size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
+		graphregion(color(white))
+	graph export "$figures/appendix/AF_br_size_`wt'.pdf", as(pdf) replace
+	if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_size_`wt'.pdf", as(pdf) replace
+	di "Figure exported to: $figures/appendix/AF_br_size_`wt'.pdf"
+	restore
 	drop __*
 }
 
