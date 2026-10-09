@@ -1466,6 +1466,12 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - **Switch:** `global run_cod = 0` right below `$sample_marg` at the top of 04. With 0 the file logs a message, closes the log and exits right before the cause-of-death section; set 1 to run it. Default 0.
 - **Verified statically only**: brace/quote balance of the added code, file lines and repo twin lines for the new exports. Run the block from step (4) or from the block start (≈ line 3452).
 
+**Follow-up (2026-10-09, after the rerun with the reference-year fix).** `af:br_timing` now has 1999 as the true reference (no omitted-term warnings in the log).
+- Unweighted, Intensity_1998 (timing): 1992–1998 flat around +1 to +3, none significant (no pre-trend); 2000 ≈ −8 (95% CI excludes 0); 2001–2002 back to ≈ +1.5. That is the pattern BR's own lag-2 model predicts: in 2000 early (1998) enrollment has an effect and late (1999) does not; from 2001 both are exposed and Intensity_1999 × year absorbs it. So the timing piece is a clean, pre-trend-free contrast consistent with a lag-2 level effect (not with cumulative exposure, which would persist into 2001). Correction to the earlier reading that a one-year dip argued against a causal effect.
+- Unweighted, Intensity_2000 (growth): noisy throughout (pre-period −11 to +3.5); the BR-relevant 2002 point is −7.5, not significant. One significant point (2001, ≈ −15) is not part of BR's identification and sits among noisy placebo years.
+- Weighted: both series flat within ±5; the 2000 timing point ≈ −3, not significant.
+- Overall: BR's leftover variation behaves like the shared variation (negative unweighted, about the same size, and small once population-weighted), and the tercile table puts it in the smallest municipalities. The BR-vs-us gap is a weighting/size difference, not a separate identifying source.
+
 ---
 
 ## Notes for Contributors
