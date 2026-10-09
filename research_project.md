@@ -1458,6 +1458,14 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - **Labels** of rows 5–6 changed to say what is left ("left: 2000 value = Intensity 1998", "left: 2002 value = Intensity 2000"); the old labels named calendar years and were easy to misread.
 - **Open:** (i) an event study of the timing piece (I_1998 × year, net of Intensity_1999 × year) with 1992–1999 as placebo years; (ii) rows 4–6 by size tercile.
 
+## Session Update (2026-10-09)
+
+**Two tests of the leftover (steps 6–7 of the BR block in `codes/04_extra_robustness.do`) and a switch for the cause-of-death section.**
+- **`af:br_timing` (step 6, `AF_br_timing_{uw,w}.pdf`):** event study. Regression of mortality 65+ on fixed effects, Intensity_1999 × year (reference 1999) and Intensity_1998 × year (series 1) or Intensity_2000 × year (series 2, separate regression), BR sample and window. Years 1992–1998 are placebos (BR's treatment is 0); the 2000 coefficient on Intensity_1998 is BR's timing contrast, the 2002 coefficient on Intensity_2000 the growth contrast. A pre-drift would mean the timing result is a pre-trend.
+- **`at:br_leftover_size` (step 7, `AT_br_leftover_size.tex`):** rows 1, 2, 4–6 of `at:br_leftover` Panel A by size tercile (same terciles as `af:br_size`), unweighted and weighted, with the share-explained rows.
+- **Switch:** `global run_cod = 0` right below `$sample_marg` at the top of 04. With 0 the file logs a message, closes the log and exits right before the cause-of-death section; set 1 to run it. Default 0.
+- **Verified statically only**: brace/quote balance of the added code, file lines and repo twin lines for the new exports. Run the block from step (4) or from the block start (≈ line 3452).
+
 ---
 
 ## Notes for Contributors

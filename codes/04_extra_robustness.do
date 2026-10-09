@@ -51,6 +51,10 @@ set more off
 }
 
 global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
+
+* SWITCH: run the cause-of-death section at the very end of this file?
+* 1 = run it, 0 = skip it (the file stops right before that section).
+global run_cod = 0
 * $sample_br is defined in 02_mortality.do (strict default: 1998/1999
 * entrants). Mirror that default only if it is not already set, so this
 * file also runs in a fresh session while still honoring the choice made
@@ -3476,6 +3480,10 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 *       also af:br_trim (AF_br_trim_uw, _w) and af:br_size
 *       (AF_br_size_uw, _w): the same slopes after trimming the tails
 *       of the residualized treatment / within size terciles
+*   (6) af:br_timing -- event study of the timing / growth pieces of the
+*       leftover: AF_br_timing_uw, AF_br_timing_w (.pdf)
+*   (7) at:br_leftover_size -- rows 1, 2, 4-6 of (3), Panel A, by size
+*       tercile: AT_br_leftover_size.tex
 *   (5) af:cloud_br -- BR's own cloud: change in mortality from 1992-99
 *       to 2000-02 against the mean lagged dose:
 *       AF_cloud_br_uw, AF_cloud_br_w (.pdf)
@@ -4084,9 +4092,172 @@ cloud_plot d_br dose_br w65_br 1 "AF_cloud_br_w" ///
 	"BR treatment: mean lagged intensity, 2000-2002" ///
 	"Change in mortality rate 65+, 2000-2002 vs. 1992-1999" 1
 
+*------------------------------------------------------------
+* (6) Event study of the "timing piece" of BR's leftover (see (3)):
+* mortality on fixed effects, Intensity_1999 x year, and
+* Intensity_1998 x year (or, in a separate regression, Intensity_2000 x
+* year), reference year 1999. BR's treatment in 2000 is Intensity_1998
+* and in 2002 Intensity_2000, so the 2000 coefficient on Intensity_1998
+* is the timing contrast in BR's leftover; the coefficients for
+* 1992-1998 are placebos (BR's treatment is zero then). Likewise for
+* Intensity_2000 in 2002 (the growth piece). Files: AF_br_timing_uw/w.
+*------------------------------------------------------------
+use `cdid_panel', clear
+quietly keep if $sample_br & inrange(year, 1992, 2002)
+quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+quietly count if missing(inten1998, inten2000)
+di "`r(N)' observations with missing Intensity 1998 or 2000 (dropped from the regressions below)"
+foreach wt in uw w {
+	local aw ""
+	if "`wt'" == "w" local aw "[aw=popover65_]"
+	foreach v in 1998 2000 {
+		quietly reghdfe emr65 ib1999.year#c.inten1999 ib1999.year#c.inten`v' `aw', ///
+			a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+		forvalues t = 1992/2002 {
+			if `t' == 1999 {
+				local eb`v'_`t' = 0
+				local el`v'_`t' = 0
+				local eh`v'_`t' = 0
+			}
+			else {
+				local eb`v'_`t' = _b[`t'.year#c.inten`v']
+				local el`v'_`t' = _b[`t'.year#c.inten`v'] - 1.96 * _se[`t'.year#c.inten`v']
+				local eh`v'_`t' = _b[`t'.year#c.inten`v'] + 1.96 * _se[`t'.year#c.inten`v']
+			}
+		}
+	}
+	preserve
+	clear
+	quietly set obs 11
+	quietly gen int year = 1991 + _n
+	foreach v in 1998 2000 {
+		quietly gen double b_`v' = .
+		quietly gen double l_`v' = .
+		quietly gen double h_`v' = .
+		forvalues t = 1992/2002 {
+			quietly replace b_`v' = `eb`v'_`t'' if year == `t'
+			quietly replace l_`v' = `el`v'_`t'' if year == `t'
+			quietly replace h_`v' = `eh`v'_`t'' if year == `t'
+		}
+	}
+	quietly gen double x_1998 = year - 0.1
+	quietly gen double x_2000 = year + 0.1
+	twoway ///
+		(rcap l_1998 h_1998 x_1998, lcolor(navy%60)) ///
+		(connected b_1998 x_1998, mcolor(navy) lcolor(navy) msymbol(O)) ///
+		(rcap l_2000 h_2000 x_2000, lcolor(maroon%60)) ///
+		(connected b_2000 x_2000, mcolor(maroon) lcolor(maroon) msymbol(D) lpattern(dash)), ///
+		yline(0, lcolor(gs12)) xline(1999.5, lcolor(gs10) lpattern(shortdash)) ///
+		xlabel(1992(1)2002, labsize(small)) ///
+		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+		xtitle("Year (reference: 1999; BR treatment is nonzero from 2000)", size(small)) ///
+		ytitle("Coefficient on Intensity x year (95% CI)", size(small)) ///
+		legend(order(2 "Intensity 1998 (timing piece)" 4 "Intensity 2000 (growth piece)") ///
+			size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
+		graphregion(color(white))
+	graph export "$figures/appendix/AF_br_timing_`wt'.pdf", as(pdf) replace
+	if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_timing_`wt'.pdf", as(pdf) replace
+	di "Figure exported to: $figures/appendix/AF_br_timing_`wt'.pdf"
+	restore
+}
+
+*------------------------------------------------------------
+* (7) Rows 1, 2 and 4-6 of (3), Panel A, within terciles of municipality
+* size (mean population 65+ over 1992-96, same terciles as af:br_size):
+* AT_br_leftover_size.tex. Shares are the partial within-R2 of BR's
+* treatment on the terms listed, as in (3).
+*------------------------------------------------------------
+use `cdid_panel', clear
+quietly keep if $sample_br & inrange(year, 1992, 2002)
+quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
+egen byte __tag = tag(cve_ent_mun_super)
+quietly xtile __szt = __sz if __tag, nquantiles(3)
+bysort cve_ent_mun_super: egen byte __terc = max(__szt)
+forvalues k = 1/3 {
+	quietly summarize __sz if __tag & __terc == `k'
+	local mp`k' = trim(string(r(mean), "%9.0fc"))
+}
+local ctl1 ""
+local ctl2 "c.inten1999#i.year"
+local ctl4 "c.inten1999#i.year i.inten_start_year#i.year"
+local ctl5 "c.inten1999#i.year c.inten1998#i.year"
+local ctl6 "c.inten1999#i.year c.inten2000#i.year"
+foreach wt in uw w {
+	local aw ""
+	if "`wt'" == "w" local aw "[aw=popover65_]"
+	forvalues k = 1/3 {
+		foreach r in 1 2 4 5 6 {
+			reghdfe emr65 lag2_intensity_new `ctl`r'' `aw' if __terc == `k', ///
+				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+			local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+			local st ""
+			if `t' >= 1.645 local st "*"
+			if `t' >= 1.960 local st "**"
+			if `t' >= 2.576 local st "***"
+			local zb_`wt'_`k'_`r' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
+			local zs_`wt'_`k'_`r' = trim(string(_se[lag2_intensity_new], "%9.3f"))
+			if `r' == 1 {
+				local zN_`wt'_`k' = trim(string(e(N), "%12.0fc"))
+				tempvar tg
+				quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+				quietly count if `tg' == 1
+				local zM_`wt'_`k' = trim(string(r(N), "%12.0fc"))
+				drop `tg'
+			}
+			else {
+				quietly reghdfe lag2_intensity_new `ctl`r'' `aw' if __terc == `k', a(cve_ent_mun_super year)
+				local zr_`wt'_`k'_`r' = trim(string(e(r2_within), "%9.3f"))
+			}
+		}
+	}
+}
+
+cap file close bsz
+file open bsz using "$tables/appendix/AT_br_leftover_size.tex", write replace
+file write bsz "\begin{tabular}{lcccccc} \hline \hline" _n
+file write bsz " & \multicolumn{3}{c}{Unweighted} & \multicolumn{3}{c}{Weighted} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7}" _n
+file write bsz " & Small & Medium & Large & Small & Medium & Large \\ " _n
+file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) \\ \toprule" _n
+file write bsz "Mean population 65+, 1992--96 & `mp1' & `mp2' & `mp3' & `mp1' & `mp2' & `mp3' \\ " _n
+file write bsz "  & & & & & & \\ " _n
+file write bsz "\textit{BR treatment}, fixed effects only & `zb_uw_1_1' & `zb_uw_2_1' & `zb_uw_3_1' & `zb_w_1_1' & `zb_w_2_1' & `zb_w_3_1' \\ " _n
+file write bsz " & (`zs_uw_1_1') & (`zs_uw_2_1') & (`zs_uw_3_1') & (`zs_w_1_1') & (`zs_w_2_1') & (`zs_w_3_1') \\ " _n
+file write bsz "\quad + Intensity 1999 x year & `zb_uw_1_2' & `zb_uw_2_2' & `zb_uw_3_2' & `zb_w_1_2' & `zb_w_2_2' & `zb_w_3_2' \\ " _n
+file write bsz " & (`zs_uw_1_2') & (`zs_uw_2_2') & (`zs_uw_3_2') & (`zs_w_1_2') & (`zs_w_2_2') & (`zs_w_3_2') \\ " _n
+file write bsz "  & & & & & & \\ " _n
+file write bsz "Intensity 1999 x year and, in addition: & & & & & & \\ " _n
+file write bsz "\quad Entry cohort x year (1998 vs. 1999) & `zb_uw_1_4' & `zb_uw_2_4' & `zb_uw_3_4' & `zb_w_1_4' & `zb_w_2_4' & `zb_w_3_4' \\ " _n
+file write bsz " & (`zs_uw_1_4') & (`zs_uw_2_4') & (`zs_uw_3_4') & (`zs_w_1_4') & (`zs_w_2_4') & (`zs_w_3_4') \\ " _n
+file write bsz "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000) & `zb_uw_1_5' & `zb_uw_2_5' & `zb_uw_3_5' & `zb_w_1_5' & `zb_w_2_5' & `zb_w_3_5' \\ " _n
+file write bsz " & (`zs_uw_1_5') & (`zs_uw_2_5') & (`zs_uw_3_5') & (`zs_w_1_5') & (`zs_w_2_5') & (`zs_w_3_5') \\ " _n
+file write bsz "\quad Intensity 2000 x year (left: 2000 value = Intensity 1998) & `zb_uw_1_6' & `zb_uw_2_6' & `zb_uw_3_6' & `zb_w_1_6' & `zb_w_2_6' & `zb_w_3_6' \\ " _n
+file write bsz " & (`zs_uw_1_6') & (`zs_uw_2_6') & (`zs_uw_3_6') & (`zs_w_1_6') & (`zs_w_2_6') & (`zs_w_3_6') \\ " _n
+file write bsz "  & & & & & & \\ " _n
+file write bsz "Share of BR treatment variation explained by: & & & & & & \\ " _n
+file write bsz "\quad Intensity 1999 x year & `zr_uw_1_2' & `zr_uw_2_2' & `zr_uw_3_2' & `zr_w_1_2' & `zr_w_2_2' & `zr_w_3_2' \\ " _n
+file write bsz "\quad Intensity 1999 and entry cohort x year & `zr_uw_1_4' & `zr_uw_2_4' & `zr_uw_3_4' & `zr_w_1_4' & `zr_w_2_4' & `zr_w_3_4' \\ " _n
+file write bsz "\quad Intensity 1999 and 1998 x year & `zr_uw_1_5' & `zr_uw_2_5' & `zr_uw_3_5' & `zr_w_1_5' & `zr_w_2_5' & `zr_w_3_5' \\ " _n
+file write bsz "\quad Intensity 1999 and 2000 x year & `zr_uw_1_6' & `zr_uw_2_6' & `zr_uw_3_6' & `zr_w_1_6' & `zr_w_2_6' & `zr_w_3_6' \\ " _n
+file write bsz "Observations & `zN_uw_1' & `zN_uw_2' & `zN_uw_3' & `zN_w_1' & `zN_w_2' & `zN_w_3' \\ " _n
+file write bsz "No. Mun & `zM_uw_1' & `zM_uw_2' & `zM_uw_3' & `zM_w_1' & `zM_w_2' & `zM_w_3' \\ " _n
+file write bsz "\bottomrule" _n
+file write bsz "\end{tabular}"
+file close bsz
+if "$repo_tables" != "" copy "$tables/appendix/AT_br_leftover_size.tex" "$repo_tables/appendix/AT_br_leftover_size.tex", replace
+di "Table exported to: $tables/appendix/AT_br_leftover_size.tex"
+
 * restore the working panel for the cause-of-death section below
 use `cdid_panel', clear
 
+
+*============================================================
+* Skip everything below unless $run_cod = 1 (switch at the top of this file)
+if $run_cod == 0 {
+	di "Cause-of-death section skipped: global run_cod is 0 at the top of this file"
+	log close
+	exit
+}
 
 *============================================================
 * CAUSE-OF-DEATH ANALYSIS (all of it, consolidated here)
