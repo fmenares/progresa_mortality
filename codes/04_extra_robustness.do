@@ -4107,11 +4107,20 @@ quietly keep if $sample_br & inrange(year, 1992, 2002)
 quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
 quietly count if missing(inten1998, inten2000)
 di "`r(N)' observations with missing Intensity 1998 or 2000 (dropped from the regressions below)"
+* Intensity x year terms built by hand, leaving out 1999, so that 1999 is
+* the reference year. (With ib1999.year#c.x Stata keeps every year of a
+* factor-by-continuous interaction, the municipality fixed effects then
+* make one year redundant, and reghdfe dropped 2002 instead of 1999.)
+foreach v in 1998 2000 {
+	forvalues t = 1992/2002 {
+		if `t' != 1999 quietly gen double __e`v'_`t' = inten`v' * (year == `t')
+	}
+}
 foreach wt in uw w {
 	local aw ""
 	if "`wt'" == "w" local aw "[aw=popover65_]"
 	foreach v in 1998 2000 {
-		quietly reghdfe emr65 ib1999.year#c.inten1999 ib1999.year#c.inten`v' `aw', ///
+		quietly reghdfe emr65 __e`v'_* c.inten1999#i.year `aw', ///
 			a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
 		forvalues t = 1992/2002 {
 			if `t' == 1999 {
@@ -4120,9 +4129,10 @@ foreach wt in uw w {
 				local eh`v'_`t' = 0
 			}
 			else {
-				local eb`v'_`t' = _b[`t'.year#c.inten`v']
-				local el`v'_`t' = _b[`t'.year#c.inten`v'] - 1.96 * _se[`t'.year#c.inten`v']
-				local eh`v'_`t' = _b[`t'.year#c.inten`v'] + 1.96 * _se[`t'.year#c.inten`v']
+				if _se[__e`v'_`t'] == 0 di as error "WARNING: Intensity `v' x `t' omitted (`wt')"
+				local eb`v'_`t' = _b[__e`v'_`t']
+				local el`v'_`t' = _b[__e`v'_`t'] - 1.96 * _se[__e`v'_`t']
+				local eh`v'_`t' = _b[__e`v'_`t'] + 1.96 * _se[__e`v'_`t']
 			}
 		}
 	}
