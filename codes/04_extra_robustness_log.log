@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:   9 Oct 2026, 14:43:43
+ opened on:   9 Oct 2026, 15:20:19
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -12648,11 +12648,21 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 . di "`r(N)' observations with missing Intensity 1998 or 2000 (dropped from the regressions below)"
 0 observations with missing Intensity 1998 or 2000 (dropped from the regressions below)
 
+. * Intensity x year terms built by hand, leaving out 1999, so that 1999 is
+. * the reference year. (With ib1999.year#c.x Stata keeps every year of a
+. * factor-by-continuous interaction, the municipality fixed effects then
+. * make one year redundant, and reghdfe dropped 2002 instead of 1999.)
+. foreach v in 1998 2000 {
+  2.         forvalues t = 1992/2002 {
+  3.                 if `t' != 1999 quietly gen double __e`v'_`t' = inten`v' * (year == `t')
+  4.         }
+  5. }
+
 . foreach wt in uw w {
   2.         local aw ""
   3.         if "`wt'" == "w" local aw "[aw=popover65_]"
   4.         foreach v in 1998 2000 {
-  5.                 quietly reghdfe emr65 ib1999.year#c.inten1999 ib1999.year#c.inten`v' `aw', ///
+  5.                 quietly reghdfe emr65 __e`v'_* c.inten1999#i.year `aw', ///
 >                         a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
   6.                 forvalues t = 1992/2002 {
   7.                         if `t' == 1999 {
@@ -12661,31 +12671,31 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
  10.                                 local eh`v'_`t' = 0
  11.                         }
  12.                         else {
- 13.                                 local eb`v'_`t' = _b[`t'.year#c.inten`v']
- 14.                                 local el`v'_`t' = _b[`t'.year#c.inten`v'] - 1.96 * _se[`t'.year#c.inte
-> n`v']
- 15.                                 local eh`v'_`t' = _b[`t'.year#c.inten`v'] + 1.96 * _se[`t'.year#c.inte
-> n`v']
- 16.                         }
- 17.                 }
- 18.         }
- 19.         preserve
- 20.         clear
- 21.         quietly set obs 11
- 22.         quietly gen int year = 1991 + _n
- 23.         foreach v in 1998 2000 {
- 24.                 quietly gen double b_`v' = .
- 25.                 quietly gen double l_`v' = .
- 26.                 quietly gen double h_`v' = .
- 27.                 forvalues t = 1992/2002 {
- 28.                         quietly replace b_`v' = `eb`v'_`t'' if year == `t'
- 29.                         quietly replace l_`v' = `el`v'_`t'' if year == `t'
- 30.                         quietly replace h_`v' = `eh`v'_`t'' if year == `t'
- 31.                 }
- 32.         }
- 33.         quietly gen double x_1998 = year - 0.1
- 34.         quietly gen double x_2000 = year + 0.1
- 35.         twoway ///
+ 13.                                 if _se[__e`v'_`t'] == 0 di as error "WARNING: Intensity `v' x `t' omit
+> ted (`wt')"
+ 14.                                 local eb`v'_`t' = _b[__e`v'_`t']
+ 15.                                 local el`v'_`t' = _b[__e`v'_`t'] - 1.96 * _se[__e`v'_`t']
+ 16.                                 local eh`v'_`t' = _b[__e`v'_`t'] + 1.96 * _se[__e`v'_`t']
+ 17.                         }
+ 18.                 }
+ 19.         }
+ 20.         preserve
+ 21.         clear
+ 22.         quietly set obs 11
+ 23.         quietly gen int year = 1991 + _n
+ 24.         foreach v in 1998 2000 {
+ 25.                 quietly gen double b_`v' = .
+ 26.                 quietly gen double l_`v' = .
+ 27.                 quietly gen double h_`v' = .
+ 28.                 forvalues t = 1992/2002 {
+ 29.                         quietly replace b_`v' = `eb`v'_`t'' if year == `t'
+ 30.                         quietly replace l_`v' = `el`v'_`t'' if year == `t'
+ 31.                         quietly replace h_`v' = `eh`v'_`t'' if year == `t'
+ 32.                 }
+ 33.         }
+ 34.         quietly gen double x_1998 = year - 0.1
+ 35.         quietly gen double x_2000 = year + 0.1
+ 36.         twoway ///
 >                 (rcap l_1998 h_1998 x_1998, lcolor(navy%60)) ///
 >                 (connected b_1998 x_1998, mcolor(navy) lcolor(navy) msymbol(O)) ///
 >                 (rcap l_2000 h_2000 x_2000, lcolor(maroon%60)) ///
@@ -12698,12 +12708,12 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 >                 legend(order(2 "Intensity 1998 (timing piece)" 4 "Intensity 2000 (growth piece)") ///
 >                         size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
 >                 graphregion(color(white))
- 36.         graph export "$figures/appendix/AF_br_timing_`wt'.pdf", as(pdf) replace
- 37.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_timing_`wt'.pdf", as(pdf) 
+ 37.         graph export "$figures/appendix/AF_br_timing_`wt'.pdf", as(pdf) replace
+ 38.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_timing_`wt'.pdf", as(pdf) 
 > replace
- 38.         di "Figure exported to: $figures/appendix/AF_br_timing_`wt'.pdf"
- 39.         restore
- 40. }
+ 39.         di "Figure exported to: $figures/appendix/AF_br_timing_`wt'.pdf"
+ 40.         restore
+ 41. }
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_timing_uw.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_br_timing_uw.pdf saved
@@ -14330,9 +14340,6 @@ Absorbed degrees of freedom:
 . cap file close bsz
 
 . file open bsz using "$tables/appendix/AT_br_leftover_size.tex", write replace
-(file
-    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_leftover_size.tex
-    not found)
 
 . file write bsz "\begin{tabular}{lcccccc} \hline \hline" _n
 
@@ -14409,8 +14416,6 @@ Absorbed degrees of freedom:
 
 . if "$repo_tables" != "" copy "$tables/appendix/AT_br_leftover_size.tex" "$repo_tables/appendix/AT_br_left
 > over_size.tex", replace
-(file C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables/appendix/AT_br_leftover_size.tex not
-    found)
 
 . di "Table exported to: $tables/appendix/AT_br_leftover_size.tex"
 Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_lefto
@@ -14431,5 +14436,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:   9 Oct 2026, 14:45:51
+ closed on:   9 Oct 2026, 15:22:14
 -----------------------------------------------------------------------------------------------------------
