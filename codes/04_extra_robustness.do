@@ -22,7 +22,9 @@
 *** file close' lines to restore that output.
 *** EXPORT MIRRORING: every figure and table written here is also exported to the
 *** repo clone ($repo_figures / $repo_tables), one extra line after each export.
-*** EXCEPTIONS (exports active, for review): the through-2005 Table 2 /
+*** EXCEPTIONS (exports active): the BR size/trimming table
+*** (AT6_BR_trimming.tex, at:br_trimming, displayed again since 2026-10-13);
+*** the through-2005 Table 2 /
 *** Figure 2 replication and the dose-response cloud / Barham-Rowberry
 *** decomposition block, both right before the cause-of-death section.
 *** ============================================================================================================
@@ -3066,17 +3068,20 @@ restore
 * Pooled only; same unweighted lag-2 spec as AT3 Panel B.
 *============================================================
 
-* Step 1: Compute municipality-level mean older-adult population
-*         across the BR sample period (used as size proxy for trimming)
+* Step 1: Compute municipality-level mean older-adult population over
+*         the pre-program years of the BR window (1992-1996), used as the
+*         size proxy for trimming and terciles. Pre-program so that size
+*         is not affected by the program (population 65+ responds to
+*         mortality); the same definition as at:br_leftover_size.
 capture drop _pop_br_tmp pop_mun_br
 bys cve_ent_mun_super: egen _pop_br_tmp = mean(popover65_) ///
-    if inrange(year, 1992, 2002) & $sample_br
+    if inrange(year, 1992, 1996) & $sample_br
 bys cve_ent_mun_super: egen pop_mun_br = mean(_pop_br_tmp)
 drop _pop_br_tmp
 
 * Step 2: Get p10/p25/p50 cutoffs at the municipality level
 preserve
-    keep if $sample_br & inrange(year, 1992, 2002)
+    keep if $sample_br & inrange(year, 1992, 1996)
     collapse (mean) pop_mean = popover65_, by(cve_ent_mun_super)
     _pctile pop_mean, p(10 25)
     local p10_br = r(r1)
@@ -3146,22 +3151,16 @@ local NmunAT5_3: di %12.0fc `r(ndistinct)'
 * sample itself into three equal-sized groups (terciles) by municipality
 * size and report the unweighted BR replication spec separately within
 * each.
-capture drop pop_mun_br_terc
-bys cve_ent_mun_super: egen pop_mun_br_terc = mean(popover65_) ///
-    if inrange(year, 1992, 2002) & $sample_br
-preserve
-    keep if $sample_br & inrange(year, 1992, 2002)
-    collapse (mean) pop_mean_terc = popover65_, by(cve_ent_mun_super)
-    _pctile pop_mean_terc, p(33.33 66.67)
-    local p33_br = r(r1)
-    local p67_br = r(r2)
-restore
-di "BR size tercile cutoffs (older adults 65+): p33=`p33_br', p67=`p67_br'"
-
-capture drop size_tercile_br
-gen byte size_tercile_br = 1 if pop_mun_br_terc <= `p33_br' & !missing(pop_mun_br_terc)
-replace size_tercile_br = 2 if pop_mun_br_terc > `p33_br' & pop_mun_br_terc <= `p67_br'
-replace size_tercile_br = 3 if pop_mun_br_terc > `p67_br' & !missing(pop_mun_br_terc)
+* Terciles: three groups with equal numbers of municipalities, ranked by
+* the pre-program (1992-1996) mean population 65+ (pop_mun_br, Step 1);
+* xtile over one row per municipality, exactly as in at:br_leftover_size,
+* so its unweighted Small/Medium/Large columns match columns (5)-(7) here.
+capture drop pop_mun_br_terc size_tercile_br _tg_terc _szt
+gen double pop_mun_br_terc = pop_mun_br if inrange(year, 1992, 2002) & $sample_br
+egen byte _tg_terc = tag(cve_ent_mun_super) if !missing(pop_mun_br_terc)
+quietly xtile _szt = pop_mun_br_terc if _tg_terc == 1, nquantiles(3)
+bys cve_ent_mun_super: egen byte size_tercile_br = max(_szt)
+drop _tg_terc _szt
 label define size_tercile_br_lbl 1 "Small" 2 "Medium" 3 "Large", replace
 label values size_tercile_br size_tercile_br_lbl
 
@@ -3195,29 +3194,26 @@ local meanI99_AT5_2: di %6.1f r(mean) * 100
 quietly sum inten1999 if $sample_br & year == 1996 & pop_mun_br > `p25_br'
 local meanI99_AT5_3: di %6.1f r(mean) * 100
 
-* file write lines below disabled: not displayed in the paper (formerly
-* wrote $tables/appendix/AT6_BR_trimming.tex)
-* {
-*     cap file close sm
-*     file open sm using "$tables/appendix/AT6_BR_trimming.tex", write replace
-*     file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
-*     file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Population Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
-*     file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
-*     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
-*     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule " _n
-*     file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
-*     file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') \\ " _n
-*     file write sm "  & & & & & & & \\ " _n
-*     file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' \\ " _n
-*     file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' \\ " _n
-*     file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' \\ " _n
-*     file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
-*     file write sm "\bottomrule" _n
-*     file write sm "\end{tabular}"
-*     file close sm
-*     if "$repo_tables" != "" copy "$tables/appendix/AT6_BR_trimming.tex" "$repo_tables/appendix/AT6_BR_trimming.tex", replace
-* }
-di "Table NOT exported (disabled): $tables/appendix/AT6_BR_trimming.tex"
+* Displayed again (2026-10-13), next to at:br_leftover_size.
+cap file close sm
+file open sm using "$tables/appendix/AT6_BR_trimming.tex", write replace
+file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
+file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Population Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
+file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
+file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
+file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule " _n
+file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
+file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') \\ " _n
+file write sm "  & & & & & & & \\ " _n
+file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' \\ " _n
+file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' \\ " _n
+file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' \\ " _n
+file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
+file write sm "\bottomrule" _n
+file write sm "\end{tabular}"
+file close sm
+if "$repo_tables" != "" copy "$tables/appendix/AT6_BR_trimming.tex" "$repo_tables/appendix/AT6_BR_trimming.tex", replace
+di "Table exported to: $tables/appendix/AT6_BR_trimming.tex"
 
 drop pop_mun_br
 
@@ -3482,8 +3478,8 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 *       of the residualized treatment / within size terciles
 *   (6) af:br_timing -- event study of the timing / growth pieces of the
 *       leftover: AF_br_timing_uw, AF_br_timing_w (.pdf)
-*   (7) at:br_leftover_size -- (3), Panels A and B, by size tercile and
-*       in the whole sample: AT_br_leftover_size.tex
+*   (7) at:br_leftover_size -- (3), Panel A (without the Intensity_2005
+*       row), by size tercile and in the whole sample
 * IN THE PAPER (since 2026-10-13): only (1) af:cloud_mortality (kept for
 * later) and (7) at:br_leftover_size. The exports of (2)-(6) still run so
 * the log keeps their numbers, but figures_app.tex/tables_app.tex no
@@ -4180,85 +4176,65 @@ foreach wt in uw w {
 
 *------------------------------------------------------------
 * (7) at:br_leftover_size -- the paper's single table on BR's leftover
-* variation (landscape, Appendix Table A.7). Columns: Small, Medium,
-* Large, All -- unweighted, then weighted. Panel A: BR's sample (1998/99
-* entrants) and window (1992-2002), rows 1-6 of the decomposition in (3);
-* "All" reproduces (3), Panel A. Panel B: our highly marginalized sample
-* and window (1991-2006) with Seguro Popular intensity in every
-* regression, rows 1-3; "All" reproduces (3), Panel B. Terciles are of
-* mean population 65+ over the years up to 1996 within each panel's own
-* sample (Panel A's are the af:br_size terciles). Shares are the partial
-* within-R2 of BR's treatment on the terms listed, beyond the base
-* controls. AT_br_leftover_size.tex.
+* variation (landscape, Appendix Table A.7). BR's sample (1998/99
+* entrants) and window (1992-2002). Columns: Small, Medium, Large, All
+* -- unweighted, then weighted; "All" reproduces (3), Panel A. Rows: BR's
+* treatment with fixed effects only; + Intensity_1999 x year; and, on
+* top of the latter, entry cohort x year, Intensity_1998 x year, or
+* Intensity_2000 x year. (Intensity_2005 x year and the 1991-2006 HM
+* panel of (3) are left out: they concern our design, not BR's; the
+* numbers stay in (3)'s log and in research_project.md.) Terciles: three
+* groups with equal numbers of municipalities, ranked by the pre-program
+* (1992-1996) mean population 65+, the same groups as columns (5)-(7) of
+* the AT6_BR_trimming table. Shares are the partial within-R2 of BR's
+* treatment on the terms listed. AT_br_leftover_size.tex.
 *------------------------------------------------------------
-foreach pnl in A B {
-	use `cdid_panel', clear
-	if "`pnl'" == "A" {
-		quietly keep if $sample_br & inrange(year, 1992, 2002)
-		local base ""
-	}
-	else {
-		quietly keep if $sample_marg & inrange(year, 1991, 2006)
-		quietly keep if !missing(sp_intensity)
-		local base "c.sp_intensity"
-	}
-	quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
-	bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
-	egen byte __tag = tag(cve_ent_mun_super)
-	quietly xtile __szt = __sz if __tag, nquantiles(3)
-	bysort cve_ent_mun_super: egen byte __terc = max(__szt)
-	forvalues k = 1/3 {
-		quietly summarize __sz if __tag & __terc == `k'
-		local mp`pnl'_`k' = trim(string(r(mean), "%9.0fc"))
-	}
-	quietly summarize __sz if __tag
-	local mp`pnl'_4 = trim(string(r(mean), "%9.0fc"))
-	local ctl1 "`base'"
-	local ctl2 "`base' c.inten1999#i.year"
-	local ctl3 "`base' c.inten1999#i.year c.inten2005#i.year"
-	local nr = 3
-	if "`pnl'" == "A" {
-		local ctl4 "`ctl2' i.inten_start_year#i.year"
-		local ctl5 "`ctl2' c.inten1998#i.year"
-		local ctl6 "`ctl2' c.inten2000#i.year"
-		local nr = 6
-	}
-	foreach wt in uw w {
-		local aw ""
-		if "`wt'" == "w" local aw "[aw=popover65_]"
-		* k = 1-3: size terciles; k = 4: whole sample
-		forvalues k = 1/4 {
-			local cond "if __terc == `k'"
-			if `k' == 4 local cond ""
-			* within-R2 of BR's treatment on the base controls alone
-			local r2base = 0
-			if "`base'" != "" {
-				quietly reghdfe lag2_intensity_new `base' `aw' `cond', a(cve_ent_mun_super year)
-				local r2base = e(r2_within)
+use `cdid_panel', clear
+quietly keep if $sample_br & inrange(year, 1992, 2002)
+quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
+egen byte __tag = tag(cve_ent_mun_super)
+quietly xtile __szt = __sz if __tag, nquantiles(3)
+bysort cve_ent_mun_super: egen byte __terc = max(__szt)
+forvalues k = 1/3 {
+	quietly summarize __sz if __tag & __terc == `k'
+	local mp`k' = trim(string(r(mean), "%9.0fc"))
+}
+quietly summarize __sz if __tag
+local mp4 = trim(string(r(mean), "%9.0fc"))
+local ctl1 ""
+local ctl2 "c.inten1999#i.year"
+local ctl4 "c.inten1999#i.year i.inten_start_year#i.year"
+local ctl5 "c.inten1999#i.year c.inten1998#i.year"
+local ctl6 "c.inten1999#i.year c.inten2000#i.year"
+foreach wt in uw w {
+	local aw ""
+	if "`wt'" == "w" local aw "[aw=popover65_]"
+	* k = 1-3: size terciles; k = 4: whole sample
+	forvalues k = 1/4 {
+		local cond "if __terc == `k'"
+		if `k' == 4 local cond ""
+		foreach r in 1 2 4 5 6 {
+			reghdfe emr65 lag2_intensity_new `ctl`r'' `aw' `cond', ///
+				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+			local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+			local st ""
+			if `t' >= 1.645 local st "*"
+			if `t' >= 1.960 local st "**"
+			if `t' >= 2.576 local st "***"
+			local zb_`wt'_`k'_`r' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
+			local zs_`wt'_`k'_`r' = trim(string(_se[lag2_intensity_new], "%9.3f"))
+			if `r' == 1 {
+				local zN_`wt'_`k' = trim(string(e(N), "%12.0fc"))
+				tempvar tg
+				quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+				quietly count if `tg' == 1
+				local zM_`wt'_`k' = trim(string(r(N), "%12.0fc"))
+				drop `tg'
 			}
-			forvalues r = 1/`nr' {
-				reghdfe emr65 lag2_intensity_new `ctl`r'' `aw' `cond', ///
-					a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
-				local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
-				local st ""
-				if `t' >= 1.645 local st "*"
-				if `t' >= 1.960 local st "**"
-				if `t' >= 2.576 local st "***"
-				local zb_`pnl'_`wt'_`k'_`r' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
-				local zs_`pnl'_`wt'_`k'_`r' = trim(string(_se[lag2_intensity_new], "%9.3f"))
-				if `r' == 1 {
-					local zN_`pnl'_`wt'_`k' = trim(string(e(N), "%12.0fc"))
-					tempvar tg
-					quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
-					quietly count if `tg' == 1
-					local zM_`pnl'_`wt'_`k' = trim(string(r(N), "%12.0fc"))
-					drop `tg'
-				}
-				else {
-					quietly reghdfe lag2_intensity_new `ctl`r'' `aw' `cond', a(cve_ent_mun_super year)
-					local pr2 = (e(r2_within) - `r2base') / (1 - `r2base')
-					local zr_`pnl'_`wt'_`k'_`r' = trim(string(`pr2', "%9.3f"))
-				}
+			else {
+				quietly reghdfe lag2_intensity_new `ctl`r'' `aw' `cond', a(cve_ent_mun_super year)
+				local zr_`wt'_`k'_`r' = trim(string(e(r2_within), "%9.3f"))
 			}
 		}
 	}
@@ -4267,12 +4243,10 @@ foreach pnl in A B {
 local cols "uw_1 uw_2 uw_3 uw_4 w_1 w_2 w_3 w_4"
 local lab1 "\textit{BR treatment}, fixed effects only"
 local lab2 "\quad + Intensity 1999 x year"
-local lab3 "\quad + Intensity 2005 x year"
 local lab4 "\quad Entry cohort x year (1998 vs. 1999)"
 local lab5 "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000)"
 local lab6 "\quad Intensity 2000 x year (left: 2000 value = Intensity 1998)"
 local sl2 "\quad Intensity 1999 x year"
-local sl3 "\quad Intensity 1999 and 2005 x year"
 local sl4 "\quad Intensity 1999 and entry cohort x year"
 local sl5 "\quad Intensity 1999 and 1998 x year"
 local sl6 "\quad Intensity 1999 and 2000 x year"
@@ -4283,50 +4257,39 @@ file write bsz "\begin{tabular}{lcccccccc} \hline \hline" _n
 file write bsz " & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){2-5} \cmidrule(lr){6-9}" _n
 file write bsz " & Small & Medium & Large & All & Small & Medium & Large & All \\ " _n
 file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
-foreach pnl in A B {
-	local nr = 3
-	if "`pnl'" == "A" local nr = 6
-	if "`pnl'" == "A" {
-		file write bsz "\underline{\textit{Panel A: Barham and Rowberry sample (1998--1999 entrants), 1992--2002}} \\ " _n
-	}
-	else {
-		file write bsz "  & & & & & & & & \\ " _n
-		file write bsz "\underline{\textit{Panel B: Highly marginalized municipalities, 1991--2006}} \\ " _n
-	}
-	file write bsz "Mean population 65+, up to 1996 & `mp`pnl'_1' & `mp`pnl'_2' & `mp`pnl'_3' & `mp`pnl'_4' & `mp`pnl'_1' & `mp`pnl'_2' & `mp`pnl'_3' & `mp`pnl'_4' \\ " _n
-	file write bsz "  & & & & & & & & \\ " _n
-	forvalues r = 1/`nr' {
-		local cb ""
-		local cs ""
-		foreach c of local cols {
-			local cb "`cb' & `zb_`pnl'_`c'_`r''"
-			local cs "`cs' & (`zs_`pnl'_`c'_`r'')"
-		}
-		if `r' == 4 {
-			file write bsz "  & & & & & & & & \\ " _n
-			file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & \\ " _n
-		}
-		file write bsz "`lab`r''`cb' \\ " _n
-		file write bsz "`cs' \\ " _n
-	}
-	file write bsz "  & & & & & & & & \\ " _n
-	file write bsz "Share of BR treatment variation explained by: & & & & & & & & \\ " _n
-	forvalues r = 2/`nr' {
-		local cr ""
-		foreach c of local cols {
-			local cr "`cr' & `zr_`pnl'_`c'_`r''"
-		}
-		file write bsz "`sl`r''`cr' \\ " _n
-	}
-	local cn ""
-	local cm ""
+file write bsz "Mean population 65+, 1992--1996 & `mp1' & `mp2' & `mp3' & `mp4' & `mp1' & `mp2' & `mp3' & `mp4' \\ " _n
+file write bsz "  & & & & & & & & \\ " _n
+foreach r in 1 2 4 5 6 {
+	local cb ""
+	local cs ""
 	foreach c of local cols {
-		local cn "`cn' & `zN_`pnl'_`c''"
-		local cm "`cm' & `zM_`pnl'_`c''"
+		local cb "`cb' & `zb_`c'_`r''"
+		local cs "`cs' & (`zs_`c'_`r'')"
 	}
-	file write bsz "Observations`cn' \\ " _n
-	file write bsz "No. Mun`cm' \\ " _n
+	if `r' == 4 {
+		file write bsz "  & & & & & & & & \\ " _n
+		file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & \\ " _n
+	}
+	file write bsz "`lab`r''`cb' \\ " _n
+	file write bsz "`cs' \\ " _n
 }
+file write bsz "  & & & & & & & & \\ " _n
+file write bsz "Share of BR treatment variation explained by: & & & & & & & & \\ " _n
+foreach r in 2 4 5 6 {
+	local cr ""
+	foreach c of local cols {
+		local cr "`cr' & `zr_`c'_`r''"
+	}
+	file write bsz "`sl`r''`cr' \\ " _n
+}
+local cn ""
+local cm ""
+foreach c of local cols {
+	local cn "`cn' & `zN_`c''"
+	local cm "`cm' & `zM_`c''"
+}
+file write bsz "Observations`cn' \\ " _n
+file write bsz "No. Mun`cm' \\ " _n
 file write bsz "\bottomrule" _n
 file write bsz "\end{tabular}"
 file close bsz
