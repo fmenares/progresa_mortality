@@ -3482,8 +3482,8 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 *       of the residualized treatment / within size terciles
 *   (6) af:br_timing -- event study of the timing / growth pieces of the
 *       leftover: AF_br_timing_uw, AF_br_timing_w (.pdf)
-*   (7) at:br_leftover_size -- rows 1-6 of (3), Panel A, by size
-*       tercile and in the whole sample: AT_br_leftover_size.tex
+*   (7) at:br_leftover_size -- (3), Panels A and B, by size tercile and
+*       in the whole sample: AT_br_leftover_size.tex
 * IN THE PAPER (since 2026-10-13): only (1) af:cloud_mortality (kept for
 * later) and (7) at:br_leftover_size. The exports of (2)-(6) still run so
 * the log keeps their numbers, but figures_app.tex/tables_app.tex no
@@ -4180,60 +4180,85 @@ foreach wt in uw w {
 
 *------------------------------------------------------------
 * (7) at:br_leftover_size -- the paper's single table on BR's leftover
-* variation: rows 1-6 of (3), Panel A, within terciles of municipality
-* size (mean population 65+ over 1992-96, same terciles as af:br_size)
-* and in the whole BR sample ("All", which reproduces (3), Panel A).
-* Columns: Small, Medium, Large, All -- unweighted, then weighted.
-* AT_br_leftover_size.tex. Shares are the partial within-R2 of BR's
-* treatment on the terms listed, as in (3).
+* variation (landscape, Appendix Table A.7). Columns: Small, Medium,
+* Large, All -- unweighted, then weighted. Panel A: BR's sample (1998/99
+* entrants) and window (1992-2002), rows 1-6 of the decomposition in (3);
+* "All" reproduces (3), Panel A. Panel B: our highly marginalized sample
+* and window (1991-2006) with Seguro Popular intensity in every
+* regression, rows 1-3; "All" reproduces (3), Panel B. Terciles are of
+* mean population 65+ over the years up to 1996 within each panel's own
+* sample (Panel A's are the af:br_size terciles). Shares are the partial
+* within-R2 of BR's treatment on the terms listed, beyond the base
+* controls. AT_br_leftover_size.tex.
 *------------------------------------------------------------
-use `cdid_panel', clear
-quietly keep if $sample_br & inrange(year, 1992, 2002)
-quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
-bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
-egen byte __tag = tag(cve_ent_mun_super)
-quietly xtile __szt = __sz if __tag, nquantiles(3)
-bysort cve_ent_mun_super: egen byte __terc = max(__szt)
-forvalues k = 1/3 {
-	quietly summarize __sz if __tag & __terc == `k'
-	local mp`k' = trim(string(r(mean), "%9.0fc"))
-}
-quietly summarize __sz if __tag
-local mp4 = trim(string(r(mean), "%9.0fc"))
-local ctl1 ""
-local ctl2 "c.inten1999#i.year"
-local ctl3 "c.inten1999#i.year c.inten2005#i.year"
-local ctl4 "c.inten1999#i.year i.inten_start_year#i.year"
-local ctl5 "c.inten1999#i.year c.inten1998#i.year"
-local ctl6 "c.inten1999#i.year c.inten2000#i.year"
-foreach wt in uw w {
-	local aw ""
-	if "`wt'" == "w" local aw "[aw=popover65_]"
-	* k = 1-3: size terciles; k = 4: whole sample
-	forvalues k = 1/4 {
-		local cond "if __terc == `k'"
-		if `k' == 4 local cond ""
-		forvalues r = 1/6 {
-			reghdfe emr65 lag2_intensity_new `ctl`r'' `aw' `cond', ///
-				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
-			local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
-			local st ""
-			if `t' >= 1.645 local st "*"
-			if `t' >= 1.960 local st "**"
-			if `t' >= 2.576 local st "***"
-			local zb_`wt'_`k'_`r' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
-			local zs_`wt'_`k'_`r' = trim(string(_se[lag2_intensity_new], "%9.3f"))
-			if `r' == 1 {
-				local zN_`wt'_`k' = trim(string(e(N), "%12.0fc"))
-				tempvar tg
-				quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
-				quietly count if `tg' == 1
-				local zM_`wt'_`k' = trim(string(r(N), "%12.0fc"))
-				drop `tg'
+foreach pnl in A B {
+	use `cdid_panel', clear
+	if "`pnl'" == "A" {
+		quietly keep if $sample_br & inrange(year, 1992, 2002)
+		local base ""
+	}
+	else {
+		quietly keep if $sample_marg & inrange(year, 1991, 2006)
+		quietly keep if !missing(sp_intensity)
+		local base "c.sp_intensity"
+	}
+	quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+	bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
+	egen byte __tag = tag(cve_ent_mun_super)
+	quietly xtile __szt = __sz if __tag, nquantiles(3)
+	bysort cve_ent_mun_super: egen byte __terc = max(__szt)
+	forvalues k = 1/3 {
+		quietly summarize __sz if __tag & __terc == `k'
+		local mp`pnl'_`k' = trim(string(r(mean), "%9.0fc"))
+	}
+	quietly summarize __sz if __tag
+	local mp`pnl'_4 = trim(string(r(mean), "%9.0fc"))
+	local ctl1 "`base'"
+	local ctl2 "`base' c.inten1999#i.year"
+	local ctl3 "`base' c.inten1999#i.year c.inten2005#i.year"
+	local nr = 3
+	if "`pnl'" == "A" {
+		local ctl4 "`ctl2' i.inten_start_year#i.year"
+		local ctl5 "`ctl2' c.inten1998#i.year"
+		local ctl6 "`ctl2' c.inten2000#i.year"
+		local nr = 6
+	}
+	foreach wt in uw w {
+		local aw ""
+		if "`wt'" == "w" local aw "[aw=popover65_]"
+		* k = 1-3: size terciles; k = 4: whole sample
+		forvalues k = 1/4 {
+			local cond "if __terc == `k'"
+			if `k' == 4 local cond ""
+			* within-R2 of BR's treatment on the base controls alone
+			local r2base = 0
+			if "`base'" != "" {
+				quietly reghdfe lag2_intensity_new `base' `aw' `cond', a(cve_ent_mun_super year)
+				local r2base = e(r2_within)
 			}
-			else {
-				quietly reghdfe lag2_intensity_new `ctl`r'' `aw' `cond', a(cve_ent_mun_super year)
-				local zr_`wt'_`k'_`r' = trim(string(e(r2_within), "%9.3f"))
+			forvalues r = 1/`nr' {
+				reghdfe emr65 lag2_intensity_new `ctl`r'' `aw' `cond', ///
+					a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
+				local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+				local st ""
+				if `t' >= 1.645 local st "*"
+				if `t' >= 1.960 local st "**"
+				if `t' >= 2.576 local st "***"
+				local zb_`pnl'_`wt'_`k'_`r' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
+				local zs_`pnl'_`wt'_`k'_`r' = trim(string(_se[lag2_intensity_new], "%9.3f"))
+				if `r' == 1 {
+					local zN_`pnl'_`wt'_`k' = trim(string(e(N), "%12.0fc"))
+					tempvar tg
+					quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+					quietly count if `tg' == 1
+					local zM_`pnl'_`wt'_`k' = trim(string(r(N), "%12.0fc"))
+					drop `tg'
+				}
+				else {
+					quietly reghdfe lag2_intensity_new `ctl`r'' `aw' `cond', a(cve_ent_mun_super year)
+					local pr2 = (e(r2_within) - `r2base') / (1 - `r2base')
+					local zr_`pnl'_`wt'_`k'_`r' = trim(string(`pr2', "%9.3f"))
+				}
 			}
 		}
 	}
@@ -4258,39 +4283,50 @@ file write bsz "\begin{tabular}{lcccccccc} \hline \hline" _n
 file write bsz " & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){2-5} \cmidrule(lr){6-9}" _n
 file write bsz " & Small & Medium & Large & All & Small & Medium & Large & All \\ " _n
 file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
-file write bsz "Mean population 65+, 1992--96 & `mp1' & `mp2' & `mp3' & `mp4' & `mp1' & `mp2' & `mp3' & `mp4' \\ " _n
-file write bsz "  & & & & & & & & \\ " _n
-forvalues r = 1/6 {
-	local cb ""
-	local cs ""
-	foreach c of local cols {
-		local cb "`cb' & `zb_`c'_`r''"
-		local cs "`cs' & (`zs_`c'_`r'')"
+foreach pnl in A B {
+	local nr = 3
+	if "`pnl'" == "A" local nr = 6
+	if "`pnl'" == "A" {
+		file write bsz "\underline{\textit{Panel A: Barham and Rowberry sample (1998--1999 entrants), 1992--2002}} \\ " _n
 	}
-	if `r' == 4 {
+	else {
 		file write bsz "  & & & & & & & & \\ " _n
-		file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & \\ " _n
+		file write bsz "\underline{\textit{Panel B: Highly marginalized municipalities, 1991--2006}} \\ " _n
 	}
-	file write bsz "`lab`r''`cb' \\ " _n
-	file write bsz "`cs' \\ " _n
-}
-file write bsz "  & & & & & & & & \\ " _n
-file write bsz "Share of BR treatment variation explained by: & & & & & & & & \\ " _n
-forvalues r = 2/6 {
-	local cr ""
+	file write bsz "Mean population 65+, up to 1996 & `mp`pnl'_1' & `mp`pnl'_2' & `mp`pnl'_3' & `mp`pnl'_4' & `mp`pnl'_1' & `mp`pnl'_2' & `mp`pnl'_3' & `mp`pnl'_4' \\ " _n
+	file write bsz "  & & & & & & & & \\ " _n
+	forvalues r = 1/`nr' {
+		local cb ""
+		local cs ""
+		foreach c of local cols {
+			local cb "`cb' & `zb_`pnl'_`c'_`r''"
+			local cs "`cs' & (`zs_`pnl'_`c'_`r'')"
+		}
+		if `r' == 4 {
+			file write bsz "  & & & & & & & & \\ " _n
+			file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & \\ " _n
+		}
+		file write bsz "`lab`r''`cb' \\ " _n
+		file write bsz "`cs' \\ " _n
+	}
+	file write bsz "  & & & & & & & & \\ " _n
+	file write bsz "Share of BR treatment variation explained by: & & & & & & & & \\ " _n
+	forvalues r = 2/`nr' {
+		local cr ""
+		foreach c of local cols {
+			local cr "`cr' & `zr_`pnl'_`c'_`r''"
+		}
+		file write bsz "`sl`r''`cr' \\ " _n
+	}
+	local cn ""
+	local cm ""
 	foreach c of local cols {
-		local cr "`cr' & `zr_`c'_`r''"
+		local cn "`cn' & `zN_`pnl'_`c''"
+		local cm "`cm' & `zM_`pnl'_`c''"
 	}
-	file write bsz "`sl`r''`cr' \\ " _n
+	file write bsz "Observations`cn' \\ " _n
+	file write bsz "No. Mun`cm' \\ " _n
 }
-local cn ""
-local cm ""
-foreach c of local cols {
-	local cn "`cn' & `zN_`c''"
-	local cm "`cm' & `zM_`c''"
-}
-file write bsz "Observations`cn' \\ " _n
-file write bsz "No. Mun`cm' \\ " _n
 file write bsz "\bottomrule" _n
 file write bsz "\end{tabular}"
 file close bsz

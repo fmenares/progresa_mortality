@@ -1479,6 +1479,11 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - **`at:br_leftover` (A.7) folded into `at:br_leftover_size` (A.8 table)**, now 8 columns: Small / Medium / Large / All, unweighted then weighted; rows 1–6 (fixed effects only; + Intensity_1999 × year; + Intensity_2005 × year; then cohort, Intensity_1998, Intensity_2000 each added to row 2) and the five share rows. "All" reproduces the old A.7 Panel A. The old A.7 Panel B (HM sample, 1991–2006) is no longer in the paper; its numbers: FE only −3.28*** / −2.73***; + I99 −3.84** / −1.52; + I2005 −5.58*** / −1.68; share explained by I99 0.327 / 0.391, by I99 and I2005 0.595 / 0.636 (unweighted / weighted). The table note is self-contained (merges the old A.7 note).
 - **Cloud legend bug (affects the kept A.8):** Stata numbers the plot on the hidden axis 2 (the histogram) after the others, so the legend indices were off by one: "Binned means" showed the spline's line, "Spline fit" the weighted fit's, "weighted" the dashed unweighted fit's, "unweighted" the histogram's box. The histogram is now the last plot and the legend uses 2–5. Rerun step (1) to regenerate A.8.
 
+**Follow-up (2026-10-13): Panel B recovered, A.7 landscape, old size table restored.**
+- `at:br_leftover_size` (the 8-column table, now Appendix Table A.7) has Panel B again: highly marginalized municipalities, 1991–2006, Seguro Popular intensity in every regression, rows 1–3 and the two share rows, by terciles of mean population 65+ (up to 1996, tercile of that panel's own sample) and "All" ("All" reproduces the old A.7 Panel B: −3.280 / −2.726, −3.840 / −1.516, −5.584 / −1.678; shares .327/.391 and .595/.636). Panel A is unchanged. The table is wrapped in `landscape` (`pdflscape` is already loaded) with `\scalebox{0.82}`.
+- The former size table `at:br_trimming` (`AT6_BR_trimming.tex`: BR original, replication, excluding bottom 10% / 25%, population terciles) is displayed again right after it, for comparison; it was never regenerated, the file in `tables/appendix` is the 2026 version.
+- Rerun step (7) of the BR block in 04 (≈ lines 4182–4330) to regenerate the table.
+
 ---
 
 ## Notes for Contributors

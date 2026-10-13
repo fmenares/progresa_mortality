@@ -108,8 +108,9 @@
 
 \newpage
 % NOTE: the BR-trimming table (former AT6_BR_trimming, at:br_trimming)
-% has moved to codes/04_extra_robustness.do per the coauthor's request
-% -- no longer displayed in the paper.
+% was moved to codes/04_extra_robustness.do per the coauthor's request and
+% is displayed again, right after at:br_leftover_size, for comparison with
+% the size terciles there (2026-10-13).
 \newpage
 
 
@@ -248,18 +249,33 @@
 %   }
 % \end{table}
 
-% at:br_leftover (former Appendix Table 7) is folded into this table on
-% 2026-10-13: its Panel A is the "All" columns (4) and (8).
+\begin{landscape}
 \begin{table}[H]
 \RawCaption%
   {\caption{Barham and Rowberry's Estimate Using Only Variation Not Used by Our Design, by Municipality Size}
    \label{at:br_leftover_size}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
-  {\scalebox{0.78}{
+  {\scalebox{0.82}{
       \input{tables/appendix/AT_br_leftover_size}
     }
     \vspace{-3mm}
-    \floatfoot{Notes: This table decomposes the two-way fixed effects estimate of \citet{BarhamRowberry2013JDE} in their sample (municipalities first incorporated into \textit{Progresa} in 1998 or 1999) and period (1992--2002). Their treatment, municipal enrollment intensity lagged two years, is zero through 1999 and equals intensity in 1998, 1999, and 2000 in 2000, 2001, and 2002. The first row regresses the mortality rate for adults aged 65 and older (deaths per 1,000) on that treatment with municipality and year fixed effects; column~(4) corresponds to Appendix Table~\ref{at:did_robust_br}, Panel~B, and column~(8) to Panel~C. The second row adds $\textit{Intensity}_{1999}$ interacted with year indicators, the variation used by our event study, and the third row also adds $\textit{Intensity}_{2005}$ interacted with year indicators. By the Frisch--Waugh--Lovell theorem, these rows are their estimate computed only from the part of their treatment that the added terms do not explain. Because $\textit{Intensity}_{1999}$ interacted with year absorbs the treatment in 2001 exactly, the part it leaves is the 2000 value (the timing of enrollment before 1999) and the 2002 value (growth in enrollment after 1999). The next rows add to the second row the entry cohort (1998 or 1999) interacted with year indicators; $\textit{Intensity}_{1998}$ interacted with year indicators, which absorbs the 2000 value so that only the 2002 value remains; or $\textit{Intensity}_{2000}$ interacted with year indicators, which absorbs the 2002 value so that only the 2000 value remains (the last two cannot be added together because they would absorb the treatment entirely). The bottom rows report the share of the treatment's variation, net of the fixed effects, that the listed terms explain. Small, medium, and large are terciles of municipalities ranked by their 1992--1996 average population aged 65 and older, with equal numbers of municipalities; ``All'' is the whole sample. Columns~(1)--(4) are unweighted, as in their paper; columns~(5)--(8) are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+    \floatfoot{Notes: This table decomposes the two-way fixed effects estimate of \citet{BarhamRowberry2013JDE}, whose treatment is municipal enrollment intensity lagged two years. In each panel, the first row regresses the mortality rate for adults aged 65 and older (deaths per 1,000) on that treatment with municipality and year fixed effects; in Panel~A, column~(4) corresponds to Appendix Table~\ref{at:did_robust_br}, Panel~B, and column~(8) to Panel~C. The second row adds $\textit{Intensity}_{1999}$ interacted with year indicators, the variation used by our event study, and the third row also adds $\textit{Intensity}_{2005}$ interacted with year indicators. By the Frisch--Waugh--Lovell theorem, these rows are their estimate computed only from the part of their treatment that the added terms do not explain. The share rows report the share of the treatment's variation, net of the fixed effects (and, in Panel~B, Seguro Popular intensity), that the listed terms explain. Panel~A uses their sample (municipalities first incorporated into \textit{Progresa} in 1998 or 1999) and period (1992--2002); there, the treatment is zero through 1999 and equals intensity in 1998, 1999, and 2000 in 2000, 2001, and 2002, so $\textit{Intensity}_{1999}$ interacted with year absorbs 2001 exactly and the part it leaves is the 2000 value (the timing of enrollment before 1999) and the 2002 value (growth in enrollment after 1999). The rows below the second add to it the entry cohort (1998 or 1999) interacted with year indicators; $\textit{Intensity}_{1998}$ interacted with year indicators, which absorbs the 2000 value so that only the 2002 value remains; or $\textit{Intensity}_{2000}$ interacted with year indicators, which absorbs the 2002 value so that only the 2000 value remains (the last two cannot be added together because they would absorb the treatment entirely). Panel~B uses our sample of highly marginalized municipalities and period (1991--2006) and controls for Seguro Popular intensity. Small, medium, and large are terciles of the municipalities in each panel, ranked by their average population aged 65 and older up to 1996, with equal numbers of municipalities; the first row of each panel reports the tercile mean. ``All'' is the whole sample of the panel. Columns~(1)--(4) are unweighted, as in their paper; columns~(5)--(8) are weighted by the population aged 65 and older. Appendix Table~\ref{at:br_trimming} reports the earlier version of the size split, with progressive trimming of the smallest municipalities. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
+\end{landscape}
+
+\newpage
+\begin{table}[H]
+\RawCaption%
+  {\caption{Effect of Progresa Enrollment Intensity on Older Adults' Mortality: Population Sensitivity}
+   \label{at:br_trimming}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.85}{
+      \input{tables/appendix/AT6_BR_trimming}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table replicates the main specification of Barham and Rowberry (2013) using the same sample (municipalities incorporated into Progresa in 1998 or 1999) and the same estimating equation (two-year lagged intensity, no post-interaction). The outcome is the mortality rate for adults aged 65 and older per 1,000 inhabitants. Column~(1) reproduces their original unweighted estimate; column~(2) reports our close replication, unweighted. Columns~(3)--(4) progressively trim the smallest municipalities, dropping those in the bottom 10\% and 25\% of the distribution of average older-adult (65+) population over 1992--2002, both estimated unweighted. Columns~(5)--(7) split the BR sample into three equal-sized groups (terciles) by the same average older-adult (65+) population and estimate the same unweighted specification separately within each tercile. All regressions include municipality and year fixed effects. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
+\end{table}
+
