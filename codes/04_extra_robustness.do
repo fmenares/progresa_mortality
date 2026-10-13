@@ -3548,11 +3548,11 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 * `confirm' stops and names it: rerun 02_mortality.do.
 *============================================================
 capture confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
-	sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000
+	sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000 post year_1995
 if _rc {
 	use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
 	confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
-		sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000
+		sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000 post year_1995
 }
 tempfile cdid_panel
 save `cdid_panel'
@@ -4358,6 +4358,156 @@ file write bsz "\end{tabular}"
 file close bsz
 if "$repo_tables" != "" copy "$tables/appendix/AT_br_leftover_size.tex" "$repo_tables/appendix/AT_br_leftover_size.tex", replace
 di "Table exported to: $tables/appendix/AT_br_leftover_size.tex"
+
+*------------------------------------------------------------
+* (8) at:br_adapted_size / af:br_adapted_size -- our adapted design
+* (Intensity_1999 x Post, Post = 1997 on, Seguro Popular intensity,
+* municipality and year FE; the design of AT7_BR_robustness_emr65_
+* 2002ctrl_eoy in 02_mortality.do) in BR's sample and window (1992-2002),
+* within the size terciles of (7) (pre-program 1992-1996 mean population
+* 65+, equal numbers of municipalities) and overall. "All" reproduces
+* that table's BR-sample columns (-3.974 unweighted, -1.660 weighted).
+* For each column the event-study version (Intensity_1999 x year,
+* reference 1996) gives a joint test that the 1992-1995 coefficients are
+* zero; the event studies of the three terciles are plotted together,
+* pooled sexes, one figure per weighting: AF_br_adapted_es_size_uw/w.
+* Output: AT_br_adapted_size.tex.
+*------------------------------------------------------------
+use `cdid_panel', clear
+quietly keep if $sample_br & inrange(year, 1992, 2002)
+quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
+egen byte __tag = tag(cve_ent_mun_super)
+quietly xtile __szt = __sz if __tag, nquantiles(3)
+bysort cve_ent_mun_super: egen byte __terc = max(__szt)
+forvalues k = 1/3 {
+	quietly summarize __sz if __tag & __terc == `k'
+	local amp`k' = trim(string(r(mean), "%9.0fc"))
+}
+quietly summarize __sz if __tag
+local amp4 = trim(string(r(mean), "%9.0fc"))
+foreach wt in uw w {
+	local aw ""
+	if "`wt'" == "w" local aw "[aw=popover65_]"
+	* k = 1-3: size terciles; k = 4: whole sample
+	forvalues k = 1/4 {
+		local cond "if __terc == `k'"
+		if `k' == 4 local cond ""
+		* pooled DiD
+		reghdfe emr65 c.inten1999#i.post c.sp_intensity `aw' `cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+		local st ""
+		if `t' >= 1.645 local st "*"
+		if `t' >= 1.960 local st "**"
+		if `t' >= 2.576 local st "***"
+		local ab_`wt'_`k' = trim(string(_b[1.post#c.inten1999], "%9.3f")) + "`st'"
+		local as_`wt'_`k' = trim(string(_se[1.post#c.inten1999], "%9.3f"))
+		local aN_`wt'_`k' = trim(string(e(N), "%12.0fc"))
+		quietly summarize emr65 if e(sample) & post == 2
+		local amr_`wt'_`k' = trim(string(r(mean), "%9.2f"))
+		tempvar tg
+		quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+		quietly count if `tg' == 1
+		local aM_`wt'_`k' = trim(string(r(N), "%12.0fc"))
+		drop `tg'
+		* event study, reference 1996 (year_1995 = 6); 1992-2002 = 2..12
+		reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity `aw' `cond', ///
+			a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		quietly testparm i(2/5).year_1995#c.inten1999
+		local ap_`wt'_`k' = trim(string(r(p), "%5.3f"))
+		forvalues pos = 2/12 {
+			if `pos' == 6 {
+				local eb_`wt'_`k'_`pos' = 0
+				local el_`wt'_`k'_`pos' = 0
+				local eh_`wt'_`k'_`pos' = 0
+			}
+			else {
+				local eb_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999]
+				local el_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] - 1.96 * _se[`pos'.year_1995#c.inten1999]
+				local eh_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] + 1.96 * _se[`pos'.year_1995#c.inten1999]
+			}
+		}
+	}
+
+	* figure: the three terciles' event studies, pooled sexes
+	preserve
+	clear
+	quietly set obs 11
+	quietly gen int pos = _n + 1
+	quietly gen int year = 1990 + pos
+	forvalues k = 1/3 {
+		quietly gen double b`k' = .
+		quietly gen double l`k' = .
+		quietly gen double h`k' = .
+		forvalues q = 2/12 {
+			quietly replace b`k' = `eb_`wt'_`k'_`q'' if pos == `q'
+			quietly replace l`k' = `el_`wt'_`k'_`q'' if pos == `q'
+			quietly replace h`k' = `eh_`wt'_`k'_`q'' if pos == `q'
+		}
+	}
+	quietly gen double x1 = year - 0.18
+	quietly gen double x2 = year
+	quietly gen double x3 = year + 0.18
+	twoway ///
+		(rcap l1 h1 x1, lcolor(maroon%60) lwidth(vthin)) ///
+		(scatter b1 x1, mcolor(maroon) msymbol(O) msize(small)) ///
+		(rcap l2 h2 x2, lcolor(navy%60) lwidth(vthin)) ///
+		(scatter b2 x2, mcolor(navy) msymbol(D) msize(small)) ///
+		(rcap l3 h3 x3, lcolor(dkgreen%60) lwidth(vthin)) ///
+		(scatter b3 x3, mcolor(dkgreen) msymbol(T) msize(small)), ///
+		yline(0, lcolor(gs8) lwidth(vthin)) xline(1996.5, lcolor(gs10) lpattern(dash)) ///
+		xlabel(1992(1)2002, labsize(small) angle(45)) ///
+		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+		xtitle("") ytitle("Coefficient on Intensity 1999 x year (95% CI)", size(small)) ///
+		legend(order(2 "Small (mean 65+ population `amp1')" 4 "Medium (`amp2')" 6 "Large (`amp3')") ///
+			size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
+		graphregion(color(white))
+	graph export "$figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
+	if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
+	di "Figure exported to: $figures/appendix/AF_br_adapted_es_size_`wt'.pdf"
+	restore
+}
+
+local cols "uw_4 uw_1 uw_2 uw_3 w_4 w_1 w_2 w_3"
+local mpcols "4 1 2 3 4 1 2 3"
+local rb ""
+local rs ""
+local rp ""
+local rm ""
+local rn ""
+local rmu ""
+foreach c of local cols {
+	local rb "`rb' & `ab_`c''"
+	local rs "`rs' & (`as_`c'')"
+	local rp "`rp' & `ap_`c''"
+	local rm "`rm' & `amr_`c''"
+	local rn "`rn' & `aN_`c''"
+	local rmu "`rmu' & `aM_`c''"
+}
+local rpop ""
+foreach k of local mpcols {
+	local rpop "`rpop' & `amp`k''"
+}
+cap file close bad
+file open bad using "$tables/appendix/AT_br_adapted_size.tex", write replace
+file write bad "\begin{tabular}{lcccccccc} \hline \hline" _n
+file write bad " & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){2-5} \cmidrule(lr){6-9}" _n
+file write bad " & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
+file write bad " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
+file write bad "\textit{Intensity 1999 x Post}`rb' \\ " _n
+file write bad "`rs' \\ " _n
+file write bad "  & & & & & & & & \\ " _n
+file write bad "Pre-trend test, p-value (1992--1995)`rp' \\ " _n
+file write bad "Mean mortality rate 65+, 1992--1996`rm' \\ " _n
+file write bad "Mean population 65+, 1992--1996`rpop' \\ " _n
+file write bad "Observations`rn' \\ " _n
+file write bad "No. Mun`rmu' \\ " _n
+file write bad "\bottomrule" _n
+file write bad "\end{tabular}"
+file close bad
+if "$repo_tables" != "" copy "$tables/appendix/AT_br_adapted_size.tex" "$repo_tables/appendix/AT_br_adapted_size.tex", replace
+di "Table exported to: $tables/appendix/AT_br_adapted_size.tex"
 
 * restore the working panel for the cause-of-death section below
 use `cdid_panel', clear

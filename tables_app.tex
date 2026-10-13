@@ -106,6 +106,20 @@
   }
 \end{table}
 
+\begin{table}[H]
+\RawCaption%
+  {\caption{Adapted Design in the Barham and Rowberry Sample, by Municipality Size}
+   \label{at:br_adapted_size}}
+\floatbox[{\captop}]{table}[\FBwidth]
+  {}
+  {\scalebox{0.85}{
+      \input{tables/appendix/AT_br_adapted_size}
+    }
+    \vspace{-3mm}
+    \floatfoot{Notes: This table estimates the adapted design of equation~(\ref{eq:didadapted}), $\textit{Intensity}_{1999} \times \textit{Post}$ with $\textit{Post}$ equal to one from 1997, in the sample of \citet{BarhamRowberry2013JDE} (municipalities first incorporated into \textit{Progresa} in 1998 or 1999) over 1992--2002, overall (``All'') and within three groups with equal numbers of municipalities ranked by their pre-program (1992--1996) average population aged 65 and older. Columns~(1) and~(5) reproduce columns~(1) and~(2) of Appendix Table~\ref{at:did_robust_br2_2002ctrl_eoy}. The outcome is the mortality rate for adults aged 65 and older per 1,000. All regressions include Seguro Popular intensity and municipality and year fixed effects. The pre-trend test reports the $p$-value of a joint test that the coefficients on $\textit{Intensity}_{1999}$ interacted with each year from 1992 to 1995 are zero in the event-study version of the same regression (reference year 1996), shown in Appendix Figure~\ref{af:br_adapted_size}. Columns~(1)--(4) are unweighted; columns~(5)--(8) are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+  }
+\end{table}
+
 \newpage
 % NOTE: the BR-trimming table (former AT6_BR_trimming, at:br_trimming)
 % was moved to codes/04_extra_robustness.do per the coauthor's request and
