@@ -22,6 +22,11 @@
 *** file close' lines to restore that output.
 *** EXPORT MIRRORING: every figure and table written here is also exported to the
 *** repo clone ($repo_figures / $repo_tables), one extra line after each export.
+*** MIGRATION EXHIBITS (exports active, displayed in the appendix since
+*** 2026-10-13): AT_migration_robustness, AT_migration_robustness_census,
+*** AT_migration_robustness_ageFE, AF_migration_es(_log/_poisson),
+*** AF_migration_es_fixeddenom, AT_fixed_offset_poisson, and the
+*** experimental AT_attrition_elderly.
 *** EXCEPTIONS (exports active, for review): the through-2005 Table 2 /
 *** Figure 2 replication and the dose-response cloud / Barham-Rowberry
 *** decomposition block, both right before the cause-of-death section.
@@ -2918,10 +2923,8 @@ di "Table NOT exported (disabled): $tables/appendix/AT1_ses_trend_summary.tex"
 *============================================================
 * MOVED FROM 03_experimental.do per the coauthor's request -- was
 * AT_attrition_elderly.tex, at:attrition_elderly -- no longer
-* displayed in the paper. Regressions/di diagnostics below still
-* run so the numeric results remain available for review; the
-* `file open...file close' lines are commented out so no .tex is
-* written to tables/appendix, per this file's convention.
+* displayed in the paper until 2026-10-13; its export is active again
+* (at:attrition_elderly in tables_app.tex).
 *
 * This works on a DIFFERENT dataset than the rest of this file: the
 * individual/experimental-survey panel (pid/ronda/age97/contba/
@@ -3029,31 +3032,29 @@ foreach pnl in all eob {
     }
 }
 
-* {
-*     cap file close at
-*     file open at using "$tables/appendix/AT_attrition_elderly.tex", write replace
-*     file write at "\begin{tabular}{lcc} \hline \hline" _n
-*     file write at "& Observed in 1998 & Observed in 1999 \\ " _n
-*     file write at "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
-*     file write at "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
-*     file write at "\underline{\textit{Panel A: All older adults (65+ at baseline)}} \\ " _n
-*     file write at "\textit{Treatment} & `b_all_present98' & `b_all_present99' \\ " _n
-*     file write at " & (`se_all_present98') & (`se_all_present99') \\ " _n
-*     file write at "  & & \\ " _n
-*     file write at "Control Mean & `cm_all_present98' & `cm_all_present99' \\ " _n
-*     file write at "Observations & `N_all_present98' & `N_all_present99' \\ " _n
-*     file write at "  & & \\ " _n
-*     file write at "\underline{\textit{Panel B: Older-adults-only households}} \\ " _n
-*     file write at "\textit{Treatment} & `b_eob_present98' & `b_eob_present99' \\ " _n
-*     file write at " & (`se_eob_present98') & (`se_eob_present99') \\ " _n
-*     file write at "  & & \\ " _n
-*     file write at "Control Mean & `cm_eob_present98' & `cm_eob_present99' \\ " _n
-*     file write at "Observations & `N_eob_present98' & `N_eob_present99' \\ \bottomrule" _n
-*     file write at "\end{tabular}"
-*     file close at
-*     if "$repo_tables" != "" copy "$tables/appendix/AT_attrition_elderly.tex" "$repo_tables/appendix/AT_attrition_elderly.tex", replace
-* }
-di "Table NOT exported (disabled): $tables/appendix/AT_attrition_elderly.tex"
+cap file close at
+file open at using "$tables/appendix/AT_attrition_elderly.tex", write replace
+file write at "\begin{tabular}{lcc} \hline \hline" _n
+file write at "& Observed in 1998 & Observed in 1999 \\ " _n
+file write at "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+file write at "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
+file write at "\underline{\textit{Panel A: All older adults (65+ at baseline)}} \\ " _n
+file write at "\textit{Treatment} & `b_all_present98' & `b_all_present99' \\ " _n
+file write at " & (`se_all_present98') & (`se_all_present99') \\ " _n
+file write at "  & & \\ " _n
+file write at "Control Mean & `cm_all_present98' & `cm_all_present99' \\ " _n
+file write at "Observations & `N_all_present98' & `N_all_present99' \\ " _n
+file write at "  & & \\ " _n
+file write at "\underline{\textit{Panel B: Older-adults-only households}} \\ " _n
+file write at "\textit{Treatment} & `b_eob_present98' & `b_eob_present99' \\ " _n
+file write at " & (`se_eob_present98') & (`se_eob_present99') \\ " _n
+file write at "  & & \\ " _n
+file write at "Control Mean & `cm_eob_present98' & `cm_eob_present99' \\ " _n
+file write at "Observations & `N_eob_present98' & `N_eob_present99' \\ \bottomrule" _n
+file write at "\end{tabular}"
+file close at
+if "$repo_tables" != "" copy "$tables/appendix/AT_attrition_elderly.tex" "$repo_tables/appendix/AT_attrition_elderly.tex", replace
+di "Table exported to: $tables/appendix/AT_attrition_elderly.tex"
 
 
 restore
