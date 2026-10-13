@@ -22,9 +22,7 @@
 *** file close' lines to restore that output.
 *** EXPORT MIRRORING: every figure and table written here is also exported to the
 *** repo clone ($repo_figures / $repo_tables), one extra line after each export.
-*** EXCEPTIONS (exports active): the BR size/trimming table
-*** (AT6_BR_trimming.tex, at:br_trimming, displayed again since 2026-10-13);
-*** the through-2005 Table 2 /
+*** EXCEPTIONS (exports active, for review): the through-2005 Table 2 /
 *** Figure 2 replication and the dose-response cloud / Barham-Rowberry
 *** decomposition block, both right before the cause-of-death section.
 *** ============================================================================================================
@@ -3194,26 +3192,28 @@ local meanI99_AT5_2: di %6.1f r(mean) * 100
 quietly sum inten1999 if $sample_br & year == 1996 & pop_mun_br > `p25_br'
 local meanI99_AT5_3: di %6.1f r(mean) * 100
 
-* Displayed again (2026-10-13), next to at:br_leftover_size.
-cap file close sm
-file open sm using "$tables/appendix/AT6_BR_trimming.tex", write replace
-file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
-file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Population Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
-file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
-file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
-file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule " _n
-file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
-file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') \\ " _n
-file write sm "  & & & & & & & \\ " _n
-file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' \\ " _n
-file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' \\ " _n
-file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' \\ " _n
-file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
-file write sm "\bottomrule" _n
-file write sm "\end{tabular}"
-file close sm
-if "$repo_tables" != "" copy "$tables/appendix/AT6_BR_trimming.tex" "$repo_tables/appendix/AT6_BR_trimming.tex", replace
-di "Table exported to: $tables/appendix/AT6_BR_trimming.tex"
+* file write lines below disabled again (2026-10-13): not displayed in the paper
+* {
+* cap file close sm
+* file open sm using "$tables/appendix/AT6_BR_trimming.tex", write replace
+* file write sm "\begin{tabular}{lccccccc} \hline \hline" _n
+* file write sm "& \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textit{Progressive Trimming}} & \multicolumn{3}{c}{\textit{Population Terciles}} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-8}" _n
+* file write sm "& \multicolumn{1}{c}{BR Original} & \multicolumn{1}{c}{Replication} & \multicolumn{1}{c}{Ex.\ bottom 10\%} & \multicolumn{1}{c}{Ex.\ bottom 25\%} & \multicolumn{1}{c}{Small} & \multicolumn{1}{c}{Medium} & \multicolumn{1}{c}{Large} \\ " _n
+* file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
+* file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule " _n
+* file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_terc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
+* file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2') & (`seAT5_terc3') \\ " _n
+* file write sm "  & & & & & & & \\ " _n
+* file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5_terc2' & `meanAT5_terc3' \\ " _n
+* file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_terc3' \\ " _n
+* file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5_terc2' & `NmunAT5_terc3' \\ " _n
+* file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
+* file write sm "\bottomrule" _n
+* file write sm "\end{tabular}"
+* file close sm
+* if "$repo_tables" != "" copy "$tables/appendix/AT6_BR_trimming.tex" "$repo_tables/appendix/AT6_BR_trimming.tex", replace
+* }
+di "Table NOT exported (disabled): $tables/appendix/AT6_BR_trimming.tex"
 
 drop pop_mun_br
 
@@ -4177,16 +4177,16 @@ foreach wt in uw w {
 *------------------------------------------------------------
 * (7) at:br_leftover_size -- the paper's single table on BR's leftover
 * variation (landscape, Appendix Table A.7). BR's sample (1998/99
-* entrants) and window (1992-2002). Columns: Small, Medium, Large, All
-* -- unweighted, then weighted; "All" reproduces (3), Panel A. Rows: BR's
+* entrants) and window (1992-2002). Columns: BR Original (published),
+* then All, Small, Medium, Large -- unweighted, then weighted; "All"
+* reproduces (3), Panel A. Rows: BR's
 * treatment with fixed effects only; + Intensity_1999 x year; and, on
 * top of the latter, entry cohort x year, Intensity_1998 x year, or
 * Intensity_2000 x year. (Intensity_2005 x year and the 1991-2006 HM
 * panel of (3) are left out: they concern our design, not BR's; the
 * numbers stay in (3)'s log and in research_project.md.) Terciles: three
 * groups with equal numbers of municipalities, ranked by the pre-program
-* (1992-1996) mean population 65+, the same groups as columns (5)-(7) of
-* the AT6_BR_trimming table. Shares are the partial within-R2 of BR's
+* (1992-1996) mean population 65+. Shares are the partial within-R2 of BR's
 * treatment on the terms listed. AT_br_leftover_size.tex.
 *------------------------------------------------------------
 use `cdid_panel', clear
@@ -4240,8 +4240,13 @@ foreach wt in uw w {
 	}
 }
 
-local cols "uw_1 uw_2 uw_3 uw_4 w_1 w_2 w_3 w_4"
-local lab1 "\textit{BR treatment}, fixed effects only"
+* Column order: BR Original (their published estimate, as in the
+* former AT6 table), then All, Small, Medium, Large, unweighted and
+* weighted. Their published numbers are typed in: -6.37 (1.04), 21,571
+* observations, 1,961 municipalities (BarhamRowberry2013JDE).
+local cols "uw_4 uw_1 uw_2 uw_3 w_4 w_1 w_2 w_3"
+local mpcols "4 1 2 3 4 1 2 3"
+local lab1 "2-yr lagged Intensity"
 local lab2 "\quad + Intensity 1999 x year"
 local lab4 "\quad Entry cohort x year (1998 vs. 1999)"
 local lab5 "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000)"
@@ -4250,40 +4255,49 @@ local sl2 "\quad Intensity 1999 x year"
 local sl4 "\quad Intensity 1999 and entry cohort x year"
 local sl5 "\quad Intensity 1999 and 1998 x year"
 local sl6 "\quad Intensity 1999 and 2000 x year"
+local blank "  & & & & & & & & & \\ "
 
 cap file close bsz
 file open bsz using "$tables/appendix/AT_br_leftover_size.tex", write replace
-file write bsz "\begin{tabular}{lcccccccc} \hline \hline" _n
-file write bsz " & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){2-5} \cmidrule(lr){6-9}" _n
-file write bsz " & Small & Medium & Large & All & Small & Medium & Large & All \\ " _n
-file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
-file write bsz "Mean population 65+, 1992--1996 & `mp1' & `mp2' & `mp3' & `mp4' & `mp1' & `mp2' & `mp3' & `mp4' \\ " _n
-file write bsz "  & & & & & & & & \\ " _n
+file write bsz "\begin{tabular}{lccccccccc} \hline \hline" _n
+file write bsz " & & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){3-6} \cmidrule(lr){7-10}" _n
+file write bsz " & BR Original & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
+file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) \\ \toprule" _n
+local cmp ""
+foreach k of local mpcols {
+	local cmp "`cmp' & `mp`k''"
+}
+file write bsz "Mean population 65+, 1992--1996 &`cmp' \\ " _n
+file write bsz "`blank'" _n
 foreach r in 1 2 4 5 6 {
-	local cb ""
-	local cs ""
+	local cb " & "
+	local cs " & "
+	if `r' == 1 {
+		local cb " & -6.370***"
+		local cs " & (1.040)"
+	}
 	foreach c of local cols {
 		local cb "`cb' & `zb_`c'_`r''"
 		local cs "`cs' & (`zs_`c'_`r'')"
 	}
 	if `r' == 4 {
-		file write bsz "  & & & & & & & & \\ " _n
-		file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & \\ " _n
+		file write bsz "`blank'" _n
+		file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & & \\ " _n
 	}
 	file write bsz "`lab`r''`cb' \\ " _n
 	file write bsz "`cs' \\ " _n
 }
-file write bsz "  & & & & & & & & \\ " _n
-file write bsz "Share of BR treatment variation explained by: & & & & & & & & \\ " _n
+file write bsz "`blank'" _n
+file write bsz "Share of BR treatment variation explained by: & & & & & & & & & \\ " _n
 foreach r in 2 4 5 6 {
-	local cr ""
+	local cr " & "
 	foreach c of local cols {
 		local cr "`cr' & `zr_`c'_`r''"
 	}
 	file write bsz "`sl`r''`cr' \\ " _n
 }
-local cn ""
-local cm ""
+local cn " & 21,571"
+local cm " & 1,961"
 foreach c of local cols {
 	local cn "`cn' & `zN_`c''"
 	local cm "`cm' & `zM_`c''"
