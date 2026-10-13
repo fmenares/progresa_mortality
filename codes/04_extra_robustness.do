@@ -22,11 +22,11 @@
 *** file close' lines to restore that output.
 *** EXPORT MIRRORING: every figure and table written here is also exported to the
 *** repo clone ($repo_figures / $repo_tables), one extra line after each export.
-*** MIGRATION EXHIBITS (exports active, displayed in the appendix since
-*** 2026-10-13): AT_migration_robustness, AT_migration_robustness_census,
-*** AT_migration_robustness_ageFE, AF_migration_es(_log/_poisson),
-*** AF_migration_es_fixeddenom, AT_fixed_offset_poisson, and the
-*** experimental AT_attrition_elderly.
+*** MIGRATION EXHIBITS (exports active). In the appendix since 2026-10-13:
+*** AT_migration_robustness, AT_migration_robustness_ageFE, and
+*** AF_migration_es(_log/_poisson) with AF_migration_es_fixeddenom as its
+*** panel (b). Exported but not displayed: AT_migration_robustness_census,
+*** AT_fixed_offset_poisson, AT_attrition_elderly.
 *** EXCEPTIONS (exports active, for review): the through-2005 Table 2 /
 *** Figure 2 replication and the dose-response cloud / Barham-Rowberry
 *** decomposition block, both right before the cause-of-death section.
