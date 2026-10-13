@@ -2470,7 +2470,7 @@ if `fdok_p' == 1 & `fdok_m' == 1 & `fdok_f' == 1 {
 else di as error "Fixed-denominator population event study not plotted: at least one panel failed to estimate."
 
 *============================================================
-* MORTALITY WITH A PRE-PROGRAM (FIXED) POPULATION OFFSET
+* MORTALITY WITH A PRE-PROGRAM (FIXED) POPULATION DENOMINATOR
 * Output: $tables/appendix/AT_fixed_offset_poisson.tex
 *
 * This is the check that makes the migration threat moot for the paper's
@@ -2478,58 +2478,109 @@ else di as error "Fixed-denominator population event study not plotted: at least
 *
 * Migration threatens the mortality estimate through the DENOMINATOR: the
 * outcome emr65 = death65*1000/popover65_ divides by a contemporaneous,
-* post-program population that migration can move. If instead we model
-* raw DEATH COUNTS with an offset FIXED at each municipality's 1996
-* (pre-program) 65+ population, no post-1997 population change can enter
-* the estimate at all -- by construction, not by assumption. Column (2)
-* is therefore immune to the entire selective-out-migration story.
+* post-program population that migration can move. If instead the
+* denominator is FIXED at each municipality's pre-program 65+ population,
+* no post-1997 population change can enter the estimate at all -- by
+* construction, not by assumption. Two specifications, each with the
+* contemporaneous denominator next to the fixed one:
+*   (1)-(2) the main specification, mortality rate in levels
+*           (emr65, [aw=popover65_], as in Table 2 col. 1) vs. the rate
+*           with the 1995 population in the denominator, weighted by that
+*           same fixed population;
+*   (3)-(4) Poisson on death counts, offset = log of the contemporaneous
+*           population vs. of the 1995 population (as in AT4_functional_
+*           forms col. 3), both weighted by popover65_.
+* All include Intensity_1999 x post, Intensity_2005 x post, Seguro Popular
+* intensity, municipality and year FE.
 *
-* Column (1) repeats the standard Poisson with the contemporaneous
-* offset (as in AT4_functional_forms) so the two are directly comparable:
-* if (1) and (2) agree, migration cannot be driving the mortality null,
-* whatever the population tables happen to show.
+* The fixed year is 1995, the last pre-program year in which the 65+
+* population is actually COUNTED (1990 and 1995 count; 1996-1999 are
+* interpolated toward the 2000 count, which is already post-program).
+* If the contemporaneous and fixed columns agree, migration cannot be
+* driving the mortality null, whatever the population tables show.
 *============================================================
-cap drop popover65_1996 popover65_m1996 popover65_f1996
+cap drop popover65_1995 popover65_m1995 popover65_f1995
 foreach sfx in "_" "_m" "_f" {
-	g aux = popover65`sfx' if year == 1996
-	bys cve_ent_mun_super: egen popover65`sfx'1996 = min(aux)
+	g aux = popover65`sfx' if year == 1995
+	bys cve_ent_mun_super: egen popover65`sfx'1995 = min(aux)
 	drop aux
 }
-cap drop lpop96 lpop96_m lpop96_f
-g lpop96   = log(popover65_1996)
-g lpop96_m = log(popover65_m1996)
-g lpop96_f = log(popover65_f1996)
-
+cap drop lpop95 lpop95_m lpop95_f emr65fx emr65fx_m emr65fx_f
+g lpop95   = log(popover65_1995)
+g lpop95_m = log(popover65_m1995)
+g lpop95_f = log(popover65_f1995)
+g double emr65fx   = death65  * 1000 / popover65_1995
+g double emr65fx_m = death65m * 1000 / popover65_m1995
+g double emr65fx_f = death65f * 1000 / popover65_f1995
 foreach pnl in p m f {
 	if "`pnl'" == "p" {
 		local dout death65
+		local yc   emr65
+		local yf   emr65fx
 		local offc lpopover65
-		local offf lpop96
+		local offf lpop95
 		local wv   popover65_
+		local wf   popover65_1995
 	}
 	else if "`pnl'" == "m" {
 		local dout death65m
+		local yc   emr65m
+		local yf   emr65fx_m
 		local offc lpopover65_m
-		local offf lpop96_m
+		local offf lpop95_m
 		local wv   popover65_m
+		local wf   popover65_m1995
 	}
 	else {
 		local dout death65f
+		local yc   emr65f
+		local yf   emr65fx_f
 		local offc lpopover65_f
-		local offf lpop96_f
+		local offf lpop95_f
 		local wv   popover65_f
+		local wf   popover65_f1995
 	}
 
-	foreach c in 1 2 {
-		local bFO_`pnl'_`c'  "n/a"
-		local seFO_`pnl'_`c' "n/a"
-		local NFO_`pnl'_`c'  "n/a"
+	foreach c in 1 2 3 4 {
+		local bFO_`pnl'_`c'    "n/a"
+		local seFO_`pnl'_`c'   "n/a"
+		local NFO_`pnl'_`c'    "n/a"
+		local meanFO_`pnl'_`c' ""
 	}
 
-	* col 1: contemporaneous offset (the standard specification)
-	* col 2: offset fixed at the 1996 pre-program population
+	* cols 1-2: levels. col 1 contemporaneous (the main specification),
+	* col 2 fixed 1995 denominator and weight
 	forval c = 1/2 {
-		if `c' == 1 local offset_use `offc'
+		if `c' == 1 {
+			local yuse `yc'
+			local wuse `wv'
+		}
+		else {
+			local yuse `yf'
+			local wuse `wf'
+		}
+		capture reghdfe `yuse' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+			[aw=`wuse'] if $sample_marg, a(year cve_ent_mun_super) ///
+			vce(cluster cve_ent_mun_super)
+		if !_rc & e(N) > 0 {
+			local aux : di %12.3f _b[1.post#c.inten1999]
+			local seFO_`pnl'_`c' : di %12.3f _se[1.post#c.inten1999]
+			local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+			if      `t' >= 2.576 local bFO_`pnl'_`c' = "`aux'***"
+			else if `t' >= 1.96  local bFO_`pnl'_`c' = "`aux'**"
+			else if `t' >= 1.645 local bFO_`pnl'_`c' = "`aux'*"
+			else                  local bFO_`pnl'_`c' = "`aux'"
+			local NFO_`pnl'_`c' : di %12.0fc e(N)
+			quietly sum `yuse' if e(sample) & post == 2
+			local meanFO_`pnl'_`c' : di %12.2f r(mean)
+		}
+		else di as error "Fixed-denominator levels, panel `pnl', col `c': reghdfe failed or empty sample (rc=`_rc'), leaving cells n/a"
+	}
+
+	* cols 3-4: Poisson on death counts. col 3 contemporaneous offset,
+	* col 4 offset fixed at the 1995 pre-program population
+	forval c = 3/4 {
+		if `c' == 3 local offset_use `offc'
 		else        local offset_use `offf'
 
 		capture ppmlhdfe `dout' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
@@ -2552,24 +2603,21 @@ foreach pnl in p m f {
 {
 	cap file close fo
 	file open fo using "$tables/appendix/AT_fixed_offset_poisson.tex", write replace
-	file write fo "\begin{tabular}{lcc} \hline \hline" _n
-	file write fo "& Contemporaneous offset & Fixed 1996 offset \\ " _n
-	file write fo "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
-	file write fo "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
-	file write fo "\underline{\textit{Panel A: Pooled}} \\ " _n
-	file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_p_1' & `bFO_p_2' \\ " _n
-	file write fo " & (`seFO_p_1') & (`seFO_p_2') \\ " _n
-	file write fo "Obs & `NFO_p_1' & `NFO_p_2' \\ " _n
-	file write fo "  & & \\ " _n
-	file write fo "\underline{\textit{Panel B: Females}} \\ " _n
-	file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_f_1' & `bFO_f_2' \\ " _n
-	file write fo " & (`seFO_f_1') & (`seFO_f_2') \\ " _n
-	file write fo "Obs & `NFO_f_1' & `NFO_f_2' \\ " _n
-	file write fo "  & & \\ " _n
-	file write fo "\underline{\textit{Panel C: Males}} \\ " _n
-	file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_m_1' & `bFO_m_2' \\ " _n
-	file write fo " & (`seFO_m_1') & (`seFO_m_2') \\ " _n
-	file write fo "Obs & `NFO_m_1' & `NFO_m_2' \\ \bottomrule" _n
+	file write fo "\begin{tabular}{lcccc} \hline \hline" _n
+	file write fo "& \multicolumn{2}{c}{Levels (deaths per 1,000)} & \multicolumn{2}{c}{Poisson (\% change in deaths)} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+	file write fo "& Contemporaneous & Fixed 1995 & Contemporaneous & Fixed 1995 \\ " _n
+	file write fo "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+	foreach pnl in p f m {
+		if "`pnl'" == "p" file write fo "\underline{\textit{Panel A: Pooled}} \\ " _n
+		if "`pnl'" == "f" file write fo "\underline{\textit{Panel B: Females}} \\ " _n
+		if "`pnl'" == "m" file write fo "\underline{\textit{Panel C: Males}} \\ " _n
+		file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_`pnl'_1' & `bFO_`pnl'_2' & `bFO_`pnl'_3' & `bFO_`pnl'_4' \\ " _n
+		file write fo " & (`seFO_`pnl'_1') & (`seFO_`pnl'_2') & (`seFO_`pnl'_3') & (`seFO_`pnl'_4') \\ " _n
+		file write fo "Mean (1991-1996) & `meanFO_`pnl'_1' & `meanFO_`pnl'_2' & & \\ " _n
+		file write fo "Obs & `NFO_`pnl'_1' & `NFO_`pnl'_2' & `NFO_`pnl'_3' & `NFO_`pnl'_4' \\ " _n
+		if "`pnl'" != "m" file write fo "  & & & & \\ " _n
+	}
+	file write fo "\bottomrule" _n
 	file write fo "\end{tabular}"
 	file close fo
 	if "$repo_tables" != "" copy "$tables/appendix/AT_fixed_offset_poisson.tex" "$repo_tables/appendix/AT_fixed_offset_poisson.tex", replace

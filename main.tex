@@ -156,7 +156,7 @@ We study the long-term effects of Mexico's \textit{Progresa} conditional cash tr
 
 \p \textbf{\textit{Progresa} administrative data.} We obtain end-of-year total counts of enrolled \textit{Progresa} households from administrative records, which we use as the numerator to construct our treatment variable.
 
-\p \textbf{Population and Household data.} We linearly interpolate Census data (1990, 2000, 2005, 2010, 2020) on household and population counts, which we use as denominators for mortality rates at the sex, geography, and age cell and treatment intensity, respectively.
+\p \textbf{Population and Household data.} Population by sex and five-year age group comes from the census and population-count years 1990, 1995, 2000, and 2005. We interpolate it geometrically between these years, applying to each municipality a constant annual growth rate within each interval, and extrapolate 2006 at the 2000--2005 rate. The resulting population aged 65 and older is the denominator of the mortality rates, so within an interval population changes at a constant rate by construction. Household counts, the denominator of treatment intensity, are linearly interpolated between the census years 1990, 2000, 2005, 2010, and 2020.
 
 
 \p \textbf{Additional controls.} We use the 1990 CONAPO Marginalization Index data to restrict the sample to highly marginalized areas, and to implement robustness checks across socioeconomic strata trends. The Marginalization Index classifies all Mexican municipalities into five categories based on household poverty indicators, including dirt floors, crowding, illiteracy, and lack of sanitation  

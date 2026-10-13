@@ -207,7 +207,7 @@
 % at:fixed_offset_poisson removed on 2026-10-13.
 % \begin{table}[H]
 % \RawCaption%
-%   {\caption{Mortality Effects Under a Contemporaneous vs.\ Fixed Pre-Program Population Offset}
+%   {\caption{Mortality Effects Under a Contemporaneous vs.\ Fixed Pre-Program Population}
 %    \label{at:fixed_offset_poisson}}
 % \floatbox[{\captop}]{table}[\FBwidth]
 %   {}
@@ -215,7 +215,7 @@
 %       \input{tables/appendix/AT_fixed_offset_poisson}
 %     }
 %     \vspace{-3mm}
-%     \floatfoot{This table asks whether the main mortality result depends on migration's ability to move the mortality rate's population denominator. Both columns estimate a Poisson pseudo-maximum-likelihood model of raw death counts on $\textit{Intensity}_{1999} \times \textit{Post}$, $\textit{Intensity}_{2005} \times \textit{Post}$, and Seguro Popular intensity, weighted by the 65+ population, with municipality and year fixed effects; coefficients are reported as $(\exp(\hat\beta)-1)\times 100$, the percentage change in death counts per unit increase in intensity. Column (1) uses the contemporaneous (year-varying) 65+ population as the offset, as in Appendix Table~\ref{at:did_robust_ff}. Column (2) fixes the offset at each municipality's \textbf{1996} (pre-program) 65+ population, so that no post-1997 change in population -- from migration or any other source -- can enter the estimate. If columns (1) and (2) agree, the mortality result does not depend on migration having moved the denominator. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+%     \floatfoot{Notes: This table asks whether the main mortality result depends on the ability of migration, or of any other change in population after 1997, to move the denominator of the mortality rate. All columns include $\textit{Intensity}_{1999} \times \textit{Post}$, $\textit{Intensity}_{2005} \times \textit{Post}$, and Seguro Popular intensity, with municipality and year fixed effects. Columns (1)--(2) regress the mortality rate for adults aged 65 and older (deaths per 1,000): column (1) is the main specification of Table~\ref{t:did_age}, with the contemporaneous population in the denominator and as the weight; column (2) fixes both at each municipality's \textbf{1995} population, the last pre-program year in which the 65+ population is counted rather than interpolated. Columns (3)--(4) estimate a Poisson pseudo-maximum-likelihood model of raw death counts, weighted by the contemporaneous 65+ population, with coefficients reported as $(\exp(\hat\beta)-1)\times 100$, the percentage change in death counts per unit increase in intensity: column (3) uses the contemporaneous population as the offset, as in Appendix Table~\ref{at:did_robust_ff}; column (4) fixes the offset at the 1995 population. If the contemporaneous and fixed columns agree, the mortality result does not depend on population change after the program began. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
 %   }
 % \end{table}
 
