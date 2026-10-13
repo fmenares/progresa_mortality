@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:  13 Oct 2026, 14:55:50
+ opened on:  13 Oct 2026, 17:26:08
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -6572,7 +6572,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . 
 . *============================================================
-. * MORTALITY WITH A PRE-PROGRAM (FIXED) POPULATION OFFSET
+. * MORTALITY WITH A PRE-PROGRAM (FIXED) POPULATION DENOMINATOR
 . * Output: $tables/appendix/AT_fixed_offset_poisson.tex
 . *
 . * This is the check that makes the migration threat moot for the paper's
@@ -6580,22 +6580,32 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 . *
 . * Migration threatens the mortality estimate through the DENOMINATOR: the
 . * outcome emr65 = death65*1000/popover65_ divides by a contemporaneous,
-. * post-program population that migration can move. If instead we model
-. * raw DEATH COUNTS with an offset FIXED at each municipality's 1996
-. * (pre-program) 65+ population, no post-1997 population change can enter
-. * the estimate at all -- by construction, not by assumption. Column (2)
-. * is therefore immune to the entire selective-out-migration story.
+. * post-program population that migration can move. If instead the
+. * denominator is FIXED at each municipality's pre-program 65+ population,
+. * no post-1997 population change can enter the estimate at all -- by
+. * construction, not by assumption. Two specifications, each with the
+. * contemporaneous denominator next to the fixed one:
+. *   (1)-(2) the main specification, mortality rate in levels
+. *           (emr65, [aw=popover65_], as in Table 2 col. 1) vs. the rate
+. *           with the 1995 population in the denominator, weighted by that
+. *           same fixed population;
+. *   (3)-(4) Poisson on death counts, offset = log of the contemporaneous
+. *           population vs. of the 1995 population (as in AT4_functional_
+. *           forms col. 3), both weighted by popover65_.
+. * All include Intensity_1999 x post, Intensity_2005 x post, Seguro Popular
+. * intensity, municipality and year FE.
 . *
-. * Column (1) repeats the standard Poisson with the contemporaneous
-. * offset (as in AT4_functional_forms) so the two are directly comparable:
-. * if (1) and (2) agree, migration cannot be driving the mortality null,
-. * whatever the population tables happen to show.
+. * The fixed year is 1995, the last pre-program year in which the 65+
+. * population is actually COUNTED (1990 and 1995 count; 1996-1999 are
+. * interpolated toward the 2000 count, which is already post-program).
+. * If the contemporaneous and fixed columns agree, migration cannot be
+. * driving the mortality null, whatever the population tables show.
 . *============================================================
-. cap drop popover65_1996 popover65_m1996 popover65_f1996
+. cap drop popover65_1995 popover65_m1995 popover65_f1995
 
 . foreach sfx in "_" "_m" "_f" {
-  2.         g aux = popover65`sfx' if year == 1996
-  3.         bys cve_ent_mun_super: egen popover65`sfx'1996 = min(aux)
+  2.         g aux = popover65`sfx' if year == 1995
+  3.         bys cve_ent_mun_super: egen popover65`sfx'1995 = min(aux)
   4.         drop aux
   5. }
 (71,241 missing values generated)
@@ -6605,91 +6615,141 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 (71,241 missing values generated)
 (651 missing values generated)
 
-. cap drop lpop96 lpop96_m lpop96_f
+. cap drop lpop95 lpop95_m lpop95_f emr65fx emr65fx_m emr65fx_f
 
-. g lpop96   = log(popover65_1996)
+. g lpop95   = log(popover65_1995)
 (651 missing values generated)
 
-. g lpop96_m = log(popover65_m1996)
+. g lpop95_m = log(popover65_m1995)
 (651 missing values generated)
 
-. g lpop96_f = log(popover65_f1996)
+. g lpop95_f = log(popover65_f1995)
 (651 missing values generated)
 
-. 
+. g double emr65fx   = death65  * 1000 / popover65_1995
+(35,946 missing values generated)
+
+. g double emr65fx_m = death65m * 1000 / popover65_m1995
+(35,946 missing values generated)
+
+. g double emr65fx_f = death65f * 1000 / popover65_f1995
+(35,946 missing values generated)
+
 . foreach pnl in p m f {
   2.         if "`pnl'" == "p" {
   3.                 local dout death65
-  4.                 local offc lpopover65
-  5.                 local offf lpop96
-  6.                 local wv   popover65_
-  7.         }
-  8.         else if "`pnl'" == "m" {
-  9.                 local dout death65m
- 10.                 local offc lpopover65_m
- 11.                 local offf lpop96_m
- 12.                 local wv   popover65_m
- 13.         }
- 14.         else {
- 15.                 local dout death65f
- 16.                 local offc lpopover65_f
- 17.                 local offf lpop96_f
- 18.                 local wv   popover65_f
+  4.                 local yc   emr65
+  5.                 local yf   emr65fx
+  6.                 local offc lpopover65
+  7.                 local offf lpop95
+  8.                 local wv   popover65_
+  9.                 local wf   popover65_1995
+ 10.         }
+ 11.         else if "`pnl'" == "m" {
+ 12.                 local dout death65m
+ 13.                 local yc   emr65m
+ 14.                 local yf   emr65fx_m
+ 15.                 local offc lpopover65_m
+ 16.                 local offf lpop95_m
+ 17.                 local wv   popover65_m
+ 18.                 local wf   popover65_m1995
  19.         }
- 20. 
-.         foreach c in 1 2 {
- 21.                 local bFO_`pnl'_`c'  "n/a"
- 22.                 local seFO_`pnl'_`c' "n/a"
- 23.                 local NFO_`pnl'_`c'  "n/a"
- 24.         }
- 25. 
-.         * col 1: contemporaneous offset (the standard specification)
-.         * col 2: offset fixed at the 1996 pre-program population
+ 20.         else {
+ 21.                 local dout death65f
+ 22.                 local yc   emr65f
+ 23.                 local yf   emr65fx_f
+ 24.                 local offc lpopover65_f
+ 25.                 local offf lpop95_f
+ 26.                 local wv   popover65_f
+ 27.                 local wf   popover65_f1995
+ 28.         }
+ 29. 
+.         foreach c in 1 2 3 4 {
+ 30.                 local bFO_`pnl'_`c'    "n/a"
+ 31.                 local seFO_`pnl'_`c'   "n/a"
+ 32.                 local NFO_`pnl'_`c'    "n/a"
+ 33.                 local meanFO_`pnl'_`c' ""
+ 34.         }
+ 35. 
+.         * cols 1-2: levels. col 1 contemporaneous (the main specification),
+.         * col 2 fixed 1995 denominator and weight
 .         forval c = 1/2 {
- 26.                 if `c' == 1 local offset_use `offc'
- 27.                 else        local offset_use `offf'
- 28. 
+ 36.                 if `c' == 1 {
+ 37.                         local yuse `yc'
+ 38.                         local wuse `wv'
+ 39.                 }
+ 40.                 else {
+ 41.                         local yuse `yf'
+ 42.                         local wuse `wf'
+ 43.                 }
+ 44.                 capture reghdfe `yuse' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
+>                         [aw=`wuse'] if $sample_marg, a(year cve_ent_mun_super) ///
+>                         vce(cluster cve_ent_mun_super)
+ 45.                 if !_rc & e(N) > 0 {
+ 46.                         local aux : di %12.3f _b[1.post#c.inten1999]
+ 47.                         local seFO_`pnl'_`c' : di %12.3f _se[1.post#c.inten1999]
+ 48.                         local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+ 49.                         if      `t' >= 2.576 local bFO_`pnl'_`c' = "`aux'***"
+ 50.                         else if `t' >= 1.96  local bFO_`pnl'_`c' = "`aux'**"
+ 51.                         else if `t' >= 1.645 local bFO_`pnl'_`c' = "`aux'*"
+ 52.                         else                  local bFO_`pnl'_`c' = "`aux'"
+ 53.                         local NFO_`pnl'_`c' : di %12.0fc e(N)
+ 54.                         quietly sum `yuse' if e(sample) & post == 2
+ 55.                         local meanFO_`pnl'_`c' : di %12.2f r(mean)
+ 56.                 }
+ 57.                 else di as error "Fixed-denominator levels, panel `pnl', col `c': reghdfe failed or em
+> pty sample (rc=`_rc'), leaving cells n/a"
+ 58.         }
+ 59. 
+.         * cols 3-4: Poisson on death counts. col 3 contemporaneous offset,
+.         * col 4 offset fixed at the 1995 pre-program population
+.         forval c = 3/4 {
+ 60.                 if `c' == 3 local offset_use `offc'
+ 61.                 else        local offset_use `offf'
+ 62. 
 .                 capture ppmlhdfe `dout' c.inten1999#i.post c.inten2005#i.post c.sp_intensity ///
 >                         [pw=`wv'] if $sample_marg, a(year cve_ent_mun_super) ///
 >                         offset(`offset_use') vce(cluster cve_ent_mun_super)
- 29.                 if !_rc & e(N) > 0 {
- 30.                         local aux : di %12.2f (exp(_b[1.post#c.inten1999])-1)*100
- 31.                         local seFO_`pnl'_`c' : di %12.2f exp(_b[1.post#c.inten1999])*_se[1.post#c.inte
+ 63.                 if !_rc & e(N) > 0 {
+ 64.                         local aux : di %12.2f (exp(_b[1.post#c.inten1999])-1)*100
+ 65.                         local seFO_`pnl'_`c' : di %12.2f exp(_b[1.post#c.inten1999])*_se[1.post#c.inte
 > n1999]*100
- 32.                         local t = abs(`aux' / `seFO_`pnl'_`c'')
- 33.                         if      `t' >= 2.576 local bFO_`pnl'_`c' = "`aux'***"
- 34.                         else if `t' >= 1.96  local bFO_`pnl'_`c' = "`aux'**"
- 35.                         else if `t' >= 1.645 local bFO_`pnl'_`c' = "`aux'*"
- 36.                         else                  local bFO_`pnl'_`c' = "`aux'"
- 37.                         local NFO_`pnl'_`c' : di %12.0fc e(N)
- 38.                 }
- 39.                 else di as error "Fixed-offset Poisson, panel `pnl', col `c': ppmlhdfe failed or empty
+ 66.                         local t = abs(`aux' / `seFO_`pnl'_`c'')
+ 67.                         if      `t' >= 2.576 local bFO_`pnl'_`c' = "`aux'***"
+ 68.                         else if `t' >= 1.96  local bFO_`pnl'_`c' = "`aux'**"
+ 69.                         else if `t' >= 1.645 local bFO_`pnl'_`c' = "`aux'*"
+ 70.                         else                  local bFO_`pnl'_`c' = "`aux'"
+ 71.                         local NFO_`pnl'_`c' : di %12.0fc e(N)
+ 72.                 }
+ 73.                 else di as error "Fixed-offset Poisson, panel `pnl', col `c': ppmlhdfe failed or empty
 >  sample (rc=`_rc'), leaving cells n/a"
- 40.         }
- 41. }
+ 74.         }
+ 75. }
 
 . 
 . {
 .         cap file close fo
 .         file open fo using "$tables/appendix/AT_fixed_offset_poisson.tex", write replace
-.         file write fo "\begin{tabular}{lcc} \hline \hline" _n
-.         file write fo "& Contemporaneous offset & Fixed 1996 offset \\ " _n
-.         file write fo "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
-.         file write fo "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
-.         file write fo "\underline{\textit{Panel A: Pooled}} \\ " _n
-.         file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_p_1' & `bFO_p_2' \\ " _n
-.         file write fo " & (`seFO_p_1') & (`seFO_p_2') \\ " _n
-.         file write fo "Obs & `NFO_p_1' & `NFO_p_2' \\ " _n
-.         file write fo "  & & \\ " _n
-.         file write fo "\underline{\textit{Panel B: Females}} \\ " _n
-.         file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_f_1' & `bFO_f_2' \\ " _n
-.         file write fo " & (`seFO_f_1') & (`seFO_f_2') \\ " _n
-.         file write fo "Obs & `NFO_f_1' & `NFO_f_2' \\ " _n
-.         file write fo "  & & \\ " _n
-.         file write fo "\underline{\textit{Panel C: Males}} \\ " _n
-.         file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_m_1' & `bFO_m_2' \\ " _n
-.         file write fo " & (`seFO_m_1') & (`seFO_m_2') \\ " _n
-.         file write fo "Obs & `NFO_m_1' & `NFO_m_2' \\ \bottomrule" _n
+.         file write fo "\begin{tabular}{lcccc} \hline \hline" _n
+.         file write fo "& \multicolumn{2}{c}{Levels (deaths per 1,000)} & \multicolumn{2}{c}{Poisson (\% c
+> hange in deaths)} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+.         file write fo "& Contemporaneous & Fixed 1995 & Contemporaneous & Fixed 1995 \\ " _n
+.         file write fo "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \m
+> ulticolumn{1}{c}{(4)} \\ \toprule" _n
+.         foreach pnl in p f m {
+  2.                 if "`pnl'" == "p" file write fo "\underline{\textit{Panel A: Pooled}} \\ " _n
+  3.                 if "`pnl'" == "f" file write fo "\underline{\textit{Panel B: Females}} \\ " _n
+  4.                 if "`pnl'" == "m" file write fo "\underline{\textit{Panel C: Males}} \\ " _n
+  5.                 file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_`pnl'_1' & `bFO_`pnl'
+> _2' & `bFO_`pnl'_3' & `bFO_`pnl'_4' \\ " _n
+  6.                 file write fo " & (`seFO_`pnl'_1') & (`seFO_`pnl'_2') & (`seFO_`pnl'_3') & (`seFO_`pnl
+> '_4') \\ " _n
+  7.                 file write fo "Mean (1991-1996) & `meanFO_`pnl'_1' & `meanFO_`pnl'_2' & & \\ " _n
+  8.                 file write fo "Obs & `NFO_`pnl'_1' & `NFO_`pnl'_2' & `NFO_`pnl'_3' & `NFO_`pnl'_4' \\ 
+> " _n
+  9.                 if "`pnl'" != "m" file write fo "  & & & & \\ " _n
+ 10.         }
+.         file write fo "\bottomrule" _n
 .         file write fo "\end{tabular}"
 .         file close fo
 .         if "$repo_tables" != "" copy "$tables/appendix/AT_fixed_offset_poisson.tex" "$repo_tables/appendi
@@ -10924,12 +10984,14 @@ Figures exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cc
 . * `confirm' stops and names it: rerun 02_mortality.do.
 . *============================================================
 . capture confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
->         sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000
+>         sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000 post yea
+> r_1995
 
 . if _rc {
 .         use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
 .         confirm variable cve_ent_mun_super year gm_mun_1990 emr65 popover65_ ///
->                 sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000
+>                 sp_intensity inten1999 inten2005 lag2_intensity_new inten_start_year inten1998 inten2000 
+> post year_1995
 . }
 
 . tempfile cdid_panel
@@ -14985,6 +15047,912 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 > ver_size.tex
 
 . 
+. *------------------------------------------------------------
+. * (8) at:br_adapted_size / af:br_adapted_size -- our adapted design
+. * (Intensity_1999 x Post, Post = 1997 on, Seguro Popular intensity,
+. * municipality and year FE; the design of AT7_BR_robustness_emr65_
+. * 2002ctrl_eoy in 02_mortality.do) in BR's sample and window (1992-2002),
+. * within the size terciles of (7) (pre-program 1992-1996 mean population
+. * 65+, equal numbers of municipalities) and overall. "All" reproduces
+. * that table's BR-sample columns (-3.974 unweighted, -1.660 weighted).
+. * For each column the event-study version (Intensity_1999 x year,
+. * reference 1996) gives a joint test that the 1992-1995 coefficients are
+. * zero; the event studies of the three terciles are plotted together,
+. * pooled sexes, one figure per weighting: AF_br_adapted_es_size_uw/w.
+. * Output: AT_br_adapted_size.tex.
+. *------------------------------------------------------------
+. use `cdid_panel', clear
+
+. quietly keep if $sample_br & inrange(year, 1992, 2002)
+
+. quietly keep if !missing(emr65, lag2_intensity_new, inten1999, inten2005, popover65_)
+
+. bysort cve_ent_mun_super: egen double __sz = mean(cond(year <= 1996, popover65_, .))
+
+. egen byte __tag = tag(cve_ent_mun_super)
+
+. quietly xtile __szt = __sz if __tag, nquantiles(3)
+
+. bysort cve_ent_mun_super: egen byte __terc = max(__szt)
+
+. forvalues k = 1/3 {
+  2.         quietly summarize __sz if __tag & __terc == `k'
+  3.         local amp`k' = trim(string(r(mean), "%9.0fc"))
+  4. }
+
+. quietly summarize __sz if __tag
+
+. local amp4 = trim(string(r(mean), "%9.0fc"))
+
+. foreach wt in uw w {
+  2.         local aw ""
+  3.         if "`wt'" == "w" local aw "[aw=popover65_]"
+  4.         * k = 1-3: size terciles; k = 4: whole sample
+.         forvalues k = 1/4 {
+  5.                 local cond "if __terc == `k'"
+  6.                 if `k' == 4 local cond ""
+  7.                 * pooled DiD
+.                 reghdfe emr65 c.inten1999#i.post c.sp_intensity `aw' `cond', ///
+>                         a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+  8.                 local t = abs(_b[1.post#c.inten1999] / _se[1.post#c.inten1999])
+  9.                 local st ""
+ 10.                 if `t' >= 1.645 local st "*"
+ 11.                 if `t' >= 1.960 local st "**"
+ 12.                 if `t' >= 2.576 local st "***"
+ 13.                 local ab_`wt'_`k' = trim(string(_b[1.post#c.inten1999], "%9.3f")) + "`st'"
+ 14.                 local as_`wt'_`k' = trim(string(_se[1.post#c.inten1999], "%9.3f"))
+ 15.                 local aN_`wt'_`k' = trim(string(e(N), "%12.0fc"))
+ 16.                 quietly summarize emr65 if e(sample) & post == 2
+ 17.                 local amr_`wt'_`k' = trim(string(r(mean), "%9.2f"))
+ 18.                 tempvar tg
+ 19.                 quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+ 20.                 quietly count if `tg' == 1
+ 21.                 local aM_`wt'_`k' = trim(string(r(N), "%12.0fc"))
+ 22.                 drop `tg'
+ 23.                 * event study, reference 1996 (year_1995 = 6); 1992-2002 = 2..12
+.                 reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity `aw' `cond', ///
+>                         a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ 24.                 quietly testparm i(2/5).year_1995#c.inten1999
+ 25.                 local ap_`wt'_`k' = trim(string(r(p), "%5.3f"))
+ 26.                 forvalues pos = 2/12 {
+ 27.                         if `pos' == 6 {
+ 28.                                 local eb_`wt'_`k'_`pos' = 0
+ 29.                                 local el_`wt'_`k'_`pos' = 0
+ 30.                                 local eh_`wt'_`k'_`pos' = 0
+ 31.                         }
+ 32.                         else {
+ 33.                                 local eb_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999]
+ 34.                                 local el_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] - 1.96 * _se
+> [`pos'.year_1995#c.inten1999]
+ 35.                                 local eh_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] + 1.96 * _se
+> [`pos'.year_1995#c.inten1999]
+ 36.                         }
+ 37.                 }
+ 38.         }
+ 39. 
+.         * figure: the three terciles' event studies, pooled sexes
+.         preserve
+ 40.         clear
+ 41.         quietly set obs 11
+ 42.         quietly gen int pos = _n + 1
+ 43.         quietly gen int year = 1990 + pos
+ 44.         forvalues k = 1/3 {
+ 45.                 quietly gen double b`k' = .
+ 46.                 quietly gen double l`k' = .
+ 47.                 quietly gen double h`k' = .
+ 48.                 forvalues q = 2/12 {
+ 49.                         quietly replace b`k' = `eb_`wt'_`k'_`q'' if pos == `q'
+ 50.                         quietly replace l`k' = `el_`wt'_`k'_`q'' if pos == `q'
+ 51.                         quietly replace h`k' = `eh_`wt'_`k'_`q'' if pos == `q'
+ 52.                 }
+ 53.         }
+ 54.         quietly gen double x1 = year - 0.18
+ 55.         quietly gen double x2 = year
+ 56.         quietly gen double x3 = year + 0.18
+ 57.         twoway ///
+>                 (rcap l1 h1 x1, lcolor(maroon%60) lwidth(vthin)) ///
+>                 (scatter b1 x1, mcolor(maroon) msymbol(O) msize(small)) ///
+>                 (rcap l2 h2 x2, lcolor(navy%60) lwidth(vthin)) ///
+>                 (scatter b2 x2, mcolor(navy) msymbol(D) msize(small)) ///
+>                 (rcap l3 h3 x3, lcolor(dkgreen%60) lwidth(vthin)) ///
+>                 (scatter b3 x3, mcolor(dkgreen) msymbol(T) msize(small)), ///
+>                 yline(0, lcolor(gs8) lwidth(vthin)) xline(1996.5, lcolor(gs10) lpattern(dash)) ///
+>                 xlabel(1992(1)2002, labsize(small) angle(45)) ///
+>                 ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
+>                 xtitle("") ytitle("Coefficient on Intensity 1999 x year (95% CI)", size(small)) ///
+>                 legend(order(2 "Small (mean 65+ population `amp1')" 4 "Medium (`amp2')" 6 "Large (`amp3')
+> ") ///
+>                         size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
+>                 graphregion(color(white))
+ 58.         graph export "$figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
+ 59.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_adapted_es_size_`wt'.pdf",
+>  as(pdf) replace
+ 60.         di "Figure exported to: $figures/appendix/AF_br_adapted_es_size_`wt'.pdf"
+ 61.         restore
+ 62. }
+(MWFE estimator converged in 2 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   2,    473) =       4.25
+Statistics robust to heteroskedasticity           Prob > F        =     0.0148
+                                                  R-squared       =     0.2554
+                                                  Adj R-squared   =     0.1790
+                                                  Within R-sq.    =     0.0002
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =    21.7244
+
+                        (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |  -1.661168   2.703277    -0.61   0.539    -6.973085     3.65075
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |   -22.2211   7.856271    -2.83   0.005    -37.65861   -6.783589
+           _cons |   47.43196   .6834224    69.40   0.000     46.08904    48.77488
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 1 HDFE group                            F(  21,    473) =       9.01
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.2562
+                                                  Adj R-squared   =     0.1783
+                                                  Within R-sq.    =     0.0353
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =    21.7336
+
+                             (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |   1.609095   3.412725     0.47   0.638    -5.096883    8.315073
+                1993  |   2.360881   3.083774     0.77   0.444    -3.698709    8.420471
+                1994  |   2.954505   3.220505     0.92   0.359     -3.37376    9.282771
+                1995  |   3.945798   3.092042     1.28   0.203    -2.130039    10.02164
+                1997  |   2.407331   2.877928     0.84   0.403    -3.247774    8.062436
+                1998  |  -.3545033   3.172216    -0.11   0.911    -6.587882    5.878875
+                1999  |  -2.192428   3.048802    -0.72   0.472    -8.183299    3.798443
+                2000  |  -5.882132   3.058405    -1.92   0.055    -11.89187    .1276086
+                2001  |  -6.348561   2.915106    -2.18   0.030    -12.07672   -.6204002
+                2002  |  -3.576259   2.962602    -1.21   0.228    -9.397748    2.245229
+                      |
+year_1995#c.inten1999 |
+                1992  |  -9.162505    7.27844    -1.26   0.209    -23.46458    5.139571
+                1993  |  -1.859891   6.605001    -0.28   0.778    -14.83867    11.11888
+                1994  |  -9.175576   6.704235    -1.37   0.172    -22.34934    3.998192
+                1995  |  -10.20434   6.516142    -1.57   0.118    -23.00851    2.599824
+                1997  |  -8.286243   5.916966    -1.40   0.162    -19.91303    3.340547
+                1998  |  -5.778729   6.940622    -0.83   0.405      -19.417    7.859537
+                1999  |  -5.326552   6.335804    -0.84   0.401    -17.77636    7.123253
+                2000  |  -8.331935   6.507226    -1.28   0.201    -21.11858    4.454712
+                2001  |   -9.06994   6.266568    -1.45   0.148     -21.3837    3.243817
+                2002  |  -9.659589   6.162963    -1.57   0.118    -21.76976    2.450583
+                      |
+         sp_intensity |  -22.66212   7.172876    -3.16   0.002    -36.75677   -8.567479
+                _cons |   50.71237   1.025481    49.45   0.000     48.69731    52.72743
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 2 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   2,    473) =       0.47
+Statistics robust to heteroskedasticity           Prob > F        =     0.6255
+                                                  R-squared       =     0.4686
+                                                  Adj R-squared   =     0.4141
+                                                  Within R-sq.    =     0.0003
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     9.5475
+
+                        (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |  -1.386699    1.43224    -0.97   0.333     -4.20104    1.427641
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |  -.0269422   9.718794    -0.00   0.998     -19.1243    19.07041
+           _cons |    44.0581   .2294942   191.98   0.000     43.60715    44.50906
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 1 HDFE group                            F(  21,    473) =      11.18
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.4693
+                                                  Adj R-squared   =     0.4137
+                                                  Within R-sq.    =     0.0496
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     9.5509
+
+                             (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |  -.1812571   1.104474    -0.16   0.870     -2.35154    1.989026
+                1993  |  -.2285187    1.09856    -0.21   0.835    -2.387181    1.930143
+                1994  |  -1.522418   1.111881    -1.37   0.172    -3.707255    .6624189
+                1995  |  -.1172618   1.067675    -0.11   0.913    -2.215234     1.98071
+                1997  |   .0635205    1.02174     0.06   0.950    -1.944191    2.071232
+                1998  |   -1.67055   .9630122    -1.73   0.083    -3.562861    .2217617
+                1999  |  -1.754459   1.002976    -1.75   0.081    -3.725299    .2163813
+                2000  |  -3.884972    .991292    -3.92   0.000    -5.832853   -1.937092
+                2001  |  -4.926492   .9970213    -4.94   0.000    -6.885631   -2.967353
+                2002  |  -3.491669   1.008825    -3.46   0.001    -5.474003   -1.509336
+                      |
+year_1995#c.inten1999 |
+                1992  |  -1.148139   3.146355    -0.36   0.715    -7.330701    5.034423
+                1993  |  -.3830937   2.905949    -0.13   0.895    -6.093261    5.327073
+                1994  |  -1.554615   2.909935    -0.53   0.593    -7.272614    4.163384
+                1995  |   .6268129   2.884853     0.22   0.828    -5.041901    6.295527
+                1997  |  -.3768884    2.94534    -0.13   0.898    -6.164457     5.41068
+                1998  |    .889233   2.694376     0.33   0.742    -4.405194     6.18366
+                1999  |  -2.076696   2.900437    -0.72   0.474    -7.776032     3.62264
+                2000  |   -3.85458   2.836361    -1.36   0.175    -9.428006    1.718845
+                2001  |  -1.492494   3.052933    -0.49   0.625    -7.491483    4.506495
+                2002  |  -4.492992    2.76602    -1.62   0.105      -9.9282    .9422155
+                      |
+         sp_intensity |  -3.385205   9.794712    -0.35   0.730    -22.63174    15.86132
+                _cons |    45.8197   .4290524   106.79   0.000     44.97662    46.66279
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 2 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   2,    473) =       0.90
+Statistics robust to heteroskedasticity           Prob > F        =     0.4069
+                                                  R-squared       =     0.6766
+                                                  Adj R-squared   =     0.6435
+                                                  Within R-sq.    =     0.0003
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     5.6334
+
+                        (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |   .2453356    1.20595     0.20   0.839    -2.124346    2.615018
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |   7.415882   5.581483     1.33   0.185    -3.551689    18.38345
+           _cons |    45.7638    .126659   361.32   0.000     45.51491    46.01268
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 1 HDFE group                            F(  21,    473) =      19.07
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.6779
+                                                  Adj R-squared   =     0.6442
+                                                  Within R-sq.    =     0.0946
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     5.6275
+
+                             (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |  -.0887618   .6308187    -0.14   0.888    -1.328316    1.150792
+                1993  |  -1.086901    .609037    -1.78   0.075    -2.283654    .1098516
+                1994  |  -2.676235   .5856527    -4.57   0.000    -3.827038   -1.525432
+                1995  |  -.8309043   .5604666    -1.48   0.139    -1.932217     .270408
+                1997  |  -.7475697   .5424446    -1.38   0.169    -1.813469    .3183295
+                1998  |   -2.54455   .5503734    -4.62   0.000    -3.626029   -1.463071
+                1999  |  -2.582299   .5459467    -4.73   0.000     -3.65508   -1.509518
+                2000  |  -4.508143   .5967531    -7.55   0.000    -5.680758   -3.335528
+                2001  |  -4.590472   .5260001    -8.73   0.000    -5.624058   -3.556886
+                2002  |  -4.411868   .6063575    -7.28   0.000    -5.603356   -3.220381
+                      |
+year_1995#c.inten1999 |
+                1992  |  -1.180119   2.487343    -0.47   0.635    -6.067729    3.707491
+                1993  |  -1.138791   2.374649    -0.48   0.632    -5.804958    3.527376
+                1994  |   2.134849   2.091885     1.02   0.308    -1.975689    6.245387
+                1995  |   .3261996   2.435117     0.13   0.893    -4.458786    5.111185
+                1997  |  -.6915752   1.992599    -0.35   0.729    -4.607016    3.223866
+                1998  |   5.286998   2.300228     2.30   0.022     .7670681    9.806927
+                1999  |  -.4681394   2.039849    -0.23   0.819    -4.476426    3.540147
+                2000  |   -1.51693   2.478113    -0.61   0.541    -6.386401    3.352542
+                2001  |  -2.395991   2.150764    -1.11   0.266    -6.622224    1.830242
+                2002  |   1.467783   2.301723     0.64   0.524    -3.055085    5.990652
+                      |
+         sp_intensity |   8.087544   5.687218     1.42   0.156    -3.087794    19.26288
+                _cons |   47.94436   .2555087   187.64   0.000     47.44229    48.44643
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 2 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =     15,642
+Absorbing 2 HDFE groups                           F(   2,   1421) =       5.37
+Statistics robust to heteroskedasticity           Prob > F        =     0.0047
+                                                  R-squared       =     0.3421
+                                                  Adj R-squared   =     0.2757
+                                                  Within R-sq.    =     0.0011
+Number of clusters (cve_ent_mun_super) =      1,422Root MSE       =    14.1085
+
+                      (Std. err. adjusted for 1,422 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |  -3.974377   1.213667    -3.27   0.001    -6.355149   -1.593605
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |  -1.793104   7.619634    -0.24   0.814    -16.74004    13.15384
+           _cons |   46.23497   .2096443   220.54   0.000     45.82372    46.64621
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |      1422        1422           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =     15,642
+Absorbing 1 HDFE group                            F(  21,   1421) =      24.71
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.3433
+                                                  Adj R-squared   =     0.2766
+                                                  Within R-sq.    =     0.0361
+Number of clusters (cve_ent_mun_super) =      1,422Root MSE       =    14.0996
+
+                           (Std. err. adjusted for 1,422 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |   .5417728   .8117571     0.67   0.505    -1.050598    2.134144
+                1993  |  -.5577712     .75748    -0.74   0.462     -2.04367    .9281279
+                1994  |  -1.238851   .7668047    -1.62   0.106    -2.743041    .2653402
+                1995  |    .422349   .7382847     0.57   0.567    -1.025896    1.870594
+                1997  |    .259306   .6893631     0.38   0.707    -1.092973    1.611585
+                1998  |  -1.379731   .7502183    -1.84   0.066    -2.851386    .0919229
+                1999  |   -1.91859   .7161623    -2.68   0.007    -3.323439   -.5137413
+                2000  |  -3.858149   .7321548    -5.27   0.000     -5.29437   -2.421929
+                2001  |  -4.252135   .7039305    -6.04   0.000     -5.63299   -2.871281
+                2002  |  -3.132564   .7442944    -4.21   0.000    -4.592598    -1.67253
+                      |
+year_1995#c.inten1999 |
+                1992  |  -5.375103   3.023276    -1.78   0.076    -11.30567    .5554605
+                1993  |   1.609686   2.848204     0.57   0.572     -3.97745    7.196823
+                1994  |  -1.926867   2.944876    -0.65   0.513    -7.703637    3.849904
+                1995  |  -2.904442   2.737117    -1.06   0.289    -8.273666    2.464781
+                1997  |   -3.31062   2.477027    -1.34   0.182    -8.169644    1.548403
+                1998  |   -1.93561   2.957399    -0.65   0.513    -7.736946    3.865727
+                1999  |  -4.156156   2.638174    -1.58   0.115     -9.33129    1.018978
+                2000  |  -8.419715   2.674895    -3.15   0.002    -13.66688   -3.172549
+                2001  |  -8.638605   2.633516    -3.28   0.001     -13.8046   -3.472608
+                2002  |  -7.812702   2.595305    -3.01   0.003    -12.90374   -2.721662
+                      |
+         sp_intensity |   -4.69747   7.099495    -0.66   0.508    -18.62409    9.229147
+                _cons |   48.15881   .3799514   126.75   0.000     47.41348    48.90414
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |      1422        1422           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_adapted_es_size_u
+    > w.pdf saved as PDF format
+file
+    C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_br_adapted_es_size_uw.pdf
+    saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_ada
+> pted_es_size_uw.pdf
+(MWFE estimator converged in 4 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   2,    473) =       2.24
+Statistics robust to heteroskedasticity           Prob > F        =     0.1076
+                                                  R-squared       =     0.2721
+                                                  Adj R-squared   =     0.1974
+                                                  Within R-sq.    =     0.0005
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =    18.2246
+
+                        (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |  -2.907952   2.482991    -1.17   0.242    -7.787009    1.971106
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |  -17.55507   9.782122    -1.79   0.073    -36.77686    1.666725
+           _cons |   46.34744   .6492425    71.39   0.000     45.07168     47.6232
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 1 HDFE group                            F(  21,    473) =       9.34
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.2736
+                                                  Adj R-squared   =     0.1976
+                                                  Within R-sq.    =     0.0450
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =    18.2220
+
+                             (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |   2.533109   3.082937     0.82   0.412    -3.524838    8.591056
+                1993  |   .9710289   2.980812     0.33   0.745    -4.886243    6.828301
+                1994  |    2.10697   2.719071     0.77   0.439    -3.235982    7.449922
+                1995  |   2.832228   2.902143     0.98   0.330     -2.87046    8.534917
+                1997  |   4.343476   2.716296     1.60   0.110    -.9940235    9.680975
+                1998  |  -.7701499    2.78448    -0.28   0.782    -6.241631    4.701332
+                1999  |  -2.283451   2.703354    -0.84   0.399    -7.595521    3.028619
+                2000  |  -4.992402    2.79466    -1.79   0.075    -10.48389    .4990821
+                2001  |  -4.667251    2.68474    -1.74   0.083    -9.942744    .6082423
+                2002  |  -3.066499   2.714696    -1.13   0.259    -8.400855    2.267857
+                      |
+year_1995#c.inten1999 |
+                1992  |  -10.24667   6.396858    -1.60   0.110    -22.81645    2.323102
+                1993  |   .3460014   6.089885     0.06   0.955    -11.62057    12.31258
+                1994  |  -8.013658   5.655563    -1.42   0.157     -19.1268    3.099479
+                1995  |  -7.336764    5.97873    -1.23   0.220    -19.08492    4.411393
+                1997  |  -10.63947    5.49078    -1.94   0.053    -21.42881    .1498708
+                1998  |  -2.361902   5.843399    -0.40   0.686    -13.84413    9.120331
+                1999  |  -4.554127   5.567265    -0.82   0.414    -15.49376    6.385505
+                2000  |   -7.67321   5.803769    -1.32   0.187    -19.07757    3.731149
+                2001  |  -10.35172    5.59205    -1.85   0.065    -21.34006    .6366078
+                2002  |  -11.22167   5.701784    -1.97   0.050    -22.42563    -.017709
+                      |
+         sp_intensity |   -18.8037   8.291153    -2.27   0.024    -35.09575    -2.51165
+                _cons |   49.08226   .8576504    57.23   0.000     47.39698    50.76754
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 4 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   2,    473) =       0.48
+Statistics robust to heteroskedasticity           Prob > F        =     0.6197
+                                                  R-squared       =     0.4867
+                                                  Adj R-squared   =     0.4341
+                                                  Within R-sq.    =     0.0003
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     8.9815
+
+                        (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |  -1.316918   1.359107    -0.97   0.333    -3.987553    1.353717
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |   1.358528    9.52382     0.14   0.887     -17.3557    20.07276
+           _cons |    43.6765   .2317751   188.44   0.000     43.22106    44.13193
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 1 HDFE group                            F(  21,    473) =      11.59
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.4873
+                                                  Adj R-squared   =     0.4337
+                                                  Within R-sq.    =     0.0577
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     8.9845
+
+                             (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |   -.826207   1.039301    -0.79   0.427    -2.868426    1.216012
+                1993  |  -.5311808   1.059798    -0.50   0.616    -2.613676    1.551314
+                1994  |  -1.640053   1.072426    -1.53   0.127    -3.747362    .4672552
+                1995  |  -.4396642   1.033595    -0.43   0.671    -2.470671    1.591342
+                1997  |   -.132473   .9942025    -0.13   0.894    -2.086073    1.821127
+                1998  |  -2.028739   .8773158    -2.31   0.021    -3.752658   -.3048209
+                1999  |  -2.299117   .9595154    -2.40   0.017    -4.184557   -.4136768
+                2000  |  -3.970604    .946944    -4.19   0.000    -5.831341   -2.109867
+                2001  |  -5.159336   .9707261    -5.31   0.000    -7.066805   -3.251867
+                2002  |  -4.197169   .9519685    -4.41   0.000    -6.067779   -2.326558
+                      |
+year_1995#c.inten1999 |
+                1992  |   .3641453   2.933029     0.12   0.901    -5.399232    6.127523
+                1993  |  -.0117468   2.831891    -0.00   0.997    -5.576389    5.552895
+                1994  |  -1.378228   2.764692    -0.50   0.618    -6.810826    4.054369
+                1995  |   .8980151    2.69118     0.33   0.739    -4.390132    6.186162
+                1997  |   .0922681   2.717778     0.03   0.973    -5.248144     5.43268
+                1998  |   1.350839   2.436173     0.55   0.580    -3.436222    6.137899
+                1999  |  -1.442118   2.729732    -0.53   0.598     -6.80602    3.921784
+                2000  |  -3.877246   2.637232    -1.47   0.142    -9.059386    1.304893
+                2001  |   -.941097   2.916258    -0.32   0.747     -6.67152    4.789326
+                2002  |  -2.918194   2.596783    -1.12   0.262    -8.020852    2.184464
+                      |
+         sp_intensity |  -.7551255   9.682586    -0.08   0.938    -19.78133    18.27108
+                _cons |   45.75584   .4084841   112.01   0.000     44.95317     46.5585
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 4 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   2,    473) =       0.96
+Statistics robust to heteroskedasticity           Prob > F        =     0.3828
+                                                  R-squared       =     0.6960
+                                                  Adj R-squared   =     0.6648
+                                                  Within R-sq.    =     0.0004
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     4.8958
+
+                        (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |  -.0293379   1.193238    -0.02   0.980    -2.374041    2.315365
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |   7.176633   5.220707     1.37   0.170    -3.082014    17.43528
+           _cons |   46.48531   .1221488   380.56   0.000     46.24529    46.72533
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 1 HDFE group                            F(  21,    473) =      20.53
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.6977
+                                                  Adj R-squared   =     0.6660
+                                                  Within R-sq.    =     0.1192
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     4.8866
+
+                             (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |   .2357039   .5558203     0.42   0.672    -.8564786    1.327886
+                1993  |  -.3912205   .4991286    -0.78   0.434    -1.372004    .5895633
+                1994  |  -1.752841   .4796006    -3.65   0.000    -2.695252   -.8104295
+                1995  |  -.6802998   .4597167    -1.48   0.140    -1.583639    .2230398
+                1997  |  -.5821436   .4326925    -1.35   0.179    -1.432381    .2680936
+                1998  |  -2.031769   .4746055    -4.28   0.000    -2.964365   -1.099174
+                1999  |   -2.31447   .4717327    -4.91   0.000    -3.241421   -1.387519
+                2000  |  -3.903671   .5589784    -6.98   0.000     -5.00206   -2.805283
+                2001  |  -4.068894   .4575544    -8.89   0.000    -4.967985   -3.169804
+                2002  |  -4.003068   .5150302    -7.77   0.000    -5.015098   -2.991038
+                      |
+year_1995#c.inten1999 |
+                1992  |  -2.562611   2.209406    -1.16   0.247    -6.904076    1.778854
+                1993  |  -3.515897   2.235962    -1.57   0.117    -7.909544    .8777506
+                1994  |  -.4391028   1.785453    -0.25   0.806    -3.947505    3.069299
+                1995  |   .3649421   2.242989     0.16   0.871    -4.042512    4.772397
+                1997  |  -1.297642   1.739113    -0.75   0.456    -4.714985    2.119701
+                1998  |   3.706621   2.025322     1.83   0.068    -.2731193    7.686362
+                1999  |  -1.617551   2.057343    -0.79   0.432    -5.660213    2.425111
+                2000  |  -3.707535   2.326265    -1.59   0.112    -8.278627    .8635578
+                2001  |   -4.01773   1.991521    -2.02   0.044    -7.931053   -.1044059
+                2002  |   .0860566   2.187662     0.04   0.969    -4.212681    4.384795
+                      |
+         sp_intensity |   7.553636   5.323578     1.42   0.157    -2.907152    18.01442
+                _cons |   48.59604   .2178405   223.08   0.000     48.16799     49.0241
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 4 iterations)
+note: 2.post#c.inten1999 omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =     15,642
+Absorbing 2 HDFE groups                           F(   2,   1421) =       3.31
+Statistics robust to heteroskedasticity           Prob > F        =     0.0368
+                                                  R-squared       =     0.5519
+                                                  Adj R-squared   =     0.5067
+                                                  Within R-sq.    =     0.0007
+Number of clusters (cve_ent_mun_super) =      1,422Root MSE       =     7.2123
+
+                      (Std. err. adjusted for 1,422 clusters in cve_ent_mun_super)
+----------------------------------------------------------------------------------
+                 |               Robust
+           emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+post#c.inten1999 |
+      1997-2006  |  -1.660333    .806968    -2.06   0.040    -3.243309   -.0773564
+      1991-1996  |          0  (omitted)
+                 |
+    sp_intensity |   6.583143   4.621966     1.42   0.155    -2.483466    15.64975
+           _cons |   46.04942   .1002018   459.57   0.000     45.85286    46.24598
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |      1422        1422           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 1 iterations)
+note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
+> tol = 1.0e-09)
+
+HDFE Linear regression                            Number of obs   =     15,642
+Absorbing 1 HDFE group                            F(  21,   1421) =      32.93
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.5532
+                                                  Adj R-squared   =     0.5078
+                                                  Within R-sq.    =     0.0708
+Number of clusters (cve_ent_mun_super) =      1,422Root MSE       =     7.2039
+
+                           (Std. err. adjusted for 1,422 clusters in cve_ent_mun_super)
+---------------------------------------------------------------------------------------
+                      |               Robust
+                emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------------+----------------------------------------------------------------
+            inten1999 |          0  (omitted)
+                      |
+            year_1995 |
+                1992  |   .1919843   .4787668     0.40   0.688    -.7471812     1.13115
+                1993  |  -.5933185   .4323428    -1.37   0.170    -1.441417    .2547801
+                1994  |  -1.618457   .4241168    -3.82   0.000    -2.450419   -.7864945
+                1995  |  -.5566614   .3963631    -1.40   0.160    -1.334181    .2208583
+                1997  |  -.4451061   .3831409    -1.16   0.246    -1.196689    .3064764
+                1998  |  -1.866542   .4043715    -4.62   0.000    -2.659771   -1.073312
+                1999  |  -2.252881   .4041895    -5.57   0.000    -3.045753   -1.460009
+                2000  |  -3.797373   .4679155    -8.12   0.000    -4.715252   -2.879494
+                2001  |  -4.081221   .3997142   -10.21   0.000    -4.865314   -3.297127
+                2002  |  -3.670661   .4324567    -8.49   0.000    -4.518983   -2.822339
+                      |
+year_1995#c.inten1999 |
+                1992  |  -2.829447   1.606395    -1.76   0.078    -5.980608    .3217142
+                1993  |  -.9279752   1.573302    -0.59   0.555    -4.014219    2.158269
+                1994  |  -1.082705    1.37421    -0.79   0.431    -3.778403    1.612993
+                1995  |    .181862   1.508061     0.12   0.904    -2.776404    3.140128
+                1997  |  -.9351802   1.328559    -0.70   0.482    -3.541329    1.670968
+                1998  |   1.922724   1.439194     1.34   0.182    -.9004494    4.745897
+                1999  |  -2.174437   1.457655    -1.49   0.136    -5.033825    .6849506
+                2000  |  -5.068195   1.589696    -3.19   0.001    -8.186599   -1.949792
+                2001  |  -5.009313    1.45279    -3.45   0.001    -7.859158   -2.159469
+                2002  |  -3.465141   1.477506    -2.35   0.019    -6.363467   -.5668145
+                      |
+         sp_intensity |   5.136637    4.64366     1.11   0.269    -3.972529     14.2458
+                _cons |   48.07122   .1874703   256.42   0.000     47.70348    48.43897
+---------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ cve_ent_mun_super |      1422        1422           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_adapted_es_size_w
+    > .pdf saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_br_adapted_es_size_w.pdf
+    saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_br_ada
+> pted_es_size_w.pdf
+
+. 
+. local cols "uw_4 uw_1 uw_2 uw_3 w_4 w_1 w_2 w_3"
+
+. local mpcols "4 1 2 3 4 1 2 3"
+
+. local rb ""
+
+. local rs ""
+
+. local rp ""
+
+. local rm ""
+
+. local rn ""
+
+. local rmu ""
+
+. foreach c of local cols {
+  2.         local rb "`rb' & `ab_`c''"
+  3.         local rs "`rs' & (`as_`c'')"
+  4.         local rp "`rp' & `ap_`c''"
+  5.         local rm "`rm' & `amr_`c''"
+  6.         local rn "`rn' & `aN_`c''"
+  7.         local rmu "`rmu' & `aM_`c''"
+  8. }
+
+. local rpop ""
+
+. foreach k of local mpcols {
+  2.         local rpop "`rpop' & `amp`k''"
+  3. }
+
+. cap file close bad
+
+. file open bad using "$tables/appendix/AT_br_adapted_size.tex", write replace
+(file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_adapted_size.tex
+    not found)
+
+. file write bad "\begin{tabular}{lcccccccc} \hline \hline" _n
+
+. file write bad " & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){2-5} \c
+> midrule(lr){6-9}" _n
+
+. file write bad " & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
+
+. file write bad " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
+
+. file write bad "\textit{Intensity 1999 x Post}`rb' \\ " _n
+
+. file write bad "`rs' \\ " _n
+
+. file write bad "  & & & & & & & & \\ " _n
+
+. file write bad "Pre-trend test, p-value (1992--1995)`rp' \\ " _n
+
+. file write bad "Mean mortality rate 65+, 1992--1996`rm' \\ " _n
+
+. file write bad "Mean population 65+, 1992--1996`rpop' \\ " _n
+
+. file write bad "Observations`rn' \\ " _n
+
+. file write bad "No. Mun`rmu' \\ " _n
+
+. file write bad "\bottomrule" _n
+
+. file write bad "\end{tabular}"
+
+. file close bad
+
+. if "$repo_tables" != "" copy "$tables/appendix/AT_br_adapted_size.tex" "$repo_tables/appendix/AT_br_adapt
+> ed_size.tex", replace
+(file C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables/appendix/AT_br_adapted_size.tex not
+    found)
+
+. di "Table exported to: $tables/appendix/AT_br_adapted_size.tex"
+Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_adapt
+> ed_size.tex
+
+. 
 . * restore the working panel for the cause-of-death section below
 . use `cdid_panel', clear
 
@@ -14999,5 +15967,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:  13 Oct 2026, 14:57:11
+ closed on:  13 Oct 2026, 17:27:57
 -----------------------------------------------------------------------------------------------------------
