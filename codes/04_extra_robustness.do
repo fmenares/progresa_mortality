@@ -3482,8 +3482,12 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 *       of the residualized treatment / within size terciles
 *   (6) af:br_timing -- event study of the timing / growth pieces of the
 *       leftover: AF_br_timing_uw, AF_br_timing_w (.pdf)
-*   (7) at:br_leftover_size -- rows 1, 2, 4-6 of (3), Panel A, by size
-*       tercile: AT_br_leftover_size.tex
+*   (7) at:br_leftover_size -- rows 1-6 of (3), Panel A, by size
+*       tercile and in the whole sample: AT_br_leftover_size.tex
+* IN THE PAPER (since 2026-10-13): only (1) af:cloud_mortality (kept for
+* later) and (7) at:br_leftover_size. The exports of (2)-(6) still run so
+* the log keeps their numbers, but figures_app.tex/tables_app.tex no
+* longer include them.
 *   (5) af:cloud_br -- BR's own cloud: change in mortality from 1992-99
 *       to 2000-02 against the mean lagged dose:
 *       AF_cloud_br_uw, AF_cloud_br_w (.pdf)
@@ -3574,25 +3578,28 @@ program define cloud_plot
 	quietly gen double __hi = __curve + 1.96 * __cse
 
 	local uwline ""
-	local legorder `"3 "Binned means" 4 "Spline fit, 95% CI" 5 "Linear fit, weighted: slope `b_w' (`se_w')""'
+	local legorder `"2 "Binned means" 3 "Spline fit, 95% CI" 4 "Linear fit, weighted: slope `b_w' (`se_w')""'
 	if `both' == 1 {
 		local uwline "(line __fituw `xv', lcolor(maroon) lpattern(dash) lwidth(medthin))"
-		local legorder `"`legorder' 6 "Linear fit, unweighted: slope `b_uw' (`se_uw')""'
+		local legorder `"`legorder' 5 "Linear fit, unweighted: slope `b_uw' (`se_uw')""'
 	}
 
 	sort `xv'
-	* the CI band comes first so that the main y-axis (axis 1) is the first
-	* axis declared and is drawn on the left; the histogram, on the hidden
-	* axis 2, follows. The legend indices below do not use plots 1 and 2.
+	* Plot order: CI band (1), binned means (2), spline (3), weighted fit
+	* (4), unweighted fit (5, optional), and the histogram on the hidden
+	* axis 2 last. The band comes first so the main y-axis is declared first
+	* and drawn on the left; the histogram goes last because Stata numbers
+	* the axis-2 plot after the others, which had shifted every legend key
+	* by one (e.g. "Binned means" showed the spline's line).
 	twoway ///
 		(rarea __lo __hi `xv', color(navy%20) lwidth(none)) ///
-		(histogram `xv', fraction width(`binw') start(`xmin') yaxis(2) ///
-			fcolor(gs14) lcolor(gs12) lwidth(vthin)) ///
 		(scatter __doty __dotx if __first [aw=__sw], ///
 			msymbol(Oh) mcolor(black) mlwidth(thin)) ///
 		(line __curve `xv', lcolor(navy) lwidth(medthick)) ///
 		(line __fitw `xv', lcolor(maroon) lwidth(medthin)) ///
-		`uwline', ///
+		`uwline' ///
+		(histogram `xv', fraction width(`binw') start(`xmin') yaxis(2) ///
+			fcolor(gs14%60) lcolor(gs12) lwidth(vthin)), ///
 		yline(`ref', lcolor(gs8) lpattern(shortdash) lwidth(thin)) ///
 		yscale(axis(2) off range(0 `hmax')) ///
 		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
@@ -4172,8 +4179,11 @@ foreach wt in uw w {
 }
 
 *------------------------------------------------------------
-* (7) Rows 1, 2 and 4-6 of (3), Panel A, within terciles of municipality
-* size (mean population 65+ over 1992-96, same terciles as af:br_size):
+* (7) at:br_leftover_size -- the paper's single table on BR's leftover
+* variation: rows 1-6 of (3), Panel A, within terciles of municipality
+* size (mean population 65+ over 1992-96, same terciles as af:br_size)
+* and in the whole BR sample ("All", which reproduces (3), Panel A).
+* Columns: Small, Medium, Large, All -- unweighted, then weighted.
 * AT_br_leftover_size.tex. Shares are the partial within-R2 of BR's
 * treatment on the terms listed, as in (3).
 *------------------------------------------------------------
@@ -4188,17 +4198,23 @@ forvalues k = 1/3 {
 	quietly summarize __sz if __tag & __terc == `k'
 	local mp`k' = trim(string(r(mean), "%9.0fc"))
 }
+quietly summarize __sz if __tag
+local mp4 = trim(string(r(mean), "%9.0fc"))
 local ctl1 ""
 local ctl2 "c.inten1999#i.year"
+local ctl3 "c.inten1999#i.year c.inten2005#i.year"
 local ctl4 "c.inten1999#i.year i.inten_start_year#i.year"
 local ctl5 "c.inten1999#i.year c.inten1998#i.year"
 local ctl6 "c.inten1999#i.year c.inten2000#i.year"
 foreach wt in uw w {
 	local aw ""
 	if "`wt'" == "w" local aw "[aw=popover65_]"
-	forvalues k = 1/3 {
-		foreach r in 1 2 4 5 6 {
-			reghdfe emr65 lag2_intensity_new `ctl`r'' `aw' if __terc == `k', ///
+	* k = 1-3: size terciles; k = 4: whole sample
+	forvalues k = 1/4 {
+		local cond "if __terc == `k'"
+		if `k' == 4 local cond ""
+		forvalues r = 1/6 {
+			reghdfe emr65 lag2_intensity_new `ctl`r'' `aw' `cond', ///
 				a(cve_ent_mun_super year) vce(cluster cve_ent_mun_super)
 			local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
 			local st ""
@@ -4216,41 +4232,65 @@ foreach wt in uw w {
 				drop `tg'
 			}
 			else {
-				quietly reghdfe lag2_intensity_new `ctl`r'' `aw' if __terc == `k', a(cve_ent_mun_super year)
+				quietly reghdfe lag2_intensity_new `ctl`r'' `aw' `cond', a(cve_ent_mun_super year)
 				local zr_`wt'_`k'_`r' = trim(string(e(r2_within), "%9.3f"))
 			}
 		}
 	}
 }
 
+local cols "uw_1 uw_2 uw_3 uw_4 w_1 w_2 w_3 w_4"
+local lab1 "\textit{BR treatment}, fixed effects only"
+local lab2 "\quad + Intensity 1999 x year"
+local lab3 "\quad + Intensity 2005 x year"
+local lab4 "\quad Entry cohort x year (1998 vs. 1999)"
+local lab5 "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000)"
+local lab6 "\quad Intensity 2000 x year (left: 2000 value = Intensity 1998)"
+local sl2 "\quad Intensity 1999 x year"
+local sl3 "\quad Intensity 1999 and 2005 x year"
+local sl4 "\quad Intensity 1999 and entry cohort x year"
+local sl5 "\quad Intensity 1999 and 1998 x year"
+local sl6 "\quad Intensity 1999 and 2000 x year"
+
 cap file close bsz
 file open bsz using "$tables/appendix/AT_br_leftover_size.tex", write replace
-file write bsz "\begin{tabular}{lcccccc} \hline \hline" _n
-file write bsz " & \multicolumn{3}{c}{Unweighted} & \multicolumn{3}{c}{Weighted} \\ \cmidrule(lr){2-4} \cmidrule(lr){5-7}" _n
-file write bsz " & Small & Medium & Large & Small & Medium & Large \\ " _n
-file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) \\ \toprule" _n
-file write bsz "Mean population 65+, 1992--96 & `mp1' & `mp2' & `mp3' & `mp1' & `mp2' & `mp3' \\ " _n
-file write bsz "  & & & & & & \\ " _n
-file write bsz "\textit{BR treatment}, fixed effects only & `zb_uw_1_1' & `zb_uw_2_1' & `zb_uw_3_1' & `zb_w_1_1' & `zb_w_2_1' & `zb_w_3_1' \\ " _n
-file write bsz " & (`zs_uw_1_1') & (`zs_uw_2_1') & (`zs_uw_3_1') & (`zs_w_1_1') & (`zs_w_2_1') & (`zs_w_3_1') \\ " _n
-file write bsz "\quad + Intensity 1999 x year & `zb_uw_1_2' & `zb_uw_2_2' & `zb_uw_3_2' & `zb_w_1_2' & `zb_w_2_2' & `zb_w_3_2' \\ " _n
-file write bsz " & (`zs_uw_1_2') & (`zs_uw_2_2') & (`zs_uw_3_2') & (`zs_w_1_2') & (`zs_w_2_2') & (`zs_w_3_2') \\ " _n
-file write bsz "  & & & & & & \\ " _n
-file write bsz "Intensity 1999 x year and, in addition: & & & & & & \\ " _n
-file write bsz "\quad Entry cohort x year (1998 vs. 1999) & `zb_uw_1_4' & `zb_uw_2_4' & `zb_uw_3_4' & `zb_w_1_4' & `zb_w_2_4' & `zb_w_3_4' \\ " _n
-file write bsz " & (`zs_uw_1_4') & (`zs_uw_2_4') & (`zs_uw_3_4') & (`zs_w_1_4') & (`zs_w_2_4') & (`zs_w_3_4') \\ " _n
-file write bsz "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000) & `zb_uw_1_5' & `zb_uw_2_5' & `zb_uw_3_5' & `zb_w_1_5' & `zb_w_2_5' & `zb_w_3_5' \\ " _n
-file write bsz " & (`zs_uw_1_5') & (`zs_uw_2_5') & (`zs_uw_3_5') & (`zs_w_1_5') & (`zs_w_2_5') & (`zs_w_3_5') \\ " _n
-file write bsz "\quad Intensity 2000 x year (left: 2000 value = Intensity 1998) & `zb_uw_1_6' & `zb_uw_2_6' & `zb_uw_3_6' & `zb_w_1_6' & `zb_w_2_6' & `zb_w_3_6' \\ " _n
-file write bsz " & (`zs_uw_1_6') & (`zs_uw_2_6') & (`zs_uw_3_6') & (`zs_w_1_6') & (`zs_w_2_6') & (`zs_w_3_6') \\ " _n
-file write bsz "  & & & & & & \\ " _n
-file write bsz "Share of BR treatment variation explained by: & & & & & & \\ " _n
-file write bsz "\quad Intensity 1999 x year & `zr_uw_1_2' & `zr_uw_2_2' & `zr_uw_3_2' & `zr_w_1_2' & `zr_w_2_2' & `zr_w_3_2' \\ " _n
-file write bsz "\quad Intensity 1999 and entry cohort x year & `zr_uw_1_4' & `zr_uw_2_4' & `zr_uw_3_4' & `zr_w_1_4' & `zr_w_2_4' & `zr_w_3_4' \\ " _n
-file write bsz "\quad Intensity 1999 and 1998 x year & `zr_uw_1_5' & `zr_uw_2_5' & `zr_uw_3_5' & `zr_w_1_5' & `zr_w_2_5' & `zr_w_3_5' \\ " _n
-file write bsz "\quad Intensity 1999 and 2000 x year & `zr_uw_1_6' & `zr_uw_2_6' & `zr_uw_3_6' & `zr_w_1_6' & `zr_w_2_6' & `zr_w_3_6' \\ " _n
-file write bsz "Observations & `zN_uw_1' & `zN_uw_2' & `zN_uw_3' & `zN_w_1' & `zN_w_2' & `zN_w_3' \\ " _n
-file write bsz "No. Mun & `zM_uw_1' & `zM_uw_2' & `zM_uw_3' & `zM_w_1' & `zM_w_2' & `zM_w_3' \\ " _n
+file write bsz "\begin{tabular}{lcccccccc} \hline \hline" _n
+file write bsz " & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){2-5} \cmidrule(lr){6-9}" _n
+file write bsz " & Small & Medium & Large & All & Small & Medium & Large & All \\ " _n
+file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
+file write bsz "Mean population 65+, 1992--96 & `mp1' & `mp2' & `mp3' & `mp4' & `mp1' & `mp2' & `mp3' & `mp4' \\ " _n
+file write bsz "  & & & & & & & & \\ " _n
+forvalues r = 1/6 {
+	local cb ""
+	local cs ""
+	foreach c of local cols {
+		local cb "`cb' & `zb_`c'_`r''"
+		local cs "`cs' & (`zs_`c'_`r'')"
+	}
+	if `r' == 4 {
+		file write bsz "  & & & & & & & & \\ " _n
+		file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & \\ " _n
+	}
+	file write bsz "`lab`r''`cb' \\ " _n
+	file write bsz "`cs' \\ " _n
+}
+file write bsz "  & & & & & & & & \\ " _n
+file write bsz "Share of BR treatment variation explained by: & & & & & & & & \\ " _n
+forvalues r = 2/6 {
+	local cr ""
+	foreach c of local cols {
+		local cr "`cr' & `zr_`c'_`r''"
+	}
+	file write bsz "`sl`r''`cr' \\ " _n
+}
+local cn ""
+local cm ""
+foreach c of local cols {
+	local cn "`cn' & `zN_`c''"
+	local cm "`cm' & `zM_`c''"
+}
+file write bsz "Observations`cn' \\ " _n
+file write bsz "No. Mun`cm' \\ " _n
 file write bsz "\bottomrule" _n
 file write bsz "\end{tabular}"
 file close bsz

@@ -1472,6 +1472,13 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Weighted: both series flat within ±5; the 2000 timing point ≈ −3, not significant.
 - Overall: BR's leftover variation behaves like the shared variation (negative unweighted, about the same size, and small once population-weighted), and the tercile table puts it in the smallest municipalities. The BR-vs-us gap is a weighting/size difference, not a separate identifying source.
 
+## Session Update (2026-10-13)
+
+**Appendix trimmed to one BR-leftover table; cloud legend fix.**
+- **Removed from the appendix** (commented out in `figures_app.tex`; the code in 04 still produces the files and logs the numbers): `af:twfe_weights` (A.9), `af:cloud_br` (A.10), `af:br_leftover` (A.11), `af:br_trim` (A.12), `af:br_size` (A.13), `af:br_timing` (A.14). `af:cloud_mortality` (A.8) stays.
+- **`at:br_leftover` (A.7) folded into `at:br_leftover_size` (A.8 table)**, now 8 columns: Small / Medium / Large / All, unweighted then weighted; rows 1–6 (fixed effects only; + Intensity_1999 × year; + Intensity_2005 × year; then cohort, Intensity_1998, Intensity_2000 each added to row 2) and the five share rows. "All" reproduces the old A.7 Panel A. The old A.7 Panel B (HM sample, 1991–2006) is no longer in the paper; its numbers: FE only −3.28*** / −2.73***; + I99 −3.84** / −1.52; + I2005 −5.58*** / −1.68; share explained by I99 0.327 / 0.391, by I99 and I2005 0.595 / 0.636 (unweighted / weighted). The table note is self-contained (merges the old A.7 note).
+- **Cloud legend bug (affects the kept A.8):** Stata numbers the plot on the hidden axis 2 (the histogram) after the others, so the legend indices were off by one: "Binned means" showed the spline's line, "Spline fit" the weighted fit's, "weighted" the dashed unweighted fit's, "unweighted" the histogram's box. The histogram is now the last plot and the legend uses 2–5. Rerun step (1) to regenerate A.8.
+
 ---
 
 ## Notes for Contributors
