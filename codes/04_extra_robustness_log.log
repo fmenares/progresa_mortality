@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:  13 Oct 2026, 17:26:08
+ opened on:  14 Oct 2026, 14:20:03
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -1776,8 +1776,8 @@ Threshold grid (Intensity_1999, End-of-year fixed-denom, 1996 HM cross-section):
   0
   0
 Threshold 15: Early=985, Late-only=134, Never=0, High-Low=0
-(file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_000005.tmp not found)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_000005.tmp saved as .dta format
+(file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000005.tmp not found)
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000005.tmp saved as .dta format
 (MWFE estimator converged in 4 iterations)
 note: 2.post#c.d_early_15 omitted because of collinearity
 note: 1b.post#c.d_late_15 omitted because of collinearity
@@ -1967,8 +1967,8 @@ Absorbed degrees of freedom:
   58
   3
 Threshold median: Early=556, Late-only=502, Never=58, High-Low=3
-(file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_000006.tmp not found)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_000006.tmp saved as .dta format
+(file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp not found)
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
 (MWFE estimator converged in 4 iterations)
 note: 2.post#c.d_early_median omitted because of collinearity
 note: 2.post#c.d_late_median omitted because of collinearity
@@ -2128,8 +2128,8 @@ Absorbed degrees of freedom:
   151
   7
 Threshold tercile: Early=363, Late-only=598, Never=151, High-Low=7
-(file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_000007.tmp not found)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_000007.tmp saved as .dta format
+(file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000007.tmp not found)
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000007.tmp saved as .dta format
 (MWFE estimator converged in 4 iterations)
 note: 2.post#c.d_early_tercile omitted because of collinearity
 note: 2.post#c.d_late_tercile omitted because of collinearity
@@ -2879,7 +2879,7 @@ Group variable: year (year)
 . tempfile d3_panel
 
 . save `d3_panel'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
 
 . 
 . duplicates drop cve_ent_mun_super, force
@@ -3261,7 +3261,7 @@ Duplicates in terms of cve_ent_mun_super
 . tempfile origin_counts
 
 . save `origin_counts'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_00000e.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000e.tmp saved as .dta format
 
 . restore
 
@@ -5584,11 +5584,10 @@ xij variables:
 . {
 .         cap file close sm
 .         file open sm using "$tables/appendix/AT_migration_robustness_ageFE.tex", write replace
-.         file write sm "\begin{tabular}{lccc} \hline \hline" _n
-.         file write sm "& Levels & Log & Poisson \\ " _n
-.         file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
-.         file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \
-> toprule" _n
+.         file write sm "\begin{tabular}{lcc} \hline \hline" _n
+.         file write sm "& Log & Poisson \\ " _n
+.         file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+.         file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
 .         * NOTE: Intensity 2005 x Post x Old65 is estimated in every regression
 .         * above but not printed below, matching the display convention used
 .         * for the simple migration table and for Table~\ref{t:did_age} in the
@@ -5602,29 +5601,26 @@ xij variables:
 .         * in the text/summary discussion of this table even though it is not
 .         * shown in the table itself.
 .         file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-.         file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_1' & `bDDD99_p_2' & `bDDD99_p_3
-> ' \\ " _n
-.         file write sm "  & (`seDDD99_p_1') & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
-.         file write sm "  & & &  \\ " _n
-.         file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_1' & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
-.         file write sm "  & & &  \\ " _n
+.         file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_2' & `bDDD99_p_3' \\ " _n
+.         file write sm "  & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
+.         file write sm "  & &  \\ " _n
+.         file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
+.         file write sm "  & &  \\ " _n
 .         file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-.         file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_1' & `bDDD99_f_2' & `bDDD99_f_
-> 3' \\ " _n
-.         file write sm "  & (`seDDD99_f_1') & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
-.         file write sm "  & & &  \\ " _n
-.         file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_1' & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
-.         file write sm "  & & &  \\ " _n
+.         file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
+.         file write sm "  & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
+.         file write sm "  & &  \\ " _n
+.         file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
+.         file write sm "  & &  \\ " _n
 .         file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-.         file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_1' & `bDDD99_m_2' & `bDDD99_m_3
-> ' \\ " _n
-.         file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
-.         file write sm "  & & &  \\ " _n
-.         file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
-.         file write sm "  & & &  \\ " _n
-.         file write sm "Obs & `NDDD_f_1' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
-.         file write sm "No. Mun & `NmunDDD_p_1' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
-.         file write sm "  & & & \\ " _n
+.         file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
+.         file write sm "  & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
+.         file write sm "  & &  \\ " _n
+.         file write sm "Mean 65+ (1991-1996) & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
+.         file write sm "  & &  \\ " _n
+.         file write sm "Obs & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+.         file write sm "No. Mun & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
+.         file write sm "  & & \\ " _n
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
 .         file close sm
@@ -6569,6 +6565,289 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . else di as error "Fixed-denominator population event study not plotted: at least one panel failed to esti
 > mate."
+
+. 
+. *============================================================
+. * MIGRATION, PAPER VERSION (2026-10-14): 65+ population on
+. * Intensity_1999 x Post in LOG and POISSON only (levels dropped: they
+. * measure persons, so they scale with municipality size), each with the
+. * two household denominators of intensity side by side:
+. *   "1999": inten1999/inten2005, the main design's variable (households
+. *           of the snapshot year, i.e. after the program started);
+. *   "1990": enrolled households over the 1990-census household count.
+. *           Predetermined denominator, but = Intensity_1999 x (HH_1999/
+. *           HH_1990), so it is mechanically higher where households grew
+. *           over 1990-99, which builds pre-existing growth into the
+. *           regressor.
+. * Unweighted, Intensity_2005 x Post as a control, no Seguro Popular,
+. * municipality and year FE, HM sample 1991-2006 -- as AT_migration_
+. * robustness. Outputs:
+. *   $tables/appendix/AT_migration_pop.tex  (at:migration_rob)
+. *   $figures/appendix/AF_migration_es_{log99,log90,pois99,pois90}.pdf
+. *     (event studies, reference 1996, pooled/female/male; af:migration_es)
+. *============================================================
+. cap drop mg99_99 mg05_99 mg99_90 mg05_90 __lpop_p __lpop_m __lpop_f
+
+. gen double mg99_99 = inten1999
+(35,946 missing values generated)
+
+. gen double mg05_99 = inten2005
+(35,946 missing values generated)
+
+. gen double mg99_90 = pgbenef_1999/hh_tot1990
+(93 missing values generated)
+
+. gen double mg05_90 = pgbenef_2005/hh_tot1990
+(93 missing values generated)
+
+. replace mg99_90 = 1 if mg99_90 > 1 & !missing(mg99_90)
+(992 real changes made)
+
+. replace mg05_90 = 1 if mg05_90 > 1 & !missing(mg05_90)
+(13,144 real changes made)
+
+. gen double __lpop_p = log(popover65_)
+(35,946 missing values generated)
+
+. gen double __lpop_m = log(popover65_m)
+(35,946 missing values generated)
+
+. gen double __lpop_f = log(popover65_f)
+(35,946 missing values generated)
+
+. 
+. * ---- table
+. foreach pnl in p f m {
+  2.         if "`pnl'" == "p" local pout popover65_
+  3.         if "`pnl'" == "f" local pout popover65_f
+  4.         if "`pnl'" == "m" local pout popover65_m
+  5.         local c = 0
+  6.         foreach spec in log pois {
+  7.                 foreach d in 99 90 {
+  8.                         local ++c
+  9.                         local mgb_`pnl'_`c' "n/a"
+ 10.                         local mgs_`pnl'_`c' "n/a"
+ 11.                         local mgm_`pnl'_`c' ""
+ 12.                         local mgN_`pnl'_`c' "n/a"
+ 13.                         local mgM_`pnl'_`c' "n/a"
+ 14.                         if "`spec'" == "log" {
+ 15.                                 capture reghdfe __lpop_`pnl' c.mg99_`d'#i.post c.mg05_`d'#i.post ///
+>                                         if $sample_marg & inrange(year, 1991, 2006), ///
+>                                         a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ 16.                         }
+ 17.                         else {
+ 18.                                 capture ppmlhdfe `pout' c.mg99_`d'#i.post c.mg05_`d'#i.post ///
+>                                         if $sample_marg & inrange(year, 1991, 2006), ///
+>                                         a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ 19.                         }
+ 20.                         if !_rc & e(N) > 0 {
+ 21.                                 if "`spec'" == "log" {
+ 22.                                         local bb = _b[1.post#c.mg99_`d']
+ 23.                                         local ss = _se[1.post#c.mg99_`d']
+ 24.                                 }
+ 25.                                 else {
+ 26.                                         * proportional change, exp(b)-1, delta-method SE
+.                                         local bb = exp(_b[1.post#c.mg99_`d']) - 1
+ 27.                                         local ss = exp(_b[1.post#c.mg99_`d']) * _se[1.post#c.mg99_`d']
+ 28.                                 }
+ 29.                                 local t = abs(`bb' / `ss')
+ 30.                                 local st ""
+ 31.                                 if `t' >= 1.645 local st "*"
+ 32.                                 if `t' >= 1.960 local st "**"
+ 33.                                 if `t' >= 2.576 local st "***"
+ 34.                                 local mgb_`pnl'_`c' = trim(string(`bb', "%9.3f")) + "`st'"
+ 35.                                 local mgs_`pnl'_`c' = trim(string(`ss', "%9.3f"))
+ 36.                                 local mgN_`pnl'_`c' = trim(string(e(N), "%12.0fc"))
+ 37.                                 tempvar tg
+ 38.                                 quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+ 39.                                 quietly count if `tg' == 1
+ 40.                                 local mgM_`pnl'_`c' = trim(string(r(N), "%12.0fc"))
+ 41.                                 drop `tg'
+ 42.                                 if "`spec'" == "log" {
+ 43.                                         quietly summarize __lpop_`pnl' if e(sample) & post == 2
+ 44.                                         local mgm_`pnl'_`c' = trim(string(r(mean), "%9.2f"))
+ 45.                                 }
+ 46.                                 else {
+ 47.                                         quietly summarize `pout' if e(sample) & post == 2
+ 48.                                         local mgm_`pnl'_`c' = trim(string(r(mean), "%9.0fc"))
+ 49.                                 }
+ 50.                         }
+ 51.                         else di as error "Migration (paper version), panel `pnl', col `c': estimation 
+> failed (rc=`_rc'), leaving n/a"
+ 52.                 }
+ 53.         }
+ 54. }
+
+. cap file close mgp
+
+. file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
+(file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_migration_pop.tex
+    not found)
+
+. file write mgp "\begin{tabular}{lcccc} \hline \hline" _n
+
+. file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr
+> ){4-5}" _n
+
+. file write mgp "Intensity denominator: & 1999 households & 1990 households & 1999 households & 1990 house
+> holds \\ " _n
+
+. file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicol
+> umn{1}{c}{(4)} \\ \toprule" _n
+
+. foreach pnl in p f m {
+  2.         if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
+  3.         if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
+  4.         if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
+  5.         file write mgp "\textit{Intensity 1999 x Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `mgb_`pnl'_3'
+>  & `mgb_`pnl'_4' \\ " _n
+  6.         file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') \\ " 
+> _n
+  7.         file write mgp "Mean (1991-1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'_
+> 4' \\ " _n
+  8.         file write mgp "  & & & & \\ " _n
+  9. }
+
+. file write mgp "Obs & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' \\ " _n
+
+. file write mgp "No. Mun & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' \\ " _n
+
+. file write mgp "\bottomrule" _n
+
+. file write mgp "\end{tabular}"
+
+. file close mgp
+
+. if "$repo_tables" != "" copy "$tables/appendix/AT_migration_pop.tex" "$repo_tables/appendix/AT_migration_
+> pop.tex", replace
+(file C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables/appendix/AT_migration_pop.tex not
+    found)
+
+. di "Table exported to: $tables/appendix/AT_migration_pop.tex"
+Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_migratio
+> n_pop.tex
+
+. 
+. * ---- event studies: one file per spec x denominator, three series
+. local yl_mg `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 
+> 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+
+. foreach spec in log pois {
+  2.         foreach d in 99 90 {
+  3.                 local allok = 1
+  4.                 foreach pnl in p m f {
+  5.                         if "`pnl'" == "p" local pout popover65_
+  6.                         if "`pnl'" == "f" local pout popover65_f
+  7.                         if "`pnl'" == "m" local pout popover65_m
+  8.                         if "`spec'" == "log" {
+  9.                                 capture reghdfe __lpop_`pnl' c.mg99_`d'##ib6.year_1995 ///
+>                                         if $sample_marg & inrange(year, 1991, 2006), ///
+>                                         a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ 10.                         }
+ 11.                         else {
+ 12.                                 capture ppmlhdfe `pout' c.mg99_`d'##ib6.year_1995 ///
+>                                         if $sample_marg & inrange(year, 1991, 2006), ///
+>                                         a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ 13.                         }
+ 14.                         if _rc | e(N) == 0 {
+ 15.                                 di as error "Migration event study (`spec', `d'), panel `pnl' failed (
+> rc=`_rc')"
+ 16.                                 local allok = 0
+ 17.                                 continue
+ 18.                         }
+ 19.                         forval pos = 1/16 {
+ 20.                                 if `pos' == 6 {
+ 21.                                         local mb_`pnl'_`pos' = 0
+ 22.                                         local ms_`pnl'_`pos' = 0
+ 23.                                 }
+ 24.                                 else if "`spec'" == "pois" {
+ 25.                                         local mb_`pnl'_`pos' = (exp(_b[`pos'.year_1995#c.mg99_`d']) - 
+> 1) * 100
+ 26.                                         local ms_`pnl'_`pos' = exp(_b[`pos'.year_1995#c.mg99_`d']) * _
+> se[`pos'.year_1995#c.mg99_`d'] * 100
+ 27.                                 }
+ 28.                                 else {
+ 29.                                         local mb_`pnl'_`pos' = _b[`pos'.year_1995#c.mg99_`d']
+ 30.                                         local ms_`pnl'_`pos' = _se[`pos'.year_1995#c.mg99_`d']
+ 31.                                 }
+ 32.                         }
+ 33.                 }
+ 34.                 if `allok' == 0 continue
+ 35.                 if "`spec'" == "log" local yt "Log population 65+"
+ 36.                 else                 local yt "Population 65+ (% change from 1996)"
+ 37.                 preserve
+ 38.                 clear
+ 39.                 quietly set obs 16
+ 40.                 quietly gen yr_pos = _n
+ 41.                 quietly gen xpos_p = yr_pos - 0.18
+ 42.                 quietly gen xpos_m = yr_pos
+ 43.                 quietly gen xpos_f = yr_pos + 0.18
+ 44.                 foreach q in p m f {
+ 45.                         quietly gen b_`q'  = .
+ 46.                         quietly gen hi_`q' = .
+ 47.                         quietly gen lo_`q' = .
+ 48.                         forval pos = 1/16 {
+ 49.                                 quietly replace b_`q'  = `mb_`q'_`pos''                          if yr
+> _pos == `pos'
+ 50.                                 quietly replace hi_`q' = `mb_`q'_`pos'' + 1.96 * `ms_`q'_`pos'' if yr_
+> pos == `pos'
+ 51.                                 quietly replace lo_`q' = `mb_`q'_`pos'' - 1.96 * `ms_`q'_`pos'' if yr_
+> pos == `pos'
+ 52.                         }
+ 53.                 }
+ 54.                 twoway ///
+>                         (rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin)) ///
+>                         (scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(vsmall)) ///
+>                         (rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+>                         (scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) ///
+>                         (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) //
+> /
+>                         (scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+>                         yline(0, lcolor(gs8) lwidth(vthin)) ///
+>                         xline(6.5, lcolor(gs10) lpattern(dash) lwidth(vthin)) ///
+>                         xlabel(`yl_mg', labsize(small) angle(45)) xscale(range(0.5 16.5)) ///
+>                         xtitle("") ytitle("`yt'", size(medsmall)) ///
+>                         ylabel(, grid labsize(small) angle(0)) ///
+>                         legend(order(2 "Pooled" 4 "Female" 6 "Male") cols(3) size(small) ///
+>                                 position(6) ring(1) region(lcolor(none))) ///
+>                         graphregion(color(white))
+ 55.                 graph export "$figures/appendix/AF_migration_es_`spec'`d'.pdf", as(pdf) replace
+ 56.                 if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_migration_es_`spec'`d
+> '.pdf", as(pdf) replace
+ 57.                 di "Figure exported to: $figures/appendix/AF_migration_es_`spec'`d'.pdf"
+ 58.                 restore
+ 59.         }
+ 60. }
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_log99.p
+    > df saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_log99.pdf
+    saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
+> ion_es_log99.pdf
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_log90.p
+    > df saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_log90.pdf
+    saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
+> ion_es_log90.pdf
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_pois99.
+    > pdf saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_pois99.pdf
+    saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
+> ion_es_pois99.pdf
+file
+    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_pois90.
+    > pdf saved as PDF format
+file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_pois90.pdf
+    saved as PDF format
+Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
+> ion_es_pois90.pdf
+
+. drop __lpop_p __lpop_m __lpop_f
 
 . 
 . *============================================================
@@ -10997,7 +11276,7 @@ Figures exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cc
 . tempfile cdid_panel
 
 . save `cdid_panel'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_43fc_00000x.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000013.tmp saved as .dta format
 
 . 
 . *------------------------------------------------------------
@@ -15104,52 +15383,65 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
  15.                 local aN_`wt'_`k' = trim(string(e(N), "%12.0fc"))
  16.                 quietly summarize emr65 if e(sample) & post == 2
  17.                 local amr_`wt'_`k' = trim(string(r(mean), "%9.2f"))
- 18.                 tempvar tg
- 19.                 quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
- 20.                 quietly count if `tg' == 1
- 21.                 local aM_`wt'_`k' = trim(string(r(N), "%12.0fc"))
- 22.                 drop `tg'
- 23.                 * event study, reference 1996 (year_1995 = 6); 1992-2002 = 2..12
+ 18.                 * minimum detectable effect, 80% power, two-sided 5%: 2.8 x SE
+.                 local amde_`wt'_`k' = trim(string(2.8 * _se[1.post#c.inten1999], "%9.2f"))
+ 19.                 * BR's specification in the same group (2-yr lagged intensity,
+.                 * municipality and year FE; = row 1 of at:br_leftover_size)
+.                 reghdfe emr65 lag2_intensity_new `aw' `cond', ///
+>                         a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+ 20.                 local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+ 21.                 local st ""
+ 22.                 if `t' >= 1.645 local st "*"
+ 23.                 if `t' >= 1.960 local st "**"
+ 24.                 if `t' >= 2.576 local st "***"
+ 25.                 local bb_`wt'_`k' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
+ 26.                 local bs_`wt'_`k' = trim(string(_se[lag2_intensity_new], "%9.3f"))
+ 27.                 tempvar tg
+ 28.                 quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+ 29.                 quietly count if `tg' == 1
+ 30.                 local aM_`wt'_`k' = trim(string(r(N), "%12.0fc"))
+ 31.                 drop `tg'
+ 32.                 * event study, reference 1996 (year_1995 = 6); 1992-2002 = 2..12
 .                 reghdfe emr65 c.inten1999##ib6.year_1995 c.sp_intensity `aw' `cond', ///
 >                         a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
- 24.                 quietly testparm i(2/5).year_1995#c.inten1999
- 25.                 local ap_`wt'_`k' = trim(string(r(p), "%5.3f"))
- 26.                 forvalues pos = 2/12 {
- 27.                         if `pos' == 6 {
- 28.                                 local eb_`wt'_`k'_`pos' = 0
- 29.                                 local el_`wt'_`k'_`pos' = 0
- 30.                                 local eh_`wt'_`k'_`pos' = 0
- 31.                         }
- 32.                         else {
- 33.                                 local eb_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999]
- 34.                                 local el_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] - 1.96 * _se
+ 33.                 quietly testparm i(2/5).year_1995#c.inten1999
+ 34.                 local ap_`wt'_`k' = trim(string(r(p), "%5.3f"))
+ 35.                 forvalues pos = 2/12 {
+ 36.                         if `pos' == 6 {
+ 37.                                 local eb_`wt'_`k'_`pos' = 0
+ 38.                                 local el_`wt'_`k'_`pos' = 0
+ 39.                                 local eh_`wt'_`k'_`pos' = 0
+ 40.                         }
+ 41.                         else {
+ 42.                                 local eb_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999]
+ 43.                                 local el_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] - 1.96 * _se
 > [`pos'.year_1995#c.inten1999]
- 35.                                 local eh_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] + 1.96 * _se
+ 44.                                 local eh_`wt'_`k'_`pos' = _b[`pos'.year_1995#c.inten1999] + 1.96 * _se
 > [`pos'.year_1995#c.inten1999]
- 36.                         }
- 37.                 }
- 38.         }
- 39. 
+ 45.                         }
+ 46.                 }
+ 47.         }
+ 48. 
 .         * figure: the three terciles' event studies, pooled sexes
 .         preserve
- 40.         clear
- 41.         quietly set obs 11
- 42.         quietly gen int pos = _n + 1
- 43.         quietly gen int year = 1990 + pos
- 44.         forvalues k = 1/3 {
- 45.                 quietly gen double b`k' = .
- 46.                 quietly gen double l`k' = .
- 47.                 quietly gen double h`k' = .
- 48.                 forvalues q = 2/12 {
- 49.                         quietly replace b`k' = `eb_`wt'_`k'_`q'' if pos == `q'
- 50.                         quietly replace l`k' = `el_`wt'_`k'_`q'' if pos == `q'
- 51.                         quietly replace h`k' = `eh_`wt'_`k'_`q'' if pos == `q'
- 52.                 }
- 53.         }
- 54.         quietly gen double x1 = year - 0.18
- 55.         quietly gen double x2 = year
- 56.         quietly gen double x3 = year + 0.18
- 57.         twoway ///
+ 49.         clear
+ 50.         quietly set obs 11
+ 51.         quietly gen int pos = _n + 1
+ 52.         quietly gen int year = 1990 + pos
+ 53.         forvalues k = 1/3 {
+ 54.                 quietly gen double b`k' = .
+ 55.                 quietly gen double l`k' = .
+ 56.                 quietly gen double h`k' = .
+ 57.                 forvalues q = 2/12 {
+ 58.                         quietly replace b`k' = `eb_`wt'_`k'_`q'' if pos == `q'
+ 59.                         quietly replace l`k' = `el_`wt'_`k'_`q'' if pos == `q'
+ 60.                         quietly replace h`k' = `eh_`wt'_`k'_`q'' if pos == `q'
+ 61.                 }
+ 62.         }
+ 63.         quietly gen double x1 = year - 0.18
+ 64.         quietly gen double x2 = year
+ 65.         quietly gen double x3 = year + 0.18
+ 66.         twoway ///
 >                 (rcap l1 h1 x1, lcolor(maroon%60) lwidth(vthin)) ///
 >                 (scatter b1 x1, mcolor(maroon) msymbol(O) msize(small)) ///
 >                 (rcap l2 h2 x2, lcolor(navy%60) lwidth(vthin)) ///
@@ -15164,12 +15456,12 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 > ") ///
 >                         size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
 >                 graphregion(color(white))
- 58.         graph export "$figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
- 59.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_adapted_es_size_`wt'.pdf",
+ 67.         graph export "$figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
+ 68.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_adapted_es_size_`wt'.pdf",
 >  as(pdf) replace
- 60.         di "Figure exported to: $figures/appendix/AF_br_adapted_es_size_`wt'.pdf"
- 61.         restore
- 62. }
+ 69.         di "Figure exported to: $figures/appendix/AF_br_adapted_es_size_`wt'.pdf"
+ 70.         restore
+ 71. }
 (MWFE estimator converged in 2 iterations)
 note: 2.post#c.inten1999 omitted because of collinearity
 
@@ -15193,6 +15485,33 @@ post#c.inten1999 |
     sp_intensity |   -22.2211   7.856271    -2.83   0.005    -37.65861   -6.783589
            _cons |   47.43196   .6834224    69.40   0.000     46.08904    48.77488
 ----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 2 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   1,    473) =       9.31
+Statistics robust to heteroskedasticity           Prob > F        =     0.0024
+                                                  R-squared       =     0.2565
+                                                  Adj R-squared   =     0.1804
+                                                  Within R-sq.    =     0.0017
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =    21.7058
+
+                          (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -7.691085   2.521257    -3.05   0.002    -12.64533   -2.736835
+             _cons |   47.86912   .2837732   168.69   0.000     47.31151    48.42674
+------------------------------------------------------------------------------------
 
 Absorbed degrees of freedom:
 -----------------------------------------------------------+
@@ -15288,6 +15607,33 @@ Absorbed degrees of freedom:
  cve_ent_mun_super |       474         474           0    *|
 -----------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 2 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   1,    473) =       2.78
+Statistics robust to heteroskedasticity           Prob > F        =     0.0963
+                                                  R-squared       =     0.4688
+                                                  Adj R-squared   =     0.4145
+                                                  Within R-sq.    =     0.0006
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     9.5447
+
+                          (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -2.390593   1.434785    -1.67   0.096    -5.209934    .4287479
+             _cons |   44.00699   .1022531   430.37   0.000     43.80606    44.20792
+------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -15374,6 +15720,33 @@ Absorbed degrees of freedom:
  cve_ent_mun_super |       474         474           0    *|
 -----------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 2 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   1,    473) =       0.62
+Statistics robust to heteroskedasticity           Prob > F        =     0.4333
+                                                  R-squared       =     0.6766
+                                                  Adj R-squared   =     0.6435
+                                                  Within R-sq.    =     0.0002
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     5.6331
+
+                          (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -.9813612   1.251349    -0.78   0.433    -3.440252    1.477529
+             _cons |   45.85003   .0593432   772.63   0.000     45.73342    45.96664
+------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -15451,6 +15824,33 @@ post#c.inten1999 |
     sp_intensity |  -1.793104   7.619634    -0.24   0.814    -16.74004    13.15384
            _cons |   46.23497   .2096443   220.54   0.000     45.82372    46.64621
 ----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |      1422        1422           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 2 iterations)
+
+HDFE Linear regression                            Number of obs   =     15,642
+Absorbing 2 HDFE groups                           F(   1,   1421) =      31.61
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.3434
+                                                  Adj R-squared   =     0.2772
+                                                  Within R-sq.    =     0.0031
+Number of clusters (cve_ent_mun_super) =      1,422Root MSE       =    14.0943
+
+                        (Std. err. adjusted for 1,422 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -7.061143   1.255879    -5.62   0.000    -9.524718   -4.597567
+             _cons |   46.09214   .0968043   476.14   0.000     45.90225    46.28204
+------------------------------------------------------------------------------------
 
 Absorbed degrees of freedom:
 -----------------------------------------------------------+
@@ -15554,6 +15954,33 @@ Absorbed degrees of freedom:
  cve_ent_mun_super |       474         474           0    *|
 -----------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 4 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   1,    473) =      12.37
+Statistics robust to heteroskedasticity           Prob > F        =     0.0005
+                                                  R-squared       =     0.2734
+                                                  Adj R-squared   =     0.1990
+                                                  Within R-sq.    =     0.0024
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =    18.2057
+
+                          (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -7.342785   2.087806    -3.52   0.000    -11.44531   -3.240262
+             _cons |   46.49371   .2606771   178.36   0.000     45.98149    47.00594
+------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -15631,6 +16058,33 @@ post#c.inten1999 |
     sp_intensity |   1.358528    9.52382     0.14   0.887     -17.3557    20.07276
            _cons |    43.6765   .2317751   188.44   0.000     43.22106    44.13193
 ----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 4 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   1,    473) =       2.68
+Statistics robust to heteroskedasticity           Prob > F        =     0.1025
+                                                  R-squared       =     0.4870
+                                                  Adj R-squared   =     0.4344
+                                                  Within R-sq.    =     0.0008
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     8.9784
+
+                          (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -2.372122   1.449961    -1.64   0.103    -5.221284    .4770395
+             _cons |   43.64478   .1166623   374.11   0.000     43.41554    43.87402
+------------------------------------------------------------------------------------
 
 Absorbed degrees of freedom:
 -----------------------------------------------------------+
@@ -15726,6 +16180,33 @@ Absorbed degrees of freedom:
  cve_ent_mun_super |       474         474           0    *|
 -----------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 3 iterations)
+
+HDFE Linear regression                            Number of obs   =      5,214
+Absorbing 2 HDFE groups                           F(   1,    473) =       1.31
+Statistics robust to heteroskedasticity           Prob > F        =     0.2531
+                                                  R-squared       =     0.6960
+                                                  Adj R-squared   =     0.6649
+                                                  Within R-sq.    =     0.0005
+Number of clusters (cve_ent_mun_super) =        474Root MSE       =     4.8952
+
+                          (Std. err. adjusted for 474 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -1.393287   1.217686    -1.14   0.253    -3.786029     .999456
+             _cons |   46.56822    .058586   794.87   0.000      46.4531    46.68334
+------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |       474         474           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -15812,6 +16293,33 @@ Absorbed degrees of freedom:
  cve_ent_mun_super |      1422        1422           0    *|
 -----------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
+(MWFE estimator converged in 4 iterations)
+
+HDFE Linear regression                            Number of obs   =     15,642
+Absorbing 2 HDFE groups                           F(   1,   1421) =      22.65
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.5526
+                                                  Adj R-squared   =     0.5075
+                                                  Within R-sq.    =     0.0022
+Number of clusters (cve_ent_mun_super) =      1,422Root MSE       =     7.2064
+
+                        (Std. err. adjusted for 1,422 clusters in cve_ent_mun_super)
+------------------------------------------------------------------------------------
+                   |               Robust
+             emr65 | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+lag2_intensity_new |  -3.739679   .7857027    -4.76   0.000    -5.280941   -2.198417
+             _cons |    46.0795   .0460279  1001.12   0.000     45.98921    46.16979
+------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+              year |        11           1          10     |
+ cve_ent_mun_super |      1422        1422           0    *|
+-----------------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
 (MWFE estimator converged in 1 iterations)
 note: inten1999 is probably collinear with the fixed effects (all partialled-out values are close to zero; 
 > tol = 1.0e-09)
@@ -15881,6 +16389,12 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . local rb ""
 
+. local rmde ""
+
+. local rbb ""
+
+. local rbs ""
+
 . local rs ""
 
 . local rp ""
@@ -15893,12 +16407,15 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . foreach c of local cols {
   2.         local rb "`rb' & `ab_`c''"
-  3.         local rs "`rs' & (`as_`c'')"
-  4.         local rp "`rp' & `ap_`c''"
-  5.         local rm "`rm' & `amr_`c''"
-  6.         local rn "`rn' & `aN_`c''"
-  7.         local rmu "`rmu' & `aM_`c''"
-  8. }
+  3.         local rmde "`rmde' & `amde_`c''"
+  4.         local rbb "`rbb' & `bb_`c''"
+  5.         local rbs "`rbs' & (`bs_`c'')"
+  6.         local rs "`rs' & (`as_`c'')"
+  7.         local rp "`rp' & `ap_`c''"
+  8.         local rm "`rm' & `amr_`c''"
+  9.         local rn "`rn' & `aN_`c''"
+ 10.         local rmu "`rmu' & `aM_`c''"
+ 11. }
 
 . local rpop ""
 
@@ -15909,8 +16426,6 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 . cap file close bad
 
 . file open bad using "$tables/appendix/AT_br_adapted_size.tex", write replace
-(file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_adapted_size.tex
-    not found)
 
 . file write bad "\begin{tabular}{lcccccccc} \hline \hline" _n
 
@@ -15921,13 +16436,25 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . file write bad " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
 
+. file write bad "\underline{\textit{Panel A: Adapted design}} \\ " _n
+
 . file write bad "\textit{Intensity 1999 x Post}`rb' \\ " _n
 
 . file write bad "`rs' \\ " _n
 
-. file write bad "  & & & & & & & & \\ " _n
+. file write bad "Minimum detectable effect (80\% power)`rmde' \\ " _n
 
 . file write bad "Pre-trend test, p-value (1992--1995)`rp' \\ " _n
+
+. file write bad "  & & & & & & & & \\ " _n
+
+. file write bad "\underline{\textit{Panel B: Barham and Rowberry specification}} \\ " _n
+
+. file write bad "\textit{2-yr lagged Intensity}`rbb' \\ " _n
+
+. file write bad "`rbs' \\ " _n
+
+. file write bad "  & & & & & & & & \\ " _n
 
 . file write bad "Mean mortality rate 65+, 1992--1996`rm' \\ " _n
 
@@ -15945,8 +16472,6 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . if "$repo_tables" != "" copy "$tables/appendix/AT_br_adapted_size.tex" "$repo_tables/appendix/AT_br_adapt
 > ed_size.tex", replace
-(file C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables/appendix/AT_br_adapted_size.tex not
-    found)
 
 . di "Table exported to: $tables/appendix/AT_br_adapted_size.tex"
 Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_br_adapt
@@ -15967,5 +16492,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:  13 Oct 2026, 17:27:57
+ closed on:  14 Oct 2026, 14:22:14
 -----------------------------------------------------------------------------------------------------------
