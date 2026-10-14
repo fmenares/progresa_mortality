@@ -25,6 +25,11 @@
 \defaultbibliographystyle{ecta}
 \usepackage{verbatim}
 \usepackage{subfigure}
+% Subfigure labels read "Panel a: ..." (no parentheses), as in the text
+\makeatletter
+\def\thesubfigure{\alph{subfigure}}
+\def\@thesubfigure{Panel \thesubfigure:\space}
+\makeatother
 \bibliographystyle{chicago}
 \usepackage{soul}
 \usepackage{xcolor}
@@ -67,13 +72,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{\Large{Do Conditional Cash Transfer Programs Reduce Mortality? Ten-Year Evidence from Mexico}
-\thanks{This version: October 2026. The authors thank Andrew Goodman-Bacon, Victoria Barone, Tom Buchmuller, and participants in the 10th American-European Health Economics Study Group and 12th IRDES-LIRAES Workshop on Applied Health Economics and Policy Evaluation for valuable comments and suggestions for this version of the paper as well as for earlier versions presented at the 2022 PAA and LACEA-LAMES meetings. The authors also thank Pedro Bernal, Mathieu Pedemonte, and Natalia Testa for fruitful conversations. The opinions expressed in this paper are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent. Nor does it represent the views of Mexico's Instituto Nacional de Estad\'istica y Geograf\'ia (INEGI). All data used are publicly available from INEGI. Any errors are those of the authors.}\\ \textit{Preliminary draft, do not cite}}
+\thanks{This version: October 2026. The authors thank Victoria Barone, Tom Buchmuller, Andrew Goodman-Bacon, and participants in the 10th American-European Health Economics Study Group and 12th IRDES-LIRAES Workshop on Applied Health Economics and Policy Evaluation for valuable comments and suggestions for this version of the paper as well as for earlier versions presented at the 2022 PAA and LACEA-LAMES meetings. The authors also thank Pedro Bernal, Mathieu Pedemonte, and Natalia Testa for fruitful conversations. The opinions expressed in this paper are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent. Nor does it represent the views of Mexico's Instituto Nacional de Estad\'istica y Geograf\'ia (INEGI). All data used are publicly available from INEGI. Any errors are those of the authors.}\\ \textit{Preliminary draft, do not cite}}
 
 \author{Emma Aguila\footnote{Sol Price School of Public Policy, University of Southern California.}
 \and William H.\ Dow\footnote{School of Public Health and Department of Demography, University of California, Berkeley.}
 \and Felipe Menares\footnote{Inter-American Development Bank.}
 \and Susan W.\ Parker\footnote{School of Public Policy, University of Maryland.}
-\and Jorge Peniche\footnote{Sol Price School of Public Policy, University of Southern California.}
+\and Jorge Peniche\footnotemark[2]
 \and Soomin Ryu\footnote{Department of Public Health, University of Missouri.}}
 
 \date{}
@@ -328,8 +333,8 @@ Y_{ij,t} = \alpha + \beta_t + \gamma \mathds{1}(\text{Treatment})_i + \delta_t \
 \section*{Online Appendix}\label{appOnline}
 \vspace{2cm}
 \begin{center}
-{\Large \it Do CCT Programs (Really) Reduce Mortality: Ten-Year Evidence from Mexico} \\[.4cm]
-Emma Aguila, William H.\ Dow, Felipe Menares, Susan Parker, Jorge Peniche, and Soomin Ryu
+{\Large \it Do Conditional Cash Transfer Programs Reduce Mortality? Ten-Year Evidence from Mexico} \\[.4cm]
+Emma Aguila, William H.\ Dow, Felipe Menares, Susan W.\ Parker, Jorge Peniche, and Soomin Ryu
 \end{center}
 \listoffigures
 \listoftables

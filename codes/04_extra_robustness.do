@@ -2625,7 +2625,7 @@ foreach spec in log pois {
 		}
 		if `allok' == 0 continue
 		if "`spec'" == "log" local yt "Log population 65+"
-		else                 local yt "Population 65+ (% change from 1996)"
+		else                 local yt "Population 65+ (percent change from 1996)"
 		preserve
 		clear
 		quietly set obs 16
@@ -2650,14 +2650,15 @@ foreach spec in log pois {
 			(scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) ///
 			(rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
 			(scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)), ///
-			yline(0, lcolor(gs8) lwidth(vthin)) ///
-			xline(6.5, lcolor(gs10) lpattern(dash) lwidth(vthin)) ///
-			xlabel(`yl_mg', labsize(small) angle(45)) xscale(range(0.5 16.5)) ///
+			yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+			xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+			xlabel(`yl_mg', labsize(small) angle(45) labcolor(black)) xscale(range(0.5 16.5)) ///
 			xtitle("") ytitle("`yt'", size(medsmall)) ///
-			ylabel(, grid labsize(small) angle(0)) ///
+			ylabel(, grid gmin gmax labsize(small)) ///
 			legend(order(2 "Pooled" 4 "Female" 6 "Male") cols(3) size(small) ///
-				position(6) ring(1) region(lcolor(none))) ///
-			graphregion(color(white))
+				position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+			graphregion(color(white)) ///
+			plotregion(margin(l=1 r=1))
 		graph export "$figures/appendix/AF_migration_es_`spec'`d'.pdf", as(pdf) replace
 		if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_migration_es_`spec'`d'.pdf", as(pdf) replace
 		di "Figure exported to: $figures/appendix/AF_migration_es_`spec'`d'.pdf"
@@ -4666,13 +4667,14 @@ foreach wt in uw w {
 		(scatter b2 x2, mcolor(navy) msymbol(D) msize(small)) ///
 		(rcap l3 h3 x3, lcolor(dkgreen%60) lwidth(vthin)) ///
 		(scatter b3 x3, mcolor(dkgreen) msymbol(T) msize(small)), ///
-		yline(0, lcolor(gs8) lwidth(vthin)) xline(1996.5, lcolor(gs10) lpattern(dash)) ///
-		xlabel(1992(1)2002, labsize(small) angle(45)) ///
-		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
-		xtitle("") ytitle("Coefficient on Intensity 1999 x year (95 percent CI)", size(small)) ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(1996.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(1992(1)2002, labsize(small) angle(45) labcolor(black)) ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+		xtitle("") ytitle("Mortality rate 65+ (per 1,000 persons)", size(medsmall)) ///
 		legend(order(2 "Small (mean 65+ population `amp1')" 4 "Medium (`amp2')" 6 "Large (`amp3')") ///
-			size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
-		graphregion(color(white))
+			cols(3) size(small) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
 	graph export "$figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
 	if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
 	di "Figure exported to: $figures/appendix/AF_br_adapted_es_size_`wt'.pdf"

@@ -259,10 +259,12 @@ local N_nm_f = trim("`N_nm_f'")
 	cap file close sm
 	file open sm using "$tables/T1_descriptives.tex", write replace
 	file write sm "\begin{tabular}{lcc} \hline \hline" _n
+	file write sm "& \multicolumn{2}{c}{Percent} \\ " _n
+	file write sm "\cmidrule(lr){2-3}" _n
 	file write sm "& \multicolumn{1}{c}{Highly Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
-	file write sm "\underline{\textit{Panel A: Progresa Enrollment Intensity (percent)}} \\ " _n
+	file write sm "\underline{\textit{Panel A: Progresa Enrollment Intensity}} \\ " _n
 	file write sm "Intensity in 1999 & `m_inten1999_hm' & `m_inten1999_nm' \\ " _n
 	file write sm "  & (`sd_inten1999_hm') & (`sd_inten1999_nm') \\ " _n
 	file write sm "  & & \\ " _n
@@ -270,33 +272,34 @@ local N_nm_f = trim("`N_nm_f'")
 	file write sm "  & (`sd_inten2005_hm') & (`sd_inten2005_nm') \\ " _n
 	file write sm "  & & \\ " _n
 	file write sm "\underline{\textit{Panel B: Socioeconomic Characteristics}} \\ " _n
-	file write sm "Percent illiterate & `m_analf_hm' & `m_analf_nm' \\ " _n
+	file write sm "Illiterate & `m_analf_hm' & `m_analf_nm' \\ " _n
 	file write sm "  & (`sd_analf_hm') & (`sd_analf_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent without completed primary & `m_sprim_hm' & `m_sprim_nm' \\ " _n
+	file write sm "Without completed primary & `m_sprim_hm' & `m_sprim_nm' \\ " _n
 	file write sm "  & (`sd_sprim_hm') & (`sd_sprim_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent without electricity & `m_ovsee_hm' & `m_ovsee_nm' \\ " _n
+	file write sm "Without electricity & `m_ovsee_hm' & `m_ovsee_nm' \\ " _n
 	file write sm "  & (`sd_ovsee_hm') & (`sd_ovsee_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent without piped water & `m_ovsae_hm' & `m_ovsae_nm' \\ " _n
+	file write sm "Without piped water & `m_ovsae_hm' & `m_ovsae_nm' \\ " _n
 	file write sm "  & (`sd_ovsae_hm') & (`sd_ovsae_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent with crowding & `m_vhac_hm' & `m_vhac_nm' \\ " _n
+	file write sm "With crowding & `m_vhac_hm' & `m_vhac_nm' \\ " _n
 	file write sm "  & (`sd_vhac_hm') & (`sd_vhac_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent with dirt floors & `m_ovpt_hm' & `m_ovpt_nm' \\ " _n
+	file write sm "With dirt floors & `m_ovpt_hm' & `m_ovpt_nm' \\ " _n
 	file write sm "  & (`sd_ovpt_hm') & (`sd_ovpt_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent without drainage & `m_ovsde_hm' & `m_ovsde_nm' \\ " _n
+	file write sm "Without drainage & `m_ovsde_hm' & `m_ovsde_nm' \\ " _n
 	file write sm "  & (`sd_ovsde_hm') & (`sd_ovsde_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent in localities \$<\$5,000 & `m_pl5000_hm' & `m_pl5000_nm' \\ " _n
+	file write sm "In localities \$<\$5,000 & `m_pl5000_hm' & `m_pl5000_nm' \\ " _n
 	file write sm "  & (`sd_pl5000_hm') & (`sd_pl5000_nm') \\ " _n
 	file write sm "  & & \\ " _n
-	file write sm "Percent in 2+ person households & `m_po2sm_hm' & `m_po2sm_nm' \\ " _n
+	file write sm "In 2+ person households & `m_po2sm_hm' & `m_po2sm_nm' \\ " _n
 	file write sm "  & (`sd_po2sm_hm') & (`sd_po2sm_nm') \\ " _n
 	file write sm "  & & \\ " _n
+	file write sm "\midrule" _n
 	file write sm "Municipalities & `N_hm_f' & `N_nm_f' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
@@ -383,7 +386,7 @@ cap noisily twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxi
        (line emr65f year, lcolor(red)   lpattern(dash)          yaxis(1)) ///
        (line emr65m year, lcolor(blue)  lpattern(shortdash_dot) yaxis(1)) ///
        (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
-	ytitle("Mortality Rate (65+ per 1000)", axis(1)) ///
+	ytitle("Mortality rate (65+ per 1,000 persons)", axis(1)) ///
 	ytitle("Progresa intensity (percent)", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
 	legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (right axis)") ///
@@ -403,7 +406,7 @@ if _rc {
 	       (line emr65f year, lcolor(red)   lpattern(dash)) ///
 	       (line emr65m year, lcolor(blue)  lpattern(shortdash_dot)) ///
 	       (line intensity_new_scaled year, lcolor(orange) lpattern(longdash)), ///
-		ytitle("Mortality Rate (65+ per 1000)") ///
+		ytitle("Mortality rate (65+ per 1,000 persons)") ///
 		xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
 		legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (rescaled x`pen_scale_lbl', see notes)") ///
 		cols(4) size(medsmall) position(6) ring(1)) ///
@@ -2347,7 +2350,7 @@ foreach grp in p f m {
 		legend(order(15 "Baseline" 16 "Baseline, fixed 1997 denominator" 17 "+ Trend x Marginalization Index (municipality, linear)" 18 "+ Trend x quintile (municipality, linear)" ///
 			19 "+ Municipality marginalization percentile fixed effects" 20 "+ Locality marginalization percentile shares, flexible" ///
 			21 "+ Locality marginalization percentile shares, linear") ///
-			cols(3) size(small) position(6) ring(1) ///
+			rows(4) size(small) position(6) ring(1) ///
 			region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
 		graphregion(color(white)) ///
 		plotregion(margin(l=1 r=1))

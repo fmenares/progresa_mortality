@@ -1529,6 +1529,12 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - **Red bold marking** (`\textcolor{red}{\textbf{...}}`) of text added in the conversation, from project records (git cannot attribute authorship): W1 staggered-adoption footnotes (intro and equation paragraph) and "treatment timing is common" sentences, W4 path paragraph and footnote, W5 correlation footnote, ITT footnote, data paragraph, ses_trend sentence, 2005-endpoint sentence, denominator footnote, BR three-advantages passage, MDE definition, and the editor-reply "mechanisms" wording. Attribution is by record and may need user adjustment.
 - Fixed a doubled-backslash bug in the roadmap paragraph (`\\p`, `\\textit`, `\\ref`).
 
+### Layout and label fixes (2026-10-15)
+- Aguila and Peniche share one affiliation mark (`\footnotemark[2]`); Goodman-Bacon is third in the thanks list; the Online Appendix title and author line mirror the cover; Table A.5 (`at:did_robust_br2_2002ctrl_eoy`) and A.7 are landscape.
+- Subfigure labels now print "Panel a:" (no parentheses) via the preamble in `main.tex`, matching the text; remaining "Panel (a)" references in figure notes were converted. The labels come from LaTeX `\subfigure`, not Stata.
+- T1: a "Percent" header spans both columns; "Percent"/"(percent)" removed from row and panel labels (writer in `02_mortality.do` and `tables/T1_descriptives.tex`).
+- Stata (rerun needed for the PDFs): Figure 1a axis "Mortality rate (65+ per 1,000 persons)"; AF4 SES-trend legend `rows(4)`; AF9/AF10 (size-tercile and migration event studies) restyled like the other event studies (yellow break line, grid, legend format) with y-axis "Mortality rate 65+ (per 1,000 persons)" for the former and "percent change from 1996" for the latter.
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.
