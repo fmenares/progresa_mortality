@@ -4716,7 +4716,7 @@ file write bad " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
 file write bad "\underline{\textit{Panel A: Adapted design}} \\ " _n
 file write bad "\textit{Intensity\$_{1999}\$ \$\times\$ Post}`rb' \\ " _n
 file write bad "`rs' \\ " _n
-file write bad "Minimum detectable effect (80\% power)`rmde' \\ " _n
+file write bad "Minimum detectable effect (80 percent power)`rmde' \\ " _n
 file write bad "Pre-trend test, p-value (1992--1995)`rp' \\ " _n
 file write bad "  & & & & & & & & \\ " _n
 file write bad "\underline{\textit{Panel B: Barham and Rowberry specification}} \\ " _n

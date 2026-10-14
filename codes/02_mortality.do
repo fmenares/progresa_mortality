@@ -3348,17 +3348,17 @@ restore
 		}
 		file write tbl3 " \\ " _n
 
-		file write tbl3 "Obs"
+		file write tbl3 "Observations"
 		forval col = 1/4 {
 			local n = results_emr65_eoyfix_`pnl'[4,`col']
-			file write tbl3 "& " %9.0f (`n') ""
+			file write tbl3 "& " %9.0fc (`n') ""
 		}
 		file write tbl3 " \\ " _n
 
 		file write tbl3 "Number of municipalities"
 		forval col = 1/4 {
 			local nmun = results_emr65_eoyfix_`pnl'[5,`col']
-			file write tbl3 "& " %9.0f (`nmun') ""
+			file write tbl3 "& " %9.0fc (`nmun') ""
 		}
 		if "`pnl'" != "m" {
 			file write tbl3 " \\ " _n

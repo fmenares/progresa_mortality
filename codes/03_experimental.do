@@ -1719,7 +1719,7 @@ foreach yvar of local hh_outcomes {
     file write sm "\begin{tabular}{lcccc} \hline \hline" _n
     file write sm "& \multicolumn{2}{c}{Food} & \multicolumn{2}{c}{Health} \\ " _n
     file write sm "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
-    file write sm "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
+    file write sm "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (percent)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (percent)} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
     file write sm "\underline{\textit{Panel A: Elderly Presence}} \\ " _n
