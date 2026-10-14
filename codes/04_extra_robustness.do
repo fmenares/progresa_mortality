@@ -2279,7 +2279,7 @@ else {
 			local esout_p popover65_
 			local esout_m popover65_m
 			local esout_f popover65_f
-			local es_ytitle "Population 65+ (percent change from 1996)"
+			local es_ytitle "Population 65+ (% change from 1996)"
 			local es_outfile "$figures/appendix/AF_migration_es_poisson.pdf"
 			local es_outfile_repo "$repo_figures/appendix/AF_migration_es_poisson.pdf"
 			local es_cmd ppmlhdfe
@@ -2625,7 +2625,7 @@ foreach spec in log pois {
 		}
 		if `allok' == 0 continue
 		if "`spec'" == "log" local yt "Log population 65+"
-		else                 local yt "Population 65+ (percent change from 1996)"
+		else                 local yt "Population 65+ (% change from 1996)"
 		preserve
 		clear
 		quietly set obs 16
@@ -3600,7 +3600,7 @@ local meanI99_2005: di %6.1f r(mean) * 100
 	file write sm "Number of municipalities & `Nmun_2005_p_1' & `Nmun_2005_p_2' & `Nmun_2005_p_3' & `Nmun_2005_p_4' \\ " _n
 	file write sm "  & & & & \\ " _n
 	file write sm "SES Trend (Cont.\ Index) & N & Y & N & N \\ " _n
-	file write sm "Mean intensity 1999 (percent) & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' \\ " _n
+	file write sm "Mean intensity 1999 (\%) & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -4716,7 +4716,7 @@ file write bad " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
 file write bad "\underline{\textit{Panel A: Adapted design}} \\ " _n
 file write bad "\textit{Intensity\$_{1999}\$ \$\times\$ Post}`rb' \\ " _n
 file write bad "`rs' \\ " _n
-file write bad "Minimum detectable effect (80 percent power)`rmde' \\ " _n
+file write bad "Minimum detectable effect (80\% power)`rmde' \\ " _n
 file write bad "Pre-trend test, p-value (1992--1995)`rp' \\ " _n
 file write bad "  & & & & & & & & \\ " _n
 file write bad "\underline{\textit{Panel B: Barham and Rowberry specification}} \\ " _n

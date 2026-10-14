@@ -1535,6 +1535,9 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - T1: a "Percent" header spans both columns; "Percent"/"(percent)" removed from row and panel labels (writer in `02_mortality.do` and `tables/T1_descriptives.tex`).
 - Stata (rerun needed for the PDFs): Figure 1a axis "Mortality rate (65+ per 1,000 persons)"; AF4 SES-trend legend `rows(4)`; AF9/AF10 (size-tercile and migration event studies) restyled like the other event studies (yellow break line, grid, legend format) with y-axis "Mortality rate 65+ (per 1,000 persons)" for the former and "percent change from 1996" for the latter.
 
+### Percent symbol in tables/figures (2026-10-15)
+- Convention: running text spells out "percent" (copy editor's Chicago style, kept; about 15 words in the main text), while tables, table/figure notes and axis labels use the % symbol, which also stays out of the word count. Reverted "percent" to `\%` in `tables.tex`, `tables_app.tex`, `figures.tex`, `figures_app.tex`, the generated `tables/` files, and the matching writers/graph titles in `02`-`04` do-files (including the T1 "%" column header). `main.tex` is unchanged.
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.

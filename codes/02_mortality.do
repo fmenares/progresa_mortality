@@ -259,7 +259,7 @@ local N_nm_f = trim("`N_nm_f'")
 	cap file close sm
 	file open sm using "$tables/T1_descriptives.tex", write replace
 	file write sm "\begin{tabular}{lcc} \hline \hline" _n
-	file write sm "& \multicolumn{2}{c}{Percent} \\ " _n
+	file write sm "& \multicolumn{2}{c}{\%} \\ " _n
 	file write sm "\cmidrule(lr){2-3}" _n
 	file write sm "& \multicolumn{1}{c}{Highly Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
@@ -387,7 +387,7 @@ cap noisily twoway (line emr65  year, lcolor(black) lpattern(solid)         yaxi
        (line emr65m year, lcolor(blue)  lpattern(shortdash_dot) yaxis(1)) ///
        (line intensity_new_per year, lcolor(orange) lpattern(longdash) yaxis(2)), ///
 	ytitle("Mortality rate (65+ per 1,000 persons)", axis(1)) ///
-	ytitle("Progresa intensity (percent)", axis(2)) ///
+	ytitle("Progresa intensity (%)", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
 	legend(order(1 "All" 2 "Female" 3 "Male" 4 "Intensity (right axis)") ///
 	cols(4) size(medsmall) position(6) ring(1)) ///
@@ -734,7 +734,7 @@ local meanI99_2b: di %6.1f r(mean) * 100
 	file write sm "Number of municipalities & `Nmun_2b_p_1' & `Nmun_2b_p_2' & `Nmun_2b_p_3' & `Nmun_2b_p_4' \\ " _n
 	file write sm "  & & & & \\ " _n
 	file write sm "Socioeconomic status trend (continuous index) & No & Yes & No & No \\ " _n
-	file write sm "Mean intensity 1999 (percent) & `meanI99_2b' & `meanI99_2b' & `meanI99_2b' & `meanI99_2b' \\ " _n
+	file write sm "Mean intensity 1999 (\%) & `meanI99_2b' & `meanI99_2b' & `meanI99_2b' & `meanI99_2b' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -767,7 +767,7 @@ di "Table exported to: $tables/T2_mortality.tex"
 	file write sm "Number of municipalities & `Nmun_2b_p_3' & `Nmun_2b_p_4' \\ " _n
 	file write sm "  & & \\ " _n
 	file write sm "SES Trend (Cont.\ Index) & N & N \\ " _n
-	file write sm "Mean intensity 1999 (percent) & `meanI99_2b' & `meanI99_2b' \\ " _n
+	file write sm "Mean intensity 1999 (\%) & `meanI99_2b' & `meanI99_2b' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -821,7 +821,7 @@ cap noisily twoway (line emr65_marg  year, lcolor(black) lpattern(solid) yaxis(1
        (line inten_marg  year, lcolor(orange) lpattern(solid) yaxis(2)) ///
        (line inten_nm    year, lcolor(orange) lpattern(dash)  yaxis(2)), ///
 	ytitle("Mortality rate (65+ per 1,000 persons)", axis(1)) ///
-	ytitle("Progresa intensity (percent)", axis(2)) ///
+	ytitle("Progresa intensity (%)", axis(2)) ///
 	xtitle("Year") xline(1997, lpattern(dash) lcolor(gs10)) ///
 	legend(order(1 "Marginalized: All" 2 "Marginalized: Female" 3 "Marginalized: Male" ///
 	             4 "Non-marginalized: All" 5 "Non-marginalized: Female" 6 "Non-marginalized: Male" ///
@@ -1199,7 +1199,7 @@ foreach ff in levels log poisson {
 		local figname   "AF6c_ES_func_form_log"
 	}
 	else {
-		local ytitle_ff "Relative change in deaths (percent)"
+		local ytitle_ff "Relative change in deaths (%)"
 		local figname   "AF6d_ES_func_form_poisson"
 	}
 
@@ -1680,7 +1680,7 @@ local meanI99_AT2: di %6.1f r(mean) * 100
 	file write sm "Observations & `NFF_f_4' & `NFFuw_f' & `NFF_f_5' & `NFF_f_6' & `NAAMR_f' \\ " _n
 	file write sm "Number of municipalities & `NmunFF_p_4' & `NmunFFuw_p' & `NmunFF_p_5' & `NmunFF_p_6' & `NmunAAMR_p' \\ " _n
 	file write sm "  & & & & & \\ " _n
-	file write sm "Mean intensity 1999 (percent) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
+	file write sm "Mean intensity 1999 (\%) & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' & `meanI99_AT2' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -1870,7 +1870,7 @@ local meanI99_AT3: di %6.1f r(mean) * 100
 	file write sm "Observations & `NBR_7_p' & `NBR_7_f' & `NBR_7_m' \\ " _n
 	file write sm "Number of municipalities & `NmunBR_7_p' & `NmunBR_7_f' & `NmunBR_7_m' \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mean intensity 1999 (percent) & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
+	file write sm "Mean intensity 1999 (\%) & `meanI99_AT3' & `meanI99_AT3' & `meanI99_AT3' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2492,7 +2492,7 @@ local meanI99_age: di %6.1f r(mean) * 100
 	file write sm "  & & & & \\ " _n
 
 	file write sm "Number of municipalities & \multicolumn{4}{c}{`Nmun_AT_age'} \\ " _n
-	file write sm "Mean intensity 1999 (percent) & `meanI99_age' & `meanI99_age' & `meanI99_age' & `meanI99_age' \\ " _n
+	file write sm "Mean intensity 1999 (\%) & `meanI99_age' & `meanI99_age' & `meanI99_age' & `meanI99_age' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -3006,7 +3006,7 @@ local meanI99nc: di %6.1f r(mean) * 100
 	file write sm "  & & & \\ " _n
 	file write sm "Number of municipalities & `Nmunnc_p' & `Nmunnc_f' & `Nmunnc_m' \\ " _n
 	file write sm "  & & & \\ " _n
-	file write sm "Mean intensity 1999 (percent) & `meanI99nc' & `meanI99nc' & `meanI99nc' \\ " _n
+	file write sm "Mean intensity 1999 (\%) & `meanI99nc' & `meanI99nc' & `meanI99nc' \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -3370,7 +3370,7 @@ restore
 	}
 
 	file write tbl3 "  & & & & \\ " _n
-	file write tbl3 "Mean intensity 1999, end-of-year (percent) & \multicolumn{2}{c}{`meanI99eoy_br'} & \multicolumn{2}{c}{`meanI99eoy_hm'} \\ " _n
+	file write tbl3 "Mean intensity 1999, end-of-year (\%) & \multicolumn{2}{c}{`meanI99eoy_br'} & \multicolumn{2}{c}{`meanI99eoy_hm'} \\ " _n
 	file write tbl3 "\bottomrule" _n
 	file write tbl3 "\end{tabular}"
 	file close tbl3
