@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\03_experimental_log.log
   log type:  text
- opened on:   7 Oct 2026, 16:52:05
+ opened on:  14 Oct 2026, 15:06:55
 
 . di "Full-run log opened at: ${logFolder}03_experimental_log.log"
 Full-run log opened at: C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\03_experimental_log.l
@@ -726,7 +726,7 @@ loaded cached .dta: C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_
 . keep folio n1390* n1410*
 . tempfile spss_wide
 . save `spss_wide'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000004.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000004.tmp saved as .dta format
 . di "`c(N)' households loaded from SPSS, `c(k)' vars kept"
 139424 households loaded from SPSS, 50 vars kept
 . 
@@ -740,7 +740,7 @@ Duplicates in terms of folio
 . gen byte in_spss99 = 1
 . tempfile spss_folios
 . save `spss_folios'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000005.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000005.tmp saved as .dta format
 . * Permanent copy: the Gertler pooled cross-section is built from the 1999
 . * rosters rather than the working panel, so it needs these outside the
 . * tempfile scope. See the roster block near the top of this file.
@@ -760,7 +760,7 @@ Number of observations (_N) was 0, now 0.
 . gen int  n_visits = .
 . save `tv_acc'
 (dataset contains 0 observations)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
 . 
 . foreach sn in 1 2 3 4 {
   2.     foreach k in a b c {
@@ -788,73 +788,73 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta forma
 (139,118 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 1b: 139424 rows
 (139,374 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 1c: 139424 rows
 (139,409 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 2a: 139424 rows
 (137,061 observations deleted)
 (6 real changes made, 6 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 2b: 139424 rows
 (138,892 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 2c: 139424 rows
 (139,279 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 3a: 139424 rows
 (139,236 observations deleted)
 (1 real change made, 1 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 3b: 139424 rows
 (139,411 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 3c: 139424 rows
 (139,421 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 4a: 139424 rows
 (138,509 observations deleted)
 (2 real changes made, 2 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 4b: 139424 rows
 (139,332 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
   slot 4c: 139424 rows
 (139,410 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels97 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000006.tmp saved as .dta format
 . 
 . di "--- Step 3: collapsing to one row per person ---"
 --- Step 3: collapsing to one row per person ---
@@ -870,7 +870,7 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000006.tmp saved as .dta forma
 4587 unique persons with visit data (visitors only)
 . tempfile visits99
 . save `visits99'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000007.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000007.tmp saved as .dta format
 . save "$tempFolder/visits99_nov.dta", replace
 file C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data/visits99_nov.dta saved
 . 
@@ -971,7 +971,7 @@ loaded cached .dta: C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_
 . keep folio m149* m151*
 . tempfile spss_wide_m
 . save `spss_wide_m'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_000009.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000009.tmp saved as .dta format
 . di "`c(N)' households loaded from SPSS (June), `c(k)' vars kept"
 132806 households loaded from SPSS (June), 50 vars kept
 . 
@@ -984,7 +984,7 @@ Duplicates in terms of folio
 . gen byte in_spss99m = 1
 . tempfile spss_folios_m
 . save `spss_folios_m'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000a.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000a.tmp saved as .dta format
 . save "$tempFolder/spss_folios_jun.dta", replace
 file C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data/spss_folios_jun.dta saved
 . di "`c(N)' unique folios in SPSS file (June)"
@@ -1001,7 +1001,7 @@ Number of observations (_N) was 0, now 0.
 . gen int  n_visits = .
 . save `tv_acc_m'
 (dataset contains 0 observations)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
 . 
 . foreach sn in 01 02 03 04 05 06 07 {
   2.     foreach k in a b c {
@@ -1022,125 +1022,125 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta forma
 (132,469 observations deleted)
 (3 real changes made, 3 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 01b: 132806 rows
 (132,767 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 01c: 132806 rows
 (132,797 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 02a: 132806 rows
 (130,585 observations deleted)
 (14 real changes made, 14 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 02b: 132806 rows
 (132,386 observations deleted)
 (1 real change made, 1 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 02c: 132806 rows
 (132,695 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 03a: 132806 rows
 (132,625 observations deleted)
 (2 real changes made, 2 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 03b: 132806 rows
 (132,788 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 03c: 132806 rows
 (132,802 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 04a: 132806 rows
 (131,810 observations deleted)
 (2 real changes made, 2 to missing)
 (variable n_visits was byte, now int to accommodate using data's values)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 04b: 132806 rows
 (132,715 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 04c: 132806 rows
 (132,796 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 05a: 132806 rows
 (132,730 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 05b: 132806 rows
 (132,797 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 05c: 132806 rows
 (132,804 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 06a: 132806 rows
 (132,755 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 06b: 132806 rows
 (132,805 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 06c: 132806 rows
 (132,806 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 07a: 132806 rows
 (132,724 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 07b: 132806 rows
 (132,797 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
   slot 07c: 132806 rows
 (132,801 observations deleted)
 (0 real changes made)
 (variable n_visits was byte, now int to accommodate using data's values)
 (label labels47 already defined)
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000b.tmp saved as .dta format
 . 
 . di "--- June wave Step 3: collapsing to one row per person ---"
 --- June wave Step 3: collapsing to one row per person ---
@@ -1156,7 +1156,7 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000b.tmp saved as .dta forma
 4586 unique persons with visit data, June wave (visitors only)
 . tempfile visits99m
 . save `visits99m'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_b51c_00000c.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_00000c.tmp saved as .dta format
 . save "$tempFolder/visits99_jun.dta", replace
 file C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data/visits99_jun.dta saved
 . 
@@ -1277,6 +1277,8 @@ all files already exist and are up to date.
     Balance table saved in csv format to:
         C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/elderly_balance.csv
 
+. if "$repo_tables" != "" copy "$tables/elderly_balance.csv" "$repo_tables/elderly_balance.csv", replace
+
 . 
 . iebaltab work days_week hours_day live_alone ///
 >     if age97>=65, ///
@@ -1288,6 +1290,8 @@ all files already exist and are up to date.
 
     Balance table saved in Excel format to:
         C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/elderly_balance.xlsx
+
+. if "$repo_tables" != "" copy "$tables/elderly_balance.xlsx" "$repo_tables/elderly_balance.xlsx", replace
 
 . 
 . 
@@ -4081,6 +4085,8 @@ Gertler pooled-sample diagnostics written to: C:\Users\FELIPEME\Documents\projec
 > _n
 .     file write gp "\end{tabular}"
 .     file close gp
+.     if "$repo_tables" != "" copy "$tables/appendix/AT_gertler_pooled.tex" "$repo_tables/appendix/AT_gertl
+> er_pooled.tex", replace
 . }
 
 . di "Table exported to: $tables/appendix/AT_gertler_pooled.tex"
@@ -4303,9 +4309,8 @@ b99_p_tveo = -0.199  |  N_p_tveo =          627
 > {Health}} \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" 
 > _n
 .     file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{
-> c}{Live w/ Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{\$\da
-> gger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{\$\dagger\
-> $}} \\ " _n
+> c}{Live with Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{1}}
+>  & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{1}} \\ " _n
 .     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){
 > 6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
 .     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multi
@@ -4323,11 +4328,11 @@ b99_p_tveo = -0.199  |  N_p_tveo =          627
 .     file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') & (`s
 > e99_p_eob') & (`se99_p_tveo') \\ " _n
 .     file write sm "  & & & & & & & \\ " _n
-.     file write sm "Control Mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & & `cmn_p_eob
+.     file write sm "Control mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & & `cmn_p_eob
 > ' & \\ " _n
-.     file write sm "Control Mean (1999) & & & & & `cmn_p_tv' & & `cmn_p_tveo' \\ " _n
-.     file write sm "Obs & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_eob' & `N_p_tveo' \\
->  " _n
+.     file write sm "Control mean (1999) & & & & & `cmn_p_tv' & & `cmn_p_tveo' \\ " _n
+.     file write sm "Observations & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_eob' & `N_p
+> _tveo' \\ " _n
 .     file write sm "  & & & & & & & \\ " _n
 .     * Panel B: Females
 .     file write sm "\underline{\textit{Panel B: Females}} \\ " _n
@@ -4341,11 +4346,11 @@ b99_p_tveo = -0.199  |  N_p_tveo =          627
 .     file write sm " & (`se99_f_wh') & (`se99_f_la') & (`se99_f_wc') & (`se99_f_oe') & (`se99_f_tv') & (`s
 > e99_f_eob') & (`se99_f_tveo') \\ " _n
 .     file write sm "  & & & & & & & \\ " _n
-.     file write sm "Control Mean (1997) & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & & `cmn_f_eob
+.     file write sm "Control mean (1997) & `cmn_f_wh' & `cmn_f_la' & `cmn_f_wc' & `cmn_f_oe' & & `cmn_f_eob
 > ' & \\ " _n
-.     file write sm "Control Mean (1999) & & & & & `cmn_f_tv' & & `cmn_f_tveo' \\ " _n
-.     file write sm "Obs & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' & `N_f_tv' & `N_f_eob' & `N_f_tveo' \\
->  " _n
+.     file write sm "Control mean (1999) & & & & & `cmn_f_tv' & & `cmn_f_tveo' \\ " _n
+.     file write sm "Observations & `N_f_wh' & `N_f_la' & `N_f_wc' & `N_f_oe' & `N_f_tv' & `N_f_eob' & `N_f
+> _tveo' \\ " _n
 .     file write sm "  & & & & & & & \\ " _n
 .     * Panel C: Males
 .     file write sm "\underline{\textit{Panel C: Males}} \\ " _n
@@ -4359,14 +4364,16 @@ b99_p_tveo = -0.199  |  N_p_tveo =          627
 .     file write sm " & (`se99_m_wh') & (`se99_m_la') & (`se99_m_wc') & (`se99_m_oe') & (`se99_m_tv') & (`s
 > e99_m_eob') & (`se99_m_tveo') \\ " _n
 .     file write sm "  & & & & & & & \\ " _n
-.     file write sm "Control Mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & & `cmn_m_eob
+.     file write sm "Control mean (1997) & `cmn_m_wh' & `cmn_m_la' & `cmn_m_wc' & `cmn_m_oe' & & `cmn_m_eob
 > ' & \\ " _n
-.     file write sm "Control Mean (1999) & & & & & `cmn_m_tv' & & `cmn_m_tveo' \\ " _n
-.     file write sm "Obs & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' & `N_m_eob' & `N_m_tveo' \\
->  " _n
+.     file write sm "Control mean (1999) & & & & & `cmn_m_tv' & & `cmn_m_tveo' \\ " _n
+.     file write sm "Observations & `N_m_wh' & `N_m_la' & `N_m_wc' & `N_m_oe' & `N_m_tv' & `N_m_eob' & `N_m
+> _tveo' \\ " _n
 .     file write sm "\bottomrule" _n
 .     file write sm "\end{tabular}"
 .     file close sm
+.     if "$repo_tables" != "" copy "$tables/T3_experimental.tex" "$repo_tables/T3_experimental.tex", replac
+> e
 . }
 
 . 
@@ -4386,9 +4393,8 @@ b99_p_tveo = -0.199  |  N_p_tveo =          627
 > {Health}} \\ \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" 
 > _n
 .     file write sm "& \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Live Alone} & \multicolumn{1}{
-> c}{Live w/ Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{\$\da
-> gger\$}} & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{\$\dagger\
-> $}} \\ " _n
+> c}{Live with Children} & \multicolumn{1}{c}{Only Elderly} & \multicolumn{1}{c}{Visits\textsuperscript{1}}
+>  & \multicolumn{1}{c}{Weekly Hours} & \multicolumn{1}{c}{Health Visits\textsuperscript{1}} \\ " _n
 .     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){
 > 6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}" _n
 .     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multi
@@ -4404,14 +4410,16 @@ b99_p_tveo = -0.199  |  N_p_tveo =          627
 .     file write sm " & (`se99_p_wh') & (`se99_p_la') & (`se99_p_wc') & (`se99_p_oe') & (`se99_p_tv') & (`s
 > e99_p_eob') & (`se99_p_tveo') \\ " _n
 .     file write sm "  & & & & & & & \\ " _n
-.     file write sm "Control Mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & & `cmn_p_eob
+.     file write sm "Control mean (1997) & `cmn_p_wh' & `cmn_p_la' & `cmn_p_wc' & `cmn_p_oe' & & `cmn_p_eob
 > ' & \\ " _n
-.     file write sm "Control Mean (1999) & & & & & `cmn_p_tv' & & `cmn_p_tveo' \\ " _n
-.     file write sm "Obs & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_eob' & `N_p_tveo' \\
->  " _n
+.     file write sm "Control mean (1999) & & & & & `cmn_p_tv' & & `cmn_p_tveo' \\ " _n
+.     file write sm "Observations & `N_p_wh' & `N_p_la' & `N_p_wc' & `N_p_oe' & `N_p_tv' & `N_p_eob' & `N_p
+> _tveo' \\ " _n
 .     file write sm "\bottomrule" _n
 .     file write sm "\end{tabular}"
 .     file close sm
+.     if "$repo_tables" != "" copy "$tables/T3_experimental_slide.tex" "$repo_tables/T3_experimental_slide.
+> tex", replace
 . }
 
 . di "Table exported to: $tables/T3_experimental_slide.tex"
@@ -4438,8 +4446,6 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 . * individual-level construction steps.
 . *============================================================
 . save "$tempFolder/working_panel_for_attrition.dta", replace
-(file C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data/working_panel_for_attrition.dta
-    not found)
 file C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data/working_panel_for_attrition.dta
     saved
 
@@ -4561,6 +4567,8 @@ file C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data/working_pa
     Balance table saved in csv format to:
         C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/balance_HH.csv
 
+. if "$repo_tables" != "" copy "$tables/balance_HH.csv" "$repo_tables/balance_HH.csv", replace
+
 . 
 . iebaltab `balvars' ///
 >     if elderly97>=1, ///
@@ -4571,6 +4579,9 @@ file C:\Users\FELIPEME\Dropbox\2026\progresa_mortality\data\Temp_data/working_pa
 
     Balance table saved in csv format to:
         C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/elderly_balance_HH.csv
+
+. if "$repo_tables" != "" copy "$tables/elderly_balance_HH.csv" "$repo_tables/elderly_balance_HH.csv", repl
+> ace
 
 . *------------------------------------------------------------
 . * HOUSEHOLD-LEVEL RESULTS (expenditures)
@@ -5581,11 +5592,11 @@ Absorbed degrees of freedom:
 > `b99_pm' \\ " _n
 .     file write sm " & (`se99_food') & (`se99_pf') & (`se99_med') & (`se99_pm') \\ " _n
 .     file write sm "  & & & & \\ " _n
-.     file write sm "\textit{Differential (elderly HH)} & `b99e_food' & `b99e_pf' & `b99e_med' & `b99e_pm' 
-> \\ " _n
+.     file write sm "\textit{Differential (elderly households)} & `b99e_food' & `b99e_pf' & `b99e_med' & `b
+> 99e_pm' \\ " _n
 .     file write sm " & (`se99e_food') & (`se99e_pf') & (`se99e_med') & (`se99e_pm') \\ " _n
 .     file write sm "  & & & & \\ " _n
-.     file write sm "Control Mean (1998) & `cmn98_food' & `cmn98_pf' & `cmn98_med' & `cmn98_pm' \\ " _n
+.     file write sm "Control mean (1998) & `cmn98_food' & `cmn98_pf' & `cmn98_med' & `cmn98_pm' \\ " _n
 .     file write sm "Observations & `N_at6_food' & `N_at6_pf' & `N_at6_med' & `N_at6_pm' \\ " _n
 .     file write sm "  & & & & \\ " _n
 .     file write sm "\underline{\textit{Panel B: Older-Adults-Only Household}} \\ " _n
@@ -5597,10 +5608,12 @@ Absorbed degrees of freedom:
 > ' \\ " _n
 .     file write sm " & (`see_et_food') & (`see_et_pf') & (`see_et_med') & (`see_et_pm') \\ " _n
 .     file write sm "  & & & & \\ " _n
-.     file write sm "Control Mean (1998) & `cmn_et_food' & `cmn_et_pf' & `cmn_et_med' & `cmn_et_pm' \\ " _n
+.     file write sm "Control mean (1998) & `cmn_et_food' & `cmn_et_pf' & `cmn_et_med' & `cmn_et_pm' \\ " _n
 .     file write sm "Observations & `N_et_food' & `N_et_pf' & `N_et_med' & `N_et_pm' \\ \bottomrule" _n
 .     file write sm "\end{tabular}"
 .     file close sm
+.     if "$repo_tables" != "" copy "$tables/appendix/AT8_expenditures_elderly.tex" "$repo_tables/appendix/A
+> T8_expenditures_elderly.tex", replace
 . }
 
 . di "Table exported to: $tables/appendix/AT8_expenditures_elderly.tex"

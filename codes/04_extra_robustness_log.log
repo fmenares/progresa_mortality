@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:  14 Oct 2026, 14:20:03
+ opened on:  14 Oct 2026, 15:07:51
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -557,7 +557,7 @@ Number of observations (_N) was 0, now 16.
 >     xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 >     xscale(range(0.5 16.5)) ///
 >     xtitle("") ///
->     ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+>     ytitle("Mortality rate 65+ (per 1,000 persons)", size(medsmall)) ///
 >     ylabel(, grid gmin gmax labsize(small)) ///
 >     legend(order(7 "Threshold: 15%" 8 "Threshold: median" 9 "Threshold: p75") ///
 >         cols(3) size(small) position(6) ring(1) ///
@@ -709,7 +709,7 @@ Absorbed degrees of freedom:
 >     cap file close bin
 >     file open bin using "$tables/appendix/AT_binary_es.tex", write replace
 >     file write bin "\begin{tabular}{lcccc} \hline \hline" _n
->     file write bin "Threshold & Intensity 1999 x Post & Obs & High & Low \\ \toprule" _n
+>     file write bin "Threshold & Intensity\$_{1999}\$ \$\times\$ Post & Obs & High & Low \\ \toprule" _n
 >     file write bin "`threshname1' & `bt_1' & `Nt_1' & `n1_treated_15' & `n0_treated_15' \\ " _n
 >     file write bin " & (`set_1') & & & \\ " _n
 >     file write bin "  & & & & \\ " _n
@@ -1299,7 +1299,7 @@ Number of observations (_N) was 0, now 16.
 >     xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 >     xscale(range(0.5 16.5)) ///
 >     xtitle("") ///
->     ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+>     ytitle("Mortality rate 65+ (per 1,000 persons)", size(medsmall)) ///
 >     ylabel(, grid gmin gmax labsize(small)) ///
 >     legend(order(7 "Threshold: 15%" 8 "Threshold: median" 9 "Threshold: p75") ///
 >         cols(3) size(small) position(6) ring(1) ///
@@ -1478,8 +1478,8 @@ Absorbed degrees of freedom:
 >     cap file close bin2
 >     file open bin2 using "$tables/appendix/AT_binary_es_2bin.tex", write replace
 >     file write bin2 "\begin{tabular}{lcccc} \hline \hline" _n
->     file write bin2 "Threshold & Intensity 1999 x Post & Obs & High\textsubscript{2005} & Low\textsubscri
-> pt{2005} \\ \toprule" _n
+>     file write bin2 "Threshold & Intensity\$_{1999}\$ \$\times\$ Post & Obs & High\textsubscript{2005} & 
+> Low\textsubscript{2005} \\ \toprule" _n
 >     file write bin2 "`threshname1' & `b99t_1' & `Nt2_1' & `n1_treated05_15' & `n0_treated05_15' \\ " _n
 >     file write bin2 " & (`se99t_1') & & & \\ " _n
 >     file write bin2 "  & & & & \\ " _n
@@ -1757,7 +1757,7 @@ Threshold grid (Intensity_1999, End-of-year fixed-denom, 1996 HM cross-section):
 .     twoway `plotcmd', ///
 >         xline(1997, lcolor(gs8) lpattern(dash)) ///
 >         xtitle("Year", size(small)) ///
->         ytitle("EMR 65+ (per 1,000)", size(small)) ///
+>         ytitle("EMR 65+ (per 1,000 persons)", size(small)) ///
 >         xlabel(1991(2)2006, labsize(small)) ylabel(, labsize(small)) ///
 >         legend(order(`legend_order') cols(4) size(small) position(6) ring(1) region(lcolor(none))) ///
 >         graphregion(color(white)) plotregion(margin(l=1 r=1))
@@ -2321,7 +2321,7 @@ Figures exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cc
 >  \\ " _n
 > file write tc " & (`sethr_15_4') & (`sethr_median_4') & (`sethr_tercile_4') \\ " _n
 > file write tc "  & & & \\ " _n
-> file write tc "Obs & `Nthr_15' & `Nthr_median' & `Nthr_tercile' \\ " _n
+> file write tc "Observations & `Nthr_15' & `Nthr_median' & `Nthr_tercile' \\ " _n
 > file write tc "  & & & \\ " _n
 > file write tc "Threshold value & `clabel_15' & `clabel_median' & `clabel_tercile' \\ " _n
 > file write tc "Early & `n_early_15' & `n_early_median' & `n_early_tercile' \\ " _n
@@ -2560,7 +2560,7 @@ Number of observations (_N) was 0, now 16.
 >     xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 >     xscale(range(0.5 16.5)) ///
 >     xtitle("") ///
->     ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+>     ytitle("Mortality rate 65+ (per 1,000 persons)", size(medsmall)) ///
 >     ylabel(, grid gmin gmax labsize(small)) ///
 >     legend(order(7 "Threshold: 15%" 8 "Threshold: median" 9 "Threshold: upper tercile") ///
 >         cols(3) size(small) position(6) ring(1) ///
@@ -4580,7 +4580,7 @@ Absorbed degrees of freedom:
 >     file write fd " & (`se99_fd_p_1') & (`se99_fd_p_2') & (`se99_fd_p_3') & (`se99_fd_p_4') & (`se99_fd_p
 > _5') \\ " _n
 >     file write fd "  & & & & & \\ " _n
->     file write fd "Obs & `N_fd_p_1' & `N_fd_p_2' & `N_fd_p_3' & `N_fd_p_4' & `N_fd_p_5' \\ " _n
+>     file write fd "Observations & `N_fd_p_1' & `N_fd_p_2' & `N_fd_p_3' & `N_fd_p_4' & `N_fd_p_5' \\ " _n
 >     file write fd "  & & & & & \\ " _n
 >     file write fd "\underline{\textit{Panel B: Females}} \\ " _n
 >     file write fd "\textit{Intensity 1999 x post} & `b99_fd_f_1' & `b99_fd_f_2' & `b99_fd_f_3' & `b99_fd_
@@ -4588,7 +4588,7 @@ Absorbed degrees of freedom:
 >     file write fd " & (`se99_fd_f_1') & (`se99_fd_f_2') & (`se99_fd_f_3') & (`se99_fd_f_4') & (`se99_fd_f
 > _5') \\ " _n
 >     file write fd "  & & & & & \\ " _n
->     file write fd "Obs & `N_fd_f_1' & `N_fd_f_2' & `N_fd_f_3' & `N_fd_f_4' & `N_fd_f_5' \\ " _n
+>     file write fd "Observations & `N_fd_f_1' & `N_fd_f_2' & `N_fd_f_3' & `N_fd_f_4' & `N_fd_f_5' \\ " _n
 >     file write fd "  & & & & & \\ " _n
 >     file write fd "\underline{\textit{Panel C: Males}} \\ " _n
 >     file write fd "\textit{Intensity 1999 x post} & `b99_fd_m_1' & `b99_fd_m_2' & `b99_fd_m_3' & `b99_fd_
@@ -4596,7 +4596,7 @@ Absorbed degrees of freedom:
 >     file write fd " & (`se99_fd_m_1') & (`se99_fd_m_2') & (`se99_fd_m_3') & (`se99_fd_m_4') & (`se99_fd_m
 > _5') \\ " _n
 >     file write fd "  & & & & & \\ " _n
->     file write fd "Obs & `N_fd_m_1' & `N_fd_m_2' & `N_fd_m_3' & `N_fd_m_4' & `N_fd_m_5' \\ " _n
+>     file write fd "Observations & `N_fd_m_1' & `N_fd_m_2' & `N_fd_m_3' & `N_fd_m_4' & `N_fd_m_5' \\ " _n
 >     file write fd "\bottomrule" _n
 >     file write fd "\end{tabular}"
 >     file close fd
@@ -4633,14 +4633,14 @@ Table (commented out) would have been exported to: C:\Users\FELIPEME\Dropbox\Apl
 . * municipality-year FE can absorb general population growth and only the
 . * *differential* trend of the 65+ band survives.
 . *
-. * FIX 0: the archived version's "Mean (1991-1996)" / "Mean 65+
+. * FIX 0: the archived version's "Mean (1991--1996)" / "Mean 65+
 . * (1991-1996)" row was always blank in both tables' static output. Cause:
 . * `post' is coded {1 = 1997-2006, 2 = 1991-1996} throughout this
 . * pipeline (see the `gen post' block in 02_mortality.do), but the
 . * archived code summarized `if post == 0', which never matches -- r(mean)
 . * was always missing. Corrected to `post == 2' below, matching the
 . * convention already used for this exact row elsewhere (e.g.
-. * AT4_functional_forms' "Mean (1991-1996)" row in 02_mortality.do).
+. * AT4_functional_forms' "Mean (1991--1996)" row in 02_mortality.do).
 . *
 . * FIX 4 (see the fuller writeup at the DDD table below): the first real
 . * run of this table (9 Aug 2026) returned "n/a" for the Levels/Log
@@ -4993,28 +4993,28 @@ lpopover65_f |      6,714    5.072724    1.071673    1.94591   8.341216
 .         * stand-alone interpretation in this specification"). The bMG05_*/
 .         * seMG05_* locals above are still computed for anyone who wants them.
 .         file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-.         file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_p_1' & `bMG99_p_2' & `bMG99_p_
-> 3' \\ " _n
+.         file write sm "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `bMG99_p_1' & `bMG99_
+> p_2' & `bMG99_p_3' \\ " _n
 .         file write sm "  & (`seMG99_p_1') & (`seMG99_p_2') & (`seMG99_p_3') \\ " _n
 .         file write sm "  & & &  \\ " _n
-.         file write sm "Mean (1991-1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' \\ " _n
+.         file write sm "Mean (1991--1996)  & `meanMG_p_1' & `meanMG_p_2' & `meanMG_p_3' \\ " _n
 .         file write sm "  & & &  \\ " _n
 .         file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-.         file write sm "\textit{Intensity 1999 x post (1997-2006)}  & `bMG99_f_1' & `bMG99_f_2' & `bMG99_f
-> _3' \\ " _n
+.         file write sm "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)}  & `bMG99_f_1' & `bMG99
+> _f_2' & `bMG99_f_3' \\ " _n
 .         file write sm "  & (`seMG99_f_1') & (`seMG99_f_2') & (`seMG99_f_3') \\ " _n
 .         file write sm "  & & &  \\ " _n
-.         file write sm "Mean (1991-1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' \\ " _n
+.         file write sm "Mean (1991--1996)  & `meanMG_f_1' & `meanMG_f_2' & `meanMG_f_3' \\ " _n
 .         file write sm "  & & &  \\ " _n
 .         file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-.         file write sm "\textit{Intensity 1999 x post (1997-2006)} & `bMG99_m_1' & `bMG99_m_2' & `bMG99_m_
-> 3' \\ " _n
+.         file write sm "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `bMG99_m_1' & `bMG99_
+> m_2' & `bMG99_m_3' \\ " _n
 .         file write sm "  & (`seMG99_m_1') & (`seMG99_m_2') & (`seMG99_m_3') \\ " _n
 .         file write sm "  & & &  \\ " _n
-.         file write sm "Mean (1991-1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' \\ " _n
+.         file write sm "Mean (1991--1996) & `meanMG_m_1' & `meanMG_m_2' & `meanMG_m_3' \\ " _n
 .         file write sm "  & & &  \\ " _n
-.         file write sm "Obs & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' \\ " _n
-.         file write sm "No. Mun & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' \\ " _n
+.         file write sm "Observations & `NMG_f_1' & `NMG_f_2' & `NMG_f_3' \\ " _n
+.         file write sm "Number of municipalities & `NmunMG_p_1' & `NmunMG_p_2' & `NmunMG_p_3' \\ " _n
 .         file write sm "  & & & \\ " _n
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
@@ -5222,28 +5222,28 @@ lpopover65_f |      1,119    5.105873    1.083196    1.94591   8.309677
 .         file write smc "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ 
 > \toprule" _n
 .         file write smc "\underline{\textit{Panel A: Pooled}}  \\ " _n
-.         file write smc "\textit{Intensity 1999 x post (1997-2006)} & `bMGC99_p_1' & `bMGC99_p_2' & `bMGC9
-> 9_p_3' \\ " _n
+.         file write smc "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `bMGC99_p_1' & `bMGC
+> 99_p_2' & `bMGC99_p_3' \\ " _n
 .         file write smc "  & (`seMGC99_p_1') & (`seMGC99_p_2') & (`seMGC99_p_3') \\ " _n
 .         file write smc "  & & &  \\ " _n
-.         file write smc "Mean (1991-1996)  & `meanMGC_p_1' & `meanMGC_p_2' & `meanMGC_p_3' \\ " _n
+.         file write smc "Mean (1991--1996)  & `meanMGC_p_1' & `meanMGC_p_2' & `meanMGC_p_3' \\ " _n
 .         file write smc "  & & &  \\ " _n
 .         file write smc "\underline{\textit{Panel B: Females}}  \\ " _n
-.         file write smc "\textit{Intensity 1999 x post (1997-2006)}  & `bMGC99_f_1' & `bMGC99_f_2' & `bMGC
-> 99_f_3' \\ " _n
+.         file write smc "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)}  & `bMGC99_f_1' & `bMG
+> C99_f_2' & `bMGC99_f_3' \\ " _n
 .         file write smc "  & (`seMGC99_f_1') & (`seMGC99_f_2') & (`seMGC99_f_3') \\ " _n
 .         file write smc "  & & &  \\ " _n
-.         file write smc "Mean (1991-1996)  & `meanMGC_f_1' & `meanMGC_f_2' & `meanMGC_f_3' \\ " _n
+.         file write smc "Mean (1991--1996)  & `meanMGC_f_1' & `meanMGC_f_2' & `meanMGC_f_3' \\ " _n
 .         file write smc "  & & &  \\ " _n
 .         file write smc "\underline{\textit{Panel C: Males}}  \\ " _n
-.         file write smc "\textit{Intensity 1999 x post (1997-2006)} & `bMGC99_m_1' & `bMGC99_m_2' & `bMGC9
-> 9_m_3' \\ " _n
+.         file write smc "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `bMGC99_m_1' & `bMGC
+> 99_m_2' & `bMGC99_m_3' \\ " _n
 .         file write smc "  & (`seMGC99_m_1') & (`seMGC99_m_2') & (`seMGC99_m_3') \\ " _n
 .         file write smc "  & & &  \\ " _n
-.         file write smc "Mean (1991-1996) & `meanMGC_m_1' & `meanMGC_m_2' & `meanMGC_m_3' \\ " _n
+.         file write smc "Mean (1991--1996) & `meanMGC_m_1' & `meanMGC_m_2' & `meanMGC_m_3' \\ " _n
 .         file write smc "  & & &  \\ " _n
-.         file write smc "Obs & `NMGC_f_1' & `NMGC_f_2' & `NMGC_f_3' \\ " _n
-.         file write smc "No. Mun & `NmunMGC_p_1' & `NmunMGC_p_2' & `NmunMGC_p_3' \\ " _n
+.         file write smc "Observations & `NMGC_f_1' & `NMGC_f_2' & `NMGC_f_3' \\ " _n
+.         file write smc "Number of municipalities & `NmunMGC_p_1' & `NmunMGC_p_2' & `NmunMGC_p_3' \\ " _n
 .         file write smc "  & & & \\ " _n
 .         file write smc "\bottomrule" _n
 .         file write smc "\end{tabular}"
@@ -5604,22 +5604,22 @@ xij variables:
 .         file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_2' & `bDDD99_p_3' \\ " _n
 .         file write sm "  & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
 .         file write sm "  & &  \\ " _n
-.         file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
+.         file write sm "Mean 65+ (1991--1996)  & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
 .         file write sm "  & &  \\ " _n
 .         file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
 .         file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
 .         file write sm "  & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
 .         file write sm "  & &  \\ " _n
-.         file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
+.         file write sm "Mean 65+ (1991--1996)  & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
 .         file write sm "  & &  \\ " _n
 .         file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
 .         file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
 .         file write sm "  & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
 .         file write sm "  & &  \\ " _n
-.         file write sm "Mean 65+ (1991-1996) & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
+.         file write sm "Mean 65+ (1991--1996) & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
 .         file write sm "  & &  \\ " _n
-.         file write sm "Obs & `NDDD_f_2' & `NDDD_f_3' \\ " _n
-.         file write sm "No. Mun & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
+.         file write sm "Observations & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+.         file write sm "Number of municipalities & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
 .         file write sm "  & & \\ " _n
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
@@ -5694,7 +5694,7 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
  21.                         local esout_p popover65_
  22.                         local esout_m popover65_m
  23.                         local esout_f popover65_f
- 24.                         local es_ytitle "Population 65+ (% change from 1996)"
+ 24.                         local es_ytitle "Population 65+ (percent change from 1996)"
  25.                         local es_outfile "$figures/appendix/AF_migration_es_poisson.pdf"
  26.                         local es_outfile_repo "$repo_figures/appendix/AF_migration_es_poisson.pdf"
  27.                         local es_cmd ppmlhdfe
@@ -6681,8 +6681,6 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 . cap file close mgp
 
 . file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
-(file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_migration_pop.tex
-    not found)
 
 . file write mgp "\begin{tabular}{lcccc} \hline \hline" _n
 
@@ -6699,18 +6697,18 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
   2.         if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
   3.         if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
   4.         if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
-  5.         file write mgp "\textit{Intensity 1999 x Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `mgb_`pnl'_3'
->  & `mgb_`pnl'_4' \\ " _n
+  5.         file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' 
+> & `mgb_`pnl'_3' & `mgb_`pnl'_4' \\ " _n
   6.         file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') \\ " 
 > _n
-  7.         file write mgp "Mean (1991-1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'_
-> 4' \\ " _n
+  7.         file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'
+> _4' \\ " _n
   8.         file write mgp "  & & & & \\ " _n
   9. }
 
-. file write mgp "Obs & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' \\ " _n
+. file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' \\ " _n
 
-. file write mgp "No. Mun & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' \\ " _n
+. file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' \\ " _n
 
 . file write mgp "\bottomrule" _n
 
@@ -6720,8 +6718,6 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . if "$repo_tables" != "" copy "$tables/appendix/AT_migration_pop.tex" "$repo_tables/appendix/AT_migration_
 > pop.tex", replace
-(file C:\Users\FELIPEME\Documents\projects\progresa_mortality\tables/appendix/AT_migration_pop.tex not
-    found)
 
 . di "Table exported to: $tables/appendix/AT_migration_pop.tex"
 Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\tables/appendix/AT_migratio
@@ -7019,13 +7015,13 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
   2.                 if "`pnl'" == "p" file write fo "\underline{\textit{Panel A: Pooled}} \\ " _n
   3.                 if "`pnl'" == "f" file write fo "\underline{\textit{Panel B: Females}} \\ " _n
   4.                 if "`pnl'" == "m" file write fo "\underline{\textit{Panel C: Males}} \\ " _n
-  5.                 file write fo "\textit{Intensity 1999 x post (1997-2006)} & `bFO_`pnl'_1' & `bFO_`pnl'
-> _2' & `bFO_`pnl'_3' & `bFO_`pnl'_4' \\ " _n
+  5.                 file write fo "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `bFO_`pnl'
+> _1' & `bFO_`pnl'_2' & `bFO_`pnl'_3' & `bFO_`pnl'_4' \\ " _n
   6.                 file write fo " & (`seFO_`pnl'_1') & (`seFO_`pnl'_2') & (`seFO_`pnl'_3') & (`seFO_`pnl
 > '_4') \\ " _n
-  7.                 file write fo "Mean (1991-1996) & `meanFO_`pnl'_1' & `meanFO_`pnl'_2' & & \\ " _n
-  8.                 file write fo "Obs & `NFO_`pnl'_1' & `NFO_`pnl'_2' & `NFO_`pnl'_3' & `NFO_`pnl'_4' \\ 
-> " _n
+  7.                 file write fo "Mean (1991--1996) & `meanFO_`pnl'_1' & `meanFO_`pnl'_2' & & \\ " _n
+  8.                 file write fo "Observations & `NFO_`pnl'_1' & `NFO_`pnl'_2' & `NFO_`pnl'_3' & `NFO_`pn
+> l'_4' \\ " _n
   9.                 if "`pnl'" != "m" file write fo "  & & & & \\ " _n
  10.         }
 .         file write fo "\bottomrule" _n
@@ -7147,7 +7143,7 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                         xlabel(`yr_labels', labsize(small) angle(45) labcolor(black)) ///
 >                         xscale(range(1.5 12.5)) ///
 >                         xtitle("") ///
->                         ytitle("Mortality Rate (per 1,000)", size(medsmall)) ///
+>                         ytitle("Mortality rate (per 1,000 persons)", size(medsmall)) ///
 >                         ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
 >                         legend(order(5 "Weighted (baseline)" 6 "Weighted + Intensity 2002 control") ///
 >                                 cols(1) size(medsmall) position(6) ring(1) ///
@@ -9270,51 +9266,51 @@ Absorbed degrees of freedom:
 > ulticolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 . 
 . *       file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-. *       file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_p_1' & `b99_2c_p_2' & `b99_2c
-> _p_3' & `b99_2c_p_4' & `b99_2c_p_5' & `b99_2c_p_6' \\ " _n
+. *       file write sm "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `b99_2c_p_1' & `b99_2
+> c_p_2' & `b99_2c_p_3' & `b99_2c_p_4' & `b99_2c_p_5' & `b99_2c_p_6' \\ " _n
 . *       file write sm " & (`se99_2c_p_1') & (`se99_2c_p_2') & (`se99_2c_p_3') & (`se99_2c_p_4') & (`se99_
 > 2c_p_5') & (`se99_2c_p_6') \\ " _n
 . *       file write sm "  & & & & & & \\ " _n
-. *       file write sm "Mean (1991-1996) & `mean_2c_p_1' & `mean_2c_p_2' & `mean_2c_p_3' & `mean_2c_p_4' &
->  `mean_2c_p_5' & `mean_2c_p_6' \\ " _n
-. *       file write sm "Obs & `N_2c_p_1' & `N_2c_p_2' & `N_2c_p_3' & `N_2c_p_4' & `N_2c_p_5' & `N_2c_p_6' 
-> \\ " _n
+. *       file write sm "Mean (1991--1996) & `mean_2c_p_1' & `mean_2c_p_2' & `mean_2c_p_3' & `mean_2c_p_4' 
+> & `mean_2c_p_5' & `mean_2c_p_6' \\ " _n
+. *       file write sm "Observations & `N_2c_p_1' & `N_2c_p_2' & `N_2c_p_3' & `N_2c_p_4' & `N_2c_p_5' & `N
+> _2c_p_6' \\ " _n
 . *       file write sm "  & & & & & & \\ " _n
 . 
 . *       file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-. *       file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_f_1' & `b99_2c_f_2' & `b99_2c
-> _f_3' & `b99_2c_f_4' & `b99_2c_f_5' & `b99_2c_f_6' \\ " _n
+. *       file write sm "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `b99_2c_f_1' & `b99_2
+> c_f_2' & `b99_2c_f_3' & `b99_2c_f_4' & `b99_2c_f_5' & `b99_2c_f_6' \\ " _n
 . *       file write sm " & (`se99_2c_f_1') & (`se99_2c_f_2') & (`se99_2c_f_3') & (`se99_2c_f_4') & (`se99_
 > 2c_f_5') & (`se99_2c_f_6') \\ " _n
 . *       file write sm "  & & & & & & \\ " _n
-. *       file write sm "Mean (1991-1996) & `mean_2c_f_1' & `mean_2c_f_2' & `mean_2c_f_3' & `mean_2c_f_4' &
->  `mean_2c_f_5' & `mean_2c_f_6' \\ " _n
-. *       file write sm "Obs & `N_2c_f_1' & `N_2c_f_2' & `N_2c_f_3' & `N_2c_f_4' & `N_2c_f_5' & `N_2c_f_6' 
-> \\ " _n
+. *       file write sm "Mean (1991--1996) & `mean_2c_f_1' & `mean_2c_f_2' & `mean_2c_f_3' & `mean_2c_f_4' 
+> & `mean_2c_f_5' & `mean_2c_f_6' \\ " _n
+. *       file write sm "Observations & `N_2c_f_1' & `N_2c_f_2' & `N_2c_f_3' & `N_2c_f_4' & `N_2c_f_5' & `N
+> _2c_f_6' \\ " _n
 . *       file write sm "  & & & & & & \\ " _n
 . 
 . *       file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-. *       file write sm "\textit{Intensity 1999 x post (1997-2006)} & `b99_2c_m_1' & `b99_2c_m_2' & `b99_2c
-> _m_3' & `b99_2c_m_4' & `b99_2c_m_5' & `b99_2c_m_6' \\ " _n
+. *       file write sm "\textit{Intensity\$_{1999}\$ \$\times\$ Post (1997--2006)} & `b99_2c_m_1' & `b99_2
+> c_m_2' & `b99_2c_m_3' & `b99_2c_m_4' & `b99_2c_m_5' & `b99_2c_m_6' \\ " _n
 . *       file write sm " & (`se99_2c_m_1') & (`se99_2c_m_2') & (`se99_2c_m_3') & (`se99_2c_m_4') & (`se99_
 > 2c_m_5') & (`se99_2c_m_6') \\ " _n
 . *       file write sm "  & & & & & & \\ " _n
-. *       file write sm "Mean (1991-1996) & `mean_2c_m_1' & `mean_2c_m_2' & `mean_2c_m_3' & `mean_2c_m_4' &
->  `mean_2c_m_5' & `mean_2c_m_6' \\ " _n
-. *       file write sm "Obs & `N_2c_m_1' & `N_2c_m_2' & `N_2c_m_3' & `N_2c_m_4' & `N_2c_m_5' & `N_2c_m_6' 
-> \\ " _n
+. *       file write sm "Mean (1991--1996) & `mean_2c_m_1' & `mean_2c_m_2' & `mean_2c_m_3' & `mean_2c_m_4' 
+> & `mean_2c_m_5' & `mean_2c_m_6' \\ " _n
+. *       file write sm "Observations & `N_2c_m_1' & `N_2c_m_2' & `N_2c_m_3' & `N_2c_m_4' & `N_2c_m_5' & `N
+> _2c_m_6' \\ " _n
 . *       file write sm "  & & & & & & \\ " _n
 . 
-. *       file write sm "No.\ Mun & `Nmun_2c_p_1' & `Nmun_2c_p_2' & `Nmun_2c_p_3' & `Nmun_2c_p_4' & `Nmun_2
-> c_p_5' & `Nmun_2c_p_6' \\ " _n
+. *       file write sm "Number of municipalities & `Nmun_2c_p_1' & `Nmun_2c_p_2' & `Nmun_2c_p_3' & `Nmun_2
+> c_p_4' & `Nmun_2c_p_5' & `Nmun_2c_p_6' \\ " _n
 . *       file write sm "  & & & & & & \\ " _n
 . *       file write sm "SES Trend (Cont.\ Muni.\ Index) & N & Y & N & N & N & N \\ " _n
 . *       file write sm "SES Trend (Muni.\ Quintile) & N & N & Y & N & N & N \\ " _n
 . *       file write sm "Muni.\ Marg.\ \%-ile FE & N & N & N & Y & N & N \\ " _n
 . *       file write sm "Locality Marg.\ \%-ile Shares, Flexible & N & N & N & N & Y & N \\ " _n
 . *       file write sm "Locality Marg.\ \%-ile Shares, Linear & N & N & N & N & N & Y \\ " _n
-. *       file write sm "Mean Intensity 1999 (\%) & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `meanI99_2
-> c' & `meanI99_2c' & `meanI99_2c' \\ " _n
+. *       file write sm "Mean intensity 1999 (percent) & `meanI99_2c' & `meanI99_2c' & `meanI99_2c' & `mean
+> I99_2c' & `meanI99_2c' & `meanI99_2c' \\ " _n
 . *       file write sm "\bottomrule" _n
 . *       file write sm "\end{tabular}"
 . *       file close sm
@@ -9951,19 +9947,19 @@ Absorbed degrees of freedom:
 . * file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multico
 > lumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} \\ \toprule
 >  " _n
-. * file write sm "\textit{2-yr lagged Intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT5_te
-> rc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
+. * file write sm "\textit{Two-year lagged intensity} & -6.370*** & `bBR2_2_p' & `bAT5_2' & `bAT5_3' & `bAT
+> 5_terc1' & `bAT5_terc2' & `bAT5_terc3' \\ " _n
 . * file write sm " & (1.040) & (`seBR2_2_p') & (`seAT5_2') & (`seAT5_3') & (`seAT5_terc1') & (`seAT5_terc2
 > ') & (`seAT5_terc3') \\ " _n
 . * file write sm "  & & & & & & & \\ " _n
 . * file write sm "Mean 1996 & 47.5 & `meanBR_2_p' & `meanAT5_2' & `meanAT5_3' & `meanAT5_terc1' & `meanAT5
 > _terc2' & `meanAT5_terc3' \\ " _n
-. * file write sm "Obs & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & `NAT5_ter
-> c3' \\ " _n
-. * file write sm "No.\ Mun & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_terc1' & `NmunAT5
-> _terc2' & `NmunAT5_terc3' \\ " _n
-. * file write sm "Mean Intensity 1999 (\%) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3' & `m
-> eanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
+. * file write sm "Observations & 21,571 & `NBR_2_p' & `NAT5_2' & `NAT5_3' & `NAT5_terc1' & `NAT5_terc2' & 
+> `NAT5_terc3' \\ " _n
+. * file write sm "Number of municipalities & 1,961 & `NmunBR_2_p' & `NmunAT5_2' & `NmunAT5_3' & `NmunAT5_t
+> erc1' & `NmunAT5_terc2' & `NmunAT5_terc3' \\ " _n
+. * file write sm "Mean intensity 1999 (percent) & & `meanI99_AT5_full' & `meanI99_AT5_2' & `meanI99_AT5_3'
+>  & `meanI99_AT5_terc1' & `meanI99_AT5_terc2' & `meanI99_AT5_terc3' \\ " _n
 . * file write sm "\bottomrule" _n
 . * file write sm "\end{tabular}"
 . * file close sm
@@ -10663,9 +10659,9 @@ Absorbed degrees of freedom:
 .         file write sm " & (`se99_2005_p_1') & (`se99_2005_p_2') & (`se99_2005_p_3') & (`se99_2005_p_4') \
 > \ " _n
 .         file write sm "  & & & & \\ " _n
-.         file write sm "Mean (1991-1996) & `mean_2005_p_1' & `mean_2005_p_2' & `mean_2005_p_3' & `mean_200
-> 5_p_4' \\ " _n
-.         file write sm "Obs & `N_2005_p_1' & `N_2005_p_2' & `N_2005_p_3' & `N_2005_p_4' \\ " _n
+.         file write sm "Mean (1991--1996) & `mean_2005_p_1' & `mean_2005_p_2' & `mean_2005_p_3' & `mean_20
+> 05_p_4' \\ " _n
+.         file write sm "Observations & `N_2005_p_1' & `N_2005_p_2' & `N_2005_p_3' & `N_2005_p_4' \\ " _n
 .         file write sm "  & & & & \\ " _n
 . 
 .         file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
@@ -10674,9 +10670,9 @@ Absorbed degrees of freedom:
 .         file write sm " & (`se99_2005_f_1') & (`se99_2005_f_2') & (`se99_2005_f_3') & (`se99_2005_f_4') \
 > \ " _n
 .         file write sm "  & & & & \\ " _n
-.         file write sm "Mean (1991-1996) & `mean_2005_f_1' & `mean_2005_f_2' & `mean_2005_f_3' & `mean_200
-> 5_f_4' \\ " _n
-.         file write sm "Obs & `N_2005_f_1' & `N_2005_f_2' & `N_2005_f_3' & `N_2005_f_4' \\ " _n
+.         file write sm "Mean (1991--1996) & `mean_2005_f_1' & `mean_2005_f_2' & `mean_2005_f_3' & `mean_20
+> 05_f_4' \\ " _n
+.         file write sm "Observations & `N_2005_f_1' & `N_2005_f_2' & `N_2005_f_3' & `N_2005_f_4' \\ " _n
 .         file write sm "  & & & & \\ " _n
 . 
 .         file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
@@ -10685,17 +10681,17 @@ Absorbed degrees of freedom:
 .         file write sm " & (`se99_2005_m_1') & (`se99_2005_m_2') & (`se99_2005_m_3') & (`se99_2005_m_4') \
 > \ " _n
 .         file write sm "  & & & & \\ " _n
-.         file write sm "Mean (1991-1996) & `mean_2005_m_1' & `mean_2005_m_2' & `mean_2005_m_3' & `mean_200
-> 5_m_4' \\ " _n
-.         file write sm "Obs & `N_2005_m_1' & `N_2005_m_2' & `N_2005_m_3' & `N_2005_m_4' \\ " _n
+.         file write sm "Mean (1991--1996) & `mean_2005_m_1' & `mean_2005_m_2' & `mean_2005_m_3' & `mean_20
+> 05_m_4' \\ " _n
+.         file write sm "Observations & `N_2005_m_1' & `N_2005_m_2' & `N_2005_m_3' & `N_2005_m_4' \\ " _n
 .         file write sm "  & & & & \\ " _n
 . 
-.         file write sm "No.\ Mun & `Nmun_2005_p_1' & `Nmun_2005_p_2' & `Nmun_2005_p_3' & `Nmun_2005_p_4' \
-> \ " _n
+.         file write sm "Number of municipalities & `Nmun_2005_p_1' & `Nmun_2005_p_2' & `Nmun_2005_p_3' & `
+> Nmun_2005_p_4' \\ " _n
 .         file write sm "  & & & & \\ " _n
 .         file write sm "SES Trend (Cont.\ Index) & N & Y & N & N \\ " _n
-.         file write sm "Mean Intensity 1999 (\%) & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' & `mea
-> nI99_2005' \\ " _n
+.         file write sm "Mean intensity 1999 (percent) & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' &
+>  `meanI99_2005' \\ " _n
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
 .         file close sm
@@ -10780,7 +10776,7 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                 xlabel(`yr_labels_05', labsize(small) angle(45) labcolor(black)) ///
 >                 xscale(range(0.5 15.5)) ///
 >                 xtitle("") ///
->                 ytitle("Mortality Rate 65+ (per 1,000)", size(medsmall)) ///
+>                 ytitle("Mortality rate 65+ (per 1,000 persons)", size(medsmall)) ///
 >                 ylabel(-20(5)15, grid gmin gmax labsize(small)) ///
 >                 legend(off) ///
 >                 graphregion(color(white)) ///
@@ -12630,7 +12626,7 @@ Panel B, w, row 3: share of BR treatment variation explained = 0.636
 > ' \\ " _n
  33.         }
  34.         file write brl "Observations & `N_`pnl'_uw' & `N_`pnl'_w' \\ " _n
- 35.         file write brl "No. Mun & `M_`pnl'_uw' & `M_`pnl'_w' \\ " _n
+ 35.         file write brl "Number of municipalities & `M_`pnl'_uw' & `M_`pnl'_w' \\ " _n
  36. }
 
 . file write brl "\bottomrule" _n
@@ -15224,7 +15220,7 @@ Absorbed degrees of freedom:
 
 . local mpcols "4 1 2 3 4 1 2 3"
 
-. local lab1 "2-yr lagged Intensity"
+. local lab1 "Two-year lagged intensity"
 
 . local lab2 "\quad + Intensity 1999 x year"
 
@@ -15310,7 +15306,7 @@ Absorbed degrees of freedom:
 
 . file write bsz "Observations`cn' \\ " _n
 
-. file write bsz "No. Mun`cm' \\ " _n
+. file write bsz "Number of municipalities`cm' \\ " _n
 
 . file write bsz "\bottomrule" _n
 
@@ -15451,7 +15447,8 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                 yline(0, lcolor(gs8) lwidth(vthin)) xline(1996.5, lcolor(gs10) lpattern(dash)) ///
 >                 xlabel(1992(1)2002, labsize(small) angle(45)) ///
 >                 ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
->                 xtitle("") ytitle("Coefficient on Intensity 1999 x year (95% CI)", size(small)) ///
+>                 xtitle("") ytitle("Coefficient on Intensity 1999 x year (95 percent CI)", size(small)) //
+> /
 >                 legend(order(2 "Small (mean 65+ population `amp1')" 4 "Medium (`amp2')" 6 "Large (`amp3')
 > ") ///
 >                         size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
@@ -16438,7 +16435,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . file write bad "\underline{\textit{Panel A: Adapted design}} \\ " _n
 
-. file write bad "\textit{Intensity 1999 x Post}`rb' \\ " _n
+. file write bad "\textit{Intensity\$_{1999}\$ \$\times\$ Post}`rb' \\ " _n
 
 . file write bad "`rs' \\ " _n
 
@@ -16450,7 +16447,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . file write bad "\underline{\textit{Panel B: Barham and Rowberry specification}} \\ " _n
 
-. file write bad "\textit{2-yr lagged Intensity}`rbb' \\ " _n
+. file write bad "\textit{Two-year lagged intensity}`rbb' \\ " _n
 
 . file write bad "`rbs' \\ " _n
 
@@ -16462,7 +16459,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . file write bad "Observations`rn' \\ " _n
 
-. file write bad "No. Mun`rmu' \\ " _n
+. file write bad "Number of municipalities`rmu' \\ " _n
 
 . file write bad "\bottomrule" _n
 
@@ -16492,5 +16489,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:  14 Oct 2026, 14:22:14
+ closed on:  14 Oct 2026, 15:09:51
 -----------------------------------------------------------------------------------------------------------
