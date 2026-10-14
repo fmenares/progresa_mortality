@@ -22,11 +22,13 @@
 *** file close' lines to restore that output.
 *** EXPORT MIRRORING: every figure and table written here is also exported to the
 *** repo clone ($repo_figures / $repo_tables), one extra line after each export.
-*** MIGRATION EXHIBITS (exports active). In the appendix since 2026-10-13:
-*** AT_migration_robustness, AT_migration_robustness_ageFE, and
-*** AF_migration_es(_log/_poisson) with AF_migration_es_fixeddenom as its
-*** panel (b). Exported but not displayed: AT_migration_robustness_census,
-*** AT_fixed_offset_poisson, AT_attrition_elderly.
+*** MIGRATION EXHIBITS (exports active). In the appendix (2026-10-14):
+*** AT_migration_pop (log/Poisson x 1999/1990 household denominators),
+*** AT_migration_robustness_ageFE (log/Poisson), and
+*** AF_migration_es_{log99,log90,pois99,pois90}. Exported but not
+*** displayed: AT_migration_robustness (levels/log/Poisson, one
+*** denominator), AT_migration_robustness_census, AF_migration_es(_log,
+*** _poisson, _fixeddenom), AT_fixed_offset_poisson, AT_attrition_elderly.
 *** EXCEPTIONS (exports active, for review): the through-2005 Table 2 /
 *** Figure 2 replication and the dose-response cloud / Barham-Rowberry
 *** decomposition block, both right before the cause-of-death section.
@@ -2174,10 +2176,10 @@ foreach pnl in p m f {
 {
 	cap file close sm
 	file open sm using "$tables/appendix/AT_migration_robustness_ageFE.tex", write replace
-	file write sm "\begin{tabular}{lccc} \hline \hline" _n
-	file write sm "& Levels & Log & Poisson \\ " _n
-	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}" _n
-	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} \\ \toprule" _n
+	file write sm "\begin{tabular}{lcc} \hline \hline" _n
+	file write sm "& Log & Poisson \\ " _n
+	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
 	* NOTE: Intensity 2005 x Post x Old65 is estimated in every regression
 	* above but not printed below, matching the display convention used
 	* for the simple migration table and for Table~\ref{t:did_age} in the
@@ -2191,26 +2193,26 @@ foreach pnl in p m f {
 	* in the text/summary discussion of this table even though it is not
 	* shown in the table itself.
 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_1' & `bDDD99_p_2' & `bDDD99_p_3' \\ " _n
-	file write sm "  & (`seDDD99_p_1') & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
-	file write sm "  & & &  \\ " _n
-	file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_1' & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
-	file write sm "  & & &  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_p_2' & `bDDD99_p_3' \\ " _n
+	file write sm "  & (`seDDD99_p_2') & (`seDDD99_p_3') \\ " _n
+	file write sm "  & &  \\ " _n
+	file write sm "Mean 65+ (1991-1996)  & `meanDDD_p_2' & `meanDDD_p_3' \\ " _n
+	file write sm "  & &  \\ " _n
 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_1' & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
-	file write sm "  & (`seDDD99_f_1') & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
-	file write sm "  & & &  \\ " _n
-	file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_1' & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
-	file write sm "  & & &  \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65}  & `bDDD99_f_2' & `bDDD99_f_3' \\ " _n
+	file write sm "  & (`seDDD99_f_2') & (`seDDD99_f_3') \\ " _n
+	file write sm "  & &  \\ " _n
+	file write sm "Mean 65+ (1991-1996)  & `meanDDD_f_2' & `meanDDD_f_3' \\ " _n
+	file write sm "  & &  \\ " _n
 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_1' & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
-	file write sm "  & (`seDDD99_m_1') & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
-	file write sm "  & & &  \\ " _n
-	file write sm "Mean 65+ (1991-1996) & `meanDDD_m_1' & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
-	file write sm "  & & &  \\ " _n
-	file write sm "Obs & `NDDD_f_1' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
-	file write sm "No. Mun & `NmunDDD_p_1' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
-	file write sm "  & & & \\ " _n
+	file write sm "\textit{Intensity 1999 x post x Old65} & `bDDD99_m_2' & `bDDD99_m_3' \\ " _n
+	file write sm "  & (`seDDD99_m_2') & (`seDDD99_m_3') \\ " _n
+	file write sm "  & &  \\ " _n
+	file write sm "Mean 65+ (1991-1996) & `meanDDD_m_2' & `meanDDD_m_3' \\ " _n
+	file write sm "  & &  \\ " _n
+	file write sm "Obs & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+	file write sm "No. Mun & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
+	file write sm "  & & \\ " _n
 	file write sm "\bottomrule" _n
 	file write sm "\end{tabular}"
 	file close sm
@@ -2468,6 +2470,201 @@ if `fdok_p' == 1 & `fdok_m' == 1 & `fdok_f' == 1 {
 	di "Figure exported to: $figures/appendix/AF_migration_es_fixeddenom.pdf"
 }
 else di as error "Fixed-denominator population event study not plotted: at least one panel failed to estimate."
+
+*============================================================
+* MIGRATION, PAPER VERSION (2026-10-14): 65+ population on
+* Intensity_1999 x Post in LOG and POISSON only (levels dropped: they
+* measure persons, so they scale with municipality size), each with the
+* two household denominators of intensity side by side:
+*   "1999": inten1999/inten2005, the main design's variable (households
+*           of the snapshot year, i.e. after the program started);
+*   "1990": enrolled households over the 1990-census household count.
+*           Predetermined denominator, but = Intensity_1999 x (HH_1999/
+*           HH_1990), so it is mechanically higher where households grew
+*           over 1990-99, which builds pre-existing growth into the
+*           regressor.
+* Unweighted, Intensity_2005 x Post as a control, no Seguro Popular,
+* municipality and year FE, HM sample 1991-2006 -- as AT_migration_
+* robustness. Outputs:
+*   $tables/appendix/AT_migration_pop.tex  (at:migration_rob)
+*   $figures/appendix/AF_migration_es_{log99,log90,pois99,pois90}.pdf
+*     (event studies, reference 1996, pooled/female/male; af:migration_es)
+*============================================================
+cap drop mg99_99 mg05_99 mg99_90 mg05_90 __lpop_p __lpop_m __lpop_f
+gen double mg99_99 = inten1999
+gen double mg05_99 = inten2005
+gen double mg99_90 = pgbenef_1999/hh_tot1990
+gen double mg05_90 = pgbenef_2005/hh_tot1990
+replace mg99_90 = 1 if mg99_90 > 1 & !missing(mg99_90)
+replace mg05_90 = 1 if mg05_90 > 1 & !missing(mg05_90)
+gen double __lpop_p = log(popover65_)
+gen double __lpop_m = log(popover65_m)
+gen double __lpop_f = log(popover65_f)
+
+* ---- table
+foreach pnl in p f m {
+	if "`pnl'" == "p" local pout popover65_
+	if "`pnl'" == "f" local pout popover65_f
+	if "`pnl'" == "m" local pout popover65_m
+	local c = 0
+	foreach spec in log pois {
+		foreach d in 99 90 {
+			local ++c
+			local mgb_`pnl'_`c' "n/a"
+			local mgs_`pnl'_`c' "n/a"
+			local mgm_`pnl'_`c' ""
+			local mgN_`pnl'_`c' "n/a"
+			local mgM_`pnl'_`c' "n/a"
+			if "`spec'" == "log" {
+				capture reghdfe __lpop_`pnl' c.mg99_`d'#i.post c.mg05_`d'#i.post ///
+					if $sample_marg & inrange(year, 1991, 2006), ///
+					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			else {
+				capture ppmlhdfe `pout' c.mg99_`d'#i.post c.mg05_`d'#i.post ///
+					if $sample_marg & inrange(year, 1991, 2006), ///
+					a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			if !_rc & e(N) > 0 {
+				if "`spec'" == "log" {
+					local bb = _b[1.post#c.mg99_`d']
+					local ss = _se[1.post#c.mg99_`d']
+				}
+				else {
+					* proportional change, exp(b)-1, delta-method SE
+					local bb = exp(_b[1.post#c.mg99_`d']) - 1
+					local ss = exp(_b[1.post#c.mg99_`d']) * _se[1.post#c.mg99_`d']
+				}
+				local t = abs(`bb' / `ss')
+				local st ""
+				if `t' >= 1.645 local st "*"
+				if `t' >= 1.960 local st "**"
+				if `t' >= 2.576 local st "***"
+				local mgb_`pnl'_`c' = trim(string(`bb', "%9.3f")) + "`st'"
+				local mgs_`pnl'_`c' = trim(string(`ss', "%9.3f"))
+				local mgN_`pnl'_`c' = trim(string(e(N), "%12.0fc"))
+				tempvar tg
+				quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+				quietly count if `tg' == 1
+				local mgM_`pnl'_`c' = trim(string(r(N), "%12.0fc"))
+				drop `tg'
+				if "`spec'" == "log" {
+					quietly summarize __lpop_`pnl' if e(sample) & post == 2
+					local mgm_`pnl'_`c' = trim(string(r(mean), "%9.2f"))
+				}
+				else {
+					quietly summarize `pout' if e(sample) & post == 2
+					local mgm_`pnl'_`c' = trim(string(r(mean), "%9.0fc"))
+				}
+			}
+			else di as error "Migration (paper version), panel `pnl', col `c': estimation failed (rc=`_rc'), leaving n/a"
+		}
+	}
+}
+cap file close mgp
+file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
+file write mgp "\begin{tabular}{lcccc} \hline \hline" _n
+file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+file write mgp "Intensity denominator: & 1999 households & 1990 households & 1999 households & 1990 households \\ " _n
+file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+foreach pnl in p f m {
+	if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
+	if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
+	if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
+	file write mgp "\textit{Intensity 1999 x Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `mgb_`pnl'_3' & `mgb_`pnl'_4' \\ " _n
+	file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') \\ " _n
+	file write mgp "Mean (1991-1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'_4' \\ " _n
+	file write mgp "  & & & & \\ " _n
+}
+file write mgp "Obs & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' \\ " _n
+file write mgp "No. Mun & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' \\ " _n
+file write mgp "\bottomrule" _n
+file write mgp "\end{tabular}"
+file close mgp
+if "$repo_tables" != "" copy "$tables/appendix/AT_migration_pop.tex" "$repo_tables/appendix/AT_migration_pop.tex", replace
+di "Table exported to: $tables/appendix/AT_migration_pop.tex"
+
+* ---- event studies: one file per spec x denominator, three series
+local yl_mg `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
+foreach spec in log pois {
+	foreach d in 99 90 {
+		local allok = 1
+		foreach pnl in p m f {
+			if "`pnl'" == "p" local pout popover65_
+			if "`pnl'" == "f" local pout popover65_f
+			if "`pnl'" == "m" local pout popover65_m
+			if "`spec'" == "log" {
+				capture reghdfe __lpop_`pnl' c.mg99_`d'##ib6.year_1995 ///
+					if $sample_marg & inrange(year, 1991, 2006), ///
+					a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			else {
+				capture ppmlhdfe `pout' c.mg99_`d'##ib6.year_1995 ///
+					if $sample_marg & inrange(year, 1991, 2006), ///
+					a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+			}
+			if _rc | e(N) == 0 {
+				di as error "Migration event study (`spec', `d'), panel `pnl' failed (rc=`_rc')"
+				local allok = 0
+				continue
+			}
+			forval pos = 1/16 {
+				if `pos' == 6 {
+					local mb_`pnl'_`pos' = 0
+					local ms_`pnl'_`pos' = 0
+				}
+				else if "`spec'" == "pois" {
+					local mb_`pnl'_`pos' = (exp(_b[`pos'.year_1995#c.mg99_`d']) - 1) * 100
+					local ms_`pnl'_`pos' = exp(_b[`pos'.year_1995#c.mg99_`d']) * _se[`pos'.year_1995#c.mg99_`d'] * 100
+				}
+				else {
+					local mb_`pnl'_`pos' = _b[`pos'.year_1995#c.mg99_`d']
+					local ms_`pnl'_`pos' = _se[`pos'.year_1995#c.mg99_`d']
+				}
+			}
+		}
+		if `allok' == 0 continue
+		if "`spec'" == "log" local yt "Log population 65+"
+		else                 local yt "Population 65+ (% change from 1996)"
+		preserve
+		clear
+		quietly set obs 16
+		quietly gen yr_pos = _n
+		quietly gen xpos_p = yr_pos - 0.18
+		quietly gen xpos_m = yr_pos
+		quietly gen xpos_f = yr_pos + 0.18
+		foreach q in p m f {
+			quietly gen b_`q'  = .
+			quietly gen hi_`q' = .
+			quietly gen lo_`q' = .
+			forval pos = 1/16 {
+				quietly replace b_`q'  = `mb_`q'_`pos''                          if yr_pos == `pos'
+				quietly replace hi_`q' = `mb_`q'_`pos'' + 1.96 * `ms_`q'_`pos'' if yr_pos == `pos'
+				quietly replace lo_`q' = `mb_`q'_`pos'' - 1.96 * `ms_`q'_`pos'' if yr_pos == `pos'
+			}
+		}
+		twoway ///
+			(rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin)) ///
+			(scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(vsmall)) ///
+			(rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+			(scatter b_f xpos_f, mcolor(red) msymbol(square) msize(vsmall)) ///
+			(rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+			(scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)), ///
+			yline(0, lcolor(gs8) lwidth(vthin)) ///
+			xline(6.5, lcolor(gs10) lpattern(dash) lwidth(vthin)) ///
+			xlabel(`yl_mg', labsize(small) angle(45)) xscale(range(0.5 16.5)) ///
+			xtitle("") ytitle("`yt'", size(medsmall)) ///
+			ylabel(, grid labsize(small) angle(0)) ///
+			legend(order(2 "Pooled" 4 "Female" 6 "Male") cols(3) size(small) ///
+				position(6) ring(1) region(lcolor(none))) ///
+			graphregion(color(white))
+		graph export "$figures/appendix/AF_migration_es_`spec'`d'.pdf", as(pdf) replace
+		if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_migration_es_`spec'`d'.pdf", as(pdf) replace
+		di "Figure exported to: $figures/appendix/AF_migration_es_`spec'`d'.pdf"
+		restore
+	}
+}
+drop __lpop_p __lpop_m __lpop_f
 
 *============================================================
 * MORTALITY WITH A PRE-PROGRAM (FIXED) POPULATION DENOMINATOR
@@ -4406,6 +4603,19 @@ foreach wt in uw w {
 		local aN_`wt'_`k' = trim(string(e(N), "%12.0fc"))
 		quietly summarize emr65 if e(sample) & post == 2
 		local amr_`wt'_`k' = trim(string(r(mean), "%9.2f"))
+		* minimum detectable effect, 80% power, two-sided 5%: 2.8 x SE
+		local amde_`wt'_`k' = trim(string(2.8 * _se[1.post#c.inten1999], "%9.2f"))
+		* BR's specification in the same group (2-yr lagged intensity,
+		* municipality and year FE; = row 1 of at:br_leftover_size)
+		reghdfe emr65 lag2_intensity_new `aw' `cond', ///
+			a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		local t = abs(_b[lag2_intensity_new] / _se[lag2_intensity_new])
+		local st ""
+		if `t' >= 1.645 local st "*"
+		if `t' >= 1.960 local st "**"
+		if `t' >= 2.576 local st "***"
+		local bb_`wt'_`k' = trim(string(_b[lag2_intensity_new], "%9.3f")) + "`st'"
+		local bs_`wt'_`k' = trim(string(_se[lag2_intensity_new], "%9.3f"))
 		tempvar tg
 		quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
 		quietly count if `tg' == 1
@@ -4472,6 +4682,9 @@ foreach wt in uw w {
 local cols "uw_4 uw_1 uw_2 uw_3 w_4 w_1 w_2 w_3"
 local mpcols "4 1 2 3 4 1 2 3"
 local rb ""
+local rmde ""
+local rbb ""
+local rbs ""
 local rs ""
 local rp ""
 local rm ""
@@ -4479,6 +4692,9 @@ local rn ""
 local rmu ""
 foreach c of local cols {
 	local rb "`rb' & `ab_`c''"
+	local rmde "`rmde' & `amde_`c''"
+	local rbb "`rbb' & `bb_`c''"
+	local rbs "`rbs' & (`bs_`c'')"
 	local rs "`rs' & (`as_`c'')"
 	local rp "`rp' & `ap_`c''"
 	local rm "`rm' & `amr_`c''"
@@ -4495,10 +4711,16 @@ file write bad "\begin{tabular}{lcccccccc} \hline \hline" _n
 file write bad " & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){2-5} \cmidrule(lr){6-9}" _n
 file write bad " & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
 file write bad " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\ \toprule" _n
+file write bad "\underline{\textit{Panel A: Adapted design}} \\ " _n
 file write bad "\textit{Intensity 1999 x Post}`rb' \\ " _n
 file write bad "`rs' \\ " _n
-file write bad "  & & & & & & & & \\ " _n
+file write bad "Minimum detectable effect (80\% power)`rmde' \\ " _n
 file write bad "Pre-trend test, p-value (1992--1995)`rp' \\ " _n
+file write bad "  & & & & & & & & \\ " _n
+file write bad "\underline{\textit{Panel B: Barham and Rowberry specification}} \\ " _n
+file write bad "\textit{2-yr lagged Intensity}`rbb' \\ " _n
+file write bad "`rbs' \\ " _n
+file write bad "  & & & & & & & & \\ " _n
 file write bad "Mean mortality rate 65+, 1992--1996`rm' \\ " _n
 file write bad "Mean population 65+, 1992--1996`rpop' \\ " _n
 file write bad "Observations`rn' \\ " _n

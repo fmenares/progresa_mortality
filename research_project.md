@@ -1506,6 +1506,13 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 
 **Appendix table order (2026-10-14).** A.1 `at:age_groups`, A.2 `at:no_control_sex`, A.3 `at:did_robust_ff`, A.4 `at:did_robust_br`, A.5 `at:did_robust_br2_2002ctrl_eoy`, A.6 `at:expenditures_elderly`, A.7 `at:br_adapted_size`, A.8 `at:br_leftover_size` (landscape), A.9 `at:migration_rob`, A.10 `at:migration_rob_agefe`. All references are `\ref`, so the numbers follow the order in `tables_app.tex`.
 
+**Migration and A.7 rework (2026-10-14).**
+- A.7 (`at:br_adapted_size`): two panels. Panel A adapted design by size with a minimum-detectable-effect row (2.8 × SE) and the pre-trend p-value; Panel B BR's 2-yr lagged specification by size (same groups; = row 1 of A.8). Code: step (8) of the BR block.
+- A.9 (`at:migration_rob`) now inputs `AT_migration_pop.tex`: log and Poisson (levels dropped: person counts scale with municipality size), each with the intensity denominator = 1999 households (main design) and = 1990-census households. Note explains that the 1990 version = Intensity_1999 × household growth 1990–99, so it builds pre-existing growth into the regressor.
+- A.10 (`at:migration_rob_agefe`): log and Poisson only; note reframed as the test of frail older adults moving in (65+ vs 50–64; common household movement absorbed by municipality × year FE).
+- Figure (`af:migration_es`, now A.9 among figures; A.8 is the adapted event study by size): 2×2 = log / Poisson × 1999 / 1990 denominators, files `AF_migration_es_{log99,log90,pois99,pois90}.pdf`, new block right before the fixed-population mortality block in 04.
+- Bounding argument for the text: for in-movers to offset a true reduction of 4.1 per 1,000 (the MDE), with 10–17% more older adults per unit intensity, movers' mortality would have to be ≈ 71–88 per 1,000 vs. 47 for residents (1.5–1.9×).
+
 ---
 
 ## Notes for Contributors
