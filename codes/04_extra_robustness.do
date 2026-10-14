@@ -688,7 +688,7 @@ foreach spec in 15 median tercile {
     twoway `plotcmd', ///
         xline(1997, lcolor(gs8) lpattern(dash)) ///
         xtitle("Year", size(small)) ///
-        ytitle("EMR 65+ (per 1,000)", size(small)) ///
+        ytitle("EMR 65+ (per 1,000 persons)", size(small)) ///
         xlabel(1991(2)2006, labsize(small)) ylabel(, labsize(small)) ///
         legend(order(`legend_order') cols(4) size(small) position(6) ring(1) region(lcolor(none))) ///
         graphregion(color(white)) plotregion(margin(l=1 r=1))
@@ -2279,7 +2279,7 @@ else {
 			local esout_p popover65_
 			local esout_m popover65_m
 			local esout_f popover65_f
-			local es_ytitle "Population 65+ (% change from 1996)"
+			local es_ytitle "Population 65+ (percent change from 1996)"
 			local es_outfile "$figures/appendix/AF_migration_es_poisson.pdf"
 			local es_outfile_repo "$repo_figures/appendix/AF_migration_es_poisson.pdf"
 			local es_cmd ppmlhdfe
@@ -4669,7 +4669,7 @@ foreach wt in uw w {
 		yline(0, lcolor(gs8) lwidth(vthin)) xline(1996.5, lcolor(gs10) lpattern(dash)) ///
 		xlabel(1992(1)2002, labsize(small) angle(45)) ///
 		ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
-		xtitle("") ytitle("Coefficient on Intensity 1999 x year (95% CI)", size(small)) ///
+		xtitle("") ytitle("Coefficient on Intensity 1999 x year (95 percent CI)", size(small)) ///
 		legend(order(2 "Small (mean 65+ population `amp1')" 4 "Medium (`amp2')" 6 "Large (`amp3')") ///
 			size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
 		graphregion(color(white))
