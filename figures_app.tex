@@ -118,6 +118,22 @@
 \end{figure}
 
 \begin{figure}[H]
+    \caption{Change in Older Adults' Mortality by Early-Phase Enrollment Intensity}
+    \label{af:cloud_mortality}
+
+    \subfigure[Change after 1997]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_post_plain.pdf}}
+    \subfigure[Change after 1997, net of later-phase enrollment]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_post_cond.pdf}}
+    \subfigure[Pre-period placebo]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_pre_plain.pdf}}
+    \subfigure[Pre-period placebo, net of later-phase enrollment]
+     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_pre_cond.pdf}}
+
+         \floatfoot{Note: Following \citet{callaway2025continuous}, each panel plots the change in each highly marginalized municipality's mortality rate for adults aged 65 and older (deaths per 1,000 persons) against its \textit{Progresa} enrollment intensity in 1999. In panels~a and b, the change is the 1997--2006 mean minus the 1991--1996 mean; panels~c and d are a placebo using the change from 1991--1993 to 1994--1996, before the program began. Circles are means within 20 equal-width intensity bins, weighted by the 1991--1996 average population aged 65 and older, with area proportional to bin population. The navy curve is a restricted cubic spline (four knots) with its 95 percent confidence interval; the solid and dashed maroon lines are the population-weighted and unweighted linear fits, with slopes and robust standard errors in the legend. The dashed grey line marks the mean change in the lowest-intensity decile: because every municipality was eventually treated, changes are identified only relative to the least-treated municipalities, and differences across intensity levels are causal effects only under strong parallel trends. Grey bars show the distribution of municipalities by intensity. In panels~b and d, both axes are net of $\textit{Intensity}_{2005}$ and post-1997 Seguro Popular intensity (population-weighted), with means added back; the weighted slope in panel~b is the two-period analog of $\beta_0$ in Table~\ref{t:did_age}, column~(1), and the weighted slope in panel~a that of the specification without later-phase controls in Appendix Table~\ref{at:no_control_sex}.}
+\end{figure}
+
+\begin{figure}[H]
     \caption{Event Study of the Adapted Design in the Barham and Rowberry Sample, by Municipality Size}
     \label{af:br_adapted_size}
 
@@ -195,21 +211,6 @@
 % (tables_app.tex); af:cloud_mortality is kept.
 % ============================================================
 
-\begin{figure}[H]
-    \caption{Change in Older Adults' Mortality by Early-Phase Enrollment Intensity}
-    \label{af:cloud_mortality}
-
-    \subfigure[Change after 1997]
-     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_post_plain.pdf}}
-    \subfigure[Change after 1997, net of later-phase enrollment]
-     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_post_cond.pdf}}
-    \subfigure[Pre-period placebo]
-     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_pre_plain.pdf}}
-    \subfigure[Pre-period placebo, net of later-phase enrollment]
-     {\includegraphics[width=0.49\textwidth]{figures/appendix/AF_cloud_pre_cond.pdf}}
-
-         \floatfoot{Note: Following \citet{callaway2025continuous}, each panel plots the change in each highly marginalized municipality's mortality rate for adults aged 65 and older (deaths per 1,000 persons) against its \textit{Progresa} enrollment intensity in 1999. In panels~a and b, the change is the 1997--2006 mean minus the 1991--1996 mean; panels~c and d are a placebo using the change from 1991--1993 to 1994--1996, before the program began. Circles are means within 20 equal-width intensity bins, weighted by the 1991--1996 average population aged 65 and older, with area proportional to bin population. The navy curve is a restricted cubic spline (four knots) with its 95 percent confidence interval; the solid and dashed maroon lines are the population-weighted and unweighted linear fits, with slopes and robust standard errors in the legend. The dashed grey line marks the mean change in the lowest-intensity decile: because every municipality was eventually treated, changes are identified only relative to the least-treated municipalities, and differences across intensity levels are causal effects only under strong parallel trends. Grey bars show the distribution of municipalities by intensity. In panels~b and d, both axes are net of $\textit{Intensity}_{2005}$ and post-1997 Seguro Popular intensity (population-weighted), with means added back; the weighted slope in panel~b is the two-period analog of $\beta_0$ in Table~\ref{t:did_age}, column~(1), and the weighted slope in panel~a that of the specification without later-phase controls in Appendix Table~\ref{at:no_control_sex}.}
-\end{figure}
 
 % \begin{figure}[H]
 %     \caption{Implicit Regression Weights and the Distribution of Early-Phase Enrollment Intensity}

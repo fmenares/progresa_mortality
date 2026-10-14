@@ -119,19 +119,21 @@
     \floatfoot{Note: The table reports difference-in-differences estimates of the effect of randomized assignment to \textit{Progresa} on household expenditure, with 1998 as the baseline year (the 1997 baseline round is dropped prior to estimation, so the reported coefficient is $Treatment~\times~1999$ against the 1998 control mean). Columns~(1)--(2) report the log of household food expenditure and food's share of total household expenditure; columns~(3)--(4) report the same for expenditure on medicine. Panel~A restricts the sample to eligible households and reports the differential effect by whether a household had an older adult member (aged 65 or older) present at the 1997 baseline: the first row is the treatment effect for households without an older adult member, and the second row is the differential effect for households with one (i.e., the triple-interaction coefficient). Panel~B restricts the sample to older-adults-only households (no children or working-age adults present, with household composition fixed at its 1997 pre-treatment value) and instead differentiates by household eligibility, since only eligible households received the direct food transfer (\textit{apoyo alimentario}): the first row is the treatment effect for ineligible older-adults-only households, and the second row is the differential effect for eligible ones. All regressions include municipality and year fixed effects. Standard errors are clustered at the locality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}}
 \end{table}
 
+\begin{landscape}
 \begin{table}[H]
 \RawCaption%
   {\caption{Adapted Design and Barham and Rowberry's Specification in Their Sample, by Municipality Size}
    \label{at:br_adapted_size}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
-  {\scalebox{0.85}{
+  {\scalebox{0.8}{
       \input{tables/appendix/AT_br_adapted_size}
     }
     \vspace{-3mm}
     \floatfoot{Note: This table estimates two specifications in the sample of \citet{BarhamRowberry2013JDE} (municipalities first incorporated into \textit{Progresa} in 1998 or 1999) over 1992--2002, overall (``All'') and within three groups with equal numbers of municipalities ranked by their pre-program (1992--1996) average population aged 65 and older. Panel~A uses the adapted design of equation~(\ref{eq:didadapted}), $\textit{Intensity}_{1999} \times \textit{Post}$ with $\textit{Post}$ equal to one from 1997, with Seguro Popular intensity; columns~(1) and~(5) reproduce columns~(1) and~(2) of Appendix Table~\ref{at:did_robust_br2_2002ctrl_eoy}. The minimum detectable effect is the effect the estimate would detect with 80 percent power in a two-sided test at the 5 percent level ($2.8 \times$ the standard error). The pre-trend test reports the $p$-value of a joint test that the coefficients on $\textit{Intensity}_{1999}$ interacted with each year from 1992 to 1995 are zero in the event-study version of the same regression (reference year 1996), shown in Appendix Figure~\ref{af:br_adapted_size}. Panel~B uses their specification, enrollment intensity lagged two years; columns~(1) and~(5) correspond to Appendix Table~\ref{at:did_robust_br}, Panels~B and~C. The outcome is the mortality rate for adults aged 65 and older per 1,000 persons. All regressions include municipality and year fixed effects. Columns~(1)--(4) are unweighted; columns~(5)--(8) are weighted by the population aged 65 and older. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
+\end{landscape}
 
 \begin{landscape}
 \begin{table}[H]
