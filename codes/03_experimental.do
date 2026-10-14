@@ -1722,11 +1722,11 @@ foreach yvar of local hh_outcomes {
     file write sm "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Share (\%)} \\ " _n
     file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}" _n
     file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
-    file write sm "\underline{\textit{Panel A: Elderly Presence}} \\ " _n
-    file write sm "\textit{Treatment \$\times\$ 1999 (no elderly)} & `b99_food' & `b99_pf' & `b99_med' & `b99_pm' \\ " _n
+    file write sm "\underline{\textit{Panel A: Older Adult Presence}} \\ " _n
+    file write sm "\textit{Treatment \$\times\$ 1999 (no older adults)} & `b99_food' & `b99_pf' & `b99_med' & `b99_pm' \\ " _n
     file write sm " & (`se99_food') & (`se99_pf') & (`se99_med') & (`se99_pm') \\ " _n
     file write sm "  & & & & \\ " _n
-    file write sm "\textit{Differential (elderly households)} & `b99e_food' & `b99e_pf' & `b99e_med' & `b99e_pm' \\ " _n
+    file write sm "\textit{Differential (households with older adults)} & `b99e_food' & `b99e_pf' & `b99e_med' & `b99e_pm' \\ " _n
     file write sm " & (`se99e_food') & (`se99e_pf') & (`se99e_med') & (`se99e_pm') \\ " _n
     file write sm "  & & & & \\ " _n
     file write sm "Control mean (1998) & `cmn98_food' & `cmn98_pf' & `cmn98_med' & `cmn98_pm' \\ " _n

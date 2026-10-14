@@ -261,7 +261,7 @@ local N_nm_f = trim("`N_nm_f'")
 	file write sm "\begin{tabular}{lcc} \hline \hline" _n
 	file write sm "& \multicolumn{2}{c}{\%} \\ " _n
 	file write sm "\cmidrule(lr){2-3}" _n
-	file write sm "& \multicolumn{1}{c}{Highly Marginalized} & \multicolumn{1}{c}{Non-Marginalized} \\ " _n
+	file write sm "& \multicolumn{1}{c}{Highly Marginalized} & \multicolumn{1}{c}{Non-marginalized} \\ " _n
 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}" _n
 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} \\ \toprule" _n
 	file write sm "\underline{\textit{Panel A: Progresa Enrollment Intensity}} \\ " _n
@@ -1195,7 +1195,7 @@ foreach ff in levels log poisson {
 		local figname   "AF6a_ES_func_form_levels"
 	}
 	else if "`ff'" == "log" {
-		local ytitle_ff "Percent change in mortality rate, 65+"
+		local ytitle_ff "% change in mortality rate, 65+"
 		local figname   "AF6c_ES_func_form_log"
 	}
 	else {

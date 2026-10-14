@@ -3891,16 +3891,16 @@ foreach v in d_post d_pre inten1999 {
 
 cloud_plot d_post inten1999 w65_pre 1 "AF_cloud_post_plain" ///
 	"Intensity 1999" ///
-	"Change in mortality rate 65+, 1997-2006 vs. 1991-1996" 1
+	"Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996" 1
 cloud_plot r_d_post r_inten1999 w65_pre 1 "AF_cloud_post_cond" ///
 	"Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
-	"Change in mortality rate 65+, 1997-2006 vs. 1991-1996 (net)" 0
+	"Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996 (net)" 0
 cloud_plot d_pre inten1999 w65_pre 1 "AF_cloud_pre_plain" ///
 	"Intensity 1999" ///
-	"Change in mortality rate 65+, 1994-1996 vs. 1991-1993" 1
+	"Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993" 1
 cloud_plot r_d_pre r_inten1999 w65_pre 1 "AF_cloud_pre_cond" ///
 	"Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
-	"Change in mortality rate 65+, 1994-1996 vs. 1991-1993 (net)" 0
+	"Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993 (net)" 0
 
 *------------------------------------------------------------
 * (2) Implicit regression weights vs. the distribution of the dose
@@ -4494,21 +4494,21 @@ foreach wt in uw w {
 local cols "uw_4 uw_1 uw_2 uw_3 w_4 w_1 w_2 w_3"
 local mpcols "4 1 2 3 4 1 2 3"
 local lab1 "Two-year lagged intensity"
-local lab2 "\quad + Intensity 1999 x year"
-local lab4 "\quad Entry cohort x year (1998 vs. 1999)"
-local lab5 "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000)"
-local lab6 "\quad Intensity 2000 x year (left: 2000 value = Intensity 1998)"
-local sl2 "\quad Intensity 1999 x year"
-local sl4 "\quad Intensity 1999 and entry cohort x year"
-local sl5 "\quad Intensity 1999 and 1998 x year"
-local sl6 "\quad Intensity 1999 and 2000 x year"
+local lab2 "\quad + \textit{Intensity}\textsubscript{1999} \(\times\) year"
+local lab4 "\quad Entry cohort \(\times\) year (1998 versus 1999)"
+local lab5 "\quad \textit{Intensity}\textsubscript{1998} \(\times\) year (left: 2002 value = \textit{Intensity}\textsubscript{2000})"
+local lab6 "\quad \textit{Intensity}\textsubscript{2000} \(\times\) year (left: 2000 value = \textit{Intensity}\textsubscript{1998})"
+local sl2 "\quad \textit{Intensity}\textsubscript{1999} \(\times\) year"
+local sl4 "\quad \textit{Intensity}\textsubscript{1999} and entry cohort \(\times\) year"
+local sl5 "\quad \textit{Intensity}\textsubscript{1999} and \textit{Intensity}\textsubscript{1998} \(\times\) year"
+local sl6 "\quad \textit{Intensity}\textsubscript{1999} and \textit{Intensity}\textsubscript{2000} \(\times\) year"
 local blank "  & & & & & & & & & \\ "
 
 cap file close bsz
 file open bsz using "$tables/appendix/AT_br_leftover_size.tex", write replace
 file write bsz "\begin{tabular}{lccccccccc} \hline \hline" _n
 file write bsz " & & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){3-6} \cmidrule(lr){7-10}" _n
-file write bsz " & BR Original & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
+file write bsz " & Barham and Rowberry & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
 file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) \\ \toprule" _n
 local cmp ""
 foreach k of local mpcols {
@@ -4529,13 +4529,13 @@ foreach r in 1 2 4 5 6 {
 	}
 	if `r' == 4 {
 		file write bsz "`blank'" _n
-		file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & & \\ " _n
+		file write bsz "\textit{Intensity}\textsubscript{1999} \(\times\) year and, in addition: & & & & & & & & & \\ " _n
 	}
 	file write bsz "`lab`r''`cb' \\ " _n
 	file write bsz "`cs' \\ " _n
 }
 file write bsz "`blank'" _n
-file write bsz "Share of BR treatment variation explained by: & & & & & & & & & \\ " _n
+file write bsz "Share of Barham and Rowberry treatment variation explained by: & & & & & & & & & \\ " _n
 foreach r in 2 4 5 6 {
 	local cr " & "
 	foreach c of local cols {

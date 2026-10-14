@@ -1538,6 +1538,11 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 ### Percent symbol in tables/figures (2026-10-15)
 - Convention: running text spells out "percent" (copy editor's Chicago style, kept; about 15 words in the main text), while tables, table/figure notes and axis labels use the % symbol, which also stays out of the word count. Reverted "percent" to `\%` in `tables.tex`, `tables_app.tex`, `figures.tex`, `figures_app.tex`, the generated `tables/` files, and the matching writers/graph titles in `02`-`04` do-files (including the T1 "%" column header). `main.tex` is unchanged.
 
+### Editor-consistency pass (2026-10-15)
+- Fixed implementation errors: dropped "Barham and Rowberry" in the adapted-design paragraph and the MDE footnote; garbled OECD footnote (now the editor's wording, "18 percent ... on average in member countries of the Organisation for Economic Co-operation and Development"); "As in \citet{parker2023conditional}".
+- Applied missed editor edits: Seguro Popular footnote ("had a staggered roll-out", "84 percent"); "10 percent level"; dropped "Recent work by" in the de Chaisemartin footnote; "CONAPO \citeyearpar{CONAPO1993} classifies"; ENCEL spelled out; Figure A.6 note "intensity and municipality and year fixed effects".
+- Style consistency: data paragraph in passive voice; "Barham and Rowberry" (no hyphen) in the A.5 note and the life-expectancy footnote; "Mexico's National Population Council"; double spaces; T1 "Non-marginalized"; Table A.8 labels (Barham and Rowberry, versus, Intensity subscripts with \textsubscript and \(\times\) so the Stata writer needs no `$`); Table A.6 panel labels "Older Adult Presence"; Figure A.8 axis titles (per 1,000 persons, en dashes, versus); Figure A.5 axis "% change in mortality rate, 65+".
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.
