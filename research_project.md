@@ -1543,6 +1543,9 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Applied missed editor edits: Seguro Popular footnote ("had a staggered roll-out", "84 percent"); "10 percent level"; dropped "Recent work by" in the de Chaisemartin footnote; "CONAPO \citeyearpar{CONAPO1993} classifies"; ENCEL spelled out; Figure A.6 note "intensity and municipality and year fixed effects".
 - Style consistency: data paragraph in passive voice; "Barham and Rowberry" (no hyphen) in the A.5 note and the life-expectancy footnote; "Mexico's National Population Council"; double spaces; T1 "Non-marginalized"; Table A.8 labels (Barham and Rowberry, versus, Intensity subscripts with \textsubscript and \(\times\) so the Stata writer needs no `$`); Table A.6 panel labels "Older Adult Presence"; Figure A.8 axis titles (per 1,000 persons, en dashes, versus); Figure A.5 axis "% change in mortality rate, 65+".
 
+### IDB referee: pre-trend F-tests for Figure 2 (2026-10-15)
+- `02_mortality.do`, Figure 2 loop: after each event-study regression (pooled/female/male), `test` of the 1991-1995 `year_1995#c.inten1999` coefficients = 0 (1996 reference). F and p are shown in the log and written as LaTeX macros to `$tables/F2_pretrend_tests.tex` (`\pretrendF{pooled,female,male}`, `\pretrendP{...}`), to be quoted in the Figure 2 note once the text is approved. No `.tex` changes yet.
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.

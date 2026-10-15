@@ -550,6 +550,16 @@ foreach grp in w f m {
 		c.sp_intensity [aw=`wvar'] if $sample_marg, a(cve_ent_mun_super) ///
 		vce(cluster cve_ent_mun_super)
 
+	* Joint F-test that the pre-program coefficients (1991-1995, positions
+	* 1-5; 1996 is the reference) are all zero, for the figure notes
+	test 1.year_1995#c.inten1999 2.year_1995#c.inten1999 3.year_1995#c.inten1999 ///
+		4.year_1995#c.inten1999 5.year_1995#c.inten1999
+	local Fpre_`gname' : di %5.2f r(F)
+	local ppre_`gname' : di %5.3f r(p)
+	local Fpre_`gname' = trim("`Fpre_`gname''")
+	local ppre_`gname' = trim("`ppre_`gname''")
+	di "Figure 2 (`gname'): joint pre-trend test 1991-1995, F = `Fpre_`gname'', p = `ppre_`gname''"
+
 	forval pos = 1/16 {
 		if `pos' == 6 {
 			local b_`pos'  = 0
@@ -594,6 +604,18 @@ foreach grp in w f m {
 	if "$repo_figures" != "" graph export "$repo_figures/Figure_2_`gname'.pdf", as(pdf) replace
 	restore
 }
+
+* Pre-trend F-tests as LaTeX macros (\input in the paper to quote them
+* in the Figure 2 note), e.g. \pretrendFmale and \pretrendPmale
+cap file close pt
+file open pt using "$tables/F2_pretrend_tests.tex", write replace
+foreach gname in pooled female male {
+	file write pt "\newcommand{\pretrendF`gname'}{`Fpre_`gname''}" _n
+	file write pt "\newcommand{\pretrendP`gname'}{`ppre_`gname''}" _n
+}
+file close pt
+if "$repo_tables" != "" copy "$tables/F2_pretrend_tests.tex" "$repo_tables/F2_pretrend_tests.tex", replace
+di "Pre-trend tests exported to: $tables/F2_pretrend_tests.tex"
 }
 
 *============================================================
