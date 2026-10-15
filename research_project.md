@@ -1549,6 +1549,16 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 ### Migration tables combined (2026-10-15)
 - Former A.9 (`AT_migration_pop`, log/Poisson x 1999/1990 denominators) and A.10 (`AT_migration_robustness_ageFE`, triple difference vs ages 50-64) are now one landscape table, A.9 (`at:migration_rob`, six columns): columns (1)-(4) "Population aged 65 and older", columns (5)-(6) "Ages 65+ relative to ages 50-64" (Log / Poisson; denominator row; 14pt gap between the groups). The writer in `04_extra_robustness.do` (migration "paper version" block) now builds the combined `AT_migration_pop.tex` from the DDD locals of the ageFE block above it; `AT_migration_robustness_ageFE.tex` is still exported but not input. The current `.tex` was merged by hand from the two existing files (columns 5-6 keep 4 decimals as generated). References to `at:migration_rob_agefe` were redirected to `at:migration_rob`; the appendix table count drops by one (A.10 no longer exists).
 
+### IDB referee round: edits applied (2026-10-15)
+- 1b: user's footnote on Progresa's child-health effects (paragraph on channels) edited for grammar; four new bib entries checked against the published records: `Barham2011JDE` (JDE 94(1):74-85), `Rivera2004JAMA` (JAMA 291(21):2563-70), `Fernald2008Lancet` (Lancet 371(9615):828-37), `BarberGertler2008TMIH` (TMIH 13(11):1405-14; volume/pages not confirmed by the search, check).
+- 2a: male sentence uses `\pretrendPmale` (p = 0.023); Figure 2 note reports the joint F-tests for pooled/female/male via the macros in `tables/F2_pretrend_tests.tex`, now `\input` in the preamble of `main.tex`.
+- 2d: comma added to the user's sentence on the visits measure.
+- Minor 1: equation (5) now has the period indicator, sum over s in {1998, 1999} of delta_s 1(t = s) x 1(Treatment)_i; text updated to delta_s.
+- **Minor 2 (SES trend for ages 65-69 and 70+ in Table 2): disregarded by the user's decision.**
+- Table A.7 Panel B and Table A.8 column 1 are now "Barham and Rowberry (2013)", matching Table A.4 (writers in 04 and generated files).
+- Migration note (Table A.9): restored the sentence on frailer older adults moving toward high-intensity municipalities.
+- Not done by user's decision: 1a (covered by the existing design sentence), 1c, 2b and 2c (left to coauthors), 3a (email).
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.

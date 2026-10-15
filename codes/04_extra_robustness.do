@@ -4524,7 +4524,7 @@ cap file close bsz
 file open bsz using "$tables/appendix/AT_br_leftover_size.tex", write replace
 file write bsz "\begin{tabular}{lccccccccc} \hline \hline" _n
 file write bsz " & & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){3-6} \cmidrule(lr){7-10}" _n
-file write bsz " & Barham and Rowberry & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
+file write bsz " & Barham and Rowberry (2013) & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
 file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) \\ \toprule" _n
 local cmp ""
 foreach k of local mpcols {
@@ -4735,7 +4735,7 @@ file write bad "`rs' \\ " _n
 file write bad "Minimum detectable effect (80\% power)`rmde' \\ " _n
 file write bad "Pre-trend test, p-value (1992--1995)`rp' \\ " _n
 file write bad "  & & & & & & & & \\ " _n
-file write bad "\underline{\textit{Panel B: Barham and Rowberry specification}} \\ " _n
+file write bad "\underline{\textit{Panel B: Barham and Rowberry (2013)}} \\ " _n
 file write bad "\textit{Two-year lagged intensity}`rbb' \\ " _n
 file write bad "`rbs' \\ " _n
 file write bad "  & & & & & & & & \\ " _n
