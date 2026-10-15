@@ -2508,7 +2508,7 @@ foreach pnl in p f m {
 	if "`pnl'" == "m" local pout popover65_m
 	local c = 0
 	foreach spec in log pois {
-		foreach d in 99 90 {
+		foreach d in 99 {
 			local ++c
 			local mgb_`pnl'_`c' "n/a"
 			local mgs_`pnl'_`c' "n/a"
@@ -2561,10 +2561,11 @@ foreach pnl in p f m {
 		}
 	}
 }
-* Columns (5)-(6) are the triple-difference version (65+ relative to 50-64,
+* Intensity uses the 1999 household denominator only (the 1990-census
+* version was dropped on 2026-10-15). Columns (3)-(4) are the triple-difference version (65+ relative to 50-64,
 * Intensity_1999 x Post x Old65) estimated in the AT_migration_robustness_ageFE
 * block above; this is the former Appendix Table A.10, now combined with the
-* population tables as columns (5)-(6) of a single table.
+* population tables as columns (3)-(4) of a single table.
 foreach pnl in p f m {
 	foreach c in 2 3 {
 		foreach stub in bDDD99 seDDD99 meanDDD {
@@ -2578,22 +2579,21 @@ foreach c in 2 3 {
 }
 cap file close mgp
 file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
-file write mgp "\begin{tabular}{lcccc@{\hskip 14pt}cc} \hline \hline" _n
-file write mgp "& \multicolumn{4}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative to ages 50--64} \\ \cmidrule(lr){2-5}\cmidrule(lr){6-7}" _n
-file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
-file write mgp "Intensity denominator: & 1999 households & 1990 households & 1999 households & 1990 households & 1999 households & 1999 households \\ " _n
-file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+file write mgp "\begin{tabular}{lcc@{\hskip 14pt}cc} \hline \hline" _n
+file write mgp "& \multicolumn{2}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative to ages 50--64} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+file write mgp "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} \\ " _n
+file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
 foreach pnl in p f m {
 	if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
 	if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
 	if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
-	file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `mgb_`pnl'_3' & `mgb_`pnl'_4' & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
-	file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') & (`seDDD99_`pnl'_2') & (`seDDD99_`pnl'_3') \\ " _n
-	file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'_4' & `meanDDD_`pnl'_2' & `meanDDD_`pnl'_3' \\ " _n
-	file write mgp "  & & & & & & \\ " _n
+	file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
+	file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`seDDD99_`pnl'_2') & (`seDDD99_`pnl'_3') \\ " _n
+	file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `meanDDD_`pnl'_2' & `meanDDD_`pnl'_3' \\ " _n
+	file write mgp "  & & & & \\ " _n
 }
-file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
-file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
+file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
 file write mgp "\bottomrule" _n
 file write mgp "\end{tabular}"
 file close mgp
@@ -2603,7 +2603,7 @@ di "Table exported to: $tables/appendix/AT_migration_pop.tex"
 * ---- event studies: one file per spec x denominator, three series
 local yl_mg `"1 "1991" 2 "1992" 3 "1993" 4 "1994" 5 "1995" 6 "1996" 7 "1997" 8 "1998" 9 "1999" 10 "2000" 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 foreach spec in log pois {
-	foreach d in 99 90 {
+	foreach d in 99 {
 		local allok = 1
 		foreach pnl in p m f {
 			if "`pnl'" == "p" local pout popover65_

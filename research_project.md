@@ -1559,6 +1559,11 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Migration note (Table A.9): the sentence on frailer older adults was restored and then removed again at the user's request (the motivation belongs in the text, not the table note).
 - Not done by user's decision: 1a (covered by the existing design sentence), 1c, 2b and 2c (left to coauthors), 3a (email).
 
+### Migration exhibits: 1990-household denominator dropped (2026-10-15)
+- Table A.9 (`at:migration_rob`) is now four columns, portrait (scale 0.95): (1)-(2) population aged 65+ (log, Poisson), (3)-(4) ages 65+ relative to 50-64 (triple difference, log, Poisson); all with the main 1999-household denominator. Figure A.10 (`af:migration_es`) is now two panels: (a) log, (b) Poisson.
+- Reason: the 1990-census version equals Intensity_1999 x household growth 1990-99, so for a population outcome it builds pre-existing growth into the regressor; the 1999 version matches the mortality design. Denominator robustness to be summarized in the fixed-denominator footnote (pending the user's go-ahead).
+- `04_extra_robustness.do`: migration "paper version" block now loops `foreach d in 99` (table and event studies); writer produces the 4-column table. The generated `.tex` was trimmed by hand from the last run (columns 5-6 kept their 4 decimals).
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.
