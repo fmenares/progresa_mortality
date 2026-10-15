@@ -153,33 +153,21 @@
 \end{table}
 \end{landscape}
 
+\begin{landscape}
 \begin{table}[H]
 \RawCaption%
-  {\caption{Migration Robustness: Effect of Progresa Enrollment Intensity on Elderly Population Counts (65+), Highly Marginalized Municipalities}
+  {\caption{Migration Robustness: Effect of Progresa Enrollment Intensity on the Population Aged 65 and Older, Highly Marginalized Municipalities}
    \label{at:migration_rob}}
 \floatbox[{\captop}]{table}[\FBwidth]
   {}
-  {\scalebox{0.95}{
+  {\scalebox{0.9}{
       \input{tables/appendix/AT_migration_pop}
     }
     \vspace{-3mm}
-    \floatfoot{Note: This table tests whether \textit{Progresa} enrollment intensity predicts changes in the size of the population aged 65 and older at the municipality level. Columns~(1)--(2) report OLS with the log of the population and columns~(3)--(4) Poisson pseudo-maximum likelihood with the population count, with coefficients reported as $\exp(\hat\beta)-1$, the proportional change in population per unit of intensity; all are unweighted. Columns~(1) and (3) use $\textit{Intensity}_{1999}$ as in the main design, with the number of households in 1999 as denominator; columns~(2) and (4) divide enrolled households by the number of households in the 1990 census instead. The 1990 denominator is predetermined, but it equals $\textit{Intensity}_{1999}$ times the growth in households between 1990 and 1999, so it is mechanically higher where households grew before the program. $\textit{Intensity}_{2005} \times \textit{Post}$, built with the same denominator, is included in every regression as a control but not reported. All regressions include municipality and year fixed effects. The population aged 65 and older is interpolated geometrically between census vintages (1990, 1995, 2000, 2005), so within each inter-census interval every municipality's population grows at a constant rate by construction and the annual observations are not independent measurements; restricting the sample to the years in which the population is measured (1995, 2000, and 2005) gives nearly identical estimates (not shown). Standard errors are clustered at the municipality level and shown in parentheses. The sample is restricted to highly marginalized municipalities. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
+    \floatfoot{Note: Columns~(1)--(4) test whether \textit{Progresa} enrollment intensity predicts changes in the size of the population aged 65 and older at the municipality level. Columns~(1)--(2) report OLS with the log of the population and columns~(3)--(4) Poisson pseudo-maximum likelihood with the population count, with coefficients reported as $\exp(\hat\beta)-1$, the proportional change in population per unit of intensity. Columns~(1) and~(3) use $\textit{Intensity}_{1999}$ as in the main design, with the number of households in 1999 as denominator; columns~(2) and~(4) divide enrolled households by the number of households in the 1990 census instead. The 1990 denominator is predetermined, but it equals $\textit{Intensity}_{1999}$ times the growth in households between 1990 and 1999, so it is mechanically higher where households grew before the program. $\textit{Intensity}_{2005} \times \textit{Post}$, built with the same denominator, is included in every regression as a control but not reported. All regressions include municipality and year fixed effects. Columns~(5)--(6) test whether the population aged 65 and older changed differently from the population aged 50--64 in municipalities with higher intensity. If frailer older adults had moved toward high-intensity municipalities, for instance to join enrolled relatives or to be near health services, the older group would grow faster than the younger one there. The data are stacked at the municipality $\times$ year $\times$ 5-year age-group level (50--54 through 75+) and the coefficient is on $\textit{Intensity}_{1999} \times \textit{Post} \times \textit{Old65}$, where \textit{Old65} equals one for ages 65 and older and zero for ages 50--64. Municipality$\times$year, municipality$\times$age, and year$\times$age fixed effects absorb any population change common to both age groups, such as whole households staying or moving, so only the differential change of the older group remains; $\textit{Intensity}_{2005} \times \textit{Post} \times \textit{Old65}$ is estimated but not reported. Column~(5) reports OLS with log population and column~(6) Poisson pseudo-maximum likelihood. The population aged 65 and older is interpolated geometrically between census vintages (1990, 1995, 2000, 2005), so within each inter-census interval every municipality's population grows at a constant rate by construction and the annual observations are not independent measurements; restricting the sample to the years in which the population is measured (1995, 2000, and 2005) gives nearly identical estimates (not shown). Standard errors are clustered at the municipality level and shown in parentheses. The sample is restricted to highly marginalized municipalities. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
   }
 \end{table}
-
-\begin{table}[H]
-\RawCaption%
-  {\caption{Migration Robustness, Triple-Difference: Differential Growth of the 65+ Population Relative to 50--64 in High- vs Low-Intensity Municipalities}
-   \label{at:migration_rob_agefe}}
-\floatbox[{\captop}]{table}[\FBwidth]
-  {}
-  {\scalebox{0.95}{
-      \input{tables/appendix/AT_migration_robustness_ageFE}
-    }
-    \vspace{-3mm}
-    \floatfoot{Note: This table tests whether the population aged 65 and older changed differently from the population aged 50--64 in municipalities with higher \textit{Progresa} intensity. If frailer older adults had moved toward high-intensity municipalities, for instance to join enrolled relatives or to be near health services, the older group would grow faster than the younger one there. The dataset is stacked at the municipality $\times$ year $\times$ 5-year age-group level (50--54 through 75+), built from the same interpolated population series as Appendix Table~\ref{at:migration_rob}. Old65 $=1$ for ages 65 and older and $0$ for ages 50--64. Municipality$\times$year, municipality$\times$age, and year$\times$age fixed effects are included, so any population change common to both age groups, such as whole households staying or moving, is absorbed and only the differential change of the older group remains. Column~(1) reports OLS with log population and column (2) Poisson pseudo-maximum likelihood. $\textit{Intensity}_{2005} \times \textit{Post} \times \textit{Old65}$ is estimated in every regression but not reported. Standard errors are clustered at the municipality level and shown in parentheses. ***p$<0.01$, **p$<0.05$, *p$<0.1$.}
-  }
-\end{table}
+\end{landscape}
 
 
 

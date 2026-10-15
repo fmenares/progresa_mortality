@@ -2561,23 +2561,39 @@ foreach pnl in p f m {
 		}
 	}
 }
+* Columns (5)-(6) are the triple-difference version (65+ relative to 50-64,
+* Intensity_1999 x Post x Old65) estimated in the AT_migration_robustness_ageFE
+* block above; this is the former Appendix Table A.10, now combined with the
+* population tables as columns (5)-(6) of a single table.
+foreach pnl in p f m {
+	foreach c in 2 3 {
+		foreach stub in bDDD99 seDDD99 meanDDD {
+			if `"``stub'_`pnl'_`c''"' == "" local `stub'_`pnl'_`c' "n/a"
+		}
+	}
+}
+foreach c in 2 3 {
+	if `"`NDDD_f_`c''"' == "" local NDDD_f_`c' "n/a"
+	if `"`NmunDDD_p_`c''"' == "" local NmunDDD_p_`c' "n/a"
+}
 cap file close mgp
 file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
-file write mgp "\begin{tabular}{lcccc} \hline \hline" _n
-file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
-file write mgp "Intensity denominator: & 1999 households & 1990 households & 1999 households & 1990 households \\ " _n
-file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+file write mgp "\begin{tabular}{lcccc@{\hskip 14pt}cc} \hline \hline" _n
+file write mgp "& \multicolumn{4}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative to ages 50--64} \\ \cmidrule(lr){2-5}\cmidrule(lr){6-7}" _n
+file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
+file write mgp "Intensity denominator: & 1999 households & 1990 households & 1999 households & 1990 households & 1999 households & 1999 households \\ " _n
+file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 foreach pnl in p f m {
 	if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
 	if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
 	if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
-	file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `mgb_`pnl'_3' & `mgb_`pnl'_4' \\ " _n
-	file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') \\ " _n
-	file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'_4' \\ " _n
-	file write mgp "  & & & & \\ " _n
+	file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `mgb_`pnl'_3' & `mgb_`pnl'_4' & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
+	file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') & (`seDDD99_`pnl'_2') & (`seDDD99_`pnl'_3') \\ " _n
+	file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'_4' & `meanDDD_`pnl'_2' & `meanDDD_`pnl'_3' \\ " _n
+	file write mgp "  & & & & & & \\ " _n
 }
-file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' \\ " _n
-file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' \\ " _n
+file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
 file write mgp "\bottomrule" _n
 file write mgp "\end{tabular}"
 file close mgp

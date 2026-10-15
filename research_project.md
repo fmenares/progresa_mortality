@@ -1546,6 +1546,9 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 ### IDB referee: pre-trend F-tests for Figure 2 (2026-10-15)
 - `02_mortality.do`, Figure 2 loop: after each event-study regression (pooled/female/male), `test` of the 1991-1995 `year_1995#c.inten1999` coefficients = 0 (1996 reference). F and p are shown in the log and written as LaTeX macros to `$tables/F2_pretrend_tests.tex` (`\pretrendF{pooled,female,male}`, `\pretrendP{...}`), to be quoted in the Figure 2 note once the text is approved. No `.tex` changes yet.
 
+### Migration tables combined (2026-10-15)
+- Former A.9 (`AT_migration_pop`, log/Poisson x 1999/1990 denominators) and A.10 (`AT_migration_robustness_ageFE`, triple difference vs ages 50-64) are now one landscape table, A.9 (`at:migration_rob`, six columns): columns (1)-(4) "Population aged 65 and older", columns (5)-(6) "Ages 65+ relative to ages 50-64" (Log / Poisson; denominator row; 14pt gap between the groups). The writer in `04_extra_robustness.do` (migration "paper version" block) now builds the combined `AT_migration_pop.tex` from the DDD locals of the ageFE block above it; `AT_migration_robustness_ageFE.tex` is still exported but not input. The current `.tex` was merged by hand from the two existing files (columns 5-6 keep 4 decimals as generated). References to `at:migration_rob_agefe` were redirected to `at:migration_rob`; the appendix table count drops by one (A.10 no longer exists).
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.
