@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:  14 Oct 2026, 15:07:51
+ opened on:  15 Oct 2026, 13:12:22
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -5694,7 +5694,7 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
  21.                         local esout_p popover65_
  22.                         local esout_m popover65_m
  23.                         local esout_f popover65_f
- 24.                         local es_ytitle "Population 65+ (percent change from 1996)"
+ 24.                         local es_ytitle "Population 65+ (% change from 1996)"
  25.                         local es_outfile "$figures/appendix/AF_migration_es_poisson.pdf"
  26.                         local es_outfile_repo "$repo_figures/appendix/AF_migration_es_poisson.pdf"
  27.                         local es_cmd ppmlhdfe
@@ -6678,37 +6678,59 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
  53.         }
  54. }
 
+. * Columns (5)-(6) are the triple-difference version (65+ relative to 50-64,
+. * Intensity_1999 x Post x Old65) estimated in the AT_migration_robustness_ageFE
+. * block above; this is the former Appendix Table A.10, now combined with the
+. * population tables as columns (5)-(6) of a single table.
+. foreach pnl in p f m {
+  2.         foreach c in 2 3 {
+  3.                 foreach stub in bDDD99 seDDD99 meanDDD {
+  4.                         if `"``stub'_`pnl'_`c''"' == "" local `stub'_`pnl'_`c' "n/a"
+  5.                 }
+  6.         }
+  7. }
+
+. foreach c in 2 3 {
+  2.         if `"`NDDD_f_`c''"' == "" local NDDD_f_`c' "n/a"
+  3.         if `"`NmunDDD_p_`c''"' == "" local NmunDDD_p_`c' "n/a"
+  4. }
+
 . cap file close mgp
 
 . file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
 
-. file write mgp "\begin{tabular}{lcccc} \hline \hline" _n
+. file write mgp "\begin{tabular}{lcccc@{\hskip 14pt}cc} \hline \hline" _n
 
-. file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr
-> ){4-5}" _n
+. file write mgp "& \multicolumn{4}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative
+>  to ages 50--64} \\ \cmidrule(lr){2-5}\cmidrule(lr){6-7}" _n
+
+. file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} & \multicolumn{1}{c}{Log} & \mult
+> icolumn{1}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
 
 . file write mgp "Intensity denominator: & 1999 households & 1990 households & 1999 households & 1990 house
-> holds \\ " _n
+> holds & 1999 households & 1999 households \\ " _n
 
 . file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicol
-> umn{1}{c}{(4)} \\ \toprule" _n
+> umn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 
 . foreach pnl in p f m {
   2.         if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
   3.         if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
   4.         if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
   5.         file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' 
-> & `mgb_`pnl'_3' & `mgb_`pnl'_4' \\ " _n
-  6.         file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') \\ " 
-> _n
+> & `mgb_`pnl'_3' & `mgb_`pnl'_4' & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
+  6.         file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') & (`s
+> eDDD99_`pnl'_2') & (`seDDD99_`pnl'_3') \\ " _n
   7.         file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'
-> _4' \\ " _n
-  8.         file write mgp "  & & & & \\ " _n
+> _4' & `meanDDD_`pnl'_2' & `meanDDD_`pnl'_3' \\ " _n
+  8.         file write mgp "  & & & & & & \\ " _n
   9. }
 
-. file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' \\ " _n
+. file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' & `NDDD_f_2' & `NDDD_f_3' \\
+>  " _n
 
-. file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' \\ " _n
+. file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' & `NmunDDD_p_2' 
+> & `NmunDDD_p_3' \\ " _n
 
 . file write mgp "\bottomrule" _n
 
@@ -6799,14 +6821,17 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                         (rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) //
 > /
 >                         (scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(vsmall)), ///
->                         yline(0, lcolor(gs8) lwidth(vthin)) ///
->                         xline(6.5, lcolor(gs10) lpattern(dash) lwidth(vthin)) ///
->                         xlabel(`yl_mg', labsize(small) angle(45)) xscale(range(0.5 16.5)) ///
+>                         yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+>                         xline(6.5, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+>                         xlabel(`yl_mg', labsize(small) angle(45) labcolor(black)) xscale(range(0.5 16.5))
+>  ///
 >                         xtitle("") ytitle("`yt'", size(medsmall)) ///
->                         ylabel(, grid labsize(small) angle(0)) ///
+>                         ylabel(, grid gmin gmax labsize(small)) ///
 >                         legend(order(2 "Pooled" 4 "Female" 6 "Male") cols(3) size(small) ///
->                                 position(6) ring(1) region(lcolor(none))) ///
->                         graphregion(color(white))
+>                                 position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0))
+>  ///
+>                         graphregion(color(white)) ///
+>                         plotregion(margin(l=1 r=1))
  55.                 graph export "$figures/appendix/AF_migration_es_`spec'`d'.pdf", as(pdf) replace
  56.                 if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_migration_es_`spec'`d
 > '.pdf", as(pdf) replace
@@ -10690,8 +10715,8 @@ Absorbed degrees of freedom:
 > Nmun_2005_p_4' \\ " _n
 .         file write sm "  & & & & \\ " _n
 .         file write sm "SES Trend (Cont.\ Index) & N & Y & N & N \\ " _n
-.         file write sm "Mean intensity 1999 (percent) & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' &
->  `meanI99_2005' \\ " _n
+.         file write sm "Mean intensity 1999 (\%) & `meanI99_2005' & `meanI99_2005' & `meanI99_2005' & `mea
+> nI99_2005' \\ " _n
 .         file write sm "\bottomrule" _n
 .         file write sm "\end{tabular}"
 .         file close sm
@@ -11430,7 +11455,7 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000013.tmp saved as .dta forma
 . 
 . cloud_plot d_post inten1999 w65_pre 1 "AF_cloud_post_plain" ///
 >         "Intensity 1999" ///
->         "Change in mortality rate 65+, 1997-2006 vs. 1991-1996" 1
+>         "Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996" 1
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_post_plain.pdf
     saved as PDF format
@@ -11441,7 +11466,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . cloud_plot r_d_post r_inten1999 w65_pre 1 "AF_cloud_post_cond" ///
 >         "Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
->         "Change in mortality rate 65+, 1997-2006 vs. 1991-1996 (net)" 0
+>         "Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996 (net)" 0
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_post_cond.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_post_cond.pdf
@@ -11451,7 +11476,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . cloud_plot d_pre inten1999 w65_pre 1 "AF_cloud_pre_plain" ///
 >         "Intensity 1999" ///
->         "Change in mortality rate 65+, 1994-1996 vs. 1991-1993" 1
+>         "Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993" 1
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_pre_plain.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_pre_plain.pdf
@@ -11461,7 +11486,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . cloud_plot r_d_pre r_inten1999 w65_pre 1 "AF_cloud_pre_cond" ///
 >         "Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
->         "Change in mortality rate 65+, 1994-1996 vs. 1991-1993 (net)" 0
+>         "Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993 (net)" 0
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_pre_cond.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_pre_cond.pdf saved
@@ -15222,21 +15247,25 @@ Absorbed degrees of freedom:
 
 . local lab1 "Two-year lagged intensity"
 
-. local lab2 "\quad + Intensity 1999 x year"
+. local lab2 "\quad + \textit{Intensity}\textsubscript{1999} \(\times\) year"
 
-. local lab4 "\quad Entry cohort x year (1998 vs. 1999)"
+. local lab4 "\quad Entry cohort \(\times\) year (1998 versus 1999)"
 
-. local lab5 "\quad Intensity 1998 x year (left: 2002 value = Intensity 2000)"
+. local lab5 "\quad \textit{Intensity}\textsubscript{1998} \(\times\) year (left: 2002 value = \textit{Inte
+> nsity}\textsubscript{2000})"
 
-. local lab6 "\quad Intensity 2000 x year (left: 2000 value = Intensity 1998)"
+. local lab6 "\quad \textit{Intensity}\textsubscript{2000} \(\times\) year (left: 2000 value = \textit{Inte
+> nsity}\textsubscript{1998})"
 
-. local sl2 "\quad Intensity 1999 x year"
+. local sl2 "\quad \textit{Intensity}\textsubscript{1999} \(\times\) year"
 
-. local sl4 "\quad Intensity 1999 and entry cohort x year"
+. local sl4 "\quad \textit{Intensity}\textsubscript{1999} and entry cohort \(\times\) year"
 
-. local sl5 "\quad Intensity 1999 and 1998 x year"
+. local sl5 "\quad \textit{Intensity}\textsubscript{1999} and \textit{Intensity}\textsubscript{1998} \(\tim
+> es\) year"
 
-. local sl6 "\quad Intensity 1999 and 2000 x year"
+. local sl6 "\quad \textit{Intensity}\textsubscript{1999} and \textit{Intensity}\textsubscript{2000} \(\tim
+> es\) year"
 
 . local blank "  & & & & & & & & & \\ "
 
@@ -15250,7 +15279,8 @@ Absorbed degrees of freedom:
 . file write bsz " & & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){3-6} 
 > \cmidrule(lr){7-10}" _n
 
-. file write bsz " & BR Original & All & Small & Medium & Large & All & Small & Medium & Large \\ " _n
+. file write bsz " & Barham and Rowberry & All & Small & Medium & Large & All & Small & Medium & Large \\ "
+>  _n
 
 . file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) \\ \toprule" _n
 
@@ -15277,7 +15307,8 @@ Absorbed degrees of freedom:
  11.         }
  12.         if `r' == 4 {
  13.                 file write bsz "`blank'" _n
- 14.                 file write bsz "Intensity 1999 x year and, in addition: & & & & & & & & & \\ " _n
+ 14.                 file write bsz "\textit{Intensity}\textsubscript{1999} \(\times\) year and, in additio
+> n: & & & & & & & & & \\ " _n
  15.         }
  16.         file write bsz "`lab`r''`cb' \\ " _n
  17.         file write bsz "`cs' \\ " _n
@@ -15285,7 +15316,7 @@ Absorbed degrees of freedom:
 
 . file write bsz "`blank'" _n
 
-. file write bsz "Share of BR treatment variation explained by: & & & & & & & & & \\ " _n
+. file write bsz "Share of Barham and Rowberry treatment variation explained by: & & & & & & & & & \\ " _n
 
 . foreach r in 2 4 5 6 {
   2.         local cr " & "
@@ -15444,15 +15475,17 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 >                 (scatter b2 x2, mcolor(navy) msymbol(D) msize(small)) ///
 >                 (rcap l3 h3 x3, lcolor(dkgreen%60) lwidth(vthin)) ///
 >                 (scatter b3 x3, mcolor(dkgreen) msymbol(T) msize(small)), ///
->                 yline(0, lcolor(gs8) lwidth(vthin)) xline(1996.5, lcolor(gs10) lpattern(dash)) ///
->                 xlabel(1992(1)2002, labsize(small) angle(45)) ///
->                 ylabel(, labsize(small) angle(0) glcolor(gs15)) ///
->                 xtitle("") ytitle("Coefficient on Intensity 1999 x year (95 percent CI)", size(small)) //
-> /
+>                 yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) xline(1996.5, lcolor(yellow) lpattern
+> (dash) lwidth(vthin)) ///
+>                 xlabel(1992(1)2002, labsize(small) angle(45) labcolor(black)) ///
+>                 ylabel(, grid gmin gmax labsize(small)) ///
+>                 xtitle("") ytitle("Mortality rate 65+ (per 1,000 persons)", size(medsmall)) ///
 >                 legend(order(2 "Small (mean 65+ population `amp1')" 4 "Medium (`amp2')" 6 "Large (`amp3')
 > ") ///
->                         size(vsmall) rows(1) position(6) ring(1) region(lcolor(white))) ///
->                 graphregion(color(white))
+>                         cols(3) size(small) position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1
+> ) rowgap(0)) ///
+>                 graphregion(color(white)) ///
+>                 plotregion(margin(l=1 r=1))
  67.         graph export "$figures/appendix/AF_br_adapted_es_size_`wt'.pdf", as(pdf) replace
  68.         if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_br_adapted_es_size_`wt'.pdf",
 >  as(pdf) replace
@@ -16489,5 +16522,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:  14 Oct 2026, 15:09:51
+ closed on:  15 Oct 2026, 13:16:11
 -----------------------------------------------------------------------------------------------------------
