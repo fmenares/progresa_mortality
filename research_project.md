@@ -1556,7 +1556,7 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Minor 1: equation (5) now has the period indicator, sum over s in {1998, 1999} of delta_s 1(t = s) x 1(Treatment)_i; text updated to delta_s.
 - **Minor 2 (SES trend for ages 65-69 and 70+ in Table 2): disregarded by the user's decision.**
 - Table A.7 Panel B and Table A.8 column 1 are now "Barham and Rowberry (2013)", matching Table A.4 (writers in 04 and generated files).
-- Migration note (Table A.9): restored the sentence on frailer older adults moving toward high-intensity municipalities.
+- Migration note (Table A.9): the sentence on frailer older adults was restored and then removed again at the user's request (the motivation belongs in the text, not the table note).
 - Not done by user's decision: 1a (covered by the existing design sentence), 1c, 2b and 2c (left to coauthors), 3a (email).
 
 ## Notes for Contributors
