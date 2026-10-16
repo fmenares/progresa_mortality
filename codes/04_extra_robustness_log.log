@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:  15 Oct 2026, 13:12:22
+ opened on:  15 Oct 2026, 18:12:29
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -6623,7 +6623,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
   4.         if "`pnl'" == "m" local pout popover65_m
   5.         local c = 0
   6.         foreach spec in log pois {
-  7.                 foreach d in 99 90 {
+  7.                 foreach d in 99 {
   8.                         local ++c
   9.                         local mgb_`pnl'_`c' "n/a"
  10.                         local mgs_`pnl'_`c' "n/a"
@@ -6678,10 +6678,12 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
  53.         }
  54. }
 
-. * Columns (5)-(6) are the triple-difference version (65+ relative to 50-64,
+. * Intensity uses the 1999 household denominator only (the 1990-census
+. * version was dropped on 2026-10-15). Columns (3)-(4) are the triple-difference version (65+ relative to 
+> 50-64,
 . * Intensity_1999 x Post x Old65) estimated in the AT_migration_robustness_ageFE
 . * block above; this is the former Appendix Table A.10, now combined with the
-. * population tables as columns (5)-(6) of a single table.
+. * population tables as columns (3)-(4) of a single table.
 . foreach pnl in p f m {
   2.         foreach c in 2 3 {
   3.                 foreach stub in bDDD99 seDDD99 meanDDD {
@@ -6699,38 +6701,33 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
 
-. file write mgp "\begin{tabular}{lcccc@{\hskip 14pt}cc} \hline \hline" _n
+. file write mgp "\begin{tabular}{lcc@{\hskip 14pt}cc} \hline \hline" _n
 
-. file write mgp "& \multicolumn{4}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative
->  to ages 50--64} \\ \cmidrule(lr){2-5}\cmidrule(lr){6-7}" _n
+. file write mgp "& \multicolumn{2}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative
+>  to ages 50--64} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
 
-. file write mgp "& \multicolumn{2}{c}{Log} & \multicolumn{2}{c}{Poisson} & \multicolumn{1}{c}{Log} & \mult
-> icolumn{1}{c}{Poisson} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}" _n
-
-. file write mgp "Intensity denominator: & 1999 households & 1990 households & 1999 households & 1990 house
-> holds & 1999 households & 1999 households \\ " _n
+. file write mgp "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} & \multicolumn{1}{c}{Log} & \mult
+> icolumn{1}{c}{Poisson} \\ " _n
 
 . file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicol
-> umn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
+> umn{1}{c}{(4)} \\ \toprule" _n
 
 . foreach pnl in p f m {
   2.         if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
   3.         if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
   4.         if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
   5.         file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' 
-> & `mgb_`pnl'_3' & `mgb_`pnl'_4' & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
-  6.         file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`mgs_`pnl'_3') & (`mgs_`pnl'_4') & (`s
-> eDDD99_`pnl'_2') & (`seDDD99_`pnl'_3') \\ " _n
-  7.         file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `mgm_`pnl'_3' & `mgm_`pnl'
-> _4' & `meanDDD_`pnl'_2' & `meanDDD_`pnl'_3' \\ " _n
-  8.         file write mgp "  & & & & & & \\ " _n
+> & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
+  6.         file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`seDDD99_`pnl'_2') & (`seDDD99_`pnl'_3
+> ') \\ " _n
+  7.         file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `meanDDD_`pnl'_2' & `meanD
+> DD_`pnl'_3' \\ " _n
+  8.         file write mgp "  & & & & \\ " _n
   9. }
 
-. file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `mgN_p_3' & `mgN_p_4' & `NDDD_f_2' & `NDDD_f_3' \\
->  " _n
+. file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
 
-. file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `mgM_p_3' & `mgM_p_4' & `NmunDDD_p_2' 
-> & `NmunDDD_p_3' \\ " _n
+. file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
 
 . file write mgp "\bottomrule" _n
 
@@ -6751,7 +6748,7 @@ Table exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\
 > 11 "2001" 12 "2002" 13 "2003" 14 "2004" 15 "2005" 16 "2006""'
 
 . foreach spec in log pois {
-  2.         foreach d in 99 90 {
+  2.         foreach d in 99 {
   3.                 local allok = 1
   4.                 foreach pnl in p m f {
   5.                         if "`pnl'" == "p" local pout popover65_
@@ -6847,26 +6844,12 @@ file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
 > ion_es_log99.pdf
 file
-    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_log90.p
-    > df saved as PDF format
-file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_log90.pdf
-    saved as PDF format
-Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
-> ion_es_log90.pdf
-file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_pois99.
     > pdf saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_pois99.pdf
     saved as PDF format
 Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
 > ion_es_pois99.pdf
-file
-    C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migration_es_pois90.
-    > pdf saved as PDF format
-file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_migration_es_pois90.pdf
-    saved as PDF format
-Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_migrat
-> ion_es_pois90.pdf
 
 . drop __lpop_p __lpop_m __lpop_f
 
@@ -11297,7 +11280,7 @@ Figures exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cc
 . tempfile cdid_panel
 
 . save `cdid_panel'
-file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000013.tmp saved as .dta format
+file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000011.tmp saved as .dta format
 
 . 
 . *------------------------------------------------------------
@@ -15279,8 +15262,8 @@ Absorbed degrees of freedom:
 . file write bsz " & & \multicolumn{4}{c}{Unweighted} & \multicolumn{4}{c}{Weighted} \\ \cmidrule(lr){3-6} 
 > \cmidrule(lr){7-10}" _n
 
-. file write bsz " & Barham and Rowberry & All & Small & Medium & Large & All & Small & Medium & Large \\ "
->  _n
+. file write bsz " & Barham and Rowberry (2013) & All & Small & Medium & Large & All & Small & Medium & Lar
+> ge \\ " _n
 
 . file write bsz " & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) \\ \toprule" _n
 
@@ -16478,7 +16461,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . file write bad "  & & & & & & & & \\ " _n
 
-. file write bad "\underline{\textit{Panel B: Barham and Rowberry specification}} \\ " _n
+. file write bad "\underline{\textit{Panel B: Barham and Rowberry (2013)}} \\ " _n
 
 . file write bad "\textit{Two-year lagged intensity}`rbb' \\ " _n
 
@@ -16522,5 +16505,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:  15 Oct 2026, 13:16:11
+ closed on:  15 Oct 2026, 18:14:39
 -----------------------------------------------------------------------------------------------------------
