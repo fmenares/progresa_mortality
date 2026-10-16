@@ -1564,6 +1564,10 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Reason: the 1990-census version equals Intensity_1999 x household growth 1990-99, so for a population outcome it builds pre-existing growth into the regressor; the 1999 version matches the mortality design. Denominator robustness to be summarized in the fixed-denominator footnote (pending the user's go-ahead).
 - `04_extra_robustness.do`: migration "paper version" block now loops `foreach d in 99` (table and event studies); writer produces the 4-column table. The generated `.tex` was trimmed by hand from the last run (columns 5-6 kept their 4 decimals).
 
+### Cause-of-death table back; pre-trend tests for Figure A.10 (2026-10-16)
+- `at:did_robust_cod` (`AT2_cod_mortality.tex`) is back as the last appendix table (landscape, scale 0.85). Writer in `04_extra_robustness.do` re-enabled and restyled (spelled-out cause names, Intensity_1999 x Post, Romano-Wolf p-value row, Mean (1991-1996), observations/municipalities once at the bottom); `global run_cod = 1` so the section runs (the wyoung bootstrap is slow). The current `.tex` was restyled by hand from the 2026-10-14 run. Not yet cited in the main text (the cause-of-death paragraph is still commented out).
+- Figure A.10: joint tests of the 1991-1995 coefficients after each population event study (F for log, chi2 for Poisson), written as macros to `tables/AF10_pretrend_tests.tex` (\input in `main.tex`) and quoted in the figure note. The repo file is a placeholder ("[rerun]") until 04 is rerun.
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.
