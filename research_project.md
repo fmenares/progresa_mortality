@@ -1573,6 +1573,9 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - Code: block (5) of the cloud section in `04_extra_robustness.do` exports `AF_cloud_br_post` and `AF_cloud_br_pre`. Repo placeholders until rerun: `AF_cloud_br_post.pdf` is a copy of the previous weighted file (same numbers, old axis titles); `AF_cloud_br_pre.pdf` is a "rerun" page.
 - Previous result for panel (a): slopes -7.46 (1.41) unweighted, -4.03 (0.89) weighted.
 
+### Figures A.9 and A.10 combined (2026-10-16)
+- `af:br_adapted_size` (adapted event study by size, uw/w) and `af:cloud_br` (BR cloud and 1992-94 to 1995-97 placebo) are now one 2x2 figure under the label `af:br_adapted_size`: (a)-(b) event study by size, unweighted/weighted; (c)-(d) BR cloud and placebo. Notes merged; `af:cloud_br` label dropped (it was not cited). Migration event study becomes Figure A.10.
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.
