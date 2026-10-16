@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:  16 Oct 2026, 15:27:58
+ opened on:  16 Oct 2026, 17:04:10
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -11547,7 +11547,7 @@ file C:\Users\FELIPEME\AppData\Local\Temp\ST_8330_000011.tmp saved as .dta forma
 . 
 . cloud_plot d_post inten1999 w65_pre 1 "AF_cloud_post_plain" ///
 >         "Intensity 1999" ///
->         "Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996" 1
+>         "Change in mortality rate 65+, '97–'06 vs. '91–'96" 1
 file
     C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_post_plain.pdf
     saved as PDF format
@@ -11558,7 +11558,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . cloud_plot r_d_post r_inten1999 w65_pre 1 "AF_cloud_post_cond" ///
 >         "Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
->         "Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996 (net)" 0
+>         "Change in mortality rate 65+, '97–'06 vs. '91–'96 (net)" 0
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_post_cond.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_post_cond.pdf
@@ -11568,7 +11568,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . cloud_plot d_pre inten1999 w65_pre 1 "AF_cloud_pre_plain" ///
 >         "Intensity 1999" ///
->         "Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993" 1
+>         "Change in mortality rate 65+, '94–'96 vs. '91–'93" 1
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_pre_plain.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_pre_plain.pdf
@@ -11578,7 +11578,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . cloud_plot r_d_pre r_inten1999 w65_pre 1 "AF_cloud_pre_cond" ///
 >         "Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
->         "Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993 (net)" 0
+>         "Change in mortality rate 65+, '94–'96 vs. '91–'93 (net)" 0
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_pre_cond.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_pre_cond.pdf saved
@@ -13083,7 +13083,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 . 
 . cloud_plot d_br dose_br w65_br 1 "AF_cloud_br_post" ///
 >         "Barham and Rowberry treatment: mean lagged intensity, 2000–2002" ///
->         "Change in mortality rate 65+ (per 1,000 persons), 2000–2002 versus 1992–1999" 1
+>         "Change in mortality rate 65+, '00–'02 vs. '92–'99" 1
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_br_post.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_br_post.pdf saved
@@ -13093,7 +13093,7 @@ Figure exported to: C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct
 
 . cloud_plot d_br_pre dose_br w65_br 1 "AF_cloud_br_pre" ///
 >         "Barham and Rowberry treatment: mean lagged intensity, 2000–2002" ///
->         "Change in mortality rate 65+ (per 1,000 persons), 1995–1997 versus 1992–1994" 1
+>         "Change in mortality rate 65+, '95–'97 vs. '92–'94" 1
 file C:\Users\FELIPEME\Dropbox\Aplicaciones\Overleaf\progresa_cct\figures/appendix/AF_cloud_br_pre.pdf
     saved as PDF format
 file C:\Users\FELIPEME\Documents\projects\progresa_mortality\figures/appendix/AF_cloud_br_pre.pdf saved
@@ -16627,5 +16627,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:  16 Oct 2026, 15:30:06
+ closed on:  16 Oct 2026, 17:06:24
 -----------------------------------------------------------------------------------------------------------
