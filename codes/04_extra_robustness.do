@@ -3937,16 +3937,16 @@ foreach v in d_post d_pre inten1999 {
 
 cloud_plot d_post inten1999 w65_pre 1 "AF_cloud_post_plain" ///
 	"Intensity 1999" ///
-	"Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996" 1
+	"Change in mortality rate 65+, '97–'06 vs. '91–'96" 1
 cloud_plot r_d_post r_inten1999 w65_pre 1 "AF_cloud_post_cond" ///
 	"Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
-	"Change in mortality rate 65+ (per 1,000 persons), 1997–2006 versus 1991–1996 (net)" 0
+	"Change in mortality rate 65+, '97–'06 vs. '91–'96 (net)" 0
 cloud_plot d_pre inten1999 w65_pre 1 "AF_cloud_pre_plain" ///
 	"Intensity 1999" ///
-	"Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993" 1
+	"Change in mortality rate 65+, '94–'96 vs. '91–'93" 1
 cloud_plot r_d_pre r_inten1999 w65_pre 1 "AF_cloud_pre_cond" ///
 	"Intensity 1999, net of Intensity 2005 and Seguro Popular" ///
-	"Change in mortality rate 65+ (per 1,000 persons), 1994–1996 versus 1991–1993 (net)" 0
+	"Change in mortality rate 65+, '94–'96 vs. '91–'93 (net)" 0
 
 *------------------------------------------------------------
 * (2) Implicit regression weights vs. the distribution of the dose
@@ -4393,10 +4393,10 @@ gen double d_br_pre = mr_br_p2 - mr_br_p1
 
 cloud_plot d_br dose_br w65_br 1 "AF_cloud_br_post" ///
 	"Barham and Rowberry treatment: mean lagged intensity, 2000–2002" ///
-	"Change in mortality rate 65+ (per 1,000 persons), 2000–2002 versus 1992–1999" 1
+	"Change in mortality rate 65+, '00–'02 vs. '92–'99" 1
 cloud_plot d_br_pre dose_br w65_br 1 "AF_cloud_br_pre" ///
 	"Barham and Rowberry treatment: mean lagged intensity, 2000–2002" ///
-	"Change in mortality rate 65+ (per 1,000 persons), 1995–1997 versus 1992–1994" 1
+	"Change in mortality rate 65+, '95–'97 vs. '92–'94" 1
 
 *------------------------------------------------------------
 * (6) Event study of the "timing piece" of BR's leftover (see (3)):
