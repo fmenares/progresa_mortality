@@ -3777,9 +3777,9 @@ di "Figures exported to: $figures/appendix/Figure_2_pooled_through2005.pdf, _fem
 * later) and (7) at:br_leftover_size. The exports of (2)-(6) still run so
 * the log keeps their numbers, but figures_app.tex/tables_app.tex no
 * longer include them.
-*   (5) af:cloud_br -- BR's own cloud: change in mortality from 1992-99
+*   (5) af:cloud_br -- BR's own cloud and a 1992-94 to 1995-97 placebo: change in mortality from 1992-99
 *       to 2000-02 against the mean lagged dose:
-*       AF_cloud_br_uw, AF_cloud_br_w (.pdf)
+*       AF_cloud_br_post, AF_cloud_br_pre (.pdf)
 *
 * The working panel is saved here and reloaded at the end, so the
 * cause-of-death section below runs on exactly the same data as before.
@@ -4365,28 +4365,38 @@ foreach wt in uw w {
 }
 
 *------------------------------------------------------------
-* (5) BR's own cloud, in the slides' style: each BR municipality's
-* change in mortality from 1992-99 (when BR's treatment is 0) to
-* 2000-02, against its mean BR treatment over 2000-02 (= mean intensity
-* 1998-2000). A two-period approximation of BR's regression, for
-* intuition; (3) and (4) are the exact versions.
+* (5) BR's own cloud, in the slides' style, with a pre-program placebo
+* (af:cloud_br, two panels laid out like panels a and c of
+* af:cloud_mortality). Each BR municipality's change in mortality
+* against its mean BR treatment over 2000-02 (= mean intensity
+* 1998-2000):
+*   AF_cloud_br_post: change from 1992-99 (BR treatment is 0) to 2000-02,
+*     a two-period approximation of BR's regression;
+*   AF_cloud_br_pre: placebo, change from 1992-94 to 1995-97, all before
+*     the 1998/1999 entry of these municipalities, against the same dose.
+*     A slope here is a pre-existing trend correlated with BR's dose.
+* Circles weighted by the 1992-99 mean population 65+; both the weighted
+* (solid) and unweighted (dashed, = BR's weighting) linear fits shown.
 *------------------------------------------------------------
 use `cdid_panel', clear
 quietly keep if $sample_br & inrange(year, 1992, 2002)
 bysort cve_ent_mun_super: egen double mr_br_post = mean(cond(year >= 2000, emr65, .))
 bysort cve_ent_mun_super: egen double mr_br_pre  = mean(cond(year <= 1999, emr65, .))
+bysort cve_ent_mun_super: egen double mr_br_p1   = mean(cond(inrange(year, 1992, 1994), emr65, .))
+bysort cve_ent_mun_super: egen double mr_br_p2   = mean(cond(inrange(year, 1995, 1997), emr65, .))
 bysort cve_ent_mun_super: egen double dose_br    = mean(cond(year >= 2000, lag2_intensity_new, .))
 bysort cve_ent_mun_super: egen double w65_br     = mean(cond(year <= 1999, popover65_, .))
 egen byte __one = tag(cve_ent_mun_super)
 keep if __one
-gen double d_br = mr_br_post - mr_br_pre
+gen double d_br     = mr_br_post - mr_br_pre
+gen double d_br_pre = mr_br_p2 - mr_br_p1
 
-cloud_plot d_br dose_br w65_br 0 "AF_cloud_br_uw" ///
-	"BR treatment: mean lagged intensity, 2000-2002" ///
-	"Change in mortality rate 65+, 2000-2002 vs. 1992-1999" 1
-cloud_plot d_br dose_br w65_br 1 "AF_cloud_br_w" ///
-	"BR treatment: mean lagged intensity, 2000-2002" ///
-	"Change in mortality rate 65+, 2000-2002 vs. 1992-1999" 1
+cloud_plot d_br dose_br w65_br 1 "AF_cloud_br_post" ///
+	"Barham and Rowberry treatment: mean lagged intensity, 2000–2002" ///
+	"Change in mortality rate 65+ (per 1,000 persons), 2000–2002 versus 1992–1999" 1
+cloud_plot d_br_pre dose_br w65_br 1 "AF_cloud_br_pre" ///
+	"Barham and Rowberry treatment: mean lagged intensity, 2000–2002" ///
+	"Change in mortality rate 65+ (per 1,000 persons), 1995–1997 versus 1992–1994" 1
 
 *------------------------------------------------------------
 * (6) Event study of the "timing piece" of BR's leftover (see (3)):
