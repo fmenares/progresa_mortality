@@ -61,7 +61,7 @@ global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 
 * SWITCH: run the cause-of-death section at the very end of this file?
 * 1 = run it, 0 = skip it (the file stops right before that section).
-global run_cod = 0
+global run_cod = 1
 * $sample_br is defined in 02_mortality.do (strict default: 1998/1999
 * entrants). Mirror that default only if it is not already set, so this
 * file also runs in a fresh session while still honoring the choice made
@@ -2624,6 +2624,16 @@ foreach spec in log pois {
 				local allok = 0
 				continue
 			}
+			* Joint test that the pre-program coefficients (1991-1995) are
+			* zero, for the Figure A.10 note (F for OLS, chi2 for Poisson)
+			test 1.year_1995#c.mg99_`d' 2.year_1995#c.mg99_`d' 3.year_1995#c.mg99_`d' ///
+				4.year_1995#c.mg99_`d' 5.year_1995#c.mg99_`d'
+			if "`spec'" == "log" local ptS_`spec'_`pnl' : di %5.2f r(F)
+			else                 local ptS_`spec'_`pnl' : di %5.2f r(chi2)
+			local ptP_`spec'_`pnl' : di %5.3f r(p)
+			local ptS_`spec'_`pnl' = trim("`ptS_`spec'_`pnl''")
+			local ptP_`spec'_`pnl' = trim("`ptP_`spec'_`pnl''")
+			di "Figure A.10 (`spec', `pnl'): joint pre-trend test 1991-1995, stat = `ptS_`spec'_`pnl'', p = `ptP_`spec'_`pnl''"
 			forval pos = 1/16 {
 				if `pos' == 6 {
 					local mb_`pnl'_`pos' = 0
@@ -2681,6 +2691,26 @@ foreach spec in log pois {
 		restore
 	}
 }
+* Pre-trend tests of the population event studies as LaTeX macros for the
+* Figure A.10 note, e.g. \pretrendPopLogPooled (stat) and \pretrendPopLogPooledP
+cap file close ptm
+file open ptm using "$tables/AF10_pretrend_tests.tex", write replace
+foreach spec in log pois {
+	if "`spec'" == "log" local SP "Log"
+	else                 local SP "Pois"
+	foreach pnl in p f m {
+		if "`pnl'" == "p" local PN "Pooled"
+		if "`pnl'" == "f" local PN "Female"
+		if "`pnl'" == "m" local PN "Male"
+		if "`ptS_`spec'_`pnl''" == "" local ptS_`spec'_`pnl' "n/a"
+		if "`ptP_`spec'_`pnl''" == "" local ptP_`spec'_`pnl' "n/a"
+		file write ptm "\newcommand{\pretrendPop`SP'`PN'}{`ptS_`spec'_`pnl''}" _n
+		file write ptm "\newcommand{\pretrendPop`SP'`PN'P}{`ptP_`spec'_`pnl''}" _n
+	}
+}
+file close ptm
+if "$repo_tables" != "" copy "$tables/AF10_pretrend_tests.tex" "$repo_tables/AF10_pretrend_tests.tex", replace
+di "Pre-trend tests exported to: $tables/AF10_pretrend_tests.tex"
 drop __lpop_p __lpop_m __lpop_f
 
 *============================================================
@@ -5025,45 +5055,60 @@ foreach grp in w f m {
 	}
 }
 
-* file write lines below disabled: not displayed in the paper (formerly
-* wrote $tables/appendix/AT2_cod_mortality.tex)
-* {
-* 	cap file close sm
-* 	file open sm using "$tables/appendix/AT2_cod_mortality.tex", write replace
-* 	file write sm "\begin{tabular}{lcccccccccc} \hline \hline" _n
-* 	file write sm "& Cancer & Diab. & IllDef & Resp. & Card. & Infect. & Nutri. & Accid. & Other \\ " _n
-* 	file write sm "\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}\cmidrule(lr){10-10}" _n
-* 	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
-* 	file write sm "\underline{\textit{Panel A: Pooled}}  \\ " _n
-* 	file write sm "\textit{Intensity 1999 x post} & `b99_w_tb_cancer' & `b99_w_tb_diab' & `b99_w_tb_illdef' & `b99_w_tb_resp' & `b99_w_tb_card' & `b99_w_tb_infect' & `b99_w_tb_nutri' & `b99_w_tb_accid' & `b99_w_tb_other' \\ " _n
-* 	file write sm " & (`se99_w_tb_cancer') & (`se99_w_tb_diab') & (`se99_w_tb_illdef') & (`se99_w_tb_resp') & (`se99_w_tb_card') & (`se99_w_tb_infect') & (`se99_w_tb_nutri') & (`se99_w_tb_accid') & (`se99_w_tb_other') \\ " _n
-* 	file write sm "\textit{RW p-value} & [`rwp99_w_tb_cancer'] & [`rwp99_w_tb_diab'] & [`rwp99_w_tb_illdef'] & [`rwp99_w_tb_resp'] & [`rwp99_w_tb_card'] & [`rwp99_w_tb_infect'] & [`rwp99_w_tb_nutri'] & [`rwp99_w_tb_accid'] & [`rwp99_w_tb_other'] \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "Mean (pre-1997) & `mean_w_tb_cancer' & `mean_w_tb_diab' & `mean_w_tb_illdef' & `mean_w_tb_resp' & `mean_w_tb_card' & `mean_w_tb_infect' & `mean_w_tb_nutri' & `mean_w_tb_accid' & `mean_w_tb_other' \\ " _n
-* 	file write sm "Number of municipalities & `Nmun_w_tb_cancer' & `Nmun_w_tb_diab' & `Nmun_w_tb_illdef' & `Nmun_w_tb_resp' & `Nmun_w_tb_card' & `Nmun_w_tb_infect' & `Nmun_w_tb_nutri' & `Nmun_w_tb_accid' & `Nmun_w_tb_other' \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "\underline{\textit{Panel B: Females}}  \\ " _n
-* 	file write sm "\textit{Intensity 1999 x post} & `b99_f_tb_cancer' & `b99_f_tb_diab' & `b99_f_tb_illdef' & `b99_f_tb_resp' & `b99_f_tb_card' & `b99_f_tb_infect' & `b99_f_tb_nutri' & `b99_f_tb_accid' & `b99_f_tb_other' \\ " _n
-* 	file write sm " & (`se99_f_tb_cancer') & (`se99_f_tb_diab') & (`se99_f_tb_illdef') & (`se99_f_tb_resp') & (`se99_f_tb_card') & (`se99_f_tb_infect') & (`se99_f_tb_nutri') & (`se99_f_tb_accid') & (`se99_f_tb_other') \\ " _n
-* 	file write sm "\textit{RW p-value} & [`rwp99_f_tb_cancer'] & [`rwp99_f_tb_diab'] & [`rwp99_f_tb_illdef'] & [`rwp99_f_tb_resp'] & [`rwp99_f_tb_card'] & [`rwp99_f_tb_infect'] & [`rwp99_f_tb_nutri'] & [`rwp99_f_tb_accid'] & [`rwp99_f_tb_other'] \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "Mean (pre-1997) & `mean_f_tb_cancer' & `mean_f_tb_diab' & `mean_f_tb_illdef' & `mean_f_tb_resp' & `mean_f_tb_card' & `mean_f_tb_infect' & `mean_f_tb_nutri' & `mean_f_tb_accid' & `mean_f_tb_other' \\ " _n
-* 	file write sm "Observations & `N_f_tb_cancer' & `N_f_tb_diab' & `N_f_tb_illdef' & `N_f_tb_resp' & `N_f_tb_card' & `N_f_tb_infect' & `N_f_tb_nutri' & `N_f_tb_accid' & `N_f_tb_other' \\ " _n
-* 	file write sm "Number of municipalities & `Nmun_f_tb_cancer' & `Nmun_f_tb_diab' & `Nmun_f_tb_illdef' & `Nmun_f_tb_resp' & `Nmun_f_tb_card' & `Nmun_f_tb_infect' & `Nmun_f_tb_nutri' & `Nmun_f_tb_accid' & `Nmun_f_tb_other' \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "\underline{\textit{Panel C: Males}}  \\ " _n
-* 	file write sm "\textit{Intensity 1999 x post} & `b99_m_tb_cancer' & `b99_m_tb_diab' & `b99_m_tb_illdef' & `b99_m_tb_resp' & `b99_m_tb_card' & `b99_m_tb_infect' & `b99_m_tb_nutri' & `b99_m_tb_accid' & `b99_m_tb_other' \\ " _n
-* 	file write sm " & (`se99_m_tb_cancer') & (`se99_m_tb_diab') & (`se99_m_tb_illdef') & (`se99_m_tb_resp') & (`se99_m_tb_card') & (`se99_m_tb_infect') & (`se99_m_tb_nutri') & (`se99_m_tb_accid') & (`se99_m_tb_other') \\ " _n
-* 	file write sm "Observations & `N_m_tb_cancer' & `N_m_tb_diab' & `N_m_tb_illdef' & `N_m_tb_resp' & `N_m_tb_card' & `N_m_tb_infect' & `N_m_tb_nutri' & `N_m_tb_accid' & `N_m_tb_other' \\ " _n
-* 	file write sm "Number of municipalities & `Nmun_m_tb_cancer' & `Nmun_m_tb_diab' & `Nmun_m_tb_illdef' & `Nmun_m_tb_resp' & `Nmun_m_tb_card' & `Nmun_m_tb_infect' & `Nmun_m_tb_nutri' & `Nmun_m_tb_accid' & `Nmun_m_tb_other' \\ " _n
-* 	file write sm "  & & & & & & & & & \\ " _n
-* 	file write sm "Mean intensity 1999 (percent) & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' & `meanI99_AT1cod' \\ " _n
-* 	file write sm "\bottomrule" _n
-* 	file write sm "\end{tabular}"
-* 	file close sm
-* 	if "$repo_tables" != "" copy "$tables/appendix/AT2_cod_mortality.tex" "$repo_tables/appendix/AT2_cod_mortality.tex", replace
-* }
-di "Table NOT exported (disabled): $tables/appendix/AT2_cod_mortality.tex"
+* Cause-of-death table, back in the appendix (last appendix table,
+* at:did_robust_cod) on 2026-10-16 at the coauthor's request.
+{
+	cap file close sm
+	file open sm using "$tables/appendix/AT2_cod_mortality.tex", write replace
+	file write sm "\begin{tabular}{l*{9}{c}} \hline \hline" _n
+	file write sm "& Cancer & Diabetes & Ill-defined & Respiratory & Cardiovascular & Infectious & Nutritional & Accidents & Other \\ " _n
+	file write sm "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)} & \multicolumn{1}{c}{(8)} & \multicolumn{1}{c}{(9)} \\ \toprule" _n
+	foreach grp in w f m {
+		if "`grp'" == "w" file write sm "\underline{\textit{Panel A: Pooled}} \\ " _n
+		if "`grp'" == "f" file write sm "\underline{\textit{Panel B: Females}} \\ " _n
+		if "`grp'" == "m" file write sm "\underline{\textit{Panel C: Males}} \\ " _n
+		file write sm "\textit{Intensity\$_{1999}\$ \$\times\$ Post}"
+		foreach cod in tb_cancer tb_diab tb_illdef tb_resp tb_card tb_infect tb_nutri tb_accid tb_other {
+			file write sm " & `b99_`grp'_`cod''"
+		}
+		file write sm " \\ " _n
+		foreach cod in tb_cancer tb_diab tb_illdef tb_resp tb_card tb_infect tb_nutri tb_accid tb_other {
+			file write sm " & (`se99_`grp'_`cod'')"
+		}
+		file write sm " \\ " _n
+		file write sm "Romano--Wolf \$p\$-value"
+		foreach cod in tb_cancer tb_diab tb_illdef tb_resp tb_card tb_infect tb_nutri tb_accid tb_other {
+			file write sm " & [`rwp99_`grp'_`cod'']"
+		}
+		file write sm " \\ " _n
+		file write sm "Mean (1991--1996)"
+		foreach cod in tb_cancer tb_diab tb_illdef tb_resp tb_card tb_infect tb_nutri tb_accid tb_other {
+			file write sm " & `mean_`grp'_`cod''"
+		}
+		file write sm " \\ " _n
+		file write sm "  & & & & & & & & & \\ " _n
+	}
+	file write sm "Observations"
+	foreach cod in tb_cancer tb_diab tb_illdef tb_resp tb_card tb_infect tb_nutri tb_accid tb_other {
+		file write sm " & `N_w_`cod''"
+	}
+	file write sm " \\ " _n
+	file write sm "Number of municipalities"
+	foreach cod in tb_cancer tb_diab tb_illdef tb_resp tb_card tb_infect tb_nutri tb_accid tb_other {
+		file write sm " & `Nmun_w_`cod''"
+	}
+	file write sm " \\ " _n
+	file write sm "Mean intensity 1999 (\%)"
+	foreach cod in tb_cancer tb_diab tb_illdef tb_resp tb_card tb_infect tb_nutri tb_accid tb_other {
+		file write sm " & `meanI99_AT1cod'"
+	}
+	file write sm " \\ " _n
+	file write sm "\bottomrule" _n
+	file write sm "\end{tabular}"
+	file close sm
+	if "$repo_tables" != "" copy "$tables/appendix/AT2_cod_mortality.tex" "$repo_tables/appendix/AT2_cod_mortality.tex", replace
+}
+di "Table exported to: $tables/appendix/AT2_cod_mortality.tex"
 
 
 
