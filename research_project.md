@@ -1568,6 +1568,11 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 - `at:did_robust_cod` (`AT2_cod_mortality.tex`) is back as the last appendix table (landscape, scale 0.85). Writer in `04_extra_robustness.do` re-enabled and restyled (spelled-out cause names, Intensity_1999 x Post, Romano-Wolf p-value row, Mean (1991-1996), observations/municipalities once at the bottom); `global run_cod = 1` so the section runs (the wyoung bootstrap is slow). The current `.tex` was restyled by hand from the 2026-10-14 run. Not yet cited in the main text (the cause-of-death paragraph is still commented out).
 - Figure A.10: joint tests of the 1991-1995 coefficients after each population event study (F for log, chi2 for Poisson), written as macros to `tables/AF10_pretrend_tests.tex` (\input in `main.tex`) and quoted in the figure note. The repo file is a placeholder ("[rerun]") until 04 is rerun.
 
+### Barham and Rowberry cloud with a pre-program placebo (2026-10-16)
+- New appendix figure `af:cloud_br` (after `af:br_adapted_size`, before the migration event study), laid out like panels a and c of `af:cloud_mortality`: (a) BR sample, change in mortality from 1992-99 to 2000-02 against the mean lagged-2 treatment over 2000-02 (= mean intensity 1998-2000); (b) placebo, change from 1992-94 to 1995-97 (all before the 1998/1999 entry) against the same dose. Circles weighted by the 1992-99 mean 65+ population; weighted (solid) and unweighted (dashed, BR's weighting) fits in both panels. The separate unweighted/weighted pair (`AF_cloud_br_uw/w`) is no longer exported.
+- Code: block (5) of the cloud section in `04_extra_robustness.do` exports `AF_cloud_br_post` and `AF_cloud_br_pre`. Repo placeholders until rerun: `AF_cloud_br_post.pdf` is a copy of the previous weighted file (same numbers, old axis titles); `AF_cloud_br_pre.pdf` is a "rerun" page.
+- Previous result for panel (a): slopes -7.46 (1.41) unweighted, -4.03 (0.89) weighted.
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.
