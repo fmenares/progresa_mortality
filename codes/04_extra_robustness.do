@@ -61,7 +61,7 @@ global sample_marg = "(gm_mun_1990==4|gm_mun_1990==5)"
 
 * SWITCH: run the cause-of-death section at the very end of this file?
 * 1 = run it, 0 = skip it (the file stops right before that section).
-global run_cod = 1
+global run_cod = 0
 * $sample_br is defined in 02_mortality.do (strict default: 1998/1999
 * entrants). Mirror that default only if it is not already set, so this
 * file also runs in a fresh session while still honoring the choice made
