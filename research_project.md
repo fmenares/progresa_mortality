@@ -1576,6 +1576,10 @@ Per the coauthor's five-part request: (1) relocate `AT1_ses_trend_summary` and `
 ### Figures A.9 and A.10 combined (2026-10-16)
 - `af:br_adapted_size` (adapted event study by size, uw/w) and `af:cloud_br` (BR cloud and 1992-94 to 1995-97 placebo) are now one 2x2 figure under the label `af:br_adapted_size`: (a)-(b) event study by size, unweighted/weighted; (c)-(d) BR cloud and placebo. Notes merged; `af:cloud_br` label dropped (it was not cited). Migration event study becomes Figure A.10.
 
+### Migration: census-year estimates added (2026-10-18)
+- `04_extra_robustness.do`, migration paper block: new census-years-only analysis (1990, 1995, 2000, 2005; counts read from `$data/aamr_regression_municipality_gender_tb.dta` because the working panel starts in 1991, merged with each HM municipality's Intensity_1999/2005). (i) DiD Intensity_1999 x Post (Post = 2000, 2005) with Intensity_2005 x Post, municipality and year FE, log and Poisson -> Table A.9 columns (3)-(4) (table now 6 columns, landscape: all years | census years | 65+ vs 50-64). (ii) Event study reference 1995 (coefficients 1990, 2000, 2005), pooled/female/male -> `AF_migration_es_census_{log,pois}.pdf`, Figure A.10 panels c-d; test that the 1990 coefficient is zero, written to `tables/AF10_pretrend_tests.tex` as `\pretrendPopCensus...` macros and quoted in the note.
+- Repo placeholders until rerun: "[rerun]" cells in Table A.9 columns (3)-(4), placeholder PDFs for panels c-d, "[rerun]" macros. No change to the mortality regressions (weights, denominators) per the user.
+
 ## Notes for Contributors
 
 - **Every figure/table export needs a repo twin right after it** (a second `graph export` to `$repo_figures`, or a `copy` to `$repo_tables` after the table's `file close`; see "Export mirroring" in the latest Session Update) so the repo and the Overleaf folder stay identical.

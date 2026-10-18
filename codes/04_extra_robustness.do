@@ -2561,6 +2561,172 @@ foreach pnl in p f m {
 		}
 	}
 }
+* ---- census years only (1990, 1995, 2000, 2005): the 65+ population as
+* counted, without interpolation. 1990 rows are not in the working panel
+* (02_mortality.do keeps 1991-2006), so the counts are read from the
+* source file and merged with each municipality's intensities. Used for
+* columns (3)-(4) of AT_migration_pop (Intensity_1999 x Post, Post = 2000
+* and 2005) and for the census-year event studies (reference 1995) in
+* panels c-d of af:migration_es, with a test that the 1990 coefficient is
+* zero (the only pre-program census year besides the reference).
+tempfile mg_work
+save `mg_work'
+keep if $sample_marg
+keep cve_ent_mun_super mg99_99 mg05_99
+bysort cve_ent_mun_super: keep if _n == 1
+tempfile mg_mun
+save `mg_mun'
+use cve_ent_mun_super year popover65_ popover65_f popover65_m ///
+	using "$data/aamr_regression_municipality_gender_tb.dta", clear
+keep if inlist(year, 1990, 1995, 2000, 2005)
+collapse (mean) popover65_ popover65_f popover65_m, by(cve_ent_mun_super year)
+merge m:1 cve_ent_mun_super using `mg_mun', keep(match) nogenerate
+gen byte cpost = (year >= 1997)
+gen double __clp_p = log(popover65_)
+gen double __clp_f = log(popover65_f)
+gen double __clp_m = log(popover65_m)
+foreach pnl in p f m {
+	if "`pnl'" == "p" local pout popover65_
+	if "`pnl'" == "f" local pout popover65_f
+	if "`pnl'" == "m" local pout popover65_m
+	local c = 0
+	foreach spec in log pois {
+		local ++c
+		local cgb_`pnl'_`c' "n/a"
+		local cgs_`pnl'_`c' "n/a"
+		local cgm_`pnl'_`c' ""
+		local cgN_`pnl'_`c' "n/a"
+		local cgM_`pnl'_`c' "n/a"
+		if "`spec'" == "log" {
+			capture reghdfe __clp_`pnl' c.mg99_99#i.cpost c.mg05_99#i.cpost, ///
+				a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			capture ppmlhdfe `pout' c.mg99_99#i.cpost c.mg05_99#i.cpost, ///
+				a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		if !_rc & e(N) > 0 {
+			if "`spec'" == "log" {
+				local bb = _b[1.cpost#c.mg99_99]
+				local ss = _se[1.cpost#c.mg99_99]
+			}
+			else {
+				local bb = exp(_b[1.cpost#c.mg99_99]) - 1
+				local ss = exp(_b[1.cpost#c.mg99_99]) * _se[1.cpost#c.mg99_99]
+			}
+			local t = abs(`bb' / `ss')
+			local st ""
+			if `t' >= 1.645 local st "*"
+			if `t' >= 1.960 local st "**"
+			if `t' >= 2.576 local st "***"
+			local cgb_`pnl'_`c' = trim(string(`bb', "%9.3f")) + "`st'"
+			local cgs_`pnl'_`c' = trim(string(`ss', "%9.3f"))
+			local cgN_`pnl'_`c' = trim(string(e(N), "%12.0fc"))
+			tempvar tg
+			quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+			quietly count if `tg' == 1
+			local cgM_`pnl'_`c' = trim(string(r(N), "%12.0fc"))
+			drop `tg'
+			if "`spec'" == "log" {
+				quietly summarize __clp_`pnl' if e(sample) & cpost == 0
+				local cgm_`pnl'_`c' = trim(string(r(mean), "%9.2f"))
+			}
+			else {
+				quietly summarize `pout' if e(sample) & cpost == 0
+				local cgm_`pnl'_`c' = trim(string(r(mean), "%9.0fc"))
+			}
+		}
+		else di as error "Migration (census years), panel `pnl', `spec': estimation failed (rc=`_rc'), leaving n/a"
+	}
+}
+
+* census-year event studies, reference 1995, three series per figure
+foreach spec in log pois {
+	local allok = 1
+	foreach pnl in p f m {
+		if "`pnl'" == "p" local pout popover65_
+		if "`pnl'" == "f" local pout popover65_f
+		if "`pnl'" == "m" local pout popover65_m
+		if "`spec'" == "log" {
+			capture reghdfe __clp_`pnl' c.mg99_99##ib1995.year, ///
+				a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		else {
+			capture ppmlhdfe `pout' c.mg99_99##ib1995.year, ///
+				a(cve_ent_mun_super) vce(cluster cve_ent_mun_super)
+		}
+		if _rc | e(N) == 0 {
+			di as error "Census-year event study (`spec'), panel `pnl' failed (rc=`_rc')"
+			local allok = 0
+			continue
+		}
+		* pre-program test: the 1990 coefficient (the only pre-program census
+		* year other than the 1995 reference) is zero
+		test 1990.year#c.mg99_99
+		if "`spec'" == "log" local cpS_`spec'_`pnl' : di %5.2f r(F)
+		else                 local cpS_`spec'_`pnl' : di %5.2f r(chi2)
+		local cpP_`spec'_`pnl' : di %5.3f r(p)
+		local cpS_`spec'_`pnl' = trim("`cpS_`spec'_`pnl''")
+		local cpP_`spec'_`pnl' = trim("`cpP_`spec'_`pnl''")
+		di "Census-year event study (`spec', `pnl'): pre-program test (1990 = 0), stat = `cpS_`spec'_`pnl'', p = `cpP_`spec'_`pnl''"
+		foreach yy in 1990 1995 2000 2005 {
+			if `yy' == 1995 {
+				local cb_`pnl'_`yy' = 0
+				local cs_`pnl'_`yy' = 0
+			}
+			else if "`spec'" == "pois" {
+				local cb_`pnl'_`yy' = (exp(_b[`yy'.year#c.mg99_99]) - 1) * 100
+				local cs_`pnl'_`yy' = exp(_b[`yy'.year#c.mg99_99]) * _se[`yy'.year#c.mg99_99] * 100
+			}
+			else {
+				local cb_`pnl'_`yy' = _b[`yy'.year#c.mg99_99]
+				local cs_`pnl'_`yy' = _se[`yy'.year#c.mg99_99]
+			}
+		}
+	}
+	if `allok' == 0 continue
+	if "`spec'" == "log" local yt "Log population 65+"
+	else                 local yt "Population 65+ (% change from 1995)"
+	preserve
+	clear
+	quietly set obs 4
+	quietly gen yr = 1990 + 5 * (_n - 1)
+	quietly gen xpos_p = yr - 0.45
+	quietly gen xpos_m = yr
+	quietly gen xpos_f = yr + 0.45
+	foreach q in p m f {
+		quietly gen b_`q'  = .
+		quietly gen hi_`q' = .
+		quietly gen lo_`q' = .
+		foreach yy in 1990 1995 2000 2005 {
+			quietly replace b_`q'  = `cb_`q'_`yy''                          if yr == `yy'
+			quietly replace hi_`q' = `cb_`q'_`yy'' + 1.96 * `cs_`q'_`yy'' if yr == `yy'
+			quietly replace lo_`q' = `cb_`q'_`yy'' - 1.96 * `cs_`q'_`yy'' if yr == `yy'
+		}
+	}
+	twoway ///
+		(rcap hi_p lo_p xpos_p, lcolor(black%60) lwidth(vthin)) ///
+		(scatter b_p xpos_p, mcolor(black) msymbol(circle) msize(small)) ///
+		(rcap hi_f lo_f xpos_f, lcolor(red%60) lwidth(vthin) lpattern(dash)) ///
+		(scatter b_f xpos_f, mcolor(red) msymbol(square) msize(small)) ///
+		(rcap hi_m lo_m xpos_m, lcolor(blue%60) lwidth(vthin) lpattern(shortdash_dot)) ///
+		(scatter b_m xpos_m, mcolor(blue) msymbol(triangle) msize(small)), ///
+		yline(0, lcolor(gs8) lpattern(solid) lwidth(vthin)) ///
+		xline(1997, lcolor(yellow) lpattern(dash) lwidth(vthin)) ///
+		xlabel(1990 1995 2000 2005, labsize(small) labcolor(black)) xscale(range(1988.5 2006.5)) ///
+		xtitle("") ytitle("`yt'", size(medsmall)) ///
+		ylabel(, grid gmin gmax labsize(small)) ///
+		legend(order(2 "Pooled" 4 "Female" 6 "Male") cols(3) size(small) ///
+			position(6) ring(1) region(lcolor(none)) symxsize(5) keygap(1) rowgap(0)) ///
+		graphregion(color(white)) ///
+		plotregion(margin(l=1 r=1))
+	graph export "$figures/appendix/AF_migration_es_census_`spec'.pdf", as(pdf) replace
+	if "$repo_figures" != "" graph export "$repo_figures/appendix/AF_migration_es_census_`spec'.pdf", as(pdf) replace
+	di "Figure exported to: $figures/appendix/AF_migration_es_census_`spec'.pdf"
+	restore
+}
+use `mg_work', clear
+
 * Intensity uses the 1999 household denominator only (the 1990-census
 * version was dropped on 2026-10-15). Columns (3)-(4) are the triple-difference version (65+ relative to 50-64,
 * Intensity_1999 x Post x Old65) estimated in the AT_migration_robustness_ageFE
@@ -2579,21 +2745,22 @@ foreach c in 2 3 {
 }
 cap file close mgp
 file open mgp using "$tables/appendix/AT_migration_pop.tex", write replace
-file write mgp "\begin{tabular}{lcc@{\hskip 14pt}cc} \hline \hline" _n
-file write mgp "& \multicolumn{2}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative to ages 50--64} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
-file write mgp "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} \\ " _n
-file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\ \toprule" _n
+file write mgp "\begin{tabular}{lcc@{\hskip 10pt}cc@{\hskip 10pt}cc} \hline \hline" _n
+file write mgp "& \multicolumn{4}{c}{Population aged 65 and older} & \multicolumn{2}{c}{Ages 65+ relative to ages 50--64} \\ \cmidrule(lr){2-5}\cmidrule(lr){6-7}" _n
+file write mgp "& \multicolumn{2}{c}{All years (interpolated)} & \multicolumn{2}{c}{Census years} & \multicolumn{2}{c}{All years (interpolated)} \\ \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}" _n
+file write mgp "& \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} & \multicolumn{1}{c}{Log} & \multicolumn{1}{c}{Poisson} \\ " _n
+file write mgp "& \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} \\ \toprule" _n
 foreach pnl in p f m {
 	if "`pnl'" == "p" file write mgp "\underline{\textit{Panel A: Pooled}} \\ " _n
 	if "`pnl'" == "f" file write mgp "\underline{\textit{Panel B: Females}} \\ " _n
 	if "`pnl'" == "m" file write mgp "\underline{\textit{Panel C: Males}} \\ " _n
-	file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
-	file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`seDDD99_`pnl'_2') & (`seDDD99_`pnl'_3') \\ " _n
-	file write mgp "Mean (1991--1996) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `meanDDD_`pnl'_2' & `meanDDD_`pnl'_3' \\ " _n
-	file write mgp "  & & & & \\ " _n
+	file write mgp "\textit{Intensity\$_{1999}\$ \$\times\$ Post} & `mgb_`pnl'_1' & `mgb_`pnl'_2' & `cgb_`pnl'_1' & `cgb_`pnl'_2' & `bDDD99_`pnl'_2' & `bDDD99_`pnl'_3' \\ " _n
+	file write mgp " & (`mgs_`pnl'_1') & (`mgs_`pnl'_2') & (`cgs_`pnl'_1') & (`cgs_`pnl'_2') & (`seDDD99_`pnl'_2') & (`seDDD99_`pnl'_3') \\ " _n
+	file write mgp "Mean (pre-program) & `mgm_`pnl'_1' & `mgm_`pnl'_2' & `cgm_`pnl'_1' & `cgm_`pnl'_2' & `meanDDD_`pnl'_2' & `meanDDD_`pnl'_3' \\ " _n
+	file write mgp "  & & & & & & \\ " _n
 }
-file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
-file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
+file write mgp "Observations & `mgN_p_1' & `mgN_p_2' & `cgN_p_1' & `cgN_p_2' & `NDDD_f_2' & `NDDD_f_3' \\ " _n
+file write mgp "Number of municipalities & `mgM_p_1' & `mgM_p_2' & `cgM_p_1' & `cgM_p_2' & `NmunDDD_p_2' & `NmunDDD_p_3' \\ " _n
 file write mgp "\bottomrule" _n
 file write mgp "\end{tabular}"
 file close mgp
@@ -2706,6 +2873,19 @@ foreach spec in log pois {
 		if "`ptP_`spec'_`pnl''" == "" local ptP_`spec'_`pnl' "n/a"
 		file write ptm "\newcommand{\pretrendPop`SP'`PN'}{`ptS_`spec'_`pnl''}" _n
 		file write ptm "\newcommand{\pretrendPop`SP'`PN'P}{`ptP_`spec'_`pnl''}" _n
+	}
+}
+foreach spec in log pois {
+	if "`spec'" == "log" local SP "Log"
+	else                 local SP "Pois"
+	foreach pnl in p f m {
+		if "`pnl'" == "p" local PN "Pooled"
+		if "`pnl'" == "f" local PN "Female"
+		if "`pnl'" == "m" local PN "Male"
+		if "`cpS_`spec'_`pnl''" == "" local cpS_`spec'_`pnl' "n/a"
+		if "`cpP_`spec'_`pnl''" == "" local cpP_`spec'_`pnl' "n/a"
+		file write ptm "\newcommand{\pretrendPopCensus`SP'`PN'}{`cpS_`spec'_`pnl''}" _n
+		file write ptm "\newcommand{\pretrendPopCensus`SP'`PN'P}{`cpP_`spec'_`pnl''}" _n
 	}
 }
 file close ptm
