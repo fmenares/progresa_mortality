@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- opened on:  18 Oct 2026, 17:37:14
+ opened on:  18 Oct 2026, 17:53:03
 
 . 
 . use "$data/Temp_data/working_panel_for_binary_and_descriptives.dta", clear
@@ -6733,6 +6733,13 @@ cve_ent_mun_super: all characters numeric; replaced as long
 
 . gen byte cpost = (year >= 1997)
 
+. * explicit interactions: with i.cpost, the post-period slope is the one
+. * reghdfe/ppmlhdfe drop as collinear with the municipality fixed effects,
+. * which left _b[1.cpost#c.mg99_99] = 0
+. gen double ctr99 = mg99_99 * cpost
+
+. gen double ctr05 = mg05_99 * cpost
+
 . gen double __clp_p = log(popover65_)
 
 . gen double __clp_f = log(popover65_f)
@@ -6752,48 +6759,53 @@ cve_ent_mun_super: all characters numeric; replaced as long
  11.                 local cgN_`pnl'_`c' "n/a"
  12.                 local cgM_`pnl'_`c' "n/a"
  13.                 if "`spec'" == "log" {
- 14.                         capture reghdfe __clp_`pnl' c.mg99_99#i.cpost c.mg05_99#i.cpost, ///
+ 14.                         capture reghdfe __clp_`pnl' ctr99 ctr05, ///
 >                                 a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  15.                 }
  16.                 else {
- 17.                         capture ppmlhdfe `pout' c.mg99_99#i.cpost c.mg05_99#i.cpost, ///
+ 17.                         capture ppmlhdfe `pout' ctr99 ctr05, ///
 >                                 a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
  18.                 }
  19.                 if !_rc & e(N) > 0 {
  20.                         if "`spec'" == "log" {
- 21.                                 local bb = _b[1.cpost#c.mg99_99]
- 22.                                 local ss = _se[1.cpost#c.mg99_99]
+ 21.                                 local bb = _b[ctr99]
+ 22.                                 local ss = _se[ctr99]
  23.                         }
  24.                         else {
- 25.                                 local bb = exp(_b[1.cpost#c.mg99_99]) - 1
- 26.                                 local ss = exp(_b[1.cpost#c.mg99_99]) * _se[1.cpost#c.mg99_99]
+ 25.                                 local bb = exp(_b[ctr99]) - 1
+ 26.                                 local ss = exp(_b[ctr99]) * _se[ctr99]
  27.                         }
- 28.                         local t = abs(`bb' / `ss')
- 29.                         local st ""
- 30.                         if `t' >= 1.645 local st "*"
- 31.                         if `t' >= 1.960 local st "**"
- 32.                         if `t' >= 2.576 local st "***"
- 33.                         local cgb_`pnl'_`c' = trim(string(`bb', "%9.3f")) + "`st'"
- 34.                         local cgs_`pnl'_`c' = trim(string(`ss', "%9.3f"))
- 35.                         local cgN_`pnl'_`c' = trim(string(e(N), "%12.0fc"))
- 36.                         tempvar tg
- 37.                         quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
- 38.                         quietly count if `tg' == 1
- 39.                         local cgM_`pnl'_`c' = trim(string(r(N), "%12.0fc"))
- 40.                         drop `tg'
- 41.                         if "`spec'" == "log" {
- 42.                                 quietly summarize __clp_`pnl' if e(sample) & cpost == 0
- 43.                                 local cgm_`pnl'_`c' = trim(string(r(mean), "%9.2f"))
- 44.                         }
- 45.                         else {
- 46.                                 quietly summarize `pout' if e(sample) & cpost == 0
- 47.                                 local cgm_`pnl'_`c' = trim(string(r(mean), "%9.0fc"))
+ 28.                         if `ss' == 0 | missing(`ss') {
+ 29.                                 di as error "Migration (census years), panel `pnl', `spec': coefficien
+> t dropped (SE = 0), leaving n/a"
+ 30.                                 continue
+ 31.                         }
+ 32.                         local t = abs(`bb' / `ss')
+ 33.                         local st ""
+ 34.                         if `t' >= 1.645 local st "*"
+ 35.                         if `t' >= 1.960 local st "**"
+ 36.                         if `t' >= 2.576 local st "***"
+ 37.                         local cgb_`pnl'_`c' = trim(string(`bb', "%9.3f")) + "`st'"
+ 38.                         local cgs_`pnl'_`c' = trim(string(`ss', "%9.3f"))
+ 39.                         local cgN_`pnl'_`c' = trim(string(e(N), "%12.0fc"))
+ 40.                         tempvar tg
+ 41.                         quietly egen `tg' = tag(cve_ent_mun_super) if e(sample)
+ 42.                         quietly count if `tg' == 1
+ 43.                         local cgM_`pnl'_`c' = trim(string(r(N), "%12.0fc"))
+ 44.                         drop `tg'
+ 45.                         if "`spec'" == "log" {
+ 46.                                 quietly summarize __clp_`pnl' if e(sample) & cpost == 0
+ 47.                                 local cgm_`pnl'_`c' = trim(string(r(mean), "%9.2f"))
  48.                         }
- 49.                 }
- 50.                 else di as error "Migration (census years), panel `pnl', `spec': estimation failed (rc
+ 49.                         else {
+ 50.                                 quietly summarize `pout' if e(sample) & cpost == 0
+ 51.                                 local cgm_`pnl'_`c' = trim(string(r(mean), "%9.0fc"))
+ 52.                         }
+ 53.                 }
+ 54.                 else di as error "Migration (census years), panel `pnl', `spec': estimation failed (rc
 > =`_rc'), leaving n/a"
- 51.         }
- 52. }
+ 55.         }
+ 56. }
 
 . 
 . * census-year event studies, reference 1995, three series per figure
@@ -16909,5 +16921,5 @@ Cause-of-death section skipped: global run_cod is 0 at the top of this file
       name:  <unnamed>
        log:  C:\Users\FELIPEME\Documents\projects\progresa_mortality\codes\/04_extra_robustness_log.log
   log type:  text
- closed on:  18 Oct 2026, 17:38:47
+ closed on:  18 Oct 2026, 17:55:59
 -----------------------------------------------------------------------------------------------------------
