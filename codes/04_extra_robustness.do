@@ -2588,6 +2588,11 @@ if !_rc destring cve_ent_mun_super, replace
 collapse (mean) popover65_ popover65_f popover65_m, by(cve_ent_mun_super year)
 merge m:1 cve_ent_mun_super using `mg_mun', keep(match) nogenerate
 gen byte cpost = (year >= 1997)
+* explicit interactions: with i.cpost, the post-period slope is the one
+* reghdfe/ppmlhdfe drop as collinear with the municipality fixed effects,
+* which left _b[1.cpost#c.mg99_99] = 0
+gen double ctr99 = mg99_99 * cpost
+gen double ctr05 = mg05_99 * cpost
 gen double __clp_p = log(popover65_)
 gen double __clp_f = log(popover65_f)
 gen double __clp_m = log(popover65_m)
@@ -2604,21 +2609,25 @@ foreach pnl in p f m {
 		local cgN_`pnl'_`c' "n/a"
 		local cgM_`pnl'_`c' "n/a"
 		if "`spec'" == "log" {
-			capture reghdfe __clp_`pnl' c.mg99_99#i.cpost c.mg05_99#i.cpost, ///
+			capture reghdfe __clp_`pnl' ctr99 ctr05, ///
 				a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		}
 		else {
-			capture ppmlhdfe `pout' c.mg99_99#i.cpost c.mg05_99#i.cpost, ///
+			capture ppmlhdfe `pout' ctr99 ctr05, ///
 				a(year cve_ent_mun_super) vce(cluster cve_ent_mun_super)
 		}
 		if !_rc & e(N) > 0 {
 			if "`spec'" == "log" {
-				local bb = _b[1.cpost#c.mg99_99]
-				local ss = _se[1.cpost#c.mg99_99]
+				local bb = _b[ctr99]
+				local ss = _se[ctr99]
 			}
 			else {
-				local bb = exp(_b[1.cpost#c.mg99_99]) - 1
-				local ss = exp(_b[1.cpost#c.mg99_99]) * _se[1.cpost#c.mg99_99]
+				local bb = exp(_b[ctr99]) - 1
+				local ss = exp(_b[ctr99]) * _se[ctr99]
+			}
+			if `ss' == 0 | missing(`ss') {
+				di as error "Migration (census years), panel `pnl', `spec': coefficient dropped (SE = 0), leaving n/a"
+				continue
 			}
 			local t = abs(`bb' / `ss')
 			local st ""
