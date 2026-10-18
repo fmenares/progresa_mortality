@@ -2573,12 +2573,18 @@ tempfile mg_work
 save `mg_work'
 keep if $sample_marg
 keep cve_ent_mun_super mg99_99 mg05_99
+* the municipality key is numeric in the working panel (destrung above)
+* but a string in the source file; make both numeric before merging
+capture confirm string variable cve_ent_mun_super
+if !_rc destring cve_ent_mun_super, replace
 bysort cve_ent_mun_super: keep if _n == 1
 tempfile mg_mun
 save `mg_mun'
 use cve_ent_mun_super year popover65_ popover65_f popover65_m ///
 	using "$data/aamr_regression_municipality_gender_tb.dta", clear
 keep if inlist(year, 1990, 1995, 2000, 2005)
+capture confirm string variable cve_ent_mun_super
+if !_rc destring cve_ent_mun_super, replace
 collapse (mean) popover65_ popover65_f popover65_m, by(cve_ent_mun_super year)
 merge m:1 cve_ent_mun_super using `mg_mun', keep(match) nogenerate
 gen byte cpost = (year >= 1997)
