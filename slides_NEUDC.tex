@@ -412,34 +412,6 @@
 
 \note{Our identification strategy compares municipalities that enrolled more households in the early phase of Progresa (1997-1999) with those that enrolled more later, holding cumulative coverage by 2005 fixed. Average enrollment goes from 44 percent in 1999 to 72 percent in 2005, so early enrollers get roughly four to five extra years of exposure. That is what beta zero measures: earlier exposure, not program versus no program. The 2005 intensity is a control and we do not interpret it. Because the post indicator turns on in 1997 for everyone, we avoid comparing already-treated to newly treated units. We control for Seguro Popular, Mexico's public health insurance that rolled out after 2002, and weight by the elderly population to avoid giving outsized influence to tiny, volatile municipalities.}
 
-\begin{frame}{Event Study Specification}\label{eventstudy_spec}
-\small
-
-\vspace{2pt}
-\begin{equation*}
-\text{MR}_{m,t}
-= \sum_{k \neq 1996} \beta_{k}\,\mathbf{1}[t=k] \times \textit{Intensity}_{m,1999}
-+ \sum_{k \neq 1996} \theta_{k}\,\mathbf{1}[t=k] \times \textit{Intensity}_{m,2005}
-+ \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
-\end{equation*}
-
-\vspace{4pt}
-
-\begin{itemize}
-  \item Reference year: 1996 (last pre-program year)
-  \item $\beta_k$ traces the effect of early-phase enrollment intensity on mortality in each year
-  \item \textbf{Pre-trends test}: joint F-test that $\beta_k = 0$ for $k = 1991, \dots, 1995$
-  \vspace{4pt}
-  \item \textbf{Identification assumption:} conditional on municipality and year FEs and later-phase intensity, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends in the absence of the program
-    \begin{itemize}
-      \item Restriction to highly marginalized municipalities makes this more credible: all are targeted; they differ in the speed of enrollment
-    \end{itemize}
-\end{itemize}
-
-\end{frame}
-
-\note{The event study lets us look year by year and test whether pre-trends were parallel. The reference year is 1996. If municipalities that ended up with more Progresa enrollment already had different mortality trends before the program started, the parallel trends assumption would be violated, and our DiD estimates would be unreliable.}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% RESULTS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -450,8 +422,15 @@
 \begin{columns}[T]
   \begin{column}{0.54\textwidth}
     \centering {\small (a) Pooled}\\
-    \includegraphics[width=\textwidth, keepaspectratio]{Figure_2_pooled.pdf}\\
-    {\scriptsize Pre-trend joint test: $F=1.81$ ($p=0.108$)}
+    \includegraphics[width=\textwidth, height=0.42\textheight, keepaspectratio]{Figure_2_pooled.pdf}\\
+    {\scriptsize Pre-trend joint test: $F=1.81$ ($p=0.108$)}\\[4pt]
+    \raggedright
+    {\footnotesize
+    $\begin{aligned}
+    \text{MR}_{m,t} = {} & \textstyle\sum_{k \neq 1996} \beta_{k}\,\mathbf{1}[t=k] \times \textit{Int}_{m,1999} \\
+    & + \textstyle\sum_{k \neq 1996} \theta_{k}\,\mathbf{1}[t=k] \times \textit{Int}_{m,2005} + \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
+    \end{aligned}$}\\[3pt]
+    {\scriptsize \textbf{Identification:} conditional on FEs and $\textit{Intensity}_{2005}$, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends absent the program}
   \end{column}
   \begin{column}{0.44\textwidth}
     \centering {\small (b) Females}\\
@@ -462,11 +441,9 @@
     {\scriptsize Pre-trend joint test: $F=2.63$ (\textcolor{redUT}{$p=0.023$})}
   \end{column}
 \end{columns}
-\vspace{2pt}
-{\tiny Weighted by pop.\ 65+; Seguro Popular and $\textit{Intensity}_{2005}$ controls; ref.\ year 1996; 95\% CI; F-tests of 1991--1995 coefs.}
 \end{frame}
 
-\note{The event study shows the year-by-year coefficients. In the pooled sample, pre-program coefficients alternate in sign rather than drift, and we cannot reject that they are jointly zero; after 1997 the coefficients fluctuate around zero with no persistent decline. For females, there is no differential trend before or after the program. For males, we reject parallel pre-trends, with a p-value of 0.023: the coefficients from 1992 to 1995 are already at the same negative level as after 1997, so 1996 is the unusual year and there is no break at program start. We therefore do not read the male estimates as a credible program effect.}
+\note{The event study estimates one coefficient per year, relative to 1996, the last pre-program year, with the same controls and weights as the main specification. Identification requires that, conditional on fixed effects and later-phase intensity, municipalities with higher early intensity would have followed parallel mortality trends without the program; restricting to highly marginalized municipalities helps, since all were targeted and they differ in the speed of enrollment. The joint F-tests check the 1991-1995 coefficients. The event study shows the year-by-year coefficients. In the pooled sample, pre-program coefficients alternate in sign rather than drift, and we cannot reject that they are jointly zero; after 1997 the coefficients fluctuate around zero with no persistent decline. For females, there is no differential trend before or after the program. For males, we reject parallel pre-trends, with a p-value of 0.023: the coefficients from 1992 to 1995 are already at the same negative level as after 1997, so 1996 is the unusual year and there is no break at program start. We therefore do not read the male estimates as a credible program effect.}
 
 \begin{frame}{Main Results: Effect on Elderly Mortality Rate}\label{main_results}
 \vspace{-2pt}
@@ -495,7 +472,7 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 \end{tabular}
 
 \vspace{2pt}
-{\scriptsize MDE $= 2.80 \times$ SE (two-sided 5\%). \cite{BarhamRowberry2013JDE}'s original estimate: $-6.37$ deaths/1,000.}
+{\scriptsize MDE $= (1.96 + 0.84) \times$ SE (80\% power, 5\% level); pooled: $2.80 \times 1.464 = 4.10$ vs.\ BR's $-6.37$.}
 \end{center}
 \end{frame}
 
@@ -507,31 +484,23 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 \section{Robustness}
 
 \begin{frame}{Robustness: Functional Form and Specification}\label{robustness_ff}
-\vspace{2pt}
-\begin{center}
 \small
-\begin{tabular}{lccccc}
-\toprule\toprule
- & Levels & Levels & Log & Poisson & AAMR \\
- & & (unweighted) & & (counts) & \\
- & (1) & (2) & (3) & (4) & (5) \\
-\midrule
-Pooled & $-0.719$ & $0.354$ & $-1.67$ & $-2.69$ & $0.057$ \\
- & $(1.464)$ & $(2.547)$ & $(4.20)$ & $(5.87)$ & $(1.493)$ \\[1pt]
-Females & $0.620$ & $1.668$ & $2.74$ & $5.92$ & $1.395$ \\
- & $(1.824)$ & $(2.928)$ & $(5.49)$ & $(7.46)$ & $(1.850)$ \\[1pt]
-Males & $-2.206$ & $-1.588$ & $-2.52$ & $-10.02$ & $-1.362$ \\
- & $(1.735)$ & $(2.776)$ & $(5.05)$ & $(6.30)$ & $(1.759)$ \\
-\bottomrule\bottomrule
-\end{tabular}
-\end{center}
-\vspace{2pt}
-{\scriptsize Coefficient on $\textit{Intensity}_{1999} \times$ post. Log and Poisson columns are percent changes ($100\hat\beta$ and $100(e^{\hat\beta}-1)$); Poisson uses raw death counts, handling zero cells \smallcite{ChenRoth2024QJE}; AAMR standardizes for municipal age structure.}
-\vspace{2pt}
-\footnotesize
 \begin{itemize}
-  \item[$\circ$] All estimates \textbf{small and statistically insignificant}; event studies qualitatively similar
-  \item[$\circ$] Also unchanged with alternative SES trend interactions and when later-phase intensity is measured in 2004 or 2006 instead of 2005
+  \item[$\circ$] Main result (levels) is robust across alternative functional forms:
+    \vspace{4pt}
+    \begin{enumerate}
+      \item \textbf{Log mortality rate} --- similar coefficients, avoids large-municipality dominance
+      \vspace{4pt}
+      \item \textbf{Poisson with raw death counts} --- handles zero-mortality municipality-year cells; addresses \smallcite{ChenRoth2024QJE} concerns about log with zeros
+      \vspace{4pt}
+      \item \textbf{Age-Adjusted Mortality Rate (AAMR)} --- directly standardizes for municipal age structure
+    \end{enumerate}
+  \vspace{8pt}
+  \item[$\circ$] All specifications: estimates remain \textbf{small and statistically insignificant}
+  \vspace{8pt}
+  \item[$\circ$] Event study patterns qualitatively similar across functional forms
+  \vspace{8pt}
+  \item[$\circ$] Also unchanged without weights, with alternative SES trend interactions, and when later-phase intensity is measured in 2004 or 2006 instead of 2005
 \end{itemize}
 \end{frame}
 
@@ -545,41 +514,23 @@ Males & $-2.206$ & $-1.588$ & $-2.52$ & $-10.02$ & $-1.362$ \\
 \text{MR}_{m,t} = \alpha_0 + \alpha_1\,\textit{Intensity}_{m,t-2} + \delta_m + \gamma_t + \chi_{m,t} + \varepsilon_{m,t}
 \end{equation*}
 
-\vspace{2pt}
-
-\begin{columns}[T]
-  \begin{column}{0.52\textwidth}
-    \textbf{Sensitivity of BR's estimate:}
-    \vspace{4pt}
-    \begin{itemize}
-      \item[\textbf{(A)}] BR original: $-6.37$ deaths/1,000 ($p<0.01$)
-      \item[\textbf{(B)}] Our close replication: $-7.06$ deaths/1,000 ($p<0.01$)
-      \vspace{1pt}
-      \item[\textbf{(C)}] Add \textit{population weights}: attenuates $\approx$\textbf{47\%} to $-3.74$ deaths/1,000 ($p<0.01$)
-      \vspace{1pt}
-      \item[\textbf{(D)}] 1-year lag $+$ weights: $-3.46$ deaths/1,000 ($p<0.01$)
-      \vspace{1pt}
-      \item[\textbf{(E)}] 3-year lag $+$ weights: $-2.07$ deaths/1,000 ($p<0.01$)
-    \end{itemize}
-  \end{column}
-  \begin{column}{0.46\textwidth}
-    \textbf{Why does weighting matter?}
-    \vspace{4pt}
-    \begin{itemize}
-      \item[$\circ$] Progresa targeted most isolated, smallest, poorest communities first
-      \item[$\circ$] These have highest intensity \textit{and} most volatile mortality rates (small populations)
-      \item[$\circ$] \textbf{By size tercile} (BR spec., weighted): smallest $-7.34^{***}$ (mean 154 people 65+); middle $-2.37$; largest $-1.39$
-      \item[$\circ$] Weighting by elderly population: each municipality weighted proportional to its contribution to total deaths
-    \end{itemize}
-  \end{column}
-\end{columns}
+\textbf{Sensitivity of BR's estimate:}
+\begin{itemize}
+  \item[\textbf{(A)}] BR original: $-6.37$ deaths/1,000 ($p<0.01$)
+  \item[\textbf{(B)}] Our close replication: $-7.06$ deaths/1,000 ($p<0.01$)
+  \item[\textbf{(C)}] Add \textit{population weights}: attenuates $\approx$\textbf{47\%} to $-3.74$ deaths/1,000 ($p<0.01$)
+\end{itemize}
 
 \vspace{6pt}
-% \textit{Key takeaway: the short-run result is sensitive to choices that are not driven by the data.}
-
+\textbf{Why does weighting matter?}
+\begin{itemize}
+  \item[$\circ$] \textbf{Weighting:} \textit{Progresa} targeted the most isolated, smallest, and poorest communities first; these have the highest intensity \textit{and} the most volatile mortality rates, so the unweighted estimate gives them excess influence. Weighting by the elderly population makes each municipality count in proportion to its contribution to total deaths
+  \vspace{4pt}
+  \item[$\circ$] \textbf{By size tercile} (BR specification, weighted): the effect is concentrated in the \textbf{smallest} municipalities, $-7.34^{***}$ (mean of 154 people aged 65+), and shrinks to $-2.37$ in the middle tercile and an insignificant $-1.39$ in the largest (mean of 2,144 people aged 65+)
+\end{itemize}
 \end{frame}
 
-\note{BR's original estimate is -6.37 deaths per 1,000, and we replicate it closely at -7.06. When we add population weights, the estimate drops by nearly half to -3.74, still statistically significant but substantially smaller. Changing the lag (also with weights) brings it down further, to -2.07 with a three-year lag. Splitting by municipality size shows why weights matter: the effect is concentrated in the smallest tercile, municipalities with about 150 people aged 65 and over, and it is small and insignificant in the largest. So the short-run effect becomes much smaller and depends on specification.}
+\note{BR's original estimate is -6.37 deaths per 1,000, and we replicate it closely at -7.06. When we add population weights, the estimate drops by nearly half to -3.74, still statistically significant but substantially smaller. Splitting by municipality size shows why weights matter: the effect is concentrated in the smallest tercile, municipalities with about 150 people aged 65 and over, and it is small and insignificant in the largest. So the short-run effect becomes much smaller and depends on specification.}
 
 \begin{frame}{Adapting the BR Design to Our Framework}\label{br_adapt}
 \footnotesize
@@ -658,7 +609,7 @@ Males & $-2.206$ & $-1.588$ & $-2.52$ & $-10.02$ & $-1.362$ \\
     \toprule\toprule
      & \textit{Labor} & \multicolumn{3}{c}{\textit{Living arrangements}} & \textit{Health} \\
      \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}
-     & Weekly & Live & Live with & Only & Visits$^{1}$ \\
+     & Weekly & Live & Live with & Only & Visits \\
      & hours & alone & children & elderly & \\
      & (1) & (2) & (3) & (4) & (5) \\
     \midrule
@@ -672,9 +623,6 @@ Males & $-2.206$ & $-1.588$ & $-2.52$ & $-10.02$ & $-1.362$ \\
     Observations & $6{,}518$ & $7{,}025$ & $7{,}025$ & $7{,}025$ & $4{,}700$ \\
     \bottomrule\bottomrule
     \end{tabular}}
-
-    \vspace{3pt}
-    {\tiny Pooled sample. Columns (1)--(4): DiD with 1997 baseline. $^{1}$Visits in the past 4 weeks, not collected at baseline: treatment--control cross-section pooling both 1999 ENCEL waves. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$.}
   \end{column}
   \begin{column}{0.36\textwidth}
     \scriptsize
