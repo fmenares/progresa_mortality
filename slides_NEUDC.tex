@@ -182,7 +182,7 @@
 \vspace{2pt}
 \small
 \begin{itemize}
-  \item[$\circ$] In LAC, 10\% is 65+, and is expected to double by 2050 (20\%  in poverty) \smallcite{UN2024WPP} 
+  \item[$\circ$] In LAC, 9.9\% of the population is 65+ (2024), projected to reach 18.9\% by 2050 \smallcite{UN2024WPP}; 1 in 5 older adults lives in multidimensional poverty \smallcite{CEPAL2024SocialPanorama}
   \item[$\circ$] Income support programs and health: evidence is mixed
     \begin{itemize}
       \item Some studies find important health benefits \smallcite{Case2004PerspectivesAging, Aguila2015PNAS}, others find no effects \smallcite{LloydSherlockAgrawal2014JDS}, and some identify unintended adverse consequences \smallcite{FernaldGertlerHou2008JN}
@@ -208,28 +208,31 @@
 \note{The broader literature on income transfers and health yields mixed results. Some find benefits, others find none. Most evidence is short-run. For the elderly specifically, we know Progresa increased clinic visits but didn't improve blood pressure biomarkers. Barham and Rowberry provided the key short-run mortality finding. And we know that pension programs that transfer directly to the elderly show stronger effects.}
 
 \begin{frame}{This Paper}\label{thispaper}
-\vspace{4pt}
+\vspace{0pt}
 \small
 \begin{itemize}
-  \item[$\circ$] \textbf{Research question:} Did Mexico's \textit{Progresa} CCT reduce elderly mortality ($65+$) over its first ten years?
-  \vspace{6pt}
-  \item[$\circ$] \textbf{Identification:} Difference-in-differences exploiting variation in program enrollment intensity across highly marginalized municipalities (1991--2006)
-  \vspace{6pt}
-  \item[$\circ$] \textbf{Main finding:} \textcolor{redUT}{No evidence of medium- or long-run mortality effects}
+  \item[$\circ$] \textbf{Research question:} Did \textit{earlier} exposure to Mexico's \textit{Progresa} CCT reduce mortality among adults $65+$ over the program's first ten years?
+  \vspace{2pt}
+  \item[$\circ$] \textbf{Identification:} DiD across highly marginalized municipalities (1991--2006) with different early (1997--1999) enrollment but \textbf{similar coverage by 2005}
     \begin{itemize}
-      \item Result is robust to functional form, weighting, and health insurance coverage
+      \item Estimand: effect of $\approx$4--5 \textit{additional} years of exposure, not program vs.\ no program
     \end{itemize}
-  \vspace{6pt}
-  \item[$\circ$] \textbf{Revisiting prior evidence:} Short-run estimates of \cite{BarhamRowberry2013JDE} are sensitive to weighting and lag structure
+  \vspace{2pt}
+  \item[$\circ$] \textbf{Main finding:} \textcolor{redUT}{No detectable reduction in older-adult mortality}
     \begin{itemize}
-      \item Minor changes attenuate estimates by $\geq 50\%$
+      \item Robust to weighting, functional form, SES trends, Seguro Popular; detects effects $\geq 4.1$ deaths/1,000
     \end{itemize}
-  \vspace{6pt}
-  \item[$\circ$] \textbf{Mechanisms:} No significant effects on elderly labor supply, household composition, income, or nutrition
+  \vspace{2pt}
+  \item[$\circ$] \textbf{Revisiting prior evidence:} Short-run estimates of \cite{BarhamRowberry2013JDE} are \textbf{smaller} and depend on weighting and sample
+    \begin{itemize}
+      \item Population weights attenuate them by $\approx 50\%$; no clean post-1997 break in the event study
+    \end{itemize}
+  \vspace{2pt}
+  \item[$\circ$] \textbf{Mechanisms (experimental data):} no effects on labor supply or health visits; limited changes in household composition
 \end{itemize}
 \end{frame}
 
-\note{Our paper re-examines this question using fifteen years of vital statistics. The main finding is a null — Progresa did not significantly reduce elderly mortality. We also show that the earlier short-run positive result is fragile: it depends heavily on population weighting and the choice of lag length. And when we look at the channels through which Progresa could have worked, we find no evidence those channels were activated.}
+\note{Our paper re-examines this question using sixteen years of vital statistics. Note what we estimate: municipalities end up with similar coverage by 2005, so we compare earlier versus later exposure — roughly four to five extra years — not Progresa versus no Progresa. The main finding is that earlier exposure did not detectably reduce older-adult mortality, and our design has the power to detect effects of the size previously reported. The earlier short-run estimate becomes much smaller once we weight by population and is sensitive to the sample. In the experimental data, we find no effects on labor supply or health visits and only limited changes in living arrangements.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PROGRAM BACKGROUND %%%
@@ -237,37 +240,35 @@
 \section{Program}
 
 \begin{frame}{Mexico's \textit{Progresa}: Programme Overview}\label{progresa}
-\small
+\footnotesize
 \begin{itemize}
-  \item[$\circ$] Launched 1997 in small rural communities and targeted poor households with children under 18 or pregnant women (marginality index and a household-level proxy means test)
-  \vspace{4pt}
-  \item[$\circ$] \textbf{Scale:} 6 million families covered ($\frac{1}{4}$ of all Mexican families); $\frac{2}{3}$ in rurality
-  \vspace{4pt}
-  
+  \item[$\circ$] Launched 1997 in small rural localities; targeted poor households (locality marginality index and a household-level proxy means test)
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Scale:} 6 million families covered ($\frac{1}{4}$ of all Mexican families); $\frac{2}{3}$ in localities $<$2,500 inhabitants
+  \vspace{1pt}
+
   \item[$\circ$] \textbf{Transfer:} $\approx$ MXN\$800/month ($>25\%$ income increase); paid to female household head
-  \vspace{4pt}
-  \item[$\circ$] \textbf{Conditionalities:}
     \begin{itemize}
-      \item \textit{Education:} children attend school ($\geq 85\%$ attendance)
-      \item \textit{Health:} all family members visit clinic regularly
-      \item For adults $17+$ (incl.\ elderly): \textbf{one annual visit only}
+      \item \textit{Education grant:} households with children attending school ($\geq 85\%$ attendance)
+      \item \textit{Food transfer:} flat rate to \textbf{every} eligible household, incl.\ older-adults-only households
     \end{itemize}
-  \vspace{4pt}
-  \item[$\circ$] \textbf{In 2006:} pension for adults $70+$ added --- we end analysis early to focus on original CCT
-  \vspace{4pt}
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Health conditionality:} all members visit clinic; adults $17+$ (incl.\ elderly): \textbf{one annual visit only}
+  \vspace{1pt}
+  \item[$\circ$] \textbf{In 2006:} pension for adults $70+$ added --- sample ends in 2006 (results unchanged excluding 2006)
+  \vspace{1pt}
   \item[$\circ$] \textbf{Elderly in eligible households:}
     \begin{itemize}
       \item $\approx 75\%$ of elderly lived in households with children under 15 \smallcite{BehrmanParker2013Demography}
-      \item Most are grandparents --- not direct transfer recipients
-      \item Any benefit must come through household income sharing or indirect pathways
+      \item Mostly grandparents, not direct recipients $\to$ benefits only through household sharing or indirect pathways
     \end{itemize}
 \end{itemize}
 \end{frame}
 
-\note{Progresa started in 1997 in small rural communities and rapidly scaled. Transfers went to the female head of household. For adults over 17, including elderly, the health conditionality was just one annual clinic visit. This is a very minimal requirement. The elderly in these households are typically grandparents who don't control program funds but might benefit through household resource sharing.}
+\note{Progresa started in 1997 in small rural localities and rapidly scaled. Transfers went to the female head of household. The education grant went to households with school-age children, but a flat food transfer went to every eligible household, including households made up only of older adults. For adults over 17, including the elderly, the health conditionality was just one annual clinic visit, a very minimal requirement. The elderly in these households are typically grandparents who don't control program funds but might benefit through household resource sharing.}
 
 \begin{frame}{Potential Channels to Elderly Mortality}\label{channels}
-\small
+\footnotesize
 \begin{columns}[T]
   \begin{column}{0.48\textwidth}
     \textbf{Theoretical channels}
@@ -275,12 +276,15 @@
     \begin{enumerate}
       \item \textbf{Health conditionality} \\
         One annual clinic visit $\to$ early detection of diabetes, hypertension, infectious disease
-      \vspace{8pt}
+      \vspace{3pt}
       \item \textbf{Income and nutrition} \\
         $+25\%$ household income $\to$ improved nutrition and healthcare access for elderly members
-      \vspace{8pt}
+      \vspace{3pt}
+      \item \textbf{Labor supply} \\
+        Less work $\to$ lower physical health risks (but possibly less social interaction)
+      \vspace{3pt}
       \item \textbf{Living arrangements} \\
-        Reduced adult-child migration $\to$ more co-residence and informal caregiving for elderly
+        More co-residence of family members $\to$ more informal caregiving for elderly
     \end{enumerate}
   \end{column}
   \begin{column}{0.48\textwidth}
@@ -289,15 +293,15 @@
     \begin{itemize}
       \item[$\circ$] \textit{Health conditionality:} one annual visit is a minimal intervention; \cite{aguila2024conditional} find increased utilization but no improvement in blood pressure biomarkers
       \vspace{4pt}
-      \item[$\circ$] \textit{Income:} transfers go to female head; elderly household members may not capture redistribution
+      \item[$\circ$] \textit{Income:} transfers go to female head and are labeled for children's schooling (mental accounting); elderly members may not capture redistribution
       \vspace{4pt}
-      \item[$\circ$] \textit{Caregiving:} \cite{BehrmanParker2013Demography} find physical-presence requirement for cash collection may actually \textit{increase} time demands on younger members
+      \item[$\circ$] \textit{Labor supply / caregiving:} elderly are not the target; the physical-presence requirement for cash collection may \textit{increase} time demands on younger members \smallcite{BehrmanParker2013Demography}
     \end{itemize}
   \end{column}
 \end{columns}
 \end{frame}
 
-\note{There are three plausible channels through which Progresa could affect elderly mortality. But each has a reason why it may not operate in practice. The clinic visit is minimal, the income may not reach the elderly, and the caregiving channel is ambiguous. We test all three channels directly.}
+\note{There are four plausible channels through which Progresa could affect elderly mortality: the health conditionality, income and nutrition, labor supply, and living arrangements. Each has a reason why it may not operate in practice. The clinic visit is minimal, the income is paid to mothers and labeled for children, and the elderly are not the target of the labor and caregiving responses. We test these channels with the experimental evaluation data and the ENIGH.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% DATA %%%
@@ -305,35 +309,35 @@
 \section{Data}
 
 \begin{frame}{Data Sources}\label{data}
-\small
+\footnotesize
 \begin{itemize}
   \item \textbf{Mortality data} $\rightarrow$ primary outcome publicly available from INEGI
     \begin{itemize}
       \item Individual-level death registries from death certificates, 1991--2006 
       \item Includes cause of death, birth year, sex, municipality of residence
     \end{itemize}
-  \vspace{4pt}
+  \vspace{1pt}
   \item \textbf{Population data} $\rightarrow$ mortality rate denominators
     \begin{itemize}
-      \item INEGI census counts by sex, age, municipality; linearly interpolated between census
+      \item Census/counts 1990, 1995, 2000, 2005 by sex, age, municipality; geometrically interpolated
     \end{itemize}
-  \vspace{4pt}
+  \vspace{1pt}
   \item \textbf{\textit{Progresa} administrative data} $\rightarrow$ treatment variable
     \begin{itemize}
-      \item Annual counts of enrolled households by municipality
+      \item Annual enrolled households by municipality over total households (linearly interpolated)
     \end{itemize}
-  \vspace{4pt}
+  \vspace{1pt}
   \item \textbf{CONAPO Marginalization Index (1990)} $\rightarrow$ sample restriction
     \begin{itemize}
       \item Sample restricted to highly marginalized municipalities (grade 4 or 5)
     \end{itemize}
-  \vspace{4pt}
+  \vspace{1pt}
   \item \textbf{\textit{Progresa} experimental surveys (ENCASEH 1997; ENCEL 1998--2000)} $\rightarrow$ mechanisms
     \begin{itemize}
       \item 506 treatment + 320 control localities; 18-month experimental window
-      \item Labor supply, household composition, income for elderly $65+$ in eligible households
+      \item Labor supply, household composition, health visits for elderly $65+$ in eligible households
     \end{itemize}
-  \vspace{4pt}
+  \vspace{1pt}
   \item \textbf{ENIGH (1992--2006)} $\rightarrow$ income and nutrition mechanisms (Household Survey)
 \end{itemize}
 \end{frame}
@@ -378,21 +382,16 @@
 \section{Empirical Strategy}
 
 \begin{frame}{Empirical Strategy: Difference-in-Differences}\label{empirics}
-\small
-
-
-
+\footnotesize
 \begin{itemize}
-  \item \textbf{Early phase} (1997--1999): $\textit{Intensity}_{m,1999}$ --- share of households enrolled by 1999
-  \item \textbf{Late phase} (2000--2005): $\textit{Intensity}_{m,2005}$ --- share enrolled by 2005
-  \item After 2005, expansion shifted toward urban areas $\to$ two phases are largely non-overlapping
+  \item \textbf{Early phase:} $\textit{Intensity}_{m,1999}$ --- cumulative share of households enrolled by 1999 (mean 44\%)
+  \item \textbf{Later phase:} $\textit{Intensity}_{m,2005}$ --- cumulative share enrolled by 2005 (mean 72\%), included as a \textbf{control}
+  \item Common timing (1997) for all municipalities $\to$ no already-treated units used as controls (no forbidden comparisons)
 \end{itemize}
 
-\vspace{6pt}
-
+\vspace{2pt}
 \textbf{Baseline specification}
-
-\vspace{-2pt}
+\vspace{-6pt}
 
 \begin{equation*}
 \text{MR}_{m,t}
@@ -401,19 +400,17 @@
 + \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
 \end{equation*}
 
-\vspace{4pt}
-
+\vspace{-2pt}
 \begin{itemize}
-  \item $\text{MR}_{m,t}$: deaths per 1,000 inhabitants aged $65+$, municipality $m$, year $t$
-  \item $\textit{Post}_{t}$: $= 1$ for years $1997$--$2006$; $\delta_m$, $\gamma_t$: municipality and year fixed effects
-  \item $\chi_{m,t}$: Seguro Popular enrollment intensity (controls for confounding health insurance rollout)
-  \item \textbf{Coefficient of interest}: $\beta_0$ --- effect of early-phase enrollment intensity on elderly mortality
-  \item SE clustered at the municipality level; weighted by elderly population
+  \item $\text{MR}_{m,t}$: deaths per 1,000 aged $65+$; $\textit{Post}_{t} = 1$ for 1997--2006; $\delta_m$, $\gamma_t$: municipality and year FE
+  \item $\chi_{m,t}$: Seguro Popular enrollment intensity (health insurance rollout from 2002)
+  \item \textbf{Coefficient of interest}: $\beta_0$ --- effect of \textit{earlier} exposure ($\approx$4--5 extra years) among municipalities with \textbf{similar coverage by 2005}; ITT, not program vs.\ no program
+  \item $\beta_1$: control with no stand-alone interpretation (not reported); SE clustered by municipality; weighted by population 65+
 \end{itemize}
 
 \end{frame}
 
-\note{Our identification strategy compares municipalities that enrolled more households in the early phase of Progresa (1997-1999) with those that enrolled more in the late phase (2000-2005). The post indicator turns on in 1997. We control for Seguro Popular, Mexico's public health insurance that rolled out after 2002, and weight by the elderly population to avoid giving outsized influence to tiny, volatile municipalities.}
+\note{Our identification strategy compares municipalities that enrolled more households in the early phase of Progresa (1997-1999) with those that enrolled more later, holding cumulative coverage by 2005 fixed. Average enrollment goes from 44 percent in 1999 to 72 percent in 2005, so early enrollers get roughly four to five extra years of exposure. That is what beta zero measures: earlier exposure, not program versus no program. The 2005 intensity is a control and we do not interpret it. Because the post indicator turns on in 1997 for everyone, we avoid comparing already-treated to newly treated units. We control for Seguro Popular, Mexico's public health insurance that rolled out after 2002, and weight by the elderly population to avoid giving outsized influence to tiny, volatile municipalities.}
 
 \begin{frame}{Event Study Specification}\label{eventstudy_spec}
 \small
@@ -431,11 +428,11 @@
 \begin{itemize}
   \item Reference year: 1996 (last pre-program year)
   \item $\beta_k$ traces the effect of early-phase enrollment intensity on mortality in each year
-  \item \textbf{Pre-trends test}: $\beta_k = 0$ for $k < 1997$ supports parallel trends assumption
+  \item \textbf{Pre-trends test}: joint F-test that $\beta_k = 0$ for $k = 1991, \dots, 1995$
   \vspace{4pt}
-  \item \textbf{Identification assumption:} conditional on municipality and year FEs, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends in the absence of the program
+  \item \textbf{Identification assumption:} conditional on municipality and year FEs and later-phase intensity, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends in the absence of the program
     \begin{itemize}
-      \item Restriction to highly marginalized municipalities makes this more credible: all are targeted; they differ only in speed and intensity of enrollment
+      \item Restriction to highly marginalized municipalities makes this more credible: all are targeted; they differ in the speed of enrollment
     \end{itemize}
 \end{itemize}
 
@@ -449,21 +446,32 @@
 \section{Results}
 
 \begin{frame}{Event Study: Effect on Elderly Mortality by Sex}\label{es_main}
-\vspace{-3mm}
-\begin{figure}
-  \centering
-  \includegraphics[width=0.85\textwidth, keepaspectratio]{Figure_2_w.pdf}
-\end{figure}
-% \vspace{-3mm}
-% {\footnotesize Event study for early-phase Progresa intensity. Weighted by elderly population; includes Seguro Popular controls. Reference year: 1996. Sample: highly marginalized municipalities. 95\% CI shown.}
+\vspace{-2mm}
+\begin{columns}[T]
+  \begin{column}{0.54\textwidth}
+    \centering {\small (a) Pooled}\\
+    \includegraphics[width=\textwidth, keepaspectratio]{Figure_2_pooled.pdf}\\
+    {\scriptsize Pre-trend joint test: $F=1.81$ ($p=0.108$)}
+  \end{column}
+  \begin{column}{0.44\textwidth}
+    \centering {\small (b) Females}\\
+    \includegraphics[width=\textwidth, height=0.30\textheight, keepaspectratio]{Figure_2_female.pdf}\\
+    {\scriptsize Pre-trend joint test: $F=1.08$ ($p=0.370$)}\\[2pt]
+    {\small (c) Males}\\
+    \includegraphics[width=\textwidth, height=0.30\textheight, keepaspectratio]{Figure_2_male.pdf}\\
+    {\scriptsize Pre-trend joint test: $F=2.63$ (\textcolor{redUT}{$p=0.023$})}
+  \end{column}
+\end{columns}
+\vspace{2pt}
+{\tiny Weighted by pop.\ 65+; Seguro Popular and $\textit{Intensity}_{2005}$ controls; ref.\ year 1996; 95\% CI; F-tests of 1991--1995 coefs.}
 \end{frame}
 
-\note{The event study shows the year-by-year coefficients. For females, the pre-period is relatively flat and the post-period coefficients hover around zero. For males, we see some individually significant negative coefficients in the post-period, but they are not consistent with a clean break at 1997, and they are not persistent. The average DiD estimate in the table is null for both sexes.}
+\note{The event study shows the year-by-year coefficients. In the pooled sample, pre-program coefficients alternate in sign rather than drift, and we cannot reject that they are jointly zero; after 1997 the coefficients fluctuate around zero with no persistent decline. For females, there is no differential trend before or after the program. For males, we reject parallel pre-trends, with a p-value of 0.023: the coefficients from 1992 to 1995 are already at the same negative level as after 1997, so 1996 is the unusual year and there is no break at program start. We therefore do not read the male estimates as a credible program effect.}
 
 \begin{frame}{Main Results: Effect on Elderly Mortality Rate}\label{main_results}
-\vspace{0.4cm}
+\vspace{-2pt}
 \begin{center}
-\small
+\footnotesize
 \begin{tabular}{lccc}
 \toprule\toprule
  & Pooled & Females & Males \\
@@ -471,89 +479,73 @@
 \midrule
 \textit{Intensity 1999 $\times$ post} & $-0.719$ & $0.620$ & $-2.206$ \\
  & $(1.464)$ & $(1.824)$ & $(1.735)$ \\[4pt]
-\textit{Intensity 2005 $\times$ post} & $-2.796$ & $-5.641^{**}$ & $0.201$ \\
- & $(1.803)$ & $(2.205)$ & $(1.994)$ \\[4pt]
-Mean dep.\ var.\ (1991--1996) & $46.47$ & $46.11$ & $47.26$ \\
-Observations & $17{,}904$ & $17{,}904$ & $17{,}904$ \\
-No.\ Municipalities & $1{,}119$ & $1{,}119$ & $1{,}119$ \\
+\quad + SES (marginality index) trend & $0.835$ & $2.516$ & $-1.037$ \\
+ & $(1.487)$ & $(1.836)$ & $(1.773)$ \\
 \midrule
+Mean dep.\ var.\ (1991--1996) & $46.47$ & $46.11$ & $47.26$ \\
+Minimum detectable effect (80\% power) & $4.10$ & $5.11$ & $4.86$ \\
+Pre-trend joint test, $p$-value & $0.108$ & $0.370$ & $0.023$ \\
+Observations (1,119 municipalities) & $17{,}904$ & $17{,}904$ & $17{,}904$ \\
+\midrule
+$\textit{Intensity}_{2005} \times$ post control & Y & Y & Y \\
 Seguro Popular & Y & Y & Y \\
 Weights & Y & Y & Y \\
 Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 \bottomrule\bottomrule
 \end{tabular}
+
+\vspace{2pt}
+{\scriptsize MDE $= 2.80 \times$ SE (two-sided 5\%). \cite{BarhamRowberry2013JDE}'s original estimate: $-6.37$ deaths/1,000.}
 \end{center}
 \end{frame}
 
-\note{Across all four columns, the effect of early-phase Progresa intensity on elderly mortality is small and statistically insignificant. This holds for the pooled sample, for females, and for males. Adding Seguro Popular controls doesn't change the result. Weighting doesn't change the result. The null finding is consistent across specifications.}
-
-
-
-% \begin{frame}{Cause-of-Death Analysis}\label{cod}
-% \small
-% \begin{itemize}
-%   \item[$\circ$] Prior work suggests mortality reductions through \textit{specific} causes (diabetes, CVD, Infect.)
-%   \vspace{4pt}
-%   \item[$\circ$] We decompose into 9 causes: cancer, cardiovascular, respiratory, infectious disease, diabetes, nutritional, ill-defined, accidents, other
-%   \vspace{4pt}
-%   \item[$\circ$] Individually significant point estimates (before multiple-testing correction):
-%     \begin{itemize}
-%       \item \textcolor{blue1}{Cancer}: $-0.887$ ($p<0.01$)
-%       \item \textcolor{blue1}{Ill-defined causes}: $-0.574$ ($p<0.01$)
-%       \item \textcolor{blue1}{Diabetes}: $-0.508$ ($p<0.05$)
-%       \item \textcolor{redUT}{Cardiovascular}: $+1.530$ ($p<0.10$)
-%     \end{itemize}
-%   \vspace{4pt}
-%   \item[$\circ$] \textbf{After Romano-Wolf step-down correction} for 9 simultaneous hypotheses:
-%     \begin{itemize}
-%       \item All adjusted $p$-values $> 0.05$ \textbf{except cancer} $\to$ other individually significant estimates likely reflect multiple-testing variation
-%     \end{itemize}
-%   \vspace{4pt}
-%   \item[$\circ$] The ``ill-defined causes'' result warrants additional caution: likely reflects \textit{changes in cause-of-death coding}, not true mortality reductions
-%   \vspace{4pt}
-%   \item[$\circ$] Event study plots show broad pre/post overlap for most causes: \textbf{no visual break at 1997}
-% \end{itemize}
-% \end{frame}
-
-% \note{We also looked at cause-specific mortality. Before correcting for multiple testing, we find some significant estimates — cancer, ill-defined causes, and diabetes go down; cardiovascular goes up. But once we apply the Romano-Wolf correction for testing nine hypotheses jointly, almost none survive. The ill-defined cause result is especially suspicious because it may just reflect better death certificate coding over time. The cause-specific event studies show no consistent break at the program rollout date.}
+\note{Across all three columns, the effect of early-phase Progresa intensity on elderly mortality is small and statistically insignificant, with or without a socioeconomic trend. We do not report the 2005 intensity coefficient: it is a control with no stand-alone interpretation. Importantly, this is not a power artifact: at 80 percent power, the pooled specification can detect effects as small as 4.1 deaths per 1,000, well below the 6.4 originally reported by Barham and Rowberry. Remember that the male estimate fails the pre-trend test, so we do not put weight on it.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ROBUSTNESS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Robustness}
 
-\begin{frame}{Robustness: Functional Form}\label{robustness_ff}
+\begin{frame}{Robustness: Functional Form and Specification}\label{robustness_ff}
+\vspace{2pt}
+\begin{center}
 \small
+\begin{tabular}{lccccc}
+\toprule\toprule
+ & Levels & Levels & Log & Poisson & AAMR \\
+ & & (unweighted) & & (counts) & \\
+ & (1) & (2) & (3) & (4) & (5) \\
+\midrule
+Pooled & $-0.719$ & $0.354$ & $-1.67$ & $-2.69$ & $0.057$ \\
+ & $(1.464)$ & $(2.547)$ & $(4.20)$ & $(5.87)$ & $(1.493)$ \\[1pt]
+Females & $0.620$ & $1.668$ & $2.74$ & $5.92$ & $1.395$ \\
+ & $(1.824)$ & $(2.928)$ & $(5.49)$ & $(7.46)$ & $(1.850)$ \\[1pt]
+Males & $-2.206$ & $-1.588$ & $-2.52$ & $-10.02$ & $-1.362$ \\
+ & $(1.735)$ & $(2.776)$ & $(5.05)$ & $(6.30)$ & $(1.759)$ \\
+\bottomrule\bottomrule
+\end{tabular}
+\end{center}
+\vspace{2pt}
+{\scriptsize Coefficient on $\textit{Intensity}_{1999} \times$ post. Log and Poisson columns are percent changes ($100\hat\beta$ and $100(e^{\hat\beta}-1)$); Poisson uses raw death counts, handling zero cells \smallcite{ChenRoth2024QJE}; AAMR standardizes for municipal age structure.}
+\vspace{2pt}
+\footnotesize
 \begin{itemize}
-  \item[$\circ$] Main result (levels) is robust across alternative functional forms:
-    \vspace{4pt}
-    \begin{enumerate}
-      \item \textbf{Log mortality rate} --- similar coefficients, avoids large-municipality dominance
-      \vspace{4pt}
-      \item \textbf{Poisson with raw death counts} --- handles zero-mortality municipality-year cells; addresses \smallcite{ChenRoth2024QJE} concerns about log with zeros
-      \vspace{4pt}
-      \item \textbf{Age-Adjusted Mortality Rate (AAMR)} --- directly standardizes for municipal age structure
-    \end{enumerate}
-  \vspace{8pt}
-  \item[$\circ$] All specifications: estimates remain \textbf{small and statistically insignificant}
-  \vspace{8pt}
-  \item[$\circ$] Event study patterns qualitatively similar across functional forms
-  \vspace{8pt}
-  \item[$\circ$] We report levels in the main analysis for interpretability (deaths per 1,000) and comparability with prior literature
+  \item[$\circ$] All estimates \textbf{small and statistically insignificant}; event studies qualitatively similar
+  \item[$\circ$] Also unchanged with alternative SES trend interactions and when later-phase intensity is measured in 2004 or 2006 instead of 2005
 \end{itemize}
 \end{frame}
 
-\note{We checked whether our null finding depends on how we define the outcome. Whether we use log mortality rates, Poisson regression with raw death counts, or age-adjusted mortality rates, the result is the same: small, insignificant effects. The event study patterns look qualitatively similar across all specifications.}
+\note{We checked whether our null finding depends on how we define the outcome or the specification. Unweighted, log mortality rates, Poisson regression with raw death counts, or age-adjusted mortality rates: the result is the same, small and insignificant effects. Results also don't change with different socioeconomic trends or if we measure later-phase coverage in 2004 or 2006.}
 
 \begin{frame}{Replicating Barham \& Rowberry (2013)}\label{br_replication}
-\small
+\footnotesize
 
 \textbf{Original BR design:} mortality regressed on a time-varying two-year lagged enrollment intensity
 \begin{equation*}
 \text{MR}_{m,t} = \alpha_0 + \alpha_1\,\textit{Intensity}_{m,t-2} + \delta_m + \gamma_t + \chi_{m,t} + \varepsilon_{m,t}
 \end{equation*}
 
-\vspace{8pt}
+\vspace{2pt}
 
 \begin{columns}[T]
   \begin{column}{0.52\textwidth}
@@ -562,11 +554,11 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
     \begin{itemize}
       \item[\textbf{(A)}] BR original: $-6.37$ deaths/1,000 ($p<0.01$)
       \item[\textbf{(B)}] Our close replication: $-7.06$ deaths/1,000 ($p<0.01$)
-      \vspace{4pt}
+      \vspace{1pt}
       \item[\textbf{(C)}] Add \textit{population weights}: attenuates $\approx$\textbf{47\%} to $-3.74$ deaths/1,000 ($p<0.01$)
-      \vspace{4pt}
+      \vspace{1pt}
       \item[\textbf{(D)}] 1-year lag $+$ weights: $-3.46$ deaths/1,000 ($p<0.01$)
-      \vspace{4pt}
+      \vspace{1pt}
       \item[\textbf{(E)}] 3-year lag $+$ weights: $-2.07$ deaths/1,000 ($p<0.01$)
     \end{itemize}
   \end{column}
@@ -576,7 +568,7 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
     \begin{itemize}
       \item[$\circ$] Progresa targeted most isolated, smallest, poorest communities first
       \item[$\circ$] These have highest intensity \textit{and} most volatile mortality rates (small populations)
-      \item[$\circ$] Unweighted: excess influence to smallest municipalities
+      \item[$\circ$] \textbf{By size tercile} (BR spec., weighted): smallest $-7.34^{***}$ (mean 154 people 65+); middle $-2.37$; largest $-1.39$
       \item[$\circ$] Weighting by elderly population: each municipality weighted proportional to its contribution to total deaths
     \end{itemize}
   \end{column}
@@ -587,36 +579,33 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 
 \end{frame}
 
-\note{BR's original estimate is -6.37 deaths per 1,000, and we replicate it closely at -7.06. When we add population weights, the estimate drops by nearly half to -3.74 — still statistically significant but substantially smaller. Switching to a three-year lag (also with weights) brings it down further to -2.07, still significant at p<0.01. These are all equally defensible choices. The key lesson is that the short-run result is sensitive to specification, and the magnitude shrinks substantially.}
+\note{BR's original estimate is -6.37 deaths per 1,000, and we replicate it closely at -7.06. When we add population weights, the estimate drops by nearly half to -3.74, still statistically significant but substantially smaller. Changing the lag (also with weights) brings it down further, to -2.07 with a three-year lag. Splitting by municipality size shows why weights matter: the effect is concentrated in the smallest tercile, municipalities with about 150 people aged 65 and over, and it is small and insignificant in the largest. So the short-run effect becomes much smaller and depends on specification.}
 
 \begin{frame}{Adapting the BR Design to Our Framework}\label{br_adapt}
-\small
+\footnotesize
 
 \textbf{Our adapted design:} replaces time-varying lagged intensity with fixed early-phase intensity $\times$ post indicator
 \begin{equation*}
 \text{MR}_{m,t} = \beta_0\,\textit{Post}_t \times \textit{Intensity}_{m,1999} + \delta_m + \gamma_t + \varepsilon_{m,t}
 \end{equation*}
 
-\vspace{6pt}
-
+\vspace{-2pt}
 \begin{itemize}
-  \item[$\circ$] \textbf{Advantage:} enables pre-trends test (BR's design did not allow this)
-  \item[$\circ$] \textbf{BR sample, unweighted:} estimate $\approx -4.0$ deaths/1,000 ($p<0.01$)
-  \item[$\circ$] \textbf{BR sample, with population weights:} $-1.66$ deaths/1,000 ($p<0.05$) $\to$ attenuates $\approx$58\% relative to unweighted
-  \item[$\circ$] \textbf{Full highly marginalized sample:} not statistically significant in any specification
-  \vspace{6pt}
-  \item[$\circ$] \textbf{Event study reveals additional concern for BR sample}
-    % \begin{itemize}
-    %   \item Males in BR sample: \textcolor{redUT}{clear pre-trend violations} before 1997
-    %   \item Females in BR sample: post-program coefficients do not show consistent break from pre-period
-    % \end{itemize}
-  \vspace{6pt}
-  \item[$\circ$] \textbf{Conclusion:} short-run effect sensitive to sample and design; full HM sample shows no significant effect
+  \item[$\circ$] \textbf{Advantages:} common 1997 break (no forbidden comparisons) and a pre-trends test (BR's design did not allow this)
+  \item[$\circ$] \textbf{BR sample, unweighted:} $-3.97$ deaths/1,000 ($p<0.01$)
+  \item[$\circ$] \textbf{BR sample, with population weights:} $-1.66$ deaths/1,000 ($p<0.05$) $\to$ attenuates $\approx$58\%
+  \item[$\circ$] \textbf{Highly marginalized sample, weighted:} $-1.56$ (SE 1.26) $\to$ similar point estimate, less precise
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Magnitudes:} BR's $-6.37$ $\approx$ 1 year of life expectancy at 65; weighted $-1.66$ $\approx$ \textbf{0.24 years} at mean intensity
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Event study:} no clean post-1997 break; males show pre-trends in both samples (next slide)
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Conclusion:} short-run effect is about a quarter of BR's estimate, depends on weighting and sample, and is not corroborated by the event study
 \end{itemize}
 
 \end{frame}
 
-\note{When we apply our pre/post framework to the BR sample, we can now run the event study they couldn't. For males in their sample, there are clear pre-trends — the identification assumption is likely violated. For females, the post-period doesn't show a consistent break. The weighted estimate is -1.66, significant at 5\% but 58\% smaller than the unweighted counterpart. In the full highly marginalized sample there is no significant effect at all.}
+\note{When we apply our pre/post framework to the BR sample, we can run the event study their design couldn't. The unweighted estimate is about -4, and with population weights it falls to -1.66, significant at 5 percent but 58 percent smaller. In the highly marginalized sample the weighted point estimate is similar, -1.56, but less precise. So this is mostly attenuation, plus a loss of precision. In life expectancy terms, BR's estimate is about one year at age 65; the weighted estimate is about a quarter of a year at mean intensity. And the event study, on the next slide, does not show a clean break in 1997.}
 
 \begin{frame}{Event Study by Sex and Sample, 1992--2002}\label{fig_a6}
 \vskip 2mm
@@ -649,108 +638,62 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 \end{figure}
 \end{frame}
 
+\note{This figure shows the adapted event study over 1992 to 2002, for the BR sample on the left and our highly marginalized sample on the right. For females in the BR sample, pre-trends are less pronounced, but post-program coefficients do not break from the pre-period level and overlap with it. For males, the weighted results show clear differential pre-trends in both samples. In the highly marginalized sample, neither sex shows post-program coefficients distinguishable from pre-period variation. So the short-run table estimate is not corroborated by a clean post-1997 break.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% MECHANISMS %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Mechanisms}
 
-\begin{frame}[shrink=15]{Mechanisms: Labor Supply and Living Arrangements}\label{mechanisms_lab}
-\vspace{0.2cm}
-\small
-\textbf{Data:} Progresa experimental evaluation (ENCASEH 1997; ENCEL 1998--2000). Sample: elderly $65+$ in eligible households in 506 treatment and 320 control localities.
-
+\begin{frame}{Mechanisms: Experimental Evidence (1997--1999)}\label{mechanisms_lab}
+\vspace{2pt}
+{\footnotesize \textbf{Data:} \textit{Progresa} evaluation (ENCASEH 1997; ENCEL 1998--1999); elderly $65+$ in eligible households, 506 treatment vs.\ 320 control localities (randomized). Municipality FE; SE clustered by locality.}
 \vspace{4pt}
+\begin{columns}[T]
+  \begin{column}{0.62\textwidth}
+    \centering
+    \scriptsize
+    \resizebox{\linewidth}{!}{%
+    \begin{tabular}{lccccc}
+    \toprule\toprule
+     & \textit{Labor} & \multicolumn{3}{c}{\textit{Living arrangements}} & \textit{Health} \\
+     \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-6}
+     & Weekly & Live & Live with & Only & Visits$^{1}$ \\
+     & hours & alone & children & elderly & \\
+     & (1) & (2) & (3) & (4) & (5) \\
+    \midrule
+    \textit{Treat $\times$ 1998} & $-0.657$ & $0.006$ & $-0.003$ & $-0.007$ & \\
+     & $(1.192)$ & $(0.006)$ & $(0.009)$ & $(0.007)$ & \\[3pt]
+    \textit{Treat $\times$ 1999} & $0.122$ & $0.007$ & $0.027^{*}$ & $0.006$ & $-0.023$ \\
+     & $(1.092)$ & $(0.009)$ & $(0.016)$ & $(0.013)$ & $(0.043)$ \\[3pt]
+    \midrule
+    Control mean (1997) & $14.05$ & $0.046$ & $0.693$ & $0.151$ & \\
+    Control mean (1999) & & & & & $0.096$ \\
+    Observations & $6{,}518$ & $7{,}025$ & $7{,}025$ & $7{,}025$ & $4{,}700$ \\
+    \bottomrule\bottomrule
+    \end{tabular}}
 
-\textbf{Specification:}
-\vspace{-4pt}
-\begin{equation*}
-Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t\,\mathbbm{1}[\text{Treatment}]_i + \mu_m + \varepsilon_{ij,t}
-\end{equation*}
-\begin{center}
-\begin{table}
-  \centering
-  \scriptsize
-  \begin{threeparttable}
-    \input{tables/T3_experimental}
-  \end{threeparttable}
-\end{table}
-\end{center}
-
+    \vspace{3pt}
+    {\tiny Pooled sample. Columns (1)--(4): DiD with 1997 baseline. $^{1}$Visits in the past 4 weeks, not collected at baseline: treatment--control cross-section pooling both 1999 ENCEL waves. $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$.}
+  \end{column}
+  \begin{column}{0.36\textwidth}
+    \scriptsize
+    \begin{itemize}
+      \item[$\circ$] \textbf{Labor supply:} no change in weekly hours
+      \vspace{1pt}
+      \item[$\circ$] \textbf{Living arrangements:} limited changes; men $+4$ pp more likely to live with children in 1999 ($p<0.05$)
+      \vspace{1pt}
+      \item[$\circ$] \textbf{Health visits:} no increase (no baseline; 4-week recall may miss an annual check-up)
+      \vspace{1pt}
+      \item[$\circ$] \textbf{Older-adults-only households} (food transfer only): no change in hours or visits
+      \vspace{1pt}
+      \item[$\circ$] \textbf{ENIGH 1992--2006:} income, food and health spending: imprecise nulls (limited power)
+    \end{itemize}
+  \end{column}
+\end{columns}
 \end{frame}
 
-\note{Using the experimental data, we test directly whether Progresa changed elderly labor supply or living arrangements. The answer is no on both counts. Elderly people didn't work fewer hours, and they didn't become more or less likely to live with children or alone.}
-
-\begin{frame}{Mechanisms: Conclusions}\label{mechanisms_enigh}
-\small
-
-\textbf{Experimental evidence (labor supply \& living arrangements):}
-\begin{itemize}
-  \item[$\circ$] \textbf{Labor supply:} no significant change in elderly weekly hours worked
-  \item[$\circ$] \textbf{Living arrangements:} no change in probability of living alone, with children, or with elderly only
-  \item[$\circ$] Null on living arrangements \textbf{rules out the informal-caregiving pathway}
-\end{itemize}
-
-\vspace{6pt}
-
-\textbf{Income \& nutrition (ENIGH, 1992--2006):}
-\begin{itemize}
-  \item[$\circ$] Outcomes: labor income; food spending (cereals, meat/dairy, vegetables, fats/sugar); health spending
-  \item[$\circ$] All coefficients imprecise $\to$ no significant behavioral responses detected
-  \item[$\circ$] Consistent with experimental null; limited power given survey design, but direction reinforces it
-\end{itemize}
-
-\vspace{6pt}
-
-\textbf{Overall:} two independent data sources converge --- none of the channels through which \textit{Progresa} could reach the elderly were activated at detectable levels. The null mortality result is \textbf{interpretable}, not just a power issue.
-
-\end{frame}
-
-\note{Slide 17 showed the experimental results — no changes in labor supply or living arrangements. Here we add the ENIGH findings: no significant effects on income, food consumption, or health spending either. The two data sources tell the same story. The null mortality result is not surprising given that none of the mechanisms were activated.}
-
-% \begin{frame}{Mechanisms: Summary}\label{mechanisms_summary}
-% \small
-% \begin{columns}[T]
-%   \begin{column}{0.48\textwidth}
-%     \textbf{Three channels tested}
-%     \vspace{6pt}
-%     \begin{enumerate}
-%       \item \textbf{Health conditionality} \\
-%         One annual clinic visit \\[4pt]
-%         {\footnotesize $\to$ \smallcite{BehrmanParker2013Demography}: increased utilization \\
-%         $\to$ \smallcite{aguila2024conditional}: \textcolor{redUT}{no improvement in biomarkers} \\
-%         $\to$ Cause-of-death analysis: no significant reduction in cardiovascular or infectious disease \\
-%         \textbf{Conclusion: partially activated, clinically ineffective}}
-%       \vspace{8pt}
-%       \item \textbf{Income and nutrition} \\
-%         {\footnotesize ENIGH analysis: \textcolor{redUT}{no detectable response} \\
-%         \textbf{Conclusion: not activated}}
-%       \vspace{8pt}
-%       \item \textbf{Living arrangements} \\
-%         {\footnotesize Experimental data: \textcolor{redUT}{no change in co-residence} \\
-%         \textbf{Conclusion: not activated}}
-%     \end{enumerate}
-%   \end{column}
-%   \begin{column}{0.48\textwidth}
-%     \textbf{The bigger picture}
-%     \vspace{6pt}
-%     \begin{itemize}
-%       \item[$\circ$] The null is \textbf{interpretable}, not just a power issue
-%       \vspace{4pt}
-%       \item[$\circ$] Contrast with \textbf{direct pension programs}:
-%         \begin{itemize}
-%           \item \textit{70 y Más} (direct, unconditional pension to $70+$): $-5.5\%$ elderly women mortality \smallcite{jeon2025short}
-%           \item Chile's basic solidarity pension: $-2.7$ pp four-year mortality \smallcite{MiglinoNavarrete2023AEJP}
-%         \end{itemize}
-%       \vspace{4pt}
-%       \item[$\circ$] Key difference: when income goes \textbf{directly to the elderly}, no need for intergenerational redistribution within the household
-%       \vspace{4pt}
-%       \item[$\circ$] When income goes to mothers via a child-focused CCT, elderly members depend on household redistribution that may not occur
-%     \end{itemize}
-%   \end{column}
-% \end{columns}
-% \end{frame}
-
-\note{Here's the bottom line on mechanisms. The health conditionality reached elderly people in terms of clinic visits, but didn't improve biomarkers or cause-specific mortality. Income and living arrangements were not changed. The null is coherent and interpretable. And it stands in stark contrast to direct pension programs, where income goes straight to the elderly and mortality effects are found. The intermediation through the household is what makes the CCT different.}
+\note{Using the randomized evaluation data, we test whether Progresa changed the behavior of older adults in eligible households. Hours worked did not change. Living arrangements barely changed; the one exception is that older men were about 4 percentage points more likely to live with children in 1999. We find no increase in health visits, although this measure has no baseline and a four-week recall, so it may miss an annual check-up and does not contradict earlier evidence of higher utilization. In households made up only of older adults, which receive only the food transfer, hours and visits did not change either. In the ENIGH, effects on labor income, food spending and health spending are imprecise and insignificant, so we cannot rule out small effects.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% CONCLUSION %%%
@@ -758,36 +701,30 @@ Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t
 \section{Conclusion}
 
 \begin{frame}{Concluding Remarks}\label{conclusion}
-\small
+\footnotesize
 \begin{itemize}
-  \item[$\circ$] \textbf{Main finding:} \textit{Progresa} had \textbf{no significant effect} on elderly mortality ($65+$) over its first ten years of operation
+  \item[$\circ$] \textbf{Main finding:} \textit{earlier} exposure to \textit{Progresa} produced \textbf{no detectable reduction} in mortality of adults $65+$ (1997--2006)
     \begin{itemize}
-      \item Robust to weighting, functional form, and Seguro Popular controls
-      \item Result holds for pooled sample, females, and males separately
+      \item Robust to weighting, functional form, SES trends, Seguro Popular; male estimates fail the pre-trend test
+      \item Informative null: detects effects $\geq 4.1$ deaths/1,000 (BR: $-6.37$); estimand is earlier vs.\ later exposure
     \end{itemize}
-  \vspace{4pt}
-  \item[$\circ$] \textbf{Short-run evidence revisited:} the \smallcite{BarhamRowberry2013JDE} estimate is sensitive to specification
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Short-run evidence revisited:} the \smallcite{BarhamRowberry2013JDE} estimate becomes much smaller
     \begin{itemize}
-      \item Population weighting attenuates the effect by $\approx 50\%$
-      \item Alternative lag structures further reduce it
-      \item Event study reveals pre-trend violations in the BR sample for males
+      \item Weighting attenuates it by $\approx 50\%$; concentrated in the smallest municipalities; no clean 1997 break
+      \item Weighted estimate implies $\approx$0.24 years of life expectancy at 65 (vs.\ $\approx$1 year)
     \end{itemize}
-  \vspace{4pt}
-  \item[$\circ$] \textbf{Mechanisms:} income, nutrition, and caregiving channels not detectably activated
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Mechanisms:} no effects on labor supply or health visits; limited changes in living arrangements; income and nutrition imprecise
+  \vspace{1pt}
+  \item[$\circ$] \textbf{Interpretation:} gains in utilization and hypertension diagnosis \smallcite{BehrmanParker2013Demography, aguila2024conditional} did not translate into detectable survival gains
     \begin{itemize}
-      \item Clinic utilization increased but no biomarker improvement \smallcite{aguila2024conditional}
-    \end{itemize}
-  \vspace{4pt}
-  \item[$\circ$] \textbf{Policy implication:} CCTs structured around children's education do not reliably deliver mortality benefits to elderly household members
-    \begin{itemize}
-      \item Programs transferring resources \textit{directly} to the elderly are more effective for reducing elderly mortality \smallcite{Menares2026JHR, MiglinoNavarrete2023AEJP}
+      \item Child-labeled transfers paid to mothers reach the elderly only indirectly; pensions paid \textit{directly} to older adults reduce mortality \smallcite{Menares2026JHR, MiglinoNavarrete2023AEJP}
     \end{itemize}
 \end{itemize}
 \end{frame}
 
-\note{To summarize: we find no evidence that Progresa reduced elderly mortality over ten years. The earlier short-run positive finding is sensitive to specification choices that are equally defensible. The behavioral channels that would produce a mortality effect were not activated. The policy lesson is that if you want to reduce elderly mortality, you need programs that put money directly in the hands of older adults — not child-focused CCTs that rely on intergenerational redistribution.}
-
-
+\note{To summarize: earlier exposure to Progresa did not detectably reduce older-adult mortality over its first ten years, and our design had the power to detect effects of the size previously reported. Remember this compares earlier with later exposure. The earlier short-run estimate becomes much smaller once we weight by population and is concentrated in tiny municipalities. In the experimental data, labor supply and health visits did not change, and living arrangements changed little. This does not mean Progresa had no benefits for older adults: it improved utilization and hypertension diagnosis, but those improvements did not translate into survival gains we can detect. Programs that pay older adults directly, like pensions, have shown mortality effects.}
 
 \begin{frame}[noframenumbering, plain]
 \begin{center}
@@ -799,6 +736,105 @@ Y_{ij,t} = \alpha + \beta_t + \gamma\,\mathbbm{1}[\text{Treatment}]_i + \delta_t
 }
 \end{center}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% BACKUP %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\backupbegin
+\section*{Backup}
+
+\begin{frame}{Backup: Cause-of-Death Analysis}\label{cod}
+\vspace{2pt}
+\begin{center}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccc}
+\toprule\toprule
+ & Cancer & Diabetes & Ill-defined & Respiratory & Cardiovascular & Infectious & Nutritional & Accidents & Other \\
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) \\
+\midrule
+\textit{Intensity 1999 $\times$ post} & $-0.887^{***}$ & $-0.508^{**}$ & $-0.574^{***}$ & $-0.313$ & $1.530^{*}$ & $0.619$ & $-0.102$ & $0.102$ & $-0.591$ \\
+ & $(0.266)$ & $(0.247)$ & $(0.221)$ & $(0.439)$ & $(0.822)$ & $(0.392)$ & $(0.488)$ & $(0.078)$ & $(0.911)$ \\
+Romano--Wolf $p$-value & $[0.008]$ & $[0.282]$ & $[0.077]$ & $[1.000]$ & $[0.377]$ & $[0.574]$ & $[1.000]$ & $[0.777]$ & $[1.000]$ \\
+Mean (1991--1996) & $1.70$ & $1.63$ & $1.00$ & $4.34$ & $14.01$ & $3.68$ & $4.35$ & $0.21$ & $15.54$ \\
+\bottomrule\bottomrule
+\end{tabular}}
+\end{center}
+\vspace{4pt}
+\small
+\begin{itemize}
+  \item[$\circ$] Pooled sample; nine causes following \cite{BarhamRowberry2013JDE}'s classification
+  \item[$\circ$] After Romano--Wolf correction, only \textbf{cancer} survives --- a cause BR treat as unlikely to be affected by \textit{Progresa} $\to$ read as residual differential trends, not a program effect
+  \item[$\circ$] Ill-defined causes likely reflect changes in cause-of-death coding; no visual break at 1997 in cause-specific event studies
+\end{itemize}
+\end{frame}
+
+\note{We also looked at cause-specific mortality. Before correcting for multiple testing, cancer, ill-defined causes, and diabetes go down, and cardiovascular goes up. After the Romano-Wolf correction for nine hypotheses, only cancer survives, and there is no plausible mechanism by which Progresa would reduce cancer mortality over this horizon, so we read it as residual trends. The ill-defined result may reflect better death certificate coding.}
+
+\begin{frame}{Backup: Migration of Older Adults}\label{migration}
+\vspace{2pt}
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule\toprule
+ & \multicolumn{2}{c}{Log population 65+} & Log pop.\ 65+ relative \\
+ & All years & Census years & to ages 50--64 (DDD) \\
+ & (1) & (2) & (3) \\
+\midrule
+Pooled & $0.167^{***}$ & $0.207^{***}$ & $-0.034$ \\
+ & $(0.023)$ & $(0.028)$ & $(0.031)$ \\[3pt]
+Females & $0.180^{***}$ & $0.223^{***}$ & $-0.046$ \\
+ & $(0.024)$ & $(0.029)$ & $(0.035)$ \\[3pt]
+Males & $0.158^{***}$ & $0.196^{***}$ & $0.001$ \\
+ & $(0.025)$ & $(0.030)$ & $(0.039)$ \\
+\bottomrule\bottomrule
+\end{tabular}
+\end{center}
+\vspace{2pt}
+\footnotesize
+\begin{itemize}
+  \item[$\circ$] Population 65+ grows faster in high-intensity municipalities, but so does the population 50--64
+  \item[$\circ$] Triple difference (municipality$\times$year, municipality$\times$age, year$\times$age FE): \textbf{no differential change for the 65+} $\to$ no evidence of selective elderly migration
+  \item[$\circ$] Census-year event studies: pre-program coefficient not significant ($p=0.18$ pooled, log)
+\end{itemize}
+\end{frame}
+
+\note{A natural concern is that Progresa changed who lives in these municipalities. The population aged 65 and over does grow faster in high-intensity municipalities, but so does the population aged 50 to 64. Once we compare the two age groups in a triple difference, there is no differential change for older adults. This is consistent with Stecklov and coauthors, who find no effects of Progresa on migration of older household members.}
+
+\begin{frame}{Backup: Without the Later-Phase Control; By Municipality Size}\label{nocontrol_size}
+\small
+\textbf{(a) Main specification without $\textit{Intensity}_{2005} \times$ post}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & Pooled & Females & Males \\
+\midrule
+\textit{Intensity 1999 $\times$ post} & $-2.255^{*}$ & $-2.466$ & $-2.095$ \\
+ & $(1.276)$ & $(1.534)$ & $(1.469)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+\textbf{(b) BR sample by size tercile (1992--2002), weighted}
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+ & All & Small & Medium & Large \\
+\midrule
+Adapted design ($\textit{Intensity}_{1999} \times$ post) & $-1.660^{**}$ & $-2.908$ & $-1.317$ & $-0.029$ \\
+ & $(0.807)$ & $(2.483)$ & $(1.359)$ & $(1.193)$ \\
+BR two-year lagged intensity & $-3.740^{***}$ & $-7.343^{***}$ & $-2.372$ & $-1.393$ \\
+ & $(0.786)$ & $(2.088)$ & $(1.450)$ & $(1.218)$ \\
+Mean population 65+ & 951 & 154 & 556 & 2,144 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{frame}
+
+\note{Without the later-phase control, the pooled estimate is -2.3, significant only at 10 percent; this specification conflates the timing of exposure with overall program intensity. By size tercile in the BR sample, both the adapted design and BR's specification produce their largest effects in the smallest municipalities, with mean populations of about 150 older adults, and essentially zero in the largest ones.}
+
+\backupend
 
 {\tiny\bibliography{bibliography}}
 
