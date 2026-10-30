@@ -357,7 +357,7 @@
 \note{This figure shows the key trends. The mortality rate for adults 65 and older in highly marginalized municipalities is on the left axis, and Progresa penetration is on the right. The vertical line marks 1997 when the program started. We can see that mortality was declining before the program, and enrollment grew rapidly after 1997. The identification challenge is separating the program's effect from the pre-existing trend.}
 
 \begin{frame}{Geographic Distribution of Progresa Intensity}\label{maps}
-\vspace{-2mm}
+
 \begin{columns}
   \begin{column}{0.5\textwidth}
     \centering
@@ -372,7 +372,13 @@
     \includegraphics[width=\textwidth, keepaspectratio]{Figure_1c_inten2005.pdf}
   \end{column}
 \end{columns}
-% \vspace{2mm}
+ \vspace{2mm}
+\footnotesize
+\begin{itemize}
+  \item \textbf{Early phase:} $\textit{Intensity}_{m,1999}$ --- cumulative share of households enrolled by 1999 (mean 44\%)
+  \item \textbf{Later phase:} $\textit{Intensity}_{m,2005}$ --- cumulative share enrolled by 2005 (mean 72\%), included as a \textbf{control}
+\end{itemize}
+
 % {\footnotesize Municipality-level Progresa intensity (share of beneficiary households) among highly marginalized municipalities. Darker shading = higher intensity. Substantial variation across municipalities in both phases motivates the two-phase DiD design.}
 \end{frame}
 
@@ -384,17 +390,9 @@
 \section{Empirical Strategy}
 
 \begin{frame}{Empirical Strategy: Difference-in-Differences}\label{empirics}
-\footnotesize
-\begin{itemize}
-  \item \textbf{Early phase:} $\textit{Intensity}_{m,1999}$ --- cumulative share of households enrolled by 1999 (mean 44\%)
-  \item \textbf{Later phase:} $\textit{Intensity}_{m,2005}$ --- cumulative share enrolled by 2005 (mean 72\%), included as a \textbf{control}
-  \item Common timing (1997) for all municipalities $\to$ no already-treated units used as controls (no forbidden comparisons)
-\end{itemize}
-
+\small
 \vspace{2pt}
 \textbf{Baseline specification}
-\vspace{-6pt}
-
 \begin{equation*}
 \text{MR}_{m,t}
 = \beta_{0}\,\textit{Post}_{t} \times \textit{Intensity}_{m,1999}
@@ -405,12 +403,19 @@
 \vspace{-2pt}
 \begin{itemize}
   \item $\text{MR}_{m,t}$: deaths per 1,000 aged $65+$; $\textit{Post}_{t} = 1$ for 1997--2006; $\delta_m$, $\gamma_t$: municipality and year FE
+  \item Common timing (1997) for all municipalities $\to$ no already-treated units used as controls (no forbidden comparisons)
   \item $\chi_{m,t}$: Seguro Popular enrollment intensity (health insurance rollout from 2002)
   \item \textbf{Coefficient of interest}: $\beta_0$ --- effect of \textit{earlier} exposure ($\approx$4--5 extra years) among municipalities with \textbf{similar coverage by 2005}; ITT, not program vs.\ no program
   \item SE clustered by municipality; weighted by population 65+
   %$\beta_1$: control with no stand-alone interpretation (not reported); 
 \end{itemize}
-
+\vspace{2pt}
+\textbf{Event Study agumented specification}
+\vspace{-4pt}
+{\footnotesize
+    $\begin{aligned}
+    \text{MR}_{m,t} = {} & \textstyle\sum_{k \neq 1996} \beta_{k}\,\mathbf{1}[t=k] \times \textit{Int}_{m,1999} + \textstyle\sum_{k \neq 1996} \theta_{k}\,\mathbf{1}[t=k] \times \textit{Int}_{m,2005} + \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
+    \end{aligned}$}\\[3pt]
 \end{frame}
 
 \note{Our identification strategy compares municipalities that enrolled more households in the early phase of Progresa (1997-1999) with those that enrolled more later, holding cumulative coverage by 2005 fixed. Average enrollment goes from 44 percent in 1999 to 72 percent in 2005, so early enrollers get roughly four to five extra years of exposure. That is what beta zero measures: earlier exposure, not program versus no program. The 2005 intensity is a control and we do not interpret it. Because the post indicator turns on in 1997 for everyone, we avoid comparing already-treated to newly treated units. We control for Seguro Popular, Mexico's public health insurance that rolled out after 2002, and weight by the elderly population to avoid giving outsized influence to tiny, volatile municipalities.}
@@ -428,11 +433,7 @@
     \includegraphics[width=\textwidth, height=0.42\textheight, keepaspectratio]{Figure_2_pooled.pdf}\\
     {\scriptsize Pre-trend joint test: $F=1.81$ ($p=0.108$)}\\[4pt]
     \raggedright
-    {\footnotesize
-    $\begin{aligned}
-    \text{MR}_{m,t} = {} & \textstyle\sum_{k \neq 1996} \beta_{k}\,\mathbf{1}[t=k] \times \textit{Int}_{m,1999} \\
-    & + \textstyle\sum_{k \neq 1996} \theta_{k}\,\mathbf{1}[t=k] \times \textit{Int}_{m,2005} + \delta_{m} + \gamma_{t} + \chi_{m,t} + \varepsilon_{m,t}
-    \end{aligned}$}\\[3pt]
+    
     {\scriptsize \textbf{Identification:} conditional on FEs and $\textit{Intensity}_{2005}$, municipalities with higher $\textit{Intensity}_{1999}$ would have followed parallel mortality trends absent the program}
   \end{column}
   \begin{column}{0.44\textwidth}
@@ -527,9 +528,13 @@ Mean Intensity 1999 (\%) & $44.4$ & $44.4$ & $44.4$ \\
 \vspace{6pt}
 \textbf{Why does weighting matter?}
 \begin{itemize}
-  \item[$\circ$] \textbf{Weighting:} \textit{Progresa} targeted the most isolated, smallest, and poorest communities first; these have the highest intensity \textit{and} the most volatile mortality rates, so the unweighted estimate gives them excess influence. Weighting by the elderly population makes each municipality count in proportion to its contribution to total deaths
-  \vspace{4pt}
-  \item[$\circ$] \textbf{By size tercile} (BR specification, weighted): the effect is concentrated in the \textbf{smallest} municipalities, $-7.34^{***}$ (mean of 154 people aged 65+), and shrinks to $-2.37$ in the middle tercile and an insignificant $-1.39$ in the largest (mean of 2,144 people aged 65+)
+  \item[$\circ$] \textbf{Weighting:} 
+  \begin{itemize}
+  \item \textit{Progresa} targeted the most isolated, smallest, and poorest communities first
+  \item These have the highest intensity \textit{and} the most volatile mortality rates
+  \item Weighting by the elderly population makes each municipality count in proportion to its contribution to total deaths
+  \end{itemize}
+  \item[$\circ$] \textbf{By size tercile} (BR specification, weighted): the effect is concentrated in the \textbf{smallest} municipalities, $-7.34^{***}$ (mean of 154 people aged 65+), the rest shrinks and loses precision.
 \end{itemize}
 \end{frame}
 
