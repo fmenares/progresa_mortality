@@ -51,6 +51,7 @@
 \usepackage{tabularx}
 \usepackage{threeparttable}
 \usepackage{makecell}
+\usepackage{adjustbox}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 
 % ------------------------------------------------
@@ -789,6 +790,139 @@ Mean population 65+ & 951 & 154 & 556 & 2,144 \\
 \end{frame}
 
 \note{Without the later-phase control, the pooled estimate is -2.3, significant only at 10 percent; this specification conflates the timing of exposure with overall program intensity. By size tercile in the BR sample, both the adapted design and BR's specification produce their largest effects in the smallest municipalities, with mean populations of about 150 older adults, and essentially zero in the largest ones.}
+
+\begin{frame}{Backup: Sample Descriptives, Marginalized vs.\ Non-Marginalized}\label{descr}
+\vspace{-2pt}
+\centering
+\footnotesize
+\adjustbox{max totalsize={0.95\textwidth}{0.74\textheight}}{\input{tables/T1_descriptives}}\\[3pt]
+{\scriptsize Pre-program means (\%), standard deviations in parentheses. Highly marginalized = grades 4--5 of the 1990 CONAPO index.}
+\end{frame}
+
+\note{This compares the municipalities we use with the rest. Highly marginalized municipalities have much higher Progresa enrollment, 44 percent by 1999 and 72 percent by 2005, and much worse socioeconomic conditions, which is why we restrict to them: they were all targeted and differ mainly in the speed of enrollment.}
+
+\begin{frame}{Backup: Other Age Groups, Including a 50--64 Placebo}\label{age_groups}
+\vspace{-2pt}
+\centering
+\adjustbox{max totalsize={0.95\textwidth}{0.74\textheight}}{\input{tables/appendix/AT3_age_subgroups}}\\[3pt]
+{\scriptsize $\textit{Intensity}_{1999} \times$ post, weighted by the population of each age group; Seguro Popular and $\textit{Intensity}_{2005}$ controls.}
+\end{frame}
+
+\note{The result does not depend on the age cut. Ages 65 to 69 and 70 and over are both null, and so is the 50 to 64 group, which Progresa's own conditionalities target more directly, apart from a marginally significant female estimate.}
+
+\begin{frame}{Backup: Event Studies by Functional Form}\label{es_ff}
+\vspace{-3mm}
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \centering {\small (a) Levels, weighted}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF6a_ES_func_form_levels.pdf}\\
+    {\small (c) Log}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF6c_ES_func_form_log.pdf}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \centering {\small (b) Levels, unweighted}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF6b_uw.pdf}\\
+    {\small (d) Poisson}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF6d_ES_func_form_poisson.pdf}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\note{Event studies for the specifications in the robustness table. The unweighted version is noisier, as expected when the smallest and most volatile municipalities get full weight, but its shape tracks the weighted profile and shows no post-program decline. Log and Poisson look similar to levels.}
+
+\begin{frame}{Backup: Stability to the Later-Phase Control and to SES Trends}\label{stability}
+\vspace{-3mm}
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \centering {\small (a) Later-phase control: 2004, 2005 or 2006}\\
+    \includegraphics[width=\textwidth, height=0.6\textheight, keepaspectratio]{appendix/AF8_beta0_stability.pdf}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \centering {\small (b) Alternative SES trend specifications (pooled)}\\
+    \includegraphics[width=\textwidth, height=0.6\textheight, keepaspectratio]{appendix/AF7a_ses_trend.pdf}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\note{Left: the year-by-year early-phase coefficients are essentially unchanged if later-phase coverage is measured in 2004 or 2006 instead of 2005. Right: adding municipality-specific trends interacted with the marginalization index, in several forms, does not change the pattern.}
+
+\begin{frame}{Backup: Change in Mortality against Early-Phase Intensity}\label{cloud}
+\vspace{-3mm}
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \centering {\small (a) Change after 1997}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF_cloud_post_plain.pdf}\\
+    {\small (c) Pre-period placebo}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF_cloud_pre_plain.pdf}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \centering {\small (b) Net of later-phase enrollment}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF_cloud_post_cond.pdf}\\
+    {\small (d) Placebo, net of later-phase enrollment}\\
+    \includegraphics[width=\textwidth, height=0.34\textheight, keepaspectratio]{appendix/AF_cloud_pre_cond.pdf}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\note{Following the continuous-treatment DiD literature, we plot each municipality's change in mortality, 1997 to 2006 minus 1991 to 1996, against its 1999 intensity, with binned means and a spline. This shows the dose-response relationship directly and avoids the issue of time-varying treatment timing. The bottom panels are a placebo using the change before the program started.}
+
+\begin{frame}{Backup: BR Sample, Adapted Event Study by Municipality Size}\label{br_size_es}
+\vspace{-3mm}
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \centering {\small (a) Unweighted}\\
+    \includegraphics[width=\textwidth, height=0.6\textheight, keepaspectratio]{appendix/AF_br_adapted_es_size_uw.pdf}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \centering {\small (b) Weighted}\\
+    \includegraphics[width=\textwidth, height=0.6\textheight, keepaspectratio]{appendix/AF_br_adapted_es_size_w.pdf}
+  \end{column}
+\end{columns}
+{\scriptsize Small, medium and large municipalities: terciles of the pre-program population 65+ in the BR sample, 1992--2002.}
+\end{frame}
+
+\note{Event studies of the adapted design in the Barham and Rowberry sample, by municipality size tercile. The short-run decline is concentrated in the smallest municipalities, where mortality rates are most volatile.}
+
+\begin{frame}{Backup: Barham \& Rowberry Replication by Sex}\label{br_by_sex}
+\vspace{-2pt}
+\centering
+\adjustbox{max totalsize={0.95\textwidth}{0.74\textheight}}{\input{tables/appendix/AT5_BR_replication}}
+\end{frame}
+
+\note{The full replication table, including females and males. The original BR estimates are in the first panel, our close replication below, then population weights and the alternative lags.}
+
+\begin{frame}{Backup: Experimental Evidence by Sex and Household Type}\label{exp_full}
+\vspace{-2pt}
+\centering
+\adjustbox{max totalsize={0.95\textwidth}{0.74\textheight}}{\input{tables/T3_experimental}}
+\end{frame}
+
+\note{The full experimental table. Panel A is the pooled sample from the main slide; panels B and C split by sex. The one significant estimate is that older men were more likely to live with children in 1999. Columns 6 and 7 restrict to households made up only of older adults, which receive only the food transfer.}
+
+\begin{frame}{Backup: Household Expenditure by Older-Adult Presence}\label{expend}
+\vspace{-2pt}
+\centering
+\adjustbox{max totalsize={0.95\textwidth}{0.74\textheight}}{\input{tables/appendix/AT8_expenditures_elderly}}\\[3pt]
+{\scriptsize Experimental data, treatment $\times$ 1999 versus 1998 baseline. Outcomes: log food and health expenditure and their budget shares.}
+\end{frame}
+
+\note{Using the experimental data, expenditure on food and health rises in treated households without older adults, but the differential for households with older adults is small and insignificant, and the same holds for older-adults-only households. This is consistent with the transfer not reaching older members.}
+
+\begin{frame}{Backup: Event Study of the 65+ Population (Migration)}\label{migration_es}
+\vspace{-3mm}
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \centering {\small (a) Log population, all years}\\
+    \includegraphics[width=\textwidth, height=0.6\textheight, keepaspectratio]{appendix/AF_migration_es_log99.pdf}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \centering {\small (b) Log population, census years only}\\
+    \includegraphics[width=\textwidth, height=0.6\textheight, keepaspectratio]{appendix/AF_migration_es_census_log.pdf}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\note{The year-by-year version of the migration table. Panel a uses interpolated populations, which mechanically trend between census years; panel b uses only counted populations in 1990, 1995, 2000 and 2005.}
 
 \backupend
 
