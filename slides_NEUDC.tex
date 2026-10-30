@@ -182,7 +182,7 @@
 \vspace{2pt}
 \small
 \begin{itemize}
-  \item[$\circ$] In LAC, 9.9\% of the population is 65+ (2024), projected to reach 18.9\% by 2050 \smallcite{UN2024WPP}; 1 in 5 older adults lives in multidimensional poverty \smallcite{CEPAL2024SocialPanorama}
+  \item[$\circ$] In LAC, ~10\% of the population is 65+ (2024), projected to reach double by 2050 \smallcite{UN2024WPP}; 1 in 5 older adults lives in multidimensional poverty \smallcite{CEPAL2024SocialPanorama}
   \item[$\circ$] Income support programs and health: evidence is mixed
     \begin{itemize}
       \item Some studies find important health benefits \smallcite{Case2004PerspectivesAging, Aguila2015PNAS}, others find no effects \smallcite{LloydSherlockAgrawal2014JDS}, and some identify unintended adverse consequences \smallcite{FernaldGertlerHou2008JN}
@@ -207,15 +207,13 @@
 
 \note{The broader literature on income transfers and health yields mixed results. Some find benefits, others find none. Most evidence is short-run. For the elderly specifically, we know Progresa increased clinic visits but didn't improve blood pressure biomarkers. Barham and Rowberry provided the key short-run mortality finding. And we know that pension programs that transfer directly to the elderly show stronger effects.}
 
-\begin{frame}{This Paper}\label{thispaper}
+\begin{frame}{This Paper: Did \textit{earlier} exposure to \textit{Progresa} reduce older adult mortality?}\label{thispaper}
 \vspace{0pt}
 \small
 \begin{itemize}
-  \item[$\circ$] \textbf{Research question:} Did \textit{earlier} exposure to Mexico's \textit{Progresa} CCT reduce mortality among adults $65+$ over the program's first ten years?
-  \vspace{2pt}
   \item[$\circ$] \textbf{Identification:} DiD across highly marginalized municipalities (1991--2006) with different early (1997--1999) enrollment but \textbf{similar coverage by 2005}
     \begin{itemize}
-      \item Estimand: effect of $\approx$4--5 \textit{additional} years of exposure, not program vs.\ no program
+      \item Effect of $\approx$4--5 \textit{additional} years of exposure, not program vs.\ no program
     \end{itemize}
   \vspace{2pt}
   \item[$\circ$] \textbf{Main finding:} \textcolor{redUT}{No detectable reduction in older-adult mortality}
@@ -223,7 +221,7 @@
       \item Robust to weighting, functional form, SES trends, Seguro Popular; detects effects $\geq 4.1$ deaths/1,000
     \end{itemize}
   \vspace{2pt}
-  \item[$\circ$] \textbf{Revisiting prior evidence:} Short-run estimates of \cite{BarhamRowberry2013JDE} are \textbf{smaller} and depend on weighting and sample
+  \item[$\circ$] \textbf{Revisiting prior evidence:} Short-run estimates of \cite{BarhamRowberry2013JDE} are sensitive and depend on weighting and sample
     \begin{itemize}
       \item Population weights attenuate them by $\approx 50\%$; no clean post-1997 break in the event study
     \end{itemize}
@@ -239,15 +237,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Program}
 
-\begin{frame}{Mexico's \textit{Progresa}: Programme Overview}\label{progresa}
+\begin{frame}{Mexico's \textit{Progresa}: Launched 1997 in small rural localities}\label{progresa}
 \footnotesize
 \begin{itemize}
-  \item[$\circ$] Launched 1997 in small rural localities; targeted poor households (locality marginality index and a household-level proxy means test)
-  \vspace{1pt}
-  \item[$\circ$] \textbf{Scale:} 6 million families covered ($\frac{1}{4}$ of all Mexican families); $\frac{2}{3}$ in localities $<$2,500 inhabitants
+  \item[$\circ$]  Targeted poor households reaching $\frac{1}{4}$ and $\frac{2}{3}$ in localities $<$2,500 inhabitants
+  %(locality marginality index and a household-level proxy means test)
+  %\vspace{1pt}
+  %\item[$\circ$] \textbf{Scale:} 6 million families covered (
+  
   \vspace{1pt}
 
-  \item[$\circ$] \textbf{Transfer:} $\approx$ MXN\$800/month ($>25\%$ income increase); paid to female household head
+  \item[$\circ$] \textbf{Transfer:} Represented a $25\%$ income increase); paid to female household head
     \begin{itemize}
       \item \textit{Education grant:} households with children attending school ($\geq 85\%$ attendance)
       \item \textit{Food transfer:} flat rate to \textbf{every} eligible household, incl.\ older-adults-only households
@@ -278,7 +278,7 @@
         One annual clinic visit $\to$ early detection of diabetes, hypertension, infectious disease
       \vspace{3pt}
       \item \textbf{Income and nutrition} \\
-        $+25\%$ household income $\to$ improved nutrition and healthcare access for elderly members
+        Improved nutrition and healthcare access for elderly members
       \vspace{3pt}
       \item \textbf{Labor supply} \\
         Less work $\to$ lower physical health risks (but possibly less social interaction)
@@ -293,7 +293,7 @@
     \begin{itemize}
       \item[$\circ$] \textit{Health conditionality:} one annual visit is a minimal intervention; \cite{aguila2024conditional} find increased utilization but no improvement in blood pressure biomarkers
       \vspace{4pt}
-      \item[$\circ$] \textit{Income:} transfers go to female head and are labeled for children's schooling (mental accounting); elderly members may not capture redistribution
+      \item[$\circ$] \textit{Income:} transfers go to female head and are labeled for children's schooling; elderly members may not capture redistribution
       \vspace{4pt}
       \item[$\circ$] \textit{Labor supply / caregiving:} elderly are not the target; the physical-presence requirement for cash collection may \textit{increase} time demands on younger members \smallcite{BehrmanParker2013Demography}
     \end{itemize}
@@ -317,14 +317,16 @@
       \item Includes cause of death, birth year, sex, municipality of residence
     \end{itemize}
   \vspace{1pt}
-  \item \textbf{Population data} $\rightarrow$ mortality rate denominators
+  \item \textbf{Population and household data} $\rightarrow$ mortality rate denominators
     \begin{itemize}
-      \item Census/counts 1990, 1995, 2000, 2005 by sex, age, municipality; geometrically interpolated
+      \item Interpolated Census/counts 1990, 1995, 2000, 2005 by sex, age, municipality
+      %geometrically 
     \end{itemize}
   \vspace{1pt}
   \item \textbf{\textit{Progresa} administrative data} $\rightarrow$ treatment variable
     \begin{itemize}
-      \item Annual enrolled households by municipality over total households (linearly interpolated)
+      \item Annual enrolled households by municipality over total households 
+      %(linearly interpolated)
     \end{itemize}
   \vspace{1pt}
   \item \textbf{CONAPO Marginalization Index (1990)} $\rightarrow$ sample restriction
@@ -337,8 +339,8 @@
       \item 506 treatment + 320 control localities; 18-month experimental window
       \item Labor supply, household composition, health visits for elderly $65+$ in eligible households
     \end{itemize}
-  \vspace{1pt}
-  \item \textbf{ENIGH (1992--2006)} $\rightarrow$ income and nutrition mechanisms (Household Survey)
+  %\vspace{1pt}
+  %\item \textbf{ENIGH (1992--2006)} $\rightarrow$ income and nutrition mechanisms (Household Survey)
 \end{itemize}
 \end{frame}
 
@@ -405,7 +407,8 @@
   \item $\text{MR}_{m,t}$: deaths per 1,000 aged $65+$; $\textit{Post}_{t} = 1$ for 1997--2006; $\delta_m$, $\gamma_t$: municipality and year FE
   \item $\chi_{m,t}$: Seguro Popular enrollment intensity (health insurance rollout from 2002)
   \item \textbf{Coefficient of interest}: $\beta_0$ --- effect of \textit{earlier} exposure ($\approx$4--5 extra years) among municipalities with \textbf{similar coverage by 2005}; ITT, not program vs.\ no program
-  \item $\beta_1$: control with no stand-alone interpretation (not reported); SE clustered by municipality; weighted by population 65+
+  \item SE clustered by municipality; weighted by population 65+
+  %$\beta_1$: control with no stand-alone interpretation (not reported); 
 \end{itemize}
 
 \end{frame}
@@ -709,7 +712,7 @@ Males & $-2.206$ & $-1.588$ & $-2.52$ & $-10.02$ & $-1.362$ \\
       \item Informative null: detects effects $\geq 4.1$ deaths/1,000 (BR: $-6.37$); estimand is earlier vs.\ later exposure
     \end{itemize}
   \vspace{1pt}
-  \item[$\circ$] \textbf{Short-run evidence revisited:} the \smallcite{BarhamRowberry2013JDE} estimate becomes much smaller
+  \item[$\circ$] \textbf{Short-run evidence revisited:} the \smallcite{BarhamRowberry2013JDE} estimate becomes  smaller
     \begin{itemize}
       \item Weighting attenuates it by $\approx 50\%$; concentrated in the smallest municipalities; no clean 1997 break
       \item Weighted estimate implies $\approx$0.24 years of life expectancy at 65 (vs.\ $\approx$1 year)
